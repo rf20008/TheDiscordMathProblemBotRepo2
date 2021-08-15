@@ -13,4 +13,4 @@ or DM me in Discord (ay136416#2707) (recommended, as I check Discord more often)
 
 # Contribute / Feature Requests
 
-Open a pull request!
+Open a pull request or DM me!

@@ -1,6 +1,7 @@
 import discord, math, random, requests, os
 import time, datetime, json, aiohttp
 #from discord_slash import SlashCommand, SlashContext
+#import discord_slash
 import threading
 from discord.ext import commands, tasks
 #constants
@@ -13,15 +14,27 @@ vote_threshold = 1
 mathProblems={}
 erroredInMainCode = False
 #print("yes")
+def print_current_time():
+  e = datetime.datetime.now()
+
+  print (e.strftime("%Y-%m-%d %H:%M:%S"),end=" ")
+  print (e.strftime("%d/%m/%Y"),end=" ")
+  print (e.strftime("%I:%M:%S %p"),end=" ")
+  print (e.strftime("%a, %b %d, %Y"),end=" ")
 def d():
   #print("e",flush=True)
   global mathProblems
   global trusted_users
+  global vote_threshold
   with open("math_problems.json", "r") as file:
     mathProblems = json.load(fp=file)
   with open("trusted_users.txt", "r") as file:
     for line in file:
       trusted_users.append(int(line))
+  with open("vote_threshold.txt") as file3:
+    for line in file3:
+      vote_threshold = int(line)
+      print(line)
   #print("f")
   while True:  
     #print("o")
@@ -30,7 +43,8 @@ def d():
       print("An error happened in the main code. Stopping the program...")
       exit()
       raise Exception
-    print("Attempting to save files")
+    print(f"Attempting to save files. The time is: ")
+    print_current_time()
     with open("math_problems.json", "w") as file:
       file.write(json.dumps(mathProblems))
     with open("trusted_users.txt", "w") as file2:
@@ -38,6 +52,10 @@ def d():
         file2.write(str(user))
         file2.write("\n")
         #print(user)
+
+    with open("vote_threshold.txt") as file3:
+      file.write(str(vote_threshold))
+    
     print("Successfully saved files!")
       
 t = threading.Thread(target=d,name="D",daemon=True)
@@ -67,7 +85,7 @@ async def on_command_error(ctx,error):
     return
   print(type(error))
   erroredInMainCode=True
-  await ctx.channel.send("Something went wrong! Message the devs RIGHT NOW! (Our tags are ay136416#2707 and duck_master#8022)")
+  await ctx.channel.send("Something went wrong! Message the devs ASAP! (Our tags are ay136416#2707 and duck_master#8022)")
   raise error
   
 ##@bot.command(help = """Adds a trusted user!
@@ -85,9 +103,10 @@ class ProblemRelated(commands.Cog):
     if len(question) > 250:
       await ctx.channel.send("Your question is too long! Therefore, it cannot be added. The maximum question length is 250 characters.")
       return
-    problem_id = generate_new_id()
-    if problem_id not in mathProblems.keys():
-      break
+    while True:
+      problem_id = generate_new_id()
+      if problem_id not in mathProblems.keys():
+        break
 
     e = {"answer": answer, "voters": [], "author": ctx.message.author.id, "solvers":[], "question": question}
     mathProblems[problem_id] = e
@@ -138,7 +157,8 @@ class ProblemRelated(commands.Cog):
       e += str(question) + "\t"
       print(mathProblems[question])
       e += str(mathProblems[question]["question"]) + "\t"
-      e += str(len(mathProblems[question]["voters"])) + "\t"
+      e += "(" 
+      e+= str(len(mathProblems[question]["voters"])) + "/" + str(vote_threshold) + ")" + "\t"
       e += str(len(mathProblems[question]["solvers"])) + "\t"
     await ctx.channel.send(e[:1930])
 class ModerationRelatedCommands(commands.Cog):
@@ -174,7 +194,12 @@ class ModerationRelatedCommands(commands.Cog):
       await ctx.channel.send("This problem doesn't exist!")
       return
     mathProblems[problem_id]["voters"].append(ctx.message.author.id)
-    await ctx.channel.send("You successfully voted for the problem's deletion! As long as this problem is not deleted, you can always un-vote.")
+    e = "You successfully voted for the problem's deletion! As long as this problem is not deleted, you can always un-vote. There are "
+    e += str(len(mathProblems[problem_id]["voters"]))
+    e += "/"
+    e+= str(vote_threshold)
+    e += " votes on this problem!"
+    await ctx.channel.send(e)
     if len(mathProblems[problem_id]["voters"]) >= vote_threshold:
       del mathProblems[problem_id]
       await ctx.channel.send("This problem has surpassed the threshold and has been deleted!")
@@ -244,5 +269,17 @@ class ModerationRelatedCommands(commands.Cog):
       return
     trusted_users.pop(trusted_users.index(user_id))
     await ctx.channel.send(f"Successfully made {bot.get_user(user_id).nick} no longer a trusted user!") 
-print("YAY!")
+class miscellaneous(commands.Cog):
+  @bot.command(help="Generates a invite link for this bot! Takes no arguments", brief = "Generates an invite link for this bot and takes no arguments")
+  async def generate_invite_link(ctx):
+    await ctx.channel.send("https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147552256&scope=bot%20applications.commands")
+    return
+  @bot.command(help="ping? prints latency and takes no arguments",
+  brief = "prints latency and takes no arguments")
+  async def ping(ctx):
+    await ctx.channel.send(f"Pong! My latency is {round(bot.latency*1000)}ms.")
+  @bot.command(help="Prints the vote threshold and takes no arguments", brief ="Prints the vote threshold and takes no arguments")
+  async def what_is_vote_threshold(ctx):
+    await ctx.channel.send(f"The vote threshold is {vote_threshold}.")
+print("The bot has finished setting up and will now run.")
 bot.run(DISCORD_TOKEN)
