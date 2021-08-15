@@ -1,7 +1,7 @@
 import discord, math, random, requests, os
 import time, datetime, json, aiohttp
 #from discord_slash import SlashCommand, SlashContext
-from threading import Thread
+import threading
 from discord.ext import commands, tasks
 #constants
 print("Is it working??")
@@ -30,7 +30,7 @@ def d():
         file2.write(str(user))
     print("Successfully saved files!")
       
-t = Thread(target=d)
+t = threading.Thread(target=d,name="D",daemon=True)
 print('no')
 t.run()
 print("Work please!!!!!")
