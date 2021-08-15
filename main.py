@@ -106,6 +106,8 @@ class ProblemRelated(commands.Cog):
   math_problems.list_all_problems <showSolvedProblems=False>
   showSolvedProblems is whether or not to show solved problems. Cuts off after the 1931'st character.""", brief = "List all problems stored with the bot.")
   async def list_all_problems(ctx, showSolvedProblems=False):
+    if showSolvedProblems is not False:
+      showSolvedProblems = True
     if mathProblems == {}:
       await ctx.channel.send("There aren't any problems! You should add one!")
     e = ""
