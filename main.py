@@ -47,7 +47,6 @@ help_command = commands.DefaultHelpCommand(
 
 bot = commands.Bot(
     command_prefix = commands.when_mentioned_or('math_problems.'),
-    description = description,
     help_command = help_command
 )
 #print("k")
@@ -57,7 +56,8 @@ async def on_command_error(ctx,error):
   if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
     await ctx.channel.send("Not enough arguments!")
     return
-  await ctx.channel.send("Something went wrong! Message the devs if this keeps happening!")
+  await ctx.channel.send("Something went wrong! Message the devs RIGHT NOW! (Our tags are ay136416#2707 and duck_master#8022)")
+  raise error
   
 ##@bot.command(help = """Adds a trusted user!
 ##math_problems.add_trusted_user <user_id>
@@ -120,7 +120,7 @@ class ProblemRelated(commands.Cog):
       e += len(mathProblems[question]["voters"] + "\t")
       e += len(mathProblems[question]["solvers"])
 
-  class ModerationRelatedCommands(commands.Cog)
+class ModerationRelatedCommands(commands.Cog):
   @bot.command(help = """Sets the vote threshold for problem deletion to the specified value! (can only be used by trusted users)
   math_problems.set_vote_threshold <threshold>""", brief = "Changes the vote threshold")
   async def set_vote_threshold(ctx,threshold):
@@ -186,33 +186,42 @@ class ProblemRelated(commands.Cog):
       mathProblems.pop(problem_id)
   @bot.command(help="""Adds a trusted user (can only be used by trusted users)
   math_problems.add_trusted_user <user_nick>""", brief = "Adds a trusted user (can only be used by trusted users)")
-  async def add_trusted_user(ctx,user_nick):
+  async def add_trusted_user(ctx,member: discord.Member = None):
     if ctx.message.author.id not in trusted_users:
       await ctx.channel.send("You aren't a trusted user!")
       return
-    s = ctx.message.server
-    user_id = s.get_member_named(user_nick).id
+    if member == None:
+      await ctx.channel.send("Please mention a member to get them added!")
+      return
+    user_id = member.id
     if user_id == None:
       await ctx.channel.send(f"{user_nick} isn't a valid nickname of a user!")
       return
-    trusted_users.append(user_id)
-    await ctx.channel.send(f"Successfully made {user_id.nick} a trusted user!")
+    #user_id = e.id
+    if user_id in trusted_users:
+      await ctx.channel.send(f"{bot.get_user(user_id).nick} is already a trusted user!")
+      return
+    trusted_users.append(trusted_users.index(user_id))
+    await ctx.channel.send(f"Successfully made {bot.get_user(user_id).nick} no longer a trusted user!") 
   @bot.command(help="""Removes a trusted user (can only be used by trusted users)
   math_problems.remove_trusted_user <user_nick>""", brief = "Removes a trusted user (can only be used by trusted users)")
-  async def remove_trusted_user(ctx,user_nick):
+  async def remove_trusted_user(ctx,member: discord.Member = None):
     if ctx.message.author.id not in trusted_users:
       await ctx.channel.send("You aren't a trusted user!")
       return
-    s = ctx.message.server
-    e = s.get_member_named(user_nick)
+
+    if member == None:
+      await ctx.channel.send("Please mention a member to get them added!")
+      return
+    user_id = member.id
     if user_id == None:
       await ctx.channel.send(f"{user_nick} isn't a valid nickname of a user!")
       return
-    user_id = e.id
+    #user_id = e.id
     if user_id not in trusted_users:
-      await ctx.channel.send(f"{e.nick} isn't a trusted user!")
+      await ctx.channel.send(f"{bot.get_user(user_id).nick} isn't a trusted user!")
       return
     trusted_users.pop(trusted_users.index(user_id))
-    await ctx.channel.send(f"Successfully made {user_id.nick} a trusted user!") 
+    await ctx.channel.send(f"Successfully made {bot.get_user(user_id).nick} no longer a trusted user!") 
 print("YAY!")
 bot.run(DISCORD_TOKEN)
