@@ -56,6 +56,9 @@ async def on_command_error(ctx,error):
   if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
     await ctx.channel.send("Not enough arguments!")
     return
+  if isinstance(error, discord.ext.commands.errors.CommandNotFound):
+    await ctx.channel.send("This command does not exist. Mention me and use help to get a list of all commands!")
+    return
   await ctx.channel.send("Something went wrong! Message the devs RIGHT NOW! (Our tags are ay136416#2707 and duck_master#8022)")
   raise error
   
@@ -112,7 +115,7 @@ class ProblemRelated(commands.Cog):
         e += "The combined length of the questions is too long.... shortening it!"
         await ctx.channel.send(e[:1930])
         return
-      elif not (showSolvedProblems) and ctx.message.author.id in mathProblems[questions]["solvers"]:
+      elif not (showSolvedProblems) and ctx.message.author.id in mathProblems[question]["solvers"]:
         continue
       e += "\n"
       e += question + "\t"
