@@ -4,24 +4,27 @@ import time, datetime, json, aiohttp
 import threading
 from discord.ext import commands, tasks
 #constants
-print("Is it working??")
+#print("Is it working??")
 trusted_users=[]
 DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
+print(type(DISCORD_TOKEN))
+#print(f"Discord Token: {DISCORD_TOKEN}")
 vote_threshold = 5
 mathProblems={}
-print("yes")
+#print("yes")
 def d():
-  print("e",flush=True)
+  #print("e",flush=True)
   global mathProblems
+  global trusted_users
   with open("math_problems.json", "r") as file:
     mathProblems = json.load(fp=file)
   with open("trusted_users.txt", "r") as file:
     for line in file:
-      trusted_users.append(int(str(line)))
-  print("f")
+      trusted_users.append(int(line))
+  #print("f")
   while True:
     #print("o")
-    time.sleep(15) 
+    time.sleep(60) 
     print("Attempting to save files")
     with open("math_problems.json", "w") as file:
       file.write(json.dumps(mathProblems))
@@ -31,18 +34,22 @@ def d():
     print("Successfully saved files!")
       
 t = threading.Thread(target=d,name="D",daemon=True)
-print('no')
-t.run()
+
+t.start()
 print("Work please!!!!!")
+print(trusted_users)
 def generate_new_id():
   return random.randint(0, 10**20)
 #bot = commands.AutoShardedBot(command_prefix="math_problems.")
 bot = commands.Bot(command_prefix="math_problems.")
-print("k")
-#@bot.event()
-#async def on_command_failure(self,ctx,error):
-#  print(error)
-#  raise Exception("Testing!")
+#print("k")
+@bot.event
+async def on_command_error(ctx,error):
+  print(type(error))
+  if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
+    await ctx.channel.send("Not enough arguments!")
+    return
+  await ctx.channel.send("Something went wrong! Message the devs if this keeps happening!")
   
 ##@bot.command(help = """Adds a trusted user!
 ##math_problems.add_trusted_user <user_id>
@@ -125,6 +132,8 @@ async def check_answer(ctx,problem_id,answer):
 math_problems.list_all_problems <showSolvedProblems=False>
 showSolvedProblems is whether or not to show solved problems. Cuts off after the 1931'st character.""", brief = "List all problems stored with the bot.")
 async def list_all_problems(ctx, showSolvedProblems=False):
+  if mathProblems == {}:
+    await ctx.channel.send("There aren't any problems! You should add one!")
   e = ""
   e += "Problem Id \t Question \t numVotes \t numSolvers"
   for question in mathProblems.keys():
@@ -193,5 +202,5 @@ async def remove_trusted_user(ctx,user_nick):
     return
   trusted_users.pop(trusted_users.index(user_id))
   await ctx.channel.send(f"Successfully made {user_id.nick} a trusted user!") 
-
+print("YAY!")
 bot.run(DISCORD_TOKEN)
