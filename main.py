@@ -11,6 +11,7 @@ DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
 #print(f"Discord Token: {DISCORD_TOKEN}")
 vote_threshold = 5
 mathProblems={}
+erroredInMainCode = False
 #print("yes")
 def d():
   #print("e",flush=True)
@@ -25,6 +26,10 @@ def d():
   while True:  
     #print("o")
     time.sleep(60) 
+    if erroredInMainCode:
+      print("An error happened in the main code. Stopping the program...")
+      exit()
+      raise Exception
     print("Attempting to save files")
     with open("math_problems.json", "w") as file:
       file.write(json.dumps(mathProblems))
@@ -52,13 +57,15 @@ bot = commands.Bot(
 #print("k")
 @bot.event
 async def on_command_error(ctx,error):
-  print(type(error))
+  
   if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
     await ctx.channel.send("Not enough arguments!")
     return
   if isinstance(error, discord.ext.commands.errors.CommandNotFound):
     await ctx.channel.send("This command does not exist. Mention me and use help to get a list of all commands!")
     return
+  print(type(error))
+  erroredInMainCode=True
   await ctx.channel.send("Something went wrong! Message the devs RIGHT NOW! (Our tags are ay136416#2707 and duck_master#8022)")
   raise error
   
@@ -125,7 +132,7 @@ class ProblemRelated(commands.Cog):
       e += mathProblems[question]["question"] + "\t"
       e += str(len(mathProblems[question]["voters"])) + "\t"
       e += str(len(mathProblems[question]["solvers"])) + "\t"
-
+    await ctx.channel.send(e[:1930])
 class ModerationRelatedCommands(commands.Cog):
   @bot.command(help = """Sets the vote threshold for problem deletion to the specified value! (can only be used by trusted users)
   math_problems.set_vote_threshold <threshold>""", brief = "Changes the vote threshold")
@@ -149,9 +156,9 @@ class ModerationRelatedCommands(commands.Cog):
     except KeyError:
       await ctx.channel.send("This problem doesn't exist!")
       return
-    mathProblems[problem_id]["voters"].append(ctx.channel.author.id)
+    mathProblems[problem_id]["voters"].append(ctx.message.author.id)
     await ctx.channel.send("You successfully voted for the problem's deletion! As long as this problem is not deleted, you can always un-vote.")
-    if len(mathProblems[problem_id]["voters"] >= vote_threshold):
+    if len(mathProblems[problem_id]["voters"]) >= vote_threshold:
       mathProblems.pop(problem_id)
       await ctx.channel.send("This problem has surpassed the threshold and has been deleted!")
   @bot.command(help = "Takes away your vote for the deletion of a problem (just specify problem id)",brief="Takes away a user's vote for the deletion of a problem")
@@ -164,7 +171,7 @@ class ModerationRelatedCommands(commands.Cog):
     except KeyError:
       await ctx.channel.send("This problem doesn't exist!")
       return
-    mathProblems[problem_id][voters].pop(mathProblems[problem_id]["voters"].index(ctx.message.author.id))
+    mathProblems[problem_id]["voters"].pop(mathProblems[problem_id]["voters"].index(ctx.message.author.id))
     await ctx.channel.send("Successfully un-voted for the problem's deletion!")
   @bot.command(help="""Deletes a question (either forcefully by a trusted user or deleting a problem submitted by the user who submitted this command
   math_problems.delete_problem force <problem_id> 
