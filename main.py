@@ -1,7 +1,7 @@
-import discord, math, random, requests, os
+import discord, math, random, os
 import time, datetime, json, aiohttp
-#from discord_slash import SlashCommand, SlashContext
-#import discord_slash
+from discord_slash import SlashCommand, SlashContext
+import discord_slash
 import threading
 from discord.ext import commands, tasks
 #constants
@@ -14,13 +14,6 @@ vote_threshold = 1
 mathProblems={}
 erroredInMainCode = False
 #print("yes")
-def print_current_time():
-  e = datetime.datetime.now()
-
-  print (e.strftime("%Y-%m-%d %H:%M:%S"),end=" ")
-  print (e.strftime("%d/%m/%Y"),end=" ")
-  print (e.strftime("%I:%M:%S %p"),end=" ")
-  print (e.strftime("%a, %b %d, %Y"),end=" ")
 def d():
   #print("e",flush=True)
   global mathProblems
@@ -31,7 +24,7 @@ def d():
   with open("trusted_users.txt", "r") as file:
     for line in file:
       trusted_users.append(int(line))
-  with open("vote_threshold.txt") as file3:
+  with open("vote_threshold.txt", "r") as file3:
     for line in file3:
       vote_threshold = int(line)
       print(line)
@@ -43,8 +36,7 @@ def d():
       print("An error happened in the main code. Stopping the program...")
       exit()
       raise Exception
-    print(f"Attempting to save files. The time is: ")
-    print_current_time()
+    print(f"Attempting to save files.")
     with open("math_problems.json", "w") as file:
       file.write(json.dumps(mathProblems))
     with open("trusted_users.txt", "w") as file2:
@@ -53,8 +45,8 @@ def d():
         file2.write("\n")
         #print(user)
 
-    with open("vote_threshold.txt") as file3:
-      file.write(str(vote_threshold))
+    with open("vote_threshold.txt", "w") as file3:
+      file3.write(str(vote_threshold))
     
     print("Successfully saved files!")
       
@@ -73,6 +65,9 @@ bot = commands.Bot(
     command_prefix = commands.when_mentioned_or('math_problems.'),
     help_command = help_command
 )
+slash = discord_slash.SlashCommand(bot, sync_commands=True)      # sync_commands is for doing synchronization for 
+                                                                 # every command you add, remove or update in your
+                                                                 # code
 #print("k")
 @bot.event
 async def on_command_error(ctx,error):
@@ -269,17 +264,22 @@ class ModerationRelatedCommands(commands.Cog):
       return
     trusted_users.pop(trusted_users.index(user_id))
     await ctx.channel.send(f"Successfully made {bot.get_user(user_id).nick} no longer a trusted user!") 
-class miscellaneous(commands.Cog):
-  @bot.command(help="Generates a invite link for this bot! Takes no arguments", brief = "Generates an invite link for this bot and takes no arguments")
-  async def generate_invite_link(ctx):
-    await ctx.channel.send("https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147552256&scope=bot%20applications.commands")
-    return
-  @bot.command(help="ping? prints latency and takes no arguments",
-  brief = "prints latency and takes no arguments")
-  async def ping(ctx):
-    await ctx.channel.send(f"Pong! My latency is {round(bot.latency*1000)}ms.")
-  @bot.command(help="Prints the vote threshold and takes no arguments", brief ="Prints the vote threshold and takes no arguments")
-  async def what_is_vote_threshold(ctx):
-    await ctx.channel.send(f"The vote threshold is {vote_threshold}.")
+
+  
+@slash.slash(name="ping", description = "Prints latency and takes no arguments")
+async def ping(ctx):
+  await ctx.send(f"Pong! My latency is {round(bot.latency*1000)}ms."hidden=True)
+@slash.slash(description="Prints the vote threshold and takes no arguments", name="what_is_vote_threshold")
+async def what_is_vote_threshold(ctx):
+  await ctx.channel.send(f"The vote threshold is {vote_threshold}.")
+@slash.slash(name="generateInviteLink", description = "Generates a invite link for this bot! Takes no arguments")
+async def generateInviteLink(ctx):
+  await ctx.send("https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147552256&scope=bot%20applications.commands",hidden=True)
+@slash.slash(name="test", description="TEST!",        # Adding a new slash command with our slash variable
+             options=[discord_slash.manage_commands.create_option(name="first_option", description="Testing!", option_type=3, required=False)])
+async def test(ctx,first_option=-1):
+  await ctx.send(first_option,hidden=True)
+  return
+
 print("The bot has finished setting up and will now run.")
 bot.run(DISCORD_TOKEN)
