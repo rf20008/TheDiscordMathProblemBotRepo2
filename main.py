@@ -31,7 +31,7 @@ def d():
     with open("trusted_users.txt", "w") as file2:
       for user in trusted_users:
         file2.write(str(user))
-        print(user)
+        #print(user)
     print("Successfully saved files!")
       
 t = threading.Thread(target=d,name="D",daemon=True)
