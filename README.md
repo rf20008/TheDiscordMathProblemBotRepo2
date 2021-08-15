@@ -11,6 +11,6 @@ This discord bot is licensed under the GNU license.
 If you run into any issues create an issue/pull request here with an explanation of how the modified code fixes the program
 or DM me in Discord (ay136416#2707) (recommended, as I check Discord more often). 
 
-# Contribute
+# Contribute / Feature Requests
 
-I.D.K. right now.
+Open a pull request!
