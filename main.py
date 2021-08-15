@@ -119,9 +119,10 @@ class ProblemRelated(commands.Cog):
         continue
       e += "\n"
       e += question + "\t"
+      print(mathProblems[question])
       e += mathProblems[question]["question"] + "\t"
-      e += len(mathProblems[question]["voters"] + "\t")
-      e += len(mathProblems[question]["solvers"])
+      e += str(len(mathProblems[question]["voters"])) + "\t"
+      e += str(len(mathProblems[question]["solvers"])) + "\t"
 
 class ModerationRelatedCommands(commands.Cog):
   @bot.command(help = """Sets the vote threshold for problem deletion to the specified value! (can only be used by trusted users)
