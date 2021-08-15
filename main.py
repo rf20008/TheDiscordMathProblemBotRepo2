@@ -1,6 +1,6 @@
 import discord, math, random, requests, os
 import time, datetime, json, aiohttp
-from discord_slash import SlashCommand, SlashContext
+#from discord_slash import SlashCommand, SlashContext
 from threading import Thread
 from discord.ext import commands, tasks
 #constants
@@ -9,28 +9,36 @@ trusted_users=[]
 DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
 vote_threshold = 5
 mathProblems={}
+print("yes")
 def d():
+  print("e",flush=True)
   global mathProblems
   with open("math_problems.json", "r") as file:
     mathProblems = json.load(fp=file)
   with open("trusted_users.txt", "r") as file:
     for line in file:
       trusted_users.append(int(str(line)))
+  print("f")
   while True:
-    time.sleep(60) 
+    #print("o")
+    time.sleep(15) 
+    print("Attempting to save files")
     with open("math_problems.json", "w") as file:
       file.write(json.dumps(mathProblems))
     with open("trusted_users.txt", "w") as file2:
       for user in trusted_users:
         file2.write(str(user))
+    print("Successfully saved files!")
       
 t = Thread(target=d)
+print('no')
 t.run()
+print("Work please!!!!!")
 def generate_new_id():
   return random.randint(0, 10**20)
 #bot = commands.AutoShardedBot(command_prefix="math_problems.")
 bot = commands.Bot(command_prefix="math_problems.")
-print(bot)
+print("k")
 #@bot.event()
 #async def on_command_failure(self,ctx,error):
 #  print(error)
