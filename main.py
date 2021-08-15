@@ -36,6 +36,7 @@ def d():
     with open("trusted_users.txt", "w") as file2:
       for user in trusted_users:
         file2.write(str(user))
+        file2.write("\n")
         #print(user)
     print("Successfully saved files!")
       
@@ -83,10 +84,10 @@ class ProblemRelated(commands.Cog):
     question = "".join(args)
     if len(question) > 250:
       await ctx.channel.send("Your question is too long! Therefore, it cannot be added. The maximum question length is 250 characters.")
-    while True:
-      problem_id = generate_new_id()
-      if problem_id not in mathProblems.keys():
-        break
+      return
+    problem_id = generate_new_id()
+    if problem_id not in mathProblems.keys():
+      break
 
     e = {"answer": answer, "voters": [], "author": ctx.message.author.id, "solvers":[], "question": question}
     mathProblems[problem_id] = e
