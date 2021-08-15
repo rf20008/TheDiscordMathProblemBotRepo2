@@ -4,6 +4,7 @@ from discord_slash import SlashCommand, SlashContext
 from threading import Thread
 from discord.ext import commands, tasks
 #constants
+print("Is it working??")
 trusted_users=[]
 DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
 vote_threshold = 5
@@ -29,11 +30,11 @@ def generate_new_id():
   return random.randint(0, 10**20)
 #bot = commands.AutoShardedBot(command_prefix="math_problems.")
 bot = commands.Bot(command_prefix="math_problems.")
-
-@bot.event()
-async def on_command_failure(self,ctx,error):
-  print(error)
-  raise Exception("Testing!")
+print(bot)
+#@bot.event()
+#async def on_command_failure(self,ctx,error):
+#  print(error)
+#  raise Exception("Testing!")
   
 ##@bot.command(help = """Adds a trusted user!
 ##math_problems.add_trusted_user <user_id>
