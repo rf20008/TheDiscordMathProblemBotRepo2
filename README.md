@@ -4,6 +4,6 @@ This is a Work In Progress discord bot! If you run into any issues create an iss
 or DM me in Discord (ay136416#2707) (recommended, as I check Discord more often)
 
 
-#License
+# License
 
 This discord bot is licensed under the GNU license.
