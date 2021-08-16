@@ -1,6 +1,6 @@
 # TheDiscordMathBotRepo
 
-This is a Work In Progress discord bot! 
+This is a Work In Progress discord bot! All help is appreciated.
 
 
 # License
@@ -22,3 +22,7 @@ I don't know what it is, so I don't know how to fix it. If you know what it is, 
 # Other errors
 
 As soon as you see them, contact me as soon as possible!
+
+# Invite my bot!
+
+https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147552256&scope=bot%20applications.commands
