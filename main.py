@@ -1,5 +1,5 @@
 import discord, math, random, os
-import time, datetime, json, aiohttp
+import time, datetime, json, aiohttp, copy
 from discord_slash import SlashCommand, SlashContext
 import discord_slash
 import threading
@@ -56,7 +56,7 @@ t.start()
 #print("Work please!!!!!")
 #print(trusted_users)
 def generate_new_id():
-  return random.randint(0, 10**20)
+  return random.randint(0, 10**14)
 #bot = commands.AutoShardedBot(command_prefix="math_problems.")
 help_command = commands.DefaultHelpCommand(
     no_category = 'Commands')
@@ -88,13 +88,14 @@ async def on_command_error(ctx,error):
   erroredInMainCode=True
   await ctx.send("Something went wrong! Message the devs ASAP! (Our tags are ay136416#2707 and duck_master#8022)")
   raise error
-@slash.slash(name="generate_new_problems", description= "Generates new problems", options=[discord_slash.manage_commands.create_option(name="num_new_problems_to_generate", description="the number of problems that should be generated", option_type=10, required=True)])
+@slash.slash(name="generate_new_problems", description= "Generates new problems", options=[discord_slash.manage_commands.create_option(name="num_new_problems_to_generate", description="the number of problems that should be generated", option_type=4, required=True)])
 async def generate_new_problems(ctx, num_new_problems_to_generate):
+  await ctx.defer()
   if ctx.author_id not in trusted_users:
     await ctx.send("You aren't trusted!",hidden=True)
     return
   elif num_new_problems_to_generate > 200:
-    await ctx.send("You are trying to create too many problems. Try something smaller than or equal to 200.", hidden)
+    await ctx.send("You are trying to create too many problems. Try something smaller than or equal to 200.", hidden=True)
   for i in range(num_new_problems_to_generate):
     operation = random.choice(["+", "-", "*", "/", "^"])
     if operation == "^":
@@ -103,22 +104,57 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
     else:
       num1 = random.randint(-1000, 1000)
       num2 = random.randint(-1000, 1000)
+      while num2 == 0 and operation == "/":
+        num2 = random.randint(-1000,1000)
+      
     if operation == "^":
       answer = num1**num2
-    else:
-      answer = eval(str(num1) + str(operation) + str(num2))
-    e = {"answer": answer, "voters": [], "author": ctx.author_id, "solvers":[], "question": (str(num1) +" " +  str(operation) + " "+ str(num2) + " (Was automatically created by the bot).")}
+    elif operation == "+":
+      answer = num1+num2
+    elif operation == "-":
+      answer = num1 - num2
+    elif operation == "*":
+      answer = num1 * num2
+    elif operation == "/":
+      answer = round(num1*100 / num2)/100
+    #elif op
+    e = {"answer": answer, "voters": [], "author": 845751152901750824, "solvers":[], "question": (str(num1) +" " +  str(operation) + " "+ str(num2) + " (Was automatically created by the bot).")}
     while True:
       problem_id = generate_new_id()
       if problem_id not in mathProblems.keys():
         break
     mathProblems[problem_id] = e
+  await ctx.send("Successfully created new problems.", hidden=True)
 ##@bot.command(help = """Adds a trusted user!
 ##math_problems.add_trusted_user <user_id>
 ##adds the user's id to the trusted users list 
 ##(can only be used by trusted users)""",
 ##brief = "Adds a trusted user")
-@slash.slash(name="new_problem", description = "Create a new problem", options = [discord_slash.manage_commands.create_option(name="answer", description="The answer to this problem", option_type=10, required=True), discord_slash.manage_commands.create_option(name="question", description="your question", option_type=10, required=True)])
+@slash.slash(name="delallbotproblems", description = "delete all automatically generated problems")
+async def delallbotproblems(ctx):
+  ctx.send("Attempting to delete bot problems",hidden=True)
+  global mathProblems
+  mathProblems2 = copy.deepcopy(mathProblems)
+  if ctx.author_id not in trusted_users:
+    await ctx.send("You aren't trusted", hidden=True)
+    return
+  numDeletedProblems = 0
+  f = mathProblems.keys()
+  for e in f:
+    if mathProblems2[e]["author"] == 845751152901750824:
+      mathProblems2.pop(e)
+      numDeletedProblems += 1
+  mathProblems = mathProblems2
+  await ctx.send(f"Successfully deleted {numDeletedProblems}!")
+@slash.slash(name = "list_trusted_users", description = "list all trusted users")
+async def list_trusted_users(ctx):
+  await ctx.defer(hidden=True)
+  e = ""
+  for trusted_user in trusted_users:
+    e += "\n"
+    e += str(bot.get_user(trusted_user))
+  ctx.send(e, hidden=True)
+@slash.slash(name="new_problem", description = "Create a new problem", options = [discord_slash.manage_commands.create_option(name="answer", description="The answer to this problem", option_type=4, required=True), discord_slash.manage_commands.create_option(name="question", description="your question", option_type=3, required=True)])
 async def new_problem(ctx, answer, question):
   global mathProblems
   if len(question) > 250:
@@ -129,11 +165,11 @@ async def new_problem(ctx, answer, question):
     if problem_id not in mathProblems.keys():
       break
 
-  e = {"answer": answer, "voters": [], "author": ctx.author_id, "solvers":[], "question": question}
+  e = {"answer": answer, "voters": [], "author": 845751152901750824, "solvers":[], "question": question}
   mathProblems[problem_id] = e
   await ctx.send("You have successfully made a math problem!", hidden = True)
 
-@slash.slash(name="check_answer", description = "Check if you are right", options=[discord_slash.manage_commands.create_option(name="problem_id", description="the id of the problem you are trying to check the answer of", option_type=10, required=True),discord_slash.manage_commands.create_option(name="answer", description="your answer", option_type=10, required=True)])
+@slash.slash(name="check_answer", description = "Check if you are right", options=[discord_slash.manage_commands.create_option(name="problem_id", description="the id of the problem you are trying to check the answer of", option_type=4, required=True),discord_slash.manage_commands.create_option(name="answer", description="your answer", option_type=4, required=True)])
 async def check_answer(ctx,problem_id,answer):
   global mathProblems
   try:
@@ -150,12 +186,13 @@ async def check_answer(ctx,problem_id,answer):
     await ctx.send("Yay! You are right.", hidden=True)
     mathProblems[problem_id]["solvers"].append(ctx.author_id)
 @slash.slash(name="list_all_problems", description = "List all problems stored with the bot", options=[discord_slash.manage_commands.create_option(name="show_solved_problems", description="Whether to show solved problems", option_type=5, required=False)])
-async def list_all_problems(ctx, showSolvedProblems=False):
+async def list_all_problems(ctx, show_solved_problems=False):
+  showSolvedProblems = show_solved_problems
   if showSolvedProblems != "":
     showSolvedProblems = True
   else:
     showSolvedProblems = False
-  print(showSolvedProblems)
+  #print(showSolvedProblems)
   if mathProblems.keys() == []:
     await ctx.send("There aren't any problems! You should add one!", hidden=True)
     return
@@ -173,14 +210,14 @@ async def list_all_problems(ctx, showSolvedProblems=False):
       continue
     e += "\n"
     e += str(question) + "\t"
-    print(mathProblems[question])
+    #print(mathProblems[question])
     e += str(mathProblems[question]["question"]) + "\t"
     e += "(" 
     e+= str(len(mathProblems[question]["voters"])) + "/" + str(vote_threshold) + ")" + "\t"
     e += str(len(mathProblems[question]["solvers"])) + "\t"
   await ctx.send(e[:1930])
 
-@slash.slash(name = "set_vote_threshold", description = "Sets the vote threshold", options=[discord_slash.manage_commands.create_option(name="threshold", description="the threshold you want to change it to", option_type=10, required=True)])
+@slash.slash(name = "set_vote_threshold", description = "Sets the vote threshold", options=[discord_slash.manage_commands.create_option(name="threshold", description="the threshold you want to change it to", option_type=4, required=True)])
 async def set_vote_threshold(ctx,threshold):
   global vote_threshold
   try:
@@ -200,7 +237,7 @@ async def set_vote_threshold(ctx,threshold):
     if x > vote_threshold:
       await ctx.send(f"Successfully deleted problem #{problem} due to it having {x} votes, {x-threshold} more than the threshold!", hidden=True)
   await ctx.send(f"The vote threshold has successfully been changed to {threshold}!", hidden=True)
-@slash.slash(name="vote", description = "Vote for the deletion of a problem", options=[discord_slash.manage_commands.create_option(name="first_option", description="Testing!", option_type=10, required=True)])
+@slash.slash(name="vote", description = "Vote for the deletion of a problem", options=[discord_slash.manage_commands.create_option(name="problem_id", description="problem id of the problem you are attempting to delete", option_type=4, required=True)])
 async def vote(ctx, problem_id):
   global mathProblems
   try:
@@ -220,7 +257,7 @@ async def vote(ctx, problem_id):
   if len(mathProblems[problem_id]["voters"]) >= vote_threshold:
     del mathProblems[problem_id]
     await ctx.send("This problem has surpassed the threshold and has been deleted!", hidden=True)
-@slash.slash(name="unvote", description = "takes away vote for the deletion of a problem", options=[discord_slash.manage_commands.create_option(name="problem_id", description="Problem ID!", option_type=10, required=True)])
+@slash.slash(name="unvote", description = "takes away vote for the deletion of a problem", options=[discord_slash.manage_commands.create_option(name="problem_id", description="Problem ID!", option_type=4, required=True)])
 async def unvote(ctx,problem_id):
   global mathProblems
   try:
@@ -232,9 +269,7 @@ async def unvote(ctx,problem_id):
     return
   mathProblems[problem_id]["voters"].pop(mathProblems[problem_id]["voters"].index(ctx.author_id))
   await ctx.send(f"Successfully un-voted for the problem's deletion! Now there are {str(len(mathProblems[problem_id]['voters']))}/{vote_threshold} votes on the problem.", hidden=True)
-@bot.command(help="""Deletes a question (either forcefully by a trusted user or deleting a problem submitted by the user who submitted this command
-math_problems.delete_problem  <problem_id> 
-Succeeds if trusted user or author of the problem, fails otherwise""", brief = "Deletes a question (either forcefully by a trusted user or deleting a problem submitted by the user who submitted this command")
+slash.slash(name="delete_problem", description = "Deletes a problem", options = [discord_slash.manage_commands.create_option(name="problem_id", description="Problem ID!", option_type=4, required=True)])
 async def delete_problem(ctx, problem_id):
   global mathProblems
   user_id = ctx.author_id
@@ -262,7 +297,7 @@ async def add_trusted_user(ctx,user):
     return
   trusted_users.append(trusted_users.index(user.id))
   await ctx.send(f"Successfully made {user.nick} a trusted user!", hidden=True) 
-@slash.slash(name="remove_trusted_user", description = "adds a trusted user",options=[discord_slash.manage_commands.create_option(name="user", description="The user you want to give super special bot access to", option_type=6, required=True)])
+@slash.slash(name="remove_trusted_user", description = "removes a trusted user",options=[discord_slash.manage_commands.create_option(name="user", description="The user you want to give super special bot access to", option_type=6, required=True)])
 async def remove_trusted_user(ctx,user):
   member = user
   if ctx.author_id not in trusted_users:
@@ -285,7 +320,7 @@ async def ping(ctx):
   await ctx.send(f"Pong! My latency is {round(bot.latency*1000)}ms.", hidden=True)
 @slash.slash(name="what_is_vote_threshold", description="Prints the vote threshold and takes no arguments")
 async def what_is_vote_threshold(ctx):
-  await ctx.send(f"The vote threshold is {vote_threshold}.")
+  await ctx.send(f"The vote threshold is {vote_threshold}.",hidden=True)
 @slash.slash(name="generateInviteLink", description = "Generates a invite link for this bot! Takes no arguments")
 async def generateInviteLink(ctx):
   await ctx.send("https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147552256&scope=bot%20applications.commands",hidden=True)
