@@ -18,3 +18,7 @@ Open a pull request or DM me!
 # The "Invalid Interaction Application Error" error message
 
 I don't know what it is, so I don't know how to fix it. If you know what it is, please email/dm me/ open a issue or pull request!
+
+# Other errors
+
+As soon as you see them, contact me as soon as possible!
