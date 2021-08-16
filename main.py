@@ -69,6 +69,12 @@ slash = discord_slash.SlashCommand(bot, sync_commands=True)      # sync_commands
                                                                  # every command you add, remove or update in your
                                                                  # code
 #print("k")
+
+@bot.event
+async def on_slash_command_error(ctx, error):
+  erroredInMainCode=True
+  await ctx.send("Something went wrong! Message the devs ASAP! (Our tags are ay136416#2707 and duck_master#8022)", hidden=True)
+  raise error
 @bot.event
 async def on_command_error(ctx,error):
   
@@ -80,198 +86,206 @@ async def on_command_error(ctx,error):
     return
   print(type(error))
   erroredInMainCode=True
-  await ctx.channel.send("Something went wrong! Message the devs ASAP! (Our tags are ay136416#2707 and duck_master#8022)")
+  await ctx.send("Something went wrong! Message the devs ASAP! (Our tags are ay136416#2707 and duck_master#8022)")
   raise error
-  
+@slash.slash(name="generate_new_problems", description= "Generates new problems", options=[discord_slash.manage_commands.create_option(name="num_new_problems_to_generate", description="the number of problems that should be generated", option_type=10, required=True)])
+async def generate_new_problems(ctx, num_new_problems_to_generate):
+  if ctx.author_id not in trusted_users:
+    await ctx.send("You aren't trusted!",hidden=True)
+    return
+  elif num_new_problems_to_generate > 200:
+    await ctx.send("You are trying to create too many problems. Try something smaller than or equal to 200.", hidden)
+  for i in range(num_new_problems_to_generate):
+    operation = random.choice(["+", "-", "*", "/", "^"])
+    if operation == "^":
+      num1 = random.randint(1, 20)
+      num2 = random.randint(1, 20)
+    else:
+      num1 = random.randint(-1000, 1000)
+      num2 = random.randint(-1000, 1000)
+    if operation == "^":
+      answer = num1**num2
+    else:
+      answer = eval(str(num1) + str(operation) + str(num2))
+    e = {"answer": answer, "voters": [], "author": ctx.author_id, "solvers":[], "question": (str(num1) +" " +  str(operation) + " "+ str(num2) + " (Was automatically created by the bot).")}
+    while True:
+      problem_id = generate_new_id()
+      if problem_id not in mathProblems.keys():
+        break
+    mathProblems[problem_id] = e
 ##@bot.command(help = """Adds a trusted user!
 ##math_problems.add_trusted_user <user_id>
 ##adds the user's id to the trusted users list 
 ##(can only be used by trusted users)""",
 ##brief = "Adds a trusted user")
-class ProblemRelated(commands.Cog):
-  "Problem related commands"
-  @bot.command(help="""Creates a new math problem
-  math_problems.new_problem <answer> <text>""",brief = "Adds a new math problem to the list!")
-  async def new_problem(ctx, answer, *args):
-    global mathProblems
-    question = "".join(args)
-    if len(question) > 250:
-      await ctx.channel.send("Your question is too long! Therefore, it cannot be added. The maximum question length is 250 characters.")
-      return
-    while True:
-      problem_id = generate_new_id()
-      if problem_id not in mathProblems.keys():
-        break
-
-    e = {"answer": answer, "voters": [], "author": ctx.message.author.id, "solvers":[], "question": question}
-    mathProblems[problem_id] = e
-    await ctx.channel.send("You have successfully made a math problem!")
-
-  @bot.command(help="""See if your answer is correct or not!
-  math_problems.check_answer <problem_id> <answer>""", brief = "See if you got it right on a math problem")
-  async def check_answer(ctx,problem_id,answer):
-    global mathProblems
-    try:
-      if ctx.message.author.id in mathProblems[problem_id]["solvers"]:
-        await ctx.channel.send("You have already solved this problem!")
-        return
-    except KeyError:
-      await ctx.channel.send("This problem doesn't exist!")
-      return
-
-    if mathProblems[problem_id]["answer"] != answer:
-      await ctx.channel.send("Sorry..... but you got it wrong! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.")
-    else:
-      await ctx.channel.send("Yay! You are right.")
-      mathProblems[problem_id]["solvers"].append(ctx.message.author.id)
-  @bot.command(help = """List all problems stored with the bot! 
-  math_problems.list_all_problems <showSolvedProblems=False>
-  showSolvedProblems is whether or not to show solved problems. Cuts off after the 1931'st character.""", brief = "List all problems stored with the bot.")
-  async def list_all_problems(ctx, showSolvedProblems=""):
-    if showSolvedProblems != "":
-      showSolvedProblems = True
-    else:
-      showSolvedProblems = False
-    print(showSolvedProblems)
-    if mathProblems.keys() == []:
-      await ctx.channel.send("There aren't any problems! You should add one!")
-      return
-    elif showSolvedProblems == False and False not in [ctx.message.author.id in mathProblems[id]["solvers"] for id in mathProblems.keys()]:
-      await ctx.channel.send("You solved all the problems! Add a new one!")
-      return
-    e = ""
-    e += "Problem Id \t Question \t numVotes \t numSolvers"
-    for question in mathProblems.keys():
-      if len(e) >= 1930:
-        e += "The combined length of the questions is too long.... shortening it!"
-        await ctx.channel.send(e[:1930])
-        return
-      elif not (showSolvedProblems) and ctx.message.author.id in mathProblems[question]["solvers"]:
-        continue
-      e += "\n"
-      e += str(question) + "\t"
-      print(mathProblems[question])
-      e += str(mathProblems[question]["question"]) + "\t"
-      e += "(" 
-      e+= str(len(mathProblems[question]["voters"])) + "/" + str(vote_threshold) + ")" + "\t"
-      e += str(len(mathProblems[question]["solvers"])) + "\t"
-    await ctx.channel.send(e[:1930])
-class ModerationRelatedCommands(commands.Cog):
-  @bot.command(help = """Sets the vote threshold for problem deletion to the specified value! (can only be used by trusted users)
-  math_problems.set_vote_threshold <threshold>""", brief = "Changes the vote threshold")
-  async def set_vote_threshold(ctx,threshold):
-    global vote_threshold
-    try:
-      threshold = int(threshold)
-    except:
-      await ctx.channel.send("Invalid threshold argument!")
-      return
-    if ctx.message.author.id not in trusted_users:
-      await ctx.channel.send("You aren't allowed to do this!")
-      return
-    if threshold <1:
-      await ctx.channel.send("You can't set the threshold to smaller than 1.")
-      return
-    vote_threshold=int(threshold)
-    for problem in mathProblems.keys():
-      x = len(mathProblems[problem]["voters"])
-      if x > vote_threshold:
-        await ctx.channel.send(f"Successfully deleted problem #{problem} due to it having {x} votes, {x-threshold} more than the threshold!")
-    await ctx.channel.send(f"The vote threshold has successfully been changed to {threshold}!")
-  @bot.command(help = "Vote for a problem to be deleted! Once a problem gets more votes than the threshold, it gets deleted! Specify the problem_id in order that I know what problem you want deleted.", brief = "Vote for the deletion of a bad problem using this command")
-  async def vote(ctx, problem_id):
-    global mathProblems
-    try:
-      if ctx.message.author.id in mathProblems[problem_id]["voters"]:
-        await ctx.channel.send("You have already voted for the deletion of this problem!")
-        return
-    except KeyError:
-      await ctx.channel.send("This problem doesn't exist!")
-      return
-    mathProblems[problem_id]["voters"].append(ctx.message.author.id)
-    e = "You successfully voted for the problem's deletion! As long as this problem is not deleted, you can always un-vote. There are "
-    e += str(len(mathProblems[problem_id]["voters"]))
-    e += "/"
-    e+= str(vote_threshold)
-    e += " votes on this problem!"
-    await ctx.channel.send(e)
-    if len(mathProblems[problem_id]["voters"]) >= vote_threshold:
-      del mathProblems[problem_id]
-      await ctx.channel.send("This problem has surpassed the threshold and has been deleted!")
-  @bot.command(help = "Takes awsay your vote for the deletion of a problem (just specify problem id)",brief="Takes away a user's vote for the deletion of a problem")
-  async def unvote(ctx,problem_id):
-    global mathProblems
-    try:
-      if ctx.message.author.id not in mathProblems[problem_id]["voters"]:
-        await ctx.channel.send("You aren't voting for the deletion of this problem!")
-        return
-    except KeyError:
-      await ctx.channel.send("This problem doesn't exist!")
-      return
-    mathProblems[problem_id]["voters"].pop(mathProblems[problem_id]["voters"].index(ctx.message.author.id))
-    await ctx.channel.send("Successfully un-voted for the problem's deletion!")
-  @bot.command(help="""Deletes a question (either forcefully by a trusted user or deleting a problem submitted by the user who submitted this command
-  math_problems.delete_problem  <problem_id> 
-  Succeeds if trusted user or author of the problem, fails otherwise""", brief = "Deletes a question (either forcefully by a trusted user or deleting a problem submitted by the user who submitted this command")
-  async def delete_problem(ctx, problem_id):
-    global mathProblems
-    user_id = ctx.message.author.id
+@slash.slash(name="new_problem", description = "Create a new problem", options = [discord_slash.manage_commands.create_option(name="answer", description="The answer to this problem", option_type=10, required=True), discord_slash.manage_commands.create_option(name="question", description="your question", option_type=10, required=True)])
+async def new_problem(ctx, answer, question):
+  global mathProblems
+  if len(question) > 250:
+    await ctx.send("Your question is too long! Therefore, it cannot be added. The maximum question length is 250 characters.", hidden=True)
+    return
+  while True:
+    problem_id = generate_new_id()
     if problem_id not in mathProblems.keys():
-      await ctx.channel.send("That problem doesn't exist! Use math_problems.list_problems to list all problems!")
-      return
-    if ctx.message.author.id not in trusted_users and mathProblems[problem_id]["author"] != ctx.message.author.id:
-      await ctx.channel.send("You aren't a trusted user or the author of the problem!")
-      return
-    mathProblems.pop(problem_id)
-    await ctx.channel.send(f"Successfully deleted problem #{problem_id}!")
-  @bot.command(help="""Adds a trusted user (can only be used by trusted users)
-  math_problems.add_trusted_user <user_nick>""", brief = "Adds a trusted user (can only be used by trusted users)")
-  async def add_trusted_user(ctx,member: discord.Member = None):
-    
-    if ctx.message.author.id not in trusted_users:
-      await ctx.channel.send("You aren't a trusted user!")
-      return
-    if member == None:
-      await ctx.channel.send("Please mention a member to get them added!")
-      return
-    user_id = member.id
-    if user_id == None:
-      await ctx.channel.send(f"{user_nick} isn't a valid nickname of a user!")
-      return
-    #user_id = e.id
-    if user_id in trusted_users:
-      await ctx.channel.send(f"{bot.get_user(user_id).nick} is already a trusted user!")
-      return
-    trusted_users.append(trusted_users.index(user_id))
-    await ctx.channel.send(f"Successfully made {bot.get_user(user_id).nick} no longer a trusted user!") 
-  @bot.command(help="""Removes a trusted user (can only be used by trusted users)
-  math_problems.remove_trusted_user <user_nick>""", brief = "Removes a trusted user (can only be used by trusted users)")
-  async def remove_trusted_user(ctx,member: discord.Member = None):
-    if ctx.message.author.id not in trusted_users:
-      await ctx.channel.send("You aren't a trusted user!")
-      return
+      break
 
-    if member == None:
-      await ctx.channel.send("Please mention a member to get them added!")
-      return
-    user_id = member.id
-    if user_id == None:
-      await ctx.channel.send(f"{user_nick} isn't a valid nickname of a user!")
-      return
-    #user_id = e.id
-    if user_id not in trusted_users:
-      await ctx.channel.send(f"{bot.get_user(user_id).nick} isn't a trusted user!")
-      return
-    trusted_users.pop(trusted_users.index(user_id))
-    await ctx.channel.send(f"Successfully made {bot.get_user(user_id).nick} no longer a trusted user!") 
+  e = {"answer": answer, "voters": [], "author": ctx.author_id, "solvers":[], "question": question}
+  mathProblems[problem_id] = e
+  await ctx.send("You have successfully made a math problem!", hidden = True)
 
-  
+@slash.slash(name="check_answer", description = "Check if you are right", options=[discord_slash.manage_commands.create_option(name="problem_id", description="the id of the problem you are trying to check the answer of", option_type=10, required=True),discord_slash.manage_commands.create_option(name="answer", description="your answer", option_type=10, required=True)])
+async def check_answer(ctx,problem_id,answer):
+  global mathProblems
+  try:
+    if ctx.author_id in mathProblems[problem_id]["solvers"]:
+      await ctx.send("You have already solved this problem!", hidden = True)
+      return
+  except KeyError:
+    await ctx.send("This problem doesn't exist!", hidden=True)
+    return
+
+  if mathProblems[problem_id]["answer"] != answer:
+    await ctx.send("Sorry..... but you got it wrong! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.", hidden=True)
+  else:
+    await ctx.send("Yay! You are right.", hidden=True)
+    mathProblems[problem_id]["solvers"].append(ctx.author_id)
+@slash.slash(name="list_all_problems", description = "List all problems stored with the bot", options=[discord_slash.manage_commands.create_option(name="show_solved_problems", description="Whether to show solved problems", option_type=5, required=False)])
+async def list_all_problems(ctx, showSolvedProblems=False):
+  if showSolvedProblems != "":
+    showSolvedProblems = True
+  else:
+    showSolvedProblems = False
+  print(showSolvedProblems)
+  if mathProblems.keys() == []:
+    await ctx.send("There aren't any problems! You should add one!", hidden=True)
+    return
+  elif showSolvedProblems == False and False not in [ctx.author_id in mathProblems[id]["solvers"] for id in mathProblems.keys()]:
+    await ctx.send("You solved all the problems! You should add a new one.", hidden=True)
+    return
+  e = ""
+  e += "Problem Id \t Question \t numVotes \t numSolvers"
+  for question in mathProblems.keys():
+    if len(e) >= 1930:
+      e += "The combined length of the questions is too long.... shortening it!"
+      await ctx.send(e[:1930])
+      return
+    elif not (showSolvedProblems) and ctx.author_id in mathProblems[question]["solvers"]:
+      continue
+    e += "\n"
+    e += str(question) + "\t"
+    print(mathProblems[question])
+    e += str(mathProblems[question]["question"]) + "\t"
+    e += "(" 
+    e+= str(len(mathProblems[question]["voters"])) + "/" + str(vote_threshold) + ")" + "\t"
+    e += str(len(mathProblems[question]["solvers"])) + "\t"
+  await ctx.send(e[:1930])
+
+@slash.slash(name = "set_vote_threshold", description = "Sets the vote threshold", options=[discord_slash.manage_commands.create_option(name="threshold", description="the threshold you want to change it to", option_type=10, required=True)])
+async def set_vote_threshold(ctx,threshold):
+  global vote_threshold
+  try:
+    threshold = int(threshold)
+  except:
+    await ctx.send("Invalid threshold argument!", hidden=True)
+    return
+  if ctx.author_id not in trusted_users:
+    await ctx.send("You aren't allowed to do this!", hidden=True)
+    return
+  if threshold <1:
+    await ctx.send("You can't set the threshold to smaller than 1.", hidden=True)
+    return
+  vote_threshold=int(threshold)
+  for problem in mathProblems.keys():
+    x = len(mathProblems[problem]["voters"])
+    if x > vote_threshold:
+      await ctx.send(f"Successfully deleted problem #{problem} due to it having {x} votes, {x-threshold} more than the threshold!", hidden=True)
+  await ctx.send(f"The vote threshold has successfully been changed to {threshold}!", hidden=True)
+@slash.slash(name="vote", description = "Vote for the deletion of a problem", options=[discord_slash.manage_commands.create_option(name="first_option", description="Testing!", option_type=10, required=True)])
+async def vote(ctx, problem_id):
+  global mathProblems
+  try:
+    if ctx.author_id in mathProblems[problem_id]["voters"]:
+      await ctx.send("You have already voted for the deletion of this problem!", hidden=True)
+      return
+  except KeyError:
+    await ctx.send("This problem doesn't exist!", hidden=True)
+    return
+  mathProblems[problem_id]["voters"].append(ctx.author_id)
+  e = "You successfully voted for the problem's deletion! As long as this problem is not deleted, you can always un-vote. There are "
+  e += str(len(mathProblems[problem_id]["voters"]))
+  e += "/"
+  e+= str(vote_threshold)
+  e += " votes on this problem!"
+  await ctx.send(e, hidden=True)
+  if len(mathProblems[problem_id]["voters"]) >= vote_threshold:
+    del mathProblems[problem_id]
+    await ctx.send("This problem has surpassed the threshold and has been deleted!", hidden=True)
+@slash.slash(name="unvote", description = "takes away vote for the deletion of a problem", options=[discord_slash.manage_commands.create_option(name="problem_id", description="Problem ID!", option_type=10, required=True)])
+async def unvote(ctx,problem_id):
+  global mathProblems
+  try:
+    if ctx.author_id not in mathProblems[problem_id]["voters"]:
+      await ctx.send("You aren't voting for the deletion of this problem!", hidden=True)
+      return
+  except KeyError:
+    await ctx.send("This problem doesn't exist!", hidden=True)
+    return
+  mathProblems[problem_id]["voters"].pop(mathProblems[problem_id]["voters"].index(ctx.author_id))
+  await ctx.send(f"Successfully un-voted for the problem's deletion! Now there are {str(len(mathProblems[problem_id]['voters']))}/{vote_threshold} votes on the problem.", hidden=True)
+@bot.command(help="""Deletes a question (either forcefully by a trusted user or deleting a problem submitted by the user who submitted this command
+math_problems.delete_problem  <problem_id> 
+Succeeds if trusted user or author of the problem, fails otherwise""", brief = "Deletes a question (either forcefully by a trusted user or deleting a problem submitted by the user who submitted this command")
+async def delete_problem(ctx, problem_id):
+  global mathProblems
+  user_id = ctx.author_id
+  if problem_id not in mathProblems.keys():
+    await ctx.send("That problem doesn't exist! Use math_problems.list_problems to list all problems!", hidden=True)
+    return
+  if ctx.author_id not in trusted_users and mathProblems[problem_id]["author"] != ctx.author_id:
+    await ctx.send("You aren't a trusted user or the author of the problem!", hidden=True)
+    return
+  mathProblems.pop(problem_id)
+  await ctx.send(f"Successfully deleted problem #{problem_id}!", hidden=True)
+@slash.slash(name="add_trusted_user", description = "adds a trusted user",options=[discord_slash.manage_commands.create_option(name="user", description="The user you want to give super special bot access to", option_type=6, required=True)])
+async def add_trusted_user(ctx,user):
+  member = user
+  if ctx.author_id not in trusted_users:
+    await ctx.send("You aren't a trusted user!", hidden=True)
+    return
+  user_id = member.id
+  if user_id == None:
+    await ctx.send(f"{user_nick} isn't a valid nickname of a user!", hidden=True)
+    return
+  #user_id = e.id
+  if user.id in trusted_users:
+    await ctx.send(f"{member.nick} is already a trusted user!", hidden=True)
+    return
+  trusted_users.append(trusted_users.index(user.id))
+  await ctx.send(f"Successfully made {user.nick} a trusted user!", hidden=True) 
+@slash.slash(name="remove_trusted_user", description = "adds a trusted user",options=[discord_slash.manage_commands.create_option(name="user", description="The user you want to give super special bot access to", option_type=6, required=True)])
+async def remove_trusted_user(ctx,user):
+  member = user
+  if ctx.author_id not in trusted_users:
+    await ctx.send("You aren't a trusted user!", hidden=True)
+    return
+  user_id = member.id
+  if user_id == None:
+    await ctx.send(f"{user_nick} isn't a valid nickname of a user!", hidden=True)
+    return
+  #user_id = e.id
+  if user_id not in trusted_users:
+    await ctx.send(f"{user.nick} isn't a trusted user!", hidden=True)
+    return
+  trusted_users.pop(trusted_users.index(user_id))
+  await ctx.send(f"Successfully made {user.nick} no longer a trusted user!", hidden=True) 
+
+
 @slash.slash(name="ping", description = "Prints latency and takes no arguments")
 async def ping(ctx):
-  await ctx.send(f"Pong! My latency is {round(bot.latency*1000)}ms."hidden=True)
-@slash.slash(description="Prints the vote threshold and takes no arguments", name="what_is_vote_threshold")
+  await ctx.send(f"Pong! My latency is {round(bot.latency*1000)}ms.", hidden=True)
+@slash.slash(name="what_is_vote_threshold", description="Prints the vote threshold and takes no arguments")
 async def what_is_vote_threshold(ctx):
-  await ctx.channel.send(f"The vote threshold is {vote_threshold}.")
+  await ctx.send(f"The vote threshold is {vote_threshold}.")
 @slash.slash(name="generateInviteLink", description = "Generates a invite link for this bot! Takes no arguments")
 async def generateInviteLink(ctx):
   await ctx.send("https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147552256&scope=bot%20applications.commands",hidden=True)
@@ -280,6 +294,7 @@ async def generateInviteLink(ctx):
 async def test(ctx,first_option=-1):
   await ctx.send(first_option,hidden=True)
   return
+
 
 print("The bot has finished setting up and will now run.")
 bot.run(DISCORD_TOKEN)
