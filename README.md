@@ -17,7 +17,7 @@ Open a pull request or DM me!
 
 # The "Invalid Interaction Application Error" error message
 
-I don't know what it is, so I don't know how to fix it. If you know what it is, please contact me :)
+I think I know what it is (discord says an command is invalid and takes an hour to refresh and does this error). It's just a bug and I'm working on it. :)
 
 # Other errors
 
