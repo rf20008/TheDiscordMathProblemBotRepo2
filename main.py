@@ -75,6 +75,7 @@ async def on_slash_command_error(ctx, error):
   erroredInMainCode=True
   await ctx.send("Something went wrong! Message the devs ASAP! (Our tags are ay136416#2707 and duck_master#8022)", hidden=True)
   raise error
+
 @bot.event
 async def on_command_error(ctx,error):
   
@@ -88,6 +89,10 @@ async def on_command_error(ctx,error):
   erroredInMainCode=True
   await ctx.send("Something went wrong! Message the devs ASAP! (Our tags are ay136416#2707 and duck_master#8022)")
   raise error
+@slash.slash(name="list_all_problem_ids", description= "List all problem ids")
+async def list_all_problem_ids(ctx):
+  ctx.defer()
+  await ctx.send("\n".join(mathProblems.keys())[:1930])
 @slash.slash(name="generate_new_problems", description= "Generates new problems", options=[discord_slash.manage_commands.create_option(name="num_new_problems_to_generate", description="the number of problems that should be generated", option_type=4, required=True)])
 async def generate_new_problems(ctx, num_new_problems_to_generate):
   await ctx.defer()
@@ -148,12 +153,8 @@ async def delallbotproblems(ctx):
   await ctx.send(f"Successfully deleted {numDeletedProblems}!")
 @slash.slash(name = "list_trusted_users", description = "list all trusted users")
 async def list_trusted_users(ctx):
-  await ctx.defer(hidden=True)
-  e = ""
-  for trusted_user in trusted_users:
-    e += "\n"
-    e += str(bot.get_user(trusted_user))
-  ctx.send(e, hidden=True)
+
+  ctx.send("\n".join([str(item) for item in trusted_users]))
 @slash.slash(name="new_problem", description = "Create a new problem", options = [discord_slash.manage_commands.create_option(name="answer", description="The answer to this problem", option_type=4, required=True), discord_slash.manage_commands.create_option(name="question", description="your question", option_type=3, required=True)])
 async def new_problem(ctx, answer, question):
   global mathProblems
@@ -269,7 +270,7 @@ async def unvote(ctx,problem_id):
     return
   mathProblems[problem_id]["voters"].pop(mathProblems[problem_id]["voters"].index(ctx.author_id))
   await ctx.send(f"Successfully un-voted for the problem's deletion! Now there are {str(len(mathProblems[problem_id]['voters']))}/{vote_threshold} votes on the problem.", hidden=True)
-slash.slash(name="delete_problem", description = "Deletes a problem", options = [discord_slash.manage_commands.create_option(name="problem_id", description="Problem ID!", option_type=4, required=True)])
+@slash.slash(name="delete_problem", description = "Deletes a problem", options = [discord_slash.manage_commands.create_option(name="problem_id", description="Problem ID!", option_type=4, required=True)])
 async def delete_problem(ctx, problem_id):
   global mathProblems
   user_id = ctx.author_id
