@@ -92,7 +92,7 @@ async def on_command_error(ctx,error):
 @slash.slash(name="list_all_problem_ids", description= "List all problem ids")
 async def list_all_problem_ids(ctx):
   ctx.defer()
-  await ctx.send("\n".join(mathProblems.keys())[:1930])
+  await ctx.send("\n".join([str(item) for item in mathProblems.keys())[:1930])
 @slash.slash(name="generate_new_problems", description= "Generates new problems", options=[discord_slash.manage_commands.create_option(name="num_new_problems_to_generate", description="the number of problems that should be generated", option_type=4, required=True)])
 async def generate_new_problems(ctx, num_new_problems_to_generate):
   await ctx.defer()
@@ -154,7 +154,7 @@ async def delallbotproblems(ctx):
 @slash.slash(name = "list_trusted_users", description = "list all trusted users")
 async def list_trusted_users(ctx):
 
-  ctx.send("\n".join([str(item) for item in trusted_users]))
+  await ctx.send("\n".join([str(item) for item in trusted_users]))
 @slash.slash(name="new_problem", description = "Create a new problem", options = [discord_slash.manage_commands.create_option(name="answer", description="The answer to this problem", option_type=4, required=True), discord_slash.manage_commands.create_option(name="question", description="your question", option_type=3, required=True)])
 async def new_problem(ctx, answer, question):
   global mathProblems
