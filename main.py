@@ -332,7 +332,7 @@ async def add_trusted_user(ctx,user):
   if ctx.author_id not in trusted_users:
     await ctx.send("You aren't a trusted user!", hidden=True)
     return
-  user_id = member.id
+  user_id = member.author_id
   if user_id == None:
     await ctx.send(f"{user_nick} isn't a valid nickname of a user!", hidden=True)
     return
