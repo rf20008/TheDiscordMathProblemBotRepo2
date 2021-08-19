@@ -1,4 +1,4 @@
-# TheDiscordMathBotRepo
+# The Discord Math Bot
 
 This is a Work In Progress discord bot! All help is appreciated.
 
@@ -17,7 +17,11 @@ Open a pull request or DM me!
 
 # The "Invalid Interaction Application Error" error message
 
-I think I know what it is (discord says an command is invalid and takes an hour to refresh and does this error). It's just a bug and I'm working on it. :)
+This should be fixed, but if you run into it, like all other bugs, let me know :)
+
+# discord.errors.HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body In user_id: Value "username" is not snowflake.
+
+I don't know how to fix this error! But i'm trying :)
 
 # Other errors
 
