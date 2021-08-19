@@ -91,6 +91,9 @@ async def on_command_error(ctx,error):
   raise error
 @slash.slash(name="show_problem_info", description = "Show problem info", options=[discord_slash.manage_commands.create_option(name="problem_id", description="problem id of the problem you want to show", option_type=4, required=True),discord_slash.manage_commands.create_option(name="show_all_data", description="whether to show all data (only useable by problem authors and trusted users", option_type=5, required=False),discord_slash.manage_commands.create_option(name="raw", description="whether to show data as json?", option_type=5, required=False)])
 async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False):
+  if problem_id not in mathProblems.keys():
+    await ctx.send("Problem non-existant!")
+    return
   if show_all_data:
     if ctx.author_id != mathProblems[problem_id]["author"] and ctx.author_id not in trusted_users:
       await ctx.send("Insufficient permissions!", hidden=True)
