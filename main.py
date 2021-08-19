@@ -210,7 +210,7 @@ async def new_problem(ctx, answer, question):
     if problem_id not in mathProblems.keys():
       break
 
-  e = {"answer": answer, "voters": [], "author": 845751152901750824, "solvers":[], "question": question}
+  e = {"answer": answer, "voters": [], "author": ctx.author_id, "solvers":[], "question": question}
   mathProblems[problem_id] = e
   await ctx.send("You have successfully made a math problem!", hidden = True)
 
