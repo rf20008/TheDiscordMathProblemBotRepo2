@@ -89,6 +89,13 @@ async def on_command_error(ctx,error):
   erroredInMainCode=True
   await ctx.send("Something went wrong! Message the devs ASAP! (Our tags are ay136416#2707 and duck_master#8022)")
   raise error
+@slash.slash(name="show_problem_info", description = "Show problem info", options=[discord_slash.manage_commands.create_option(name="problem_id", description="problem id of the problem you want to show", option_type=4, required=True),discord_slash.manage_commands.create_option(name="show_all_data", description="whether to show all data (only useable by problem authors and trusted users", option_type=5, required=False)discord_slash.manage_commands.create_option(name="raw", description="whether to show data as a json?", option_type=5, required=False)])
+async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False):
+  if show_all_data:
+    if ctx.author_id != mathProblems[problem_id]["author"] and ctx.author_id not in trusted_users:
+      await ctx.send("Insufficient permissions!")
+      return
+      
 @slash.slash(name="list_all_problem_ids", description= "List all problem ids")
 async def list_all_problem_ids(ctx):
   ctx.defer()
@@ -137,7 +144,7 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
 ##brief = "Adds a trusted user")
 @slash.slash(name="delallbotproblems", description = "delete all automatically generated problems")
 async def delallbotproblems(ctx):
-  ctx.send("Attempting to delete bot problems",hidden=True)
+  await ctx.send("Attempting to delete bot problems",hidden=True)
   global mathProblems
   mathProblems2 = copy.deepcopy(mathProblems)
   if ctx.author_id not in trusted_users:
