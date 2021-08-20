@@ -373,11 +373,11 @@ async def what_is_vote_threshold(ctx):
 @slash.slash(name="generateInviteLink", description = "Generates a invite link for this bot! Takes no arguments")
 async def generateInviteLink(ctx):
   await ctx.send("https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147552256&scope=bot%20applications.commands",hidden=True)
-@slash.slash(name="test", description="TEST!",        # Adding a new slash command with our slash variable
-             options=[discord_slash.manage_commands.create_option(name="first_option", description="Testing!", option_type=3, required=False)])
-async def test(ctx,first_option=-1):
-  await ctx.send(first_option,hidden=True)
-  return
+#slash.slash(name="test", description="TEST!",        # Adding a new slash command with our slash variable
+#             options=[discord_slash.manage_commands.create_option(name="first_option", description="Testing!", option_type=3, required=False)])
+#async def test(ctx,first_option=-1):
+#  await ctx.send(first_option,hidden=True)
+# return
 
 
 print("The bot has finished setting up and will now run.")
