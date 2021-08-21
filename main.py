@@ -96,9 +96,16 @@ async def on_command_error(ctx,error):
   erroredInMainCode=True
   await ctx.send("Something went wrong! Message the devs ASAP! (Our tags are ay136416#2707 and duck_master#8022)")
   raise error
-@slash.slash(name="show_problem_info", description = "Show problem info", options=[discord_slash.manage_commands.create_option(name="problem_id", description="problem id of the problem you want to show", option_type=4, required=True),discord_slash.manage_commands.create_option(name="show_all_data", description="whether to show all data (only useable by problem authors and trusted users", option_type=5, required=False),discord_slash.manage_commands.create_option(name="raw", description="whether to show data as json?", option_type=5, required=False)])
-async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False):
+@slash.slash(name="show_problem_info", description = "Show problem info", options=[discord_slash.manage_commands.create_option(name="problem_id", description="problem id of the problem you want to show", option_type=4, required=True),discord_slash.manage_commands.create_option(name="show_all_data", description="whether to show all data (only useable by problem authors and trusted users", option_type=5, required=False),discord_slash.manage_commands.create_option(name="raw", description="whether to show data as json?", option_type=5, required=False),discord_slash.manage_commands.create_option(name="is_guild_problem", description="whether the problem you are trying to view is a guild problem", option_type=5, required=False)])
+async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_guild_problem=False):
   problem_id = int(problem_id)
+  print(ctx.author)
+  print(type(ctx.author))
+  guild_id = ctx.guild_id
+  if is_guild_problem == True and guild_id == None:
+    await ctx.send("Run this command in the discord server which has this problem, not a DM!")
+    return
+
   if problem_id not in mathProblems.keys():
     await ctx.send("Problem non-existant!")
     return
@@ -274,7 +281,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
   if mathProblems.keys() == []:
     await ctx.send("There aren't any problems! You should add one!", hidden=True)
     return
-  elif showSolvedProblems == False and False not in [ctx.author_id in mathProblems[id]["solvers"] for id in mathProblems.keys()]:
+  elif showSolvedProblems == False and False not in [ctx.author_id in mathProblems[id]["solvers"] for id in mathProblems.keys()] or (show_guild_problems and show_only_guild_problems and (guildMathProblems[ctx.guild_id] == {} or False not in [ctx.author_id in guildMathProblems[guild_id][ig]["solvers"] for id in mathProblems.keys()):
     await ctx.send("You solved all the problems! You should add a new one.", hidden=True)
     return
   e = ""
