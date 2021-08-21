@@ -255,8 +255,8 @@ async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
   else:
     await ctx.send("Yay! You are right.", hidden=True)
     mathProblems[problem_id]["solvers"].append(ctx.author_id)
-@slash.slash(name="list_all_problems", description = "List all problems stored with the bot", options=[discord_slash.manage_commands.create_option(name="show_solved_problems", description="Whether to show solved problems", option_type=5, required=False)])
-async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=True):
+@slash.slash(name="list_all_problems", description = "List all problems stored with the bot", options=[discord_slash.manage_commands.create_option(name="show_solved_problems", description="Whether to show solved problems", option_type=5, required=False),discord_slash.manage_commands.create_option(name="show_guild_problems", description="Whether to show solved problems", option_type=5, required=False),discord_slash.manage_commands.create_option(name="show_only_guild_problems", description="Whether to only show guild problems", option_type=5, required=False)])
+async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=True,show_only_guild_problems=False):
   showSolvedProblems = show_solved_problems
   if showSolvedProblems != "":
     showSolvedProblems = True
@@ -271,6 +271,27 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
     return
   e = ""
   e += "Problem Id \t Question \t numVotes \t numSolvers"
+  if show_guild_problems:
+    for question in mathProblems.keys():
+      if len(e) >= 1930:
+        e += "The combined length of the questions is too long.... shortening it!"
+        await ctx.send(e[:1930])
+        return
+      elif not (showSolvedProblems) and ctx.author_id in mathProblems[question]["solvers"]:
+        continue
+      e += "\n"
+      e += str(question) + "\t"
+      e += str(mathProblems[question]["question"]) + "\t"
+      e += "(" 
+      e+= str(len(mathProblems[question]["voters"])) + "/" + str(vote_threshold) + ")" + "\t"
+      e += str(len(mathProblems[question]["solvers"])) + "\t"
+  if len(e) > 1930:
+    await ctx.send(e[:1930])
+    return
+  if show_only_guild_problems:
+    await ctx.send(e[:1930])
+    return
+    
   for question in mathProblems.keys():
     if len(e) >= 1930:
       e += "The combined length of the questions is too long.... shortening it!"
