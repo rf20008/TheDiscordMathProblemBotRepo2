@@ -282,7 +282,8 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
   if mathProblems.keys() == []:
     await ctx.send("There aren't any problems! You should add one!", hidden=True)
     return
-  elif showSolvedProblems == False and False not in [ctx.author_id in mathProblems[id]["solvers"] for id in mathProblems.keys()] or (show_guild_problems and show_only_guild_problems and (guildMathProblems[ctx.guild_id] == {} or False not in [ctx.author_id in guildMathProblems[guild_id][ig]["solvers"] for id in mathProblems.keys()]):
+  if showSolvedProblems == False and False not in [ctx.author_id in mathProblems[id]["solvers"] for id in mathProblems.keys()] or (show_guild_problems and (
+   show_only_guild_problems and (guildMathProblems[ctx.guild_id] == {} or False not in [ctx.author_id in guildMathProblems[guild_id][id]["solvers"] for id in mathProblems.keys()])):
     await ctx.send("You solved all the problems! You should add a new one.", hidden=True)
     return
   e = ""
