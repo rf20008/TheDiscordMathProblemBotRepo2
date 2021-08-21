@@ -135,7 +135,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False):
     await ctx.send(e, hidden=True)
 @slash.slash(name="list_all_problem_ids", description= "List all problem ids")
 async def list_all_problem_ids(ctx):
-  ctx.defer()
+  await ctx.defer()
   await ctx.send("\n".join([str(item) for item in mathProblems.keys()])[:1930])
 @slash.slash(name="generate_new_problems", description= "Generates new problems", options=[discord_slash.manage_commands.create_option(name="num_new_problems_to_generate", description="the number of problems that should be generated", option_type=4, required=True)])
 async def generate_new_problems(ctx, num_new_problems_to_generate):
