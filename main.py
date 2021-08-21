@@ -110,7 +110,8 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     return
   if show_all_data:
     if ctx.author_id != mathProblems[problem_id]["author"] and ctx.author_id not in trusted_users:
-      if (is_guild_problem and ctx.author.guild_permissions.administrator == False)
+      if (is_guild_problem and ctx.author.guild_permissions.administrator == False):
+        pass
       await ctx.send("Insufficient permissions!", hidden=True)
       return
     if raw:
@@ -230,7 +231,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
   
   if guild_question:
     guild_id = ctx.guild_id
-    if guild_id = None:
+    if guild_id == None:
       await ctx.send("You need to be in the guild to make a guild question!")
       del problem_id, question
       return
@@ -244,7 +245,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
         break
     e = {"answer": answer, "voters": [], "author": ctx.author_id, "solvers":[], "question": question}
     guildMathProblems[guild_id][problem_id] = e
-     await ctx.send("You have successfully made a math problem!", hidden = True)
+    await ctx.send("You have successfully made a math problem!", hidden = True)
   
   while True:
     problem_id = generate_new_id()
@@ -254,7 +255,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
   mathProblems[problem_id] = e
   await ctx.send("You have successfully made a math problem!", hidden = True)
 
-@slash.slash(name="check_answer", description = "Check if you are right", options=[discord_slash.manage_commands.create_option(name="problem_id", description="the id of the problem you are trying to check the answer of", option_type=4, required=True),discord_slash.manage_commands.create_option(name="answer", description="your answer", option_type=4, required=True),discord_slash.manage_commands.create_option(name="checking_guild_problem", description="whether checking a guild problem", option_type=5, required = False])
+@slash.slash(name="check_answer", description = "Check if you are right", options=[discord_slash.manage_commands.create_option(name="problem_id", description="the id of the problem you are trying to check the answer of", option_type=4, required=True),discord_slash.manage_commands.create_option(name="answer", description="your answer", option_type=4, required=True),discord_slash.manage_commands.create_option(name="checking_guild_problem", description="whether checking a guild problem", option_type=5, required = False)])
 async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
   global mathProblems
   try:
@@ -281,7 +282,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
   if mathProblems.keys() == []:
     await ctx.send("There aren't any problems! You should add one!", hidden=True)
     return
-  elif showSolvedProblems == False and False not in [ctx.author_id in mathProblems[id]["solvers"] for id in mathProblems.keys()] or (show_guild_problems and show_only_guild_problems and (guildMathProblems[ctx.guild_id] == {} or False not in [ctx.author_id in guildMathProblems[guild_id][ig]["solvers"] for id in mathProblems.keys()):
+  elif showSolvedProblems == False and False not in [ctx.author_id in mathProblems[id]["solvers"] for id in mathProblems.keys()] or (show_guild_problems and show_only_guild_problems and (guildMathProblems[ctx.guild_id] == {} or False not in [ctx.author_id in guildMathProblems[guild_id][ig]["solvers"] for id in mathProblems.keys()]):
     await ctx.send("You solved all the problems! You should add a new one.", hidden=True)
     return
   e = ""
