@@ -328,8 +328,8 @@ async def delete_problem(ctx, problem_id):
   await ctx.send(f"Successfully deleted problem #{problem_id}!", hidden=True)
 @slash.slash(name="add_trusted_user", description = "adds a trusted user",options=[discord_slash.manage_commands.create_option(name="user", description="The user you want to give super special bot access to", option_type=6, required=True)])
 async def add_trusted_user(ctx,user):
-  ctx.defer()
-  user2 = bot.get_user(user)
+  await ctx.defer()
+  user2 = await bot.get_user(user)
   member = user2
   if ctx.author_id not in trusted_users:
     await ctx.send("You aren't a trusted user!", hidden=True)
@@ -340,14 +340,14 @@ async def add_trusted_user(ctx,user):
     return
   #user_id = e.id
   if user.id in trusted_users:
-    await ctx.send(f"{member.name} is already a trusted user!", hidden=True)
+    await ctx.send(f"{user.name} is already a trusted user!", hidden=True)
     return
   trusted_users.append(trusted_users.index(user.id))
   await ctx.send(f"Successfully made {user.nick} a trusted user!", hidden=True) 
 @slash.slash(name="remove_trusted_user", description = "removes a trusted user",options=[discord_slash.manage_commands.create_option(name="user", description="The user you want to give super special bot access to", option_type=6, required=True)])
 async def remove_trusted_user(ctx,user):
-  ctx.defer()
-  user = await bot.fetch_user(user)
+  await ctx.defer()
+  user = await bot.get_user(user)
   member = user
   if ctx.author_id not in trusted_users:
     await ctx.send("You aren't a trusted user!", hidden=True)
