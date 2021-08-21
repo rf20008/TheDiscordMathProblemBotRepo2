@@ -12,6 +12,7 @@ DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
 #print(f"Discord Token: {DISCORD_TOKEN}")
 vote_threshold = 1
 mathProblems={}
+guildMathProblems = {}
 erroredInMainCode = False
 #print("yes")
 def d():
@@ -21,13 +22,16 @@ def d():
   global vote_threshold
   with open("math_problems.json", "r") as file:
     mathProblems = json.load(fp=file)
-  with open("trusted_users.txt", "r") as file:
-    for line in file:
+  with open("trusted_users.txt", "r") as file2:
+    for line in file2:
       trusted_users.append(int(line))
   with open("vote_threshold.txt", "r") as file3:
     for line in file3:
       vote_threshold = int(line)
       print(line)
+  with open("guild_math_problems.json", "r") as file4:
+    guildMathProblems = json.load(fp=file4)
+
   #print("f")
   while True:  
     #print("o")
@@ -47,6 +51,8 @@ def d():
 
     with open("vote_threshold.txt", "w") as file3:
       file3.write(str(vote_threshold))
+    with open("guild_math_problems.json", "w") as file4:
+      file4.write(json.dumps(guildMathProblems))
     
     print("Successfully saved files!")
       
@@ -199,8 +205,8 @@ async def delallbotproblems(ctx):
 async def list_trusted_users(ctx):
 
   await ctx.send("\n".join([str(item) for item in trusted_users]))
-@slash.slash(name="new_problem", description = "Create a new problem", options = [discord_slash.manage_commands.create_option(name="answer", description="The answer to this problem", option_type=4, required=True), discord_slash.manage_commands.create_option(name="question", description="your question", option_type=3, required=True)])
-async def new_problem(ctx, answer, question):
+@slash.slash(name="new_problem", description = "Create a new problem", options = [discord_slash.manage_commands.create_option(name="answer", description="The answer to this problem", option_type=4, required=True), discord_slash.manage_commands.create_option(name="question", description="your question", option_type=3, required=True),discord_slash.manage_commands.create_option(name="guild_command", description="Whether it should be a guild command", option_type=5, required=True)])
+async def new_problem(ctx, answer, question, guild_command=False):
   global mathProblems
   if len(question) > 250:
     await ctx.send("Your question is too long! Therefore, it cannot be added. The maximum question length is 250 characters.", hidden=True)
@@ -214,8 +220,8 @@ async def new_problem(ctx, answer, question):
   mathProblems[problem_id] = e
   await ctx.send("You have successfully made a math problem!", hidden = True)
 
-@slash.slash(name="check_answer", description = "Check if you are right", options=[discord_slash.manage_commands.create_option(name="problem_id", description="the id of the problem you are trying to check the answer of", option_type=4, required=True),discord_slash.manage_commands.create_option(name="answer", description="your answer", option_type=4, required=True)])
-async def check_answer(ctx,problem_id,answer):
+@slash.slash(name="check_answer", description = "Check if you are right", options=[discord_slash.manage_commands.create_option(name="problem_id", description="the id of the problem you are trying to check the answer of", option_type=4, required=True),discord_slash.manage_commands.create_option(name="answer", description="your answer", option_type=4, required=True),discord_slash.manage_commands.create_option(name="checking_guild_problem", description="whether checking a guild problem", option_type=5, required = False])
+async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
   global mathProblems
   try:
     if ctx.author_id in mathProblems[problem_id]["solvers"]:
@@ -231,7 +237,7 @@ async def check_answer(ctx,problem_id,answer):
     await ctx.send("Yay! You are right.", hidden=True)
     mathProblems[problem_id]["solvers"].append(ctx.author_id)
 @slash.slash(name="list_all_problems", description = "List all problems stored with the bot", options=[discord_slash.manage_commands.create_option(name="show_solved_problems", description="Whether to show solved problems", option_type=5, required=False)])
-async def list_all_problems(ctx, show_solved_problems=False):
+async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=True):
   showSolvedProblems = show_solved_problems
   if showSolvedProblems != "":
     showSolvedProblems = True
