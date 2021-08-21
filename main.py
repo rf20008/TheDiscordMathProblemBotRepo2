@@ -140,9 +140,17 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False):
     e+= str(len(mathProblems[problem_id]["solvers"]))
   
     await ctx.send(e, hidden=True)
-@slash.slash(name="list_all_problem_ids", description= "List all problem ids")
-async def list_all_problem_ids(ctx):
+@slash.slash(name="list_all_problem_ids", description= "List all problem ids"options=[discord_slash.manage_commands.create_option(name="show_only_guild_problems", description="Whether to show guild problem ids",required=False)])
+async def list_all_problem_ids(ctx,show_only_guild_problems=False):
   await ctx.defer()
+  if show_only_guild_problems:
+    guild_id = ctx.guild_id
+    if guild_id == None:
+      await ctx.send("Run this command in a Discord server or set show_only_guild_problems to False!", hidden=True)
+      return
+    await ctx.send("\n".join([str(item) for item in mathProblems.keys()])[:1930])
+    return
+
   await ctx.send("\n".join([str(item) for item in mathProblems.keys()])[:1930])
 @slash.slash(name="generate_new_problems", description= "Generates new problems", options=[discord_slash.manage_commands.create_option(name="num_new_problems_to_generate", description="the number of problems that should be generated", option_type=4, required=True)])
 async def generate_new_problems(ctx, num_new_problems_to_generate):
@@ -219,7 +227,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
       await ctx.send("You need to be in the guild to make a guild question!")
       del problem_id, question
       return
-    elif len(guildMathProblems[guild_id]) >= 125:
+    elif len(guildMathProblems[guild_id]) >= guild_maximum_problem_limit:
       await ctx.send("You have reached the guild math problem limit.")
       del problem_id, question
       return
@@ -291,7 +299,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
   if show_only_guild_problems:
     await ctx.send(e[:1930])
     return
-    
+
   for question in mathProblems.keys():
     if len(e) >= 1930:
       e += "The combined length of the questions is too long.... shortening it!"
@@ -328,8 +336,8 @@ async def set_vote_threshold(ctx,threshold):
     if x > vote_threshold:
       await ctx.send(f"Successfully deleted problem #{problem} due to it having {x} votes, {x-threshold} more than the threshold!", hidden=True)
   await ctx.send(f"The vote threshold has successfully been changed to {threshold}!", hidden=True)
-@slash.slash(name="vote", description = "Vote for the deletion of a problem", options=[discord_slash.manage_commands.create_option(name="problem_id", description="problem id of the problem you are attempting to delete", option_type=4, required=True)])
-async def vote(ctx, problem_id):
+@slash.slash(name="vote", description = "Vote for the deletion of a problem", options=[discord_slash.manage_commands.create_option(name="problem_id", description="problem id of the problem you are attempting to delete", option_type=4, required=True),discord_slash.manage_commands.create_option(name="is_guild_problem", description="problem id of the problem you are attempting to delete", option_type=5, required=False)])
+async def vote(ctx, problem_id,is_guild_problem=False):
   global mathProblems
   try:
     if ctx.author_id in mathProblems[problem_id]["voters"]:
