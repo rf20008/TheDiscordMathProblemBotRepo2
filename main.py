@@ -140,7 +140,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False):
     e+= str(len(mathProblems[problem_id]["solvers"]))
   
     await ctx.send(e, hidden=True)
-@slash.slash(name="list_all_problem_ids", description= "List all problem ids"options=[discord_slash.manage_commands.create_option(name="show_only_guild_problems", description="Whether to show guild problem ids",required=False)])
+@slash.slash(name="list_all_problem_ids", description= "List all problem ids", options=[discord_slash.manage_commands.create_option(name="show_only_guild_problems", description="Whether to show guild problem ids",required=False)])
 async def list_all_problem_ids(ctx,show_only_guild_problems=False):
   await ctx.defer()
   if show_only_guild_problems:
