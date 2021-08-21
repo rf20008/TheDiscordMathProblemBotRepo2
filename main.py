@@ -13,6 +13,7 @@ DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
 vote_threshold = 1
 mathProblems={}
 guildMathProblems = {}
+guild_maximum_problem_limit=125
 erroredInMainCode = False
 #print("yes")
 def d():
@@ -205,17 +206,35 @@ async def delallbotproblems(ctx):
 async def list_trusted_users(ctx):
 
   await ctx.send("\n".join([str(item) for item in trusted_users]))
-@slash.slash(name="new_problem", description = "Create a new problem", options = [discord_slash.manage_commands.create_option(name="answer", description="The answer to this problem", option_type=4, required=True), discord_slash.manage_commands.create_option(name="question", description="your question", option_type=3, required=True),discord_slash.manage_commands.create_option(name="guild_command", description="Whether it should be a guild command", option_type=5, required=True)])
-async def new_problem(ctx, answer, question, guild_command=False):
+@slash.slash(name="new_problem", description = "Create a new problem", options = [discord_slash.manage_commands.create_option(name="answer", description="The answer to this problem", option_type=4, required=True), discord_slash.manage_commands.create_option(name="question", description="your question", option_type=3, required=True),discord_slash.manage_commands.create_option(name="guild_question", description="Whether it should be a question for the guild", option_type=5, required=True)])
+async def new_problem(ctx, answer, question, guild_question=False):
   global mathProblems
   if len(question) > 250:
     await ctx.send("Your question is too long! Therefore, it cannot be added. The maximum question length is 250 characters.", hidden=True)
     return
+  
+  if guild_question:
+    guild_id = ctx.guild_id
+    if guild_id = None:
+      await ctx.send("You need to be in the guild to make a guild question!")
+      del problem_id, question
+      return
+    elif len(guildMathProblems[guild_id]) >= 125:
+      await ctx.send("You have reached the guild math problem limit.")
+      del problem_id, question
+      return
+    while True:
+      problem_id = generate_new_id()
+      if problem_id not in guildMathProblems[guild_id].keys():
+        break
+    e = {"answer": answer, "voters": [], "author": ctx.author_id, "solvers":[], "question": question}
+    guildMathProblems[guild_id][problem_id] = e
+     await ctx.send("You have successfully made a math problem!", hidden = True)
+  
   while True:
     problem_id = generate_new_id()
     if problem_id not in mathProblems.keys():
       break
-
   e = {"answer": answer, "voters": [], "author": ctx.author_id, "solvers":[], "question": question}
   mathProblems[problem_id] = e
   await ctx.send("You have successfully made a math problem!", hidden = True)
