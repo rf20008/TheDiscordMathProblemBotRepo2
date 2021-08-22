@@ -101,17 +101,29 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
   problem_id = int(problem_id)
 
   guild_id = ctx.guild_id
-  if is_guild_problem == True and guild_id == None:
-    await ctx.send("Run this command in the discord server which has this problem, not a DM!")
-    return
+  if is_guild_problem:
+    if guild_id == None:
+       ctx.send("Run this command in the discord server which has this problem, not a DM!")
+      return
+    if guild_id not in guildMathProblems.keys():
+      guildMathProblems[guild_id] = {}
+    if problem_id not in guildMathProblems[guild_id].keys():
+      await ctx.send("Problem non-existant!")
+      return
 
+    if show_all_data:
+      if not (ctx.author_id == guildMathProblems[guild_id][problem_id]["author"] or ctx.author_id not in trusted_users or (is_guild_problem and ctx.author.guild_permissions.administrator == True)):
+        await ctx.send("Insufficient permissions!", hidden=True)
+        return
+
+    if raw:
+      await ctx.send(str(mathProblems[problem_id]), hidden=True)
+      return
   if problem_id not in mathProblems.keys():
     await ctx.send("Problem non-existant!")
     return
   if show_all_data:
-    if ctx.author_id != mathProblems[problem_id]["author"] and ctx.author_id not in trusted_users:
-      if (is_guild_problem and ctx.author.guild_permissions.administrator == False):
-        pass
+    if not (ctx.author_id == mathProblems[problem_id]["author"] or ctx.author_id not in trusted_users or (is_guild_problem and ctx.author.guild_permissions.administrator == True)):
       await ctx.send("Insufficient permissions!", hidden=True)
       return
     if raw:
@@ -148,7 +160,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     e+= str(len(mathProblems[problem_id]["solvers"]))
   
     await ctx.send(e, hidden=True)
-@slash.slash(name="list_all_problem_ids", description= "List all problem ids", options=[discord_slash.manage_commands.create_option(name="show_only_guild_problems", description="Whether to show guild problem ids",required=False)])
+@slash.slash(name="list_all_problem_ids", description= "List all problem ids", options=[discord_slash.manage_commands.create_option(name="show_only_guild_problems", description="Whether to show guild problem ids",required=False,option_type=5)])
 async def list_all_problem_ids(ctx,show_only_guild_problems=False):
   await ctx.defer()
   if show_only_guild_problems:
@@ -235,6 +247,8 @@ async def new_problem(ctx, answer, question, guild_question=False):
       await ctx.send("You need to be in the guild to make a guild question!")
       del problem_id, question
       return
+    if guild_id not in guildMathProblems.keys():
+      guildMathProblems[guild_id] = {}
     elif len(guildMathProblems[guild_id]) >= guild_maximum_problem_limit:
       await ctx.send("You have reached the guild math problem limit.")
       del problem_id, question
@@ -282,8 +296,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
   if mathProblems.keys() == []:
     await ctx.send("There aren't any problems! You should add one!", hidden=True)
     return
-  if showSolvedProblems == False and False not in [ctx.author_id in mathProblems[id]["solvers"] for id in mathProblems.keys()] or (show_guild_problems and (
-   show_only_guild_problems and (guildMathProblems[ctx.guild_id] == {} or False not in [ctx.author_id in guildMathProblems[guild_id][id]["solvers"] for id in mathProblems.keys()])):
+  if showSolvedProblems == False and False not in [ctx.author_id in mathProblems[id]["solvers"] for id in mathProblems.keys()] or (show_guild_problems and (show_only_guild_problems and (guildMathProblems[ctx.guild_id] == {}) or False not in [ctx.author_id in guildMathProblems[guild_id][id]["solvers"] for id in mathProblems.keys()])):
     await ctx.send("You solved all the problems! You should add a new one.", hidden=True)
     return
   e = ""
