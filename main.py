@@ -413,42 +413,36 @@ async def unvote(ctx,problem_id):
     if guild_id not in guildMathProblems.keys():
       guildMathProblems[guild_id] = {}
     try:
-      if ctx.author_id in guildMathProblems[guild_id][problem_id]["voters"]:
-        await ctx.send("You have already voted for the deletion of this problem!", hidden=True)
+      if ctx.author_id not in guildMathProblems[guild_id][problem_id]["voters"]:
+        await ctx.send("You have not voted for the deletion of this problem!", hidden=True)
         return
     except KeyError:
       await ctx.send("This problem doesn't exist!", hidden=True)
       return
     guildMathProblems[guild_id][problem_id]["voters"].append(ctx.author_id)
-    e = "You successfully voted for the problem's deletion! As long as this problem is not deleted, you can always un-vote. There are "
+    e = "You successfully unvoted for the problem's deletion! Now there are"
     e += str(len(guildMathProblems[guild_id][problem_id]["voters"]))
     e += "/"
     e+= str(vote_threshold)
-    e += " votes on this problem!"
+    e += " votes on this problem."
     await ctx.send(e, hidden=True)
-    if len(mathProblems[problem_id]["voters"]) >= vote_threshold:
-
-      await ctx.send("This problem has surpassed the threshold and has been deleted!", hidden=True)  
   try:
     if ctx.author_id in mathProblems[problem_id]["voters"]:
-      await ctx.send("You have already voted for the deletion of this problem!", hidden=True)
+      await ctx.send("You have not yet voted for the deletion of this problem!", hidden=True)
       return
   except KeyError:
     await ctx.send("This problem doesn't exist!", hidden=True)
     return
   mathProblems[problem_id]["voters"].append(ctx.author_id)
-  e = "You successfully voted for the problem's deletion! As long as this problem is not deleted, you can always un-vote. There are "
+  e = "You successfully unvoted for the deletion of this problem. There are now "
   e += str(len(mathProblems[problem_id]["voters"]))
   e += "/"
   e+= str(vote_threshold)
-  e += " votes on this problem!"
+  e += " votes on this problem."
   await ctx.send(e, hidden=True)
-  if len(mathProblems[problem_id]["voters"]) >= vote_threshold:
-    del mathProblems[problem_id]
-    await ctx.send("This problem has surpassed the threshold and has been deleted!", hidden=True)
-@slash.slash(name="delete_problem", description = "Deletes a problem", options = [discord_slash.manage_commands.create_option(name="problem_id", description="Problem ID!", option_type=4, required=True)])
-async def delete_problem(ctx, problem_id):
-  global mathProblems
+@slash.slash(name="delete_problem", description = "Deletes a problem", options = [discord_slash.manage_commands.create_option(name="problem_id", description="Problem ID!", option_type=4, required=True),discord_slash.manage_commands.create_option(name="is_guild_problem", description="whether deleting a guild problem", option_type=5, required=False)])
+async def delete_problem(ctx, problem_id,is_guild_problem=False):
+  global mathProblems. guildMathProblems
   user_id = ctx.author_id
   if problem_id not in mathProblems.keys():
     await ctx.send("That problem doesn't exist! Use math_problems.list_problems to list all problems!", hidden=True)
