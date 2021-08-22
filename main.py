@@ -442,10 +442,23 @@ async def unvote(ctx,problem_id):
   await ctx.send(e, hidden=True)
 @slash.slash(name="delete_problem", description = "Deletes a problem", options = [discord_slash.manage_commands.create_option(name="problem_id", description="Problem ID!", option_type=4, required=True),discord_slash.manage_commands.create_option(name="is_guild_problem", description="whether deleting a guild problem", option_type=5, required=False)])
 async def delete_problem(ctx, problem_id,is_guild_problem=False):
-  global mathProblems. guildMathProblems
+  global mathProblems, guildMathProblems
   user_id = ctx.author_id
+  guild_id = ctx.guild_id
+  if is_guild_problem:
+    if guild_id == None:
+      await ctx.send("Run this command in the discord server which has the problem you are trying to delete, or switch is_guild_problem to False.")
+      return
+    if problem_id not in guildMathProblems[guild_id].keys():
+      await ctx.send("That problem doesn't exist.", hidden=True)
+      return
+    if not (ctx.author_id in trusted_users or mathProblems[problem_id]["author"]!= ctx.author_id or ctx.author.guild_permissions.administrator):
+      await ctx.send("Insufficient permissions", hidden=True)
+      return
+    guildMathProblems[guild_id].pop(problem_id)
+    await ctx.send(f"Successfully deleted problem #{problem_id}!", hidden=True)
   if problem_id not in mathProblems.keys():
-    await ctx.send("That problem doesn't exist! Use math_problems.list_problems to list all problems!", hidden=True)
+    await ctx.send("That problem doesn't exist.", hidden=True)
     return
   if ctx.author_id not in trusted_users and mathProblems[problem_id]["author"] != ctx.author_id:
     await ctx.send("You aren't a trusted user or the author of the problem!", hidden=True)
