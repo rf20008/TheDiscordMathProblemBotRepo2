@@ -12,6 +12,8 @@ DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
 #print(f"Discord Token: {DISCORD_TOKEN}")
 vote_threshold = 1
 mathProblems={}
+guildMathProblems = {}
+guild_maximum_problem_limit=125
 erroredInMainCode = False
 #print("yes")
 def d():
@@ -21,13 +23,16 @@ def d():
   global vote_threshold
   with open("math_problems.json", "r") as file:
     mathProblems = json.load(fp=file)
-  with open("trusted_users.txt", "r") as file:
-    for line in file:
+  with open("trusted_users.txt", "r") as file2:
+    for line in file2:
       trusted_users.append(int(line))
   with open("vote_threshold.txt", "r") as file3:
     for line in file3:
       vote_threshold = int(line)
       print(line)
+  with open("guild_math_problems.json", "r") as file4:
+    guildMathProblems = json.load(fp=file4)
+
   #print("f")
   while True:  
     #print("o")
@@ -47,6 +52,8 @@ def d():
 
     with open("vote_threshold.txt", "w") as file3:
       file3.write(str(vote_threshold))
+    with open("guild_math_problems.json", "w") as file4:
+      file4.write(json.dumps(guildMathProblems))
     
     print("Successfully saved files!")
       
@@ -89,14 +96,34 @@ async def on_command_error(ctx,error):
   erroredInMainCode=True
   await ctx.send("Something went wrong! Message the devs ASAP! (Our tags are ay136416#2707 and duck_master#8022)")
   raise error
-@slash.slash(name="show_problem_info", description = "Show problem info", options=[discord_slash.manage_commands.create_option(name="problem_id", description="problem id of the problem you want to show", option_type=4, required=True),discord_slash.manage_commands.create_option(name="show_all_data", description="whether to show all data (only useable by problem authors and trusted users", option_type=5, required=False),discord_slash.manage_commands.create_option(name="raw", description="whether to show data as json?", option_type=5, required=False)])
-async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False):
+@slash.slash(name="show_problem_info", description = "Show problem info", options=[discord_slash.manage_commands.create_option(name="problem_id", description="problem id of the problem you want to show", option_type=4, required=True),discord_slash.manage_commands.create_option(name="show_all_data", description="whether to show all data (only useable by problem authors and trusted users", option_type=5, required=False),discord_slash.manage_commands.create_option(name="raw", description="whether to show data as json?", option_type=5, required=False),discord_slash.manage_commands.create_option(name="is_guild_problem", description="whether the problem you are trying to view is a guild problem", option_type=5, required=False)])
+async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_guild_problem=False):
   problem_id = int(problem_id)
+
+  guild_id = ctx.guild_id
+  if is_guild_problem:
+    if guild_id == None:
+      ctx.send("Run this command in the discord server which has this problem, not a DM!")
+      return
+    if guild_id not in guildMathProblems.keys():
+      guildMathProblems[guild_id] = {}
+    if problem_id not in guildMathProblems[guild_id].keys():
+      await ctx.send("Problem non-existant!")
+      return
+
+    if show_all_data:
+      if not (ctx.author_id == guildMathProblems[guild_id][problem_id]["author"] or ctx.author_id not in trusted_users or (is_guild_problem and ctx.author.guild_permissions.administrator == True)):
+        await ctx.send("Insufficient permissions!", hidden=True)
+        return
+
+    if raw:
+      await ctx.send(str(mathProblems[problem_id]), hidden=True)
+      return
   if problem_id not in mathProblems.keys():
     await ctx.send("Problem non-existant!")
     return
   if show_all_data:
-    if ctx.author_id != mathProblems[problem_id]["author"] and ctx.author_id not in trusted_users:
+    if not (ctx.author_id == mathProblems[problem_id]["author"] or ctx.author_id not in trusted_users or (is_guild_problem and ctx.author.guild_permissions.administrator == True)):
       await ctx.send("Insufficient permissions!", hidden=True)
       return
     if raw:
@@ -133,9 +160,17 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False):
     e+= str(len(mathProblems[problem_id]["solvers"]))
   
     await ctx.send(e, hidden=True)
-@slash.slash(name="list_all_problem_ids", description= "List all problem ids")
-async def list_all_problem_ids(ctx):
+@slash.slash(name="list_all_problem_ids", description= "List all problem ids", options=[discord_slash.manage_commands.create_option(name="show_only_guild_problems", description="Whether to show guild problem ids",required=False,option_type=5)])
+async def list_all_problem_ids(ctx,show_only_guild_problems=False):
   await ctx.defer()
+  if show_only_guild_problems:
+    guild_id = ctx.guild_id
+    if guild_id == None:
+      await ctx.send("Run this command in a Discord server or set show_only_guild_problems to False!", hidden=True)
+      return
+    await ctx.send("\n".join([str(item) for item in mathProblems.keys()])[:1930])
+    return
+
   await ctx.send("\n".join([str(item) for item in mathProblems.keys()])[:1930])
 @slash.slash(name="generate_new_problems", description= "Generates new problems", options=[discord_slash.manage_commands.create_option(name="num_new_problems_to_generate", description="the number of problems that should be generated", option_type=4, required=True)])
 async def generate_new_problems(ctx, num_new_problems_to_generate):
@@ -199,23 +234,43 @@ async def delallbotproblems(ctx):
 async def list_trusted_users(ctx):
 
   await ctx.send("\n".join([str(item) for item in trusted_users]))
-@slash.slash(name="new_problem", description = "Create a new problem", options = [discord_slash.manage_commands.create_option(name="answer", description="The answer to this problem", option_type=4, required=True), discord_slash.manage_commands.create_option(name="question", description="your question", option_type=3, required=True)])
-async def new_problem(ctx, answer, question):
+@slash.slash(name="new_problem", description = "Create a new problem", options = [discord_slash.manage_commands.create_option(name="answer", description="The answer to this problem", option_type=4, required=True), discord_slash.manage_commands.create_option(name="question", description="your question", option_type=3, required=True),discord_slash.manage_commands.create_option(name="guild_question", description="Whether it should be a question for the guild", option_type=5, required=True)])
+async def new_problem(ctx, answer, question, guild_question=False):
   global mathProblems
   if len(question) > 250:
     await ctx.send("Your question is too long! Therefore, it cannot be added. The maximum question length is 250 characters.", hidden=True)
     return
+  
+  if guild_question:
+    guild_id = ctx.guild_id
+    if guild_id == None:
+      await ctx.send("You need to be in the guild to make a guild question!")
+      del problem_id, question
+      return
+    if guild_id not in guildMathProblems.keys():
+      guildMathProblems[guild_id] = {}
+    elif len(guildMathProblems[guild_id]) >= guild_maximum_problem_limit:
+      await ctx.send("You have reached the guild math problem limit.")
+      del problem_id, question
+      return
+    while True:
+      problem_id = generate_new_id()
+      if problem_id not in guildMathProblems[guild_id].keys():
+        break
+    e = {"answer": answer, "voters": [], "author": ctx.author_id, "solvers":[], "question": question}
+    guildMathProblems[guild_id][problem_id] = e
+    await ctx.send("You have successfully made a math problem!", hidden = True)
+  
   while True:
     problem_id = generate_new_id()
     if problem_id not in mathProblems.keys():
       break
-
   e = {"answer": answer, "voters": [], "author": ctx.author_id, "solvers":[], "question": question}
   mathProblems[problem_id] = e
   await ctx.send("You have successfully made a math problem!", hidden = True)
 
-@slash.slash(name="check_answer", description = "Check if you are right", options=[discord_slash.manage_commands.create_option(name="problem_id", description="the id of the problem you are trying to check the answer of", option_type=4, required=True),discord_slash.manage_commands.create_option(name="answer", description="your answer", option_type=4, required=True)])
-async def check_answer(ctx,problem_id,answer):
+@slash.slash(name="check_answer", description = "Check if you are right", options=[discord_slash.manage_commands.create_option(name="problem_id", description="the id of the problem you are trying to check the answer of", option_type=4, required=True),discord_slash.manage_commands.create_option(name="answer", description="your answer", option_type=4, required=True),discord_slash.manage_commands.create_option(name="checking_guild_problem", description="whether checking a guild problem", option_type=5, required = False)])
+async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
   global mathProblems
   try:
     if ctx.author_id in mathProblems[problem_id]["solvers"]:
@@ -230,8 +285,8 @@ async def check_answer(ctx,problem_id,answer):
   else:
     await ctx.send("Yay! You are right.", hidden=True)
     mathProblems[problem_id]["solvers"].append(ctx.author_id)
-@slash.slash(name="list_all_problems", description = "List all problems stored with the bot", options=[discord_slash.manage_commands.create_option(name="show_solved_problems", description="Whether to show solved problems", option_type=5, required=False)])
-async def list_all_problems(ctx, show_solved_problems=False):
+@slash.slash(name="list_all_problems", description = "List all problems stored with the bot", options=[discord_slash.manage_commands.create_option(name="show_solved_problems", description="Whether to show solved problems", option_type=5, required=False),discord_slash.manage_commands.create_option(name="show_guild_problems", description="Whether to show solved problems", option_type=5, required=False),discord_slash.manage_commands.create_option(name="show_only_guild_problems", description="Whether to only show guild problems", option_type=5, required=False)])
+async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=True,show_only_guild_problems=False):
   showSolvedProblems = show_solved_problems
   if showSolvedProblems != "":
     showSolvedProblems = True
@@ -241,11 +296,32 @@ async def list_all_problems(ctx, show_solved_problems=False):
   if mathProblems.keys() == []:
     await ctx.send("There aren't any problems! You should add one!", hidden=True)
     return
-  elif showSolvedProblems == False and False not in [ctx.author_id in mathProblems[id]["solvers"] for id in mathProblems.keys()]:
+  if showSolvedProblems == False and False not in [ctx.author_id in mathProblems[id]["solvers"] for id in mathProblems.keys()] or (show_guild_problems and (show_only_guild_problems and (guildMathProblems[ctx.guild_id] == {}) or False not in [ctx.author_id in guildMathProblems[guild_id][id]["solvers"] for id in mathProblems.keys()])):
     await ctx.send("You solved all the problems! You should add a new one.", hidden=True)
     return
   e = ""
   e += "Problem Id \t Question \t numVotes \t numSolvers"
+  if show_guild_problems:
+    for question in mathProblems.keys():
+      if len(e) >= 1930:
+        e += "The combined length of the questions is too long.... shortening it!"
+        await ctx.send(e[:1930])
+        return
+      elif not (showSolvedProblems) and ctx.author_id in mathProblems[question]["solvers"]:
+        continue
+      e += "\n"
+      e += str(question) + "\t"
+      e += str(mathProblems[question]["question"]) + "\t"
+      e += "(" 
+      e+= str(len(mathProblems[question]["voters"])) + "/" + str(vote_threshold) + ")" + "\t"
+      e += str(len(mathProblems[question]["solvers"])) + "\t"
+  if len(e) > 1930:
+    await ctx.send(e[:1930])
+    return
+  if show_only_guild_problems:
+    await ctx.send(e[:1930])
+    return
+
   for question in mathProblems.keys():
     if len(e) >= 1930:
       e += "The combined length of the questions is too long.... shortening it!"
@@ -282,9 +358,33 @@ async def set_vote_threshold(ctx,threshold):
     if x > vote_threshold:
       await ctx.send(f"Successfully deleted problem #{problem} due to it having {x} votes, {x-threshold} more than the threshold!", hidden=True)
   await ctx.send(f"The vote threshold has successfully been changed to {threshold}!", hidden=True)
-@slash.slash(name="vote", description = "Vote for the deletion of a problem", options=[discord_slash.manage_commands.create_option(name="problem_id", description="problem id of the problem you are attempting to delete", option_type=4, required=True)])
-async def vote(ctx, problem_id):
-  global mathProblems
+@slash.slash(name="vote", description = "Vote for the deletion of a problem", options=[discord_slash.manage_commands.create_option(name="problem_id", description="problem id of the problem you are attempting to delete", option_type=4, required=True),discord_slash.manage_commands.create_option(name="is_guild_problem", description="problem id of the problem you are attempting to delete", option_type=5, required=False)])
+async def vote(ctx, problem_id,is_guild_problem=False):
+  global mathProblems, guildMathProblems
+  if is_guild_problem:
+    guild_id = ctx.guild_id
+    if guild_id == None:
+      await ctx.send("You need to be in the guild to make a guild question!")
+      return
+    if guild_id not in guildMathProblems.keys():
+      guildMathProblems[guild_id] = {}
+    try:
+      if ctx.author_id in guildMathProblems[guild_id][problem_id]["voters"]:
+        await ctx.send("You have already voted for the deletion of this problem!", hidden=True)
+        return
+    except KeyError:
+      await ctx.send("This problem doesn't exist!", hidden=True)
+      return
+    guildMathProblems[guild_id][problem_id]["voters"].append(ctx.author_id)
+    e = "You successfully voted for the problem's deletion! As long as this problem is not deleted, you can always un-vote. There are "
+    e += str(len(guildMathProblems[guild_id][problem_id]["voters"]))
+    e += "/"
+    e+= str(vote_threshold)
+    e += " votes on this problem!"
+    await ctx.send(e, hidden=True)
+    if len(mathProblems[problem_id]["voters"]) >= vote_threshold:
+
+      await ctx.send("This problem has surpassed the threshold and has been deleted!", hidden=True)  
   try:
     if ctx.author_id in mathProblems[problem_id]["voters"]:
       await ctx.send("You have already voted for the deletion of this problem!", hidden=True)
@@ -304,22 +404,61 @@ async def vote(ctx, problem_id):
     await ctx.send("This problem has surpassed the threshold and has been deleted!", hidden=True)
 @slash.slash(name="unvote", description = "takes away vote for the deletion of a problem", options=[discord_slash.manage_commands.create_option(name="problem_id", description="Problem ID!", option_type=4, required=True)])
 async def unvote(ctx,problem_id):
-  global mathProblems
+  global mathProblems, guildMathProblems
+  if is_guild_problem:
+    guild_id = ctx.guild_id
+    if guild_id == None:
+      await ctx.send("You need to be in the guild to make a guild question!")
+      return
+    if guild_id not in guildMathProblems.keys():
+      guildMathProblems[guild_id] = {}
+    try:
+      if ctx.author_id not in guildMathProblems[guild_id][problem_id]["voters"]:
+        await ctx.send("You have not voted for the deletion of this problem!", hidden=True)
+        return
+    except KeyError:
+      await ctx.send("This problem doesn't exist!", hidden=True)
+      return
+    guildMathProblems[guild_id][problem_id]["voters"].append(ctx.author_id)
+    e = "You successfully unvoted for the problem's deletion! Now there are"
+    e += str(len(guildMathProblems[guild_id][problem_id]["voters"]))
+    e += "/"
+    e+= str(vote_threshold)
+    e += " votes on this problem."
+    await ctx.send(e, hidden=True)
   try:
-    if ctx.author_id not in mathProblems[problem_id]["voters"]:
-      await ctx.send("You aren't voting for the deletion of this problem!", hidden=True)
+    if ctx.author_id in mathProblems[problem_id]["voters"]:
+      await ctx.send("You have not yet voted for the deletion of this problem!", hidden=True)
       return
   except KeyError:
     await ctx.send("This problem doesn't exist!", hidden=True)
     return
-  mathProblems[problem_id]["voters"].pop(mathProblems[problem_id]["voters"].index(ctx.author_id))
-  await ctx.send(f"Successfully un-voted for the problem's deletion! Now there are {str(len(mathProblems[problem_id]['voters']))}/{vote_threshold} votes on the problem.", hidden=True)
-@slash.slash(name="delete_problem", description = "Deletes a problem", options = [discord_slash.manage_commands.create_option(name="problem_id", description="Problem ID!", option_type=4, required=True)])
-async def delete_problem(ctx, problem_id):
-  global mathProblems
+  mathProblems[problem_id]["voters"].append(ctx.author_id)
+  e = "You successfully unvoted for the deletion of this problem. There are now "
+  e += str(len(mathProblems[problem_id]["voters"]))
+  e += "/"
+  e+= str(vote_threshold)
+  e += " votes on this problem."
+  await ctx.send(e, hidden=True)
+@slash.slash(name="delete_problem", description = "Deletes a problem", options = [discord_slash.manage_commands.create_option(name="problem_id", description="Problem ID!", option_type=4, required=True),discord_slash.manage_commands.create_option(name="is_guild_problem", description="whether deleting a guild problem", option_type=5, required=False)])
+async def delete_problem(ctx, problem_id,is_guild_problem=False):
+  global mathProblems, guildMathProblems
   user_id = ctx.author_id
+  guild_id = ctx.guild_id
+  if is_guild_problem:
+    if guild_id == None:
+      await ctx.send("Run this command in the discord server which has the problem you are trying to delete, or switch is_guild_problem to False.")
+      return
+    if problem_id not in guildMathProblems[guild_id].keys():
+      await ctx.send("That problem doesn't exist.", hidden=True)
+      return
+    if not (ctx.author_id in trusted_users or mathProblems[problem_id]["author"]!= ctx.author_id or ctx.author.guild_permissions.administrator):
+      await ctx.send("Insufficient permissions", hidden=True)
+      return
+    guildMathProblems[guild_id].pop(problem_id)
+    await ctx.send(f"Successfully deleted problem #{problem_id}!", hidden=True)
   if problem_id not in mathProblems.keys():
-    await ctx.send("That problem doesn't exist! Use math_problems.list_problems to list all problems!", hidden=True)
+    await ctx.send("That problem doesn't exist.", hidden=True)
     return
   if ctx.author_id not in trusted_users and mathProblems[problem_id]["author"] != ctx.author_id:
     await ctx.send("You aren't a trusted user or the author of the problem!", hidden=True)
