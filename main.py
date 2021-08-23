@@ -16,9 +16,10 @@ guildMathProblems = {}
 guild_maximum_problem_limit=125
 erroredInMainCode = False
 #print("yes")
+
 def d():
   #print("e",flush=True)
-  global mathProblems
+  global mathProblems,guildMathProblems
   global trusted_users
   global vote_threshold
   with open("math_problems.json", "r") as file:
@@ -31,7 +32,7 @@ def d():
       vote_threshold = int(line)
       print(line)
   with open("guild_math_problems.json", "r") as file4:
-    guildMathProblems = fi
+    guildMathProblems = json.load(fp=file4)
 
   #print("f")
   while True:  
@@ -53,13 +54,18 @@ def d():
     with open("vote_threshold.txt", "w") as file3:
       file3.write(str(vote_threshold))
     with open("guild_math_problems.json", "w") as file4:
-      file4.write(json.dumps(guildMathProblems))
+      e=json.dumps(obj=guildMathProblems)
+      print(e)
+      file4.write(e)
     
     print("Successfully saved files!")
       
-t = threading.Thread(target=d,name="D",daemon=True)
+t = threading.Thread(target=d,name="The File Saver",daemon=True)
 
 t.start()
+
+
+
 #print("Work please!!!!!")
 #print(trusted_users)
 def generate_new_id():
@@ -242,7 +248,7 @@ async def list_trusted_users(ctx):
   await ctx.send("\n".join([str(item) for item in trusted_users]))
 @slash.slash(name="new_problem", description = "Create a new problem", options = [discord_slash.manage_commands.create_option(name="answer", description="The answer to this problem", option_type=4, required=True), discord_slash.manage_commands.create_option(name="question", description="your question", option_type=3, required=True),discord_slash.manage_commands.create_option(name="guild_question", description="Whether it should be a question for the guild", option_type=5, required=False)])
 async def new_problem(ctx, answer, question, guild_question=False):
-  global mathProblems
+  global mathProblems, guildMathProblems
   if len(question) > 250:
     await ctx.send("Your question is too long! Therefore, it cannot be added. The maximum question length is 250 characters.", hidden=True)
     return
@@ -264,7 +270,9 @@ async def new_problem(ctx, answer, question, guild_question=False):
       if problem_id not in guildMathProblems[guild_id].keys():
         break
     e = {"answer": answer, "voters": [], "author": ctx.author_id, "solvers":[], "question": question}
+    print(e)
     guildMathProblems[guild_id][problem_id] = e
+    print(guildMathProblems[guild_id][problem_id])
     await ctx.send("You have successfully made a math problem!", hidden = True)
     return
   while True:
@@ -277,7 +285,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
 
 @slash.slash(name="check_answer", description = "Check if you are right", options=[discord_slash.manage_commands.create_option(name="problem_id", description="the id of the problem you are trying to check the answer of", option_type=4, required=True),discord_slash.manage_commands.create_option(name="answer", description="your answer", option_type=4, required=True),discord_slash.manage_commands.create_option(name="checking_guild_problem", description="whether checking a guild problem", option_type=5, required = False)])
 async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
-  global mathProblems
+  global mathProblems,guildMathProblems
   try:
     if ctx.author_id in mathProblems[problem_id]["solvers"]:
       await ctx.send("You have already solved this problem!", hidden = True)
@@ -305,25 +313,26 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
   if mathProblems.keys() == []:
     await ctx.send("There aren't any problems! You should add one!", hidden=True)
     return
-  if showSolvedProblems == False and False not in [ctx.author_id in mathProblems[id]["solvers"] for id in mathProblems.keys()] or (show_guild_problems and (show_only_guild_problems and (guildMathProblems[ctx.guild_id] == {}) or False not in [ctx.author_id in guildMathProblems[guild_id][id]["solvers"] for id in guildMathProblems[guild_id].keys()])):
-    await ctx.send("You solved all the problems! You should add a new one.", hidden=True)
-    return
+  #if not showSolvedProblems and False not in [ctx.author_id in mathProblems[id]["solvers"] for id in mathProblems.keys()] or (show_guild_problems and (show_only_guild_problems and (guildMathProblems[ctx.guild_id] == {}) or False not in [ctx.author_id in guildMathProblems[guild_id][id]["solvers"] for id in guildMathProblems[guild_id].keys()])) or show_guild_problems and not show_only_guild_problems and False not in [ctx.author_id in mathProblems[id]["solvers"] for id in mathProblems.keys()] and False not in [ctx.author_id in guildMathProblems[guild_id][id]["solvers"] for id in guildMathProblems[guild_id].keys()]:
+    #await ctx.send("You solved all the problems! You should add a new one.", hidden=True)
+    #return
   e = ""
   e += "Problem Id \t Question \t numVotes \t numSolvers"
   if show_guild_problems:
-    for question in mathProblems.keys():
+    for question in guildMathProblems[guild_id].keys():
       if len(e) >= 1930:
         e += "The combined length of the questions is too long.... shortening it!"
         await ctx.send(e[:1930])
         return
-      elif not (showSolvedProblems) and ctx.author_id in mathProblems[question]["solvers"]:
+      elif not (showSolvedProblems) and ctx.author_id in guildMathProblems[guild_id][question]["solvers"]:
         continue
       e += "\n"
       e += str(question) + "\t"
-      e += str(mathProblems[question]["question"]) + "\t"
+      e += str(guildMathProblems[guild_id][question]["question"]) + "\t"
       e += "(" 
-      e+= str(len(mathProblems[question]["voters"])) + "/" + str(vote_threshold) + ")" + "\t"
-      e += str(len(mathProblems[question]["solvers"])) + "\t"
+      e+= str(len(guildMathProblems[guild_id][question]["voters"])) + "/" + str(vote_threshold) + ")" + "\t"
+      e += str(len(guildMathProblems[guild_id][question]["solvers"])) + "\t"
+      e += "(guild)"
   if len(e) > 1930:
     await ctx.send(e[:1930])
     return
