@@ -55,7 +55,6 @@ def d():
       file3.write(str(vote_threshold))
     with open("guild_math_problems.json", "w") as file4:
       e=json.dumps(obj=guildMathProblems)
-      print(e)
       file4.write(e)
     
     print("Successfully saved files!")
