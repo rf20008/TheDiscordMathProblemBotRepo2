@@ -110,7 +110,7 @@ async def on_command_error(ctx,error):
 async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_guild_problem=False):
   problem_id = int(problem_id)
 
-  guild_id = ctx.guild_id
+  guild_id = str(ctx.guild_id)
   if guild_id not in guildMathProblems:
     guildMathProblems[guild_id]={}
   if is_guild_problem:
@@ -176,7 +176,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
 async def list_all_problem_ids(ctx,show_only_guild_problems=False):
   await ctx.defer()
   if show_only_guild_problems:
-    guild_id = ctx.guild_id
+    guild_id = str(ctx.guild_id)
     if guild_id == None:
       await ctx.send("Run this command in a Discord server or set show_only_guild_problems to False!", hidden=True)
       return
@@ -254,16 +254,14 @@ async def new_problem(ctx, answer, question, guild_question=False):
     return
   
   if guild_question:
-    guild_id = ctx.guild_id
+    guild_id = str(ctx.guild_id)
     if guild_id == None:
       await ctx.send("You need to be in the guild to make a guild question!")
-      del problem_id, question
       return
     if guild_id not in guildMathProblems.keys():
       guildMathProblems[guild_id] = {}
     elif len(guildMathProblems[guild_id]) >= guild_maximum_problem_limit:
       await ctx.send("You have reached the guild math problem limit.")
-      del problem_id, question
       return
     while True:
       problem_id = generate_new_id()
@@ -302,7 +300,7 @@ async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
 @slash.slash(name="list_all_problems", description = "List all problems stored with the bot", options=[discord_slash.manage_commands.create_option(name="show_solved_problems", description="Whether to show solved problems", option_type=5, required=False),discord_slash.manage_commands.create_option(name="show_guild_problems", description="Whether to show solved problems", option_type=5, required=False),discord_slash.manage_commands.create_option(name="show_only_guild_problems", description="Whether to only show guild problems", option_type=5, required=False)])
 async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=True,show_only_guild_problems=False):
   showSolvedProblems = show_solved_problems
-  guild_id = ctx.guild_id
+  guild_id = str(ctx.guild_id)
   if guild_id not in guildMathProblems:
     guildMathProblems[guild_id]={}
   if showSolvedProblems != "":
@@ -313,7 +311,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
   if mathProblems.keys() == []:
     await ctx.send("There aren't any problems! You should add one!", hidden=True)
     return
-  #if not showSolvedProblems and False not in [ctx.author_id in mathProblems[id]["solvers"] for id in mathProblems.keys()] or (show_guild_problems and (show_only_guild_problems and (guildMathProblems[ctx.guild_id] == {}) or False not in [ctx.author_id in guildMathProblems[guild_id][id]["solvers"] for id in guildMathProblems[guild_id].keys()])) or show_guild_problems and not show_only_guild_problems and False not in [ctx.author_id in mathProblems[id]["solvers"] for id in mathProblems.keys()] and False not in [ctx.author_id in guildMathProblems[guild_id][id]["solvers"] for id in guildMathProblems[guild_id].keys()]:
+  #if not showSolvedProblems and False not in [ctx.author_id in mathProblems[id]["solvers"] for id in mathProblems.keys()] or (show_guild_problems and (show_only_guild_problems and (guildMathProblems[str(ctx.guild_id)] == {}) or False not in [ctx.author_id in guildMathProblems[guild_id][id]["solvers"] for id in guildMathProblems[guild_id].keys()])) or show_guild_problems and not show_only_guild_problems and False not in [ctx.author_id in mathProblems[id]["solvers"] for id in mathProblems.keys()] and False not in [ctx.author_id in guildMathProblems[guild_id][id]["solvers"] for id in guildMathProblems[guild_id].keys()]:
     #await ctx.send("You solved all the problems! You should add a new one.", hidden=True)
     #return
   e = ""
@@ -380,7 +378,14 @@ async def set_vote_threshold(ctx,threshold):
 async def vote(ctx, problem_id,is_guild_problem=False):
   global mathProblems, guildMathProblems
   if is_guild_problem:
-    guild_id = ctx.guild_id
+    guild_id = str(ctx.guild_id)
+    try:
+      if ctx.author_id in guildMathProblems[guild_id][problem_id]["voters"]:
+        await ctx.send("You have already voted for the deletion of this problem!", hidden=True)
+        return
+    except KeyError:
+      await ctx.send("This problem doesn't exist!", hidden=True)
+      return
     if guild_id == None:
       await ctx.send("You need to be in the guild to make a guild question!")
       return
@@ -424,7 +429,7 @@ async def vote(ctx, problem_id,is_guild_problem=False):
 async def unvote(ctx,problem_id):
   global mathProblems, guildMathProblems
   if is_guild_problem:
-    guild_id = ctx.guild_id
+    guild_id = str(ctx.guild_id)
     if guild_id == None:
       await ctx.send("You need to be in the guild to make a guild question!")
       return
@@ -462,7 +467,7 @@ async def unvote(ctx,problem_id):
 async def delete_problem(ctx, problem_id,is_guild_problem=False):
   global mathProblems, guildMathProblems
   user_id = ctx.author_id
-  guild_id = ctx.guild_id
+  guild_id = str(ctx.guild_id)
   if is_guild_problem:
     if guild_id == None:
       await ctx.send("Run this command in the discord server which has the problem you are trying to delete, or switch is_guild_problem to False.")
