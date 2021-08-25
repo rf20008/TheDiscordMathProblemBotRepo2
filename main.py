@@ -283,6 +283,23 @@ async def new_problem(ctx, answer, question, guild_question=False):
 @slash.slash(name="check_answer", description = "Check if you are right", options=[discord_slash.manage_commands.create_option(name="problem_id", description="the id of the problem you are trying to check the answer of", option_type=4, required=True),discord_slash.manage_commands.create_option(name="answer", description="your answer", option_type=4, required=True),discord_slash.manage_commands.create_option(name="checking_guild_problem", description="whether checking a guild problem", option_type=5, required = False)])
 async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
   global mathProblems,guildMathProblems
+  if checking_guild_problem:
+    guild_id = ctx.guild_id
+    if guild_id == None:
+      await ctx.send("Run this command in a server or set checking_guild_problem to False.")
+      return
+    try:
+      if ctx.author_id in guildMathProblems[guild_id][problem_id]["solvers"]:
+        await ctx.send("You have already solved this problem!", hidden = True)
+        return
+    except KeyError:
+      await ctx.send("This problem doesn't exist!", hidden=True)
+      return
+    if guildMathProblems[guild_id][problem_id]["answer"] != answer:
+      await ctx.send("Sorry..... but you got it wrong! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.", hidden=True)
+    else:
+      await ctx.send("Yay! You are right.", hidden=True)
+      mathProblems[problem_id]["solvers"].append(ctx.author_id)  
   try:
     if ctx.author_id in mathProblems[problem_id]["solvers"]:
       await ctx.send("You have already solved this problem!", hidden = True)
