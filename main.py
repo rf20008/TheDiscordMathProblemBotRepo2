@@ -44,7 +44,7 @@ def d():
     if erroredInMainCode:
       print("An error happened in the main code. Stopping the program...")
       exit()
-      raise Exception
+      #raise Exception
     print(f"Attempting to save files.")
     with open("math_problems.json", "w") as file:
       file.write(json.dumps(mathProblems))
@@ -92,7 +92,7 @@ async def on_ready():
 @bot.event
 async def on_slash_command_error(ctx, error):
   erroredInMainCode=True
-  await ctx.send("Something went wrong! Message the devs ASAP! (Our tags are ay136416#2707 and duck_master#8022)", hidden=True)
+  await ctx.send(":x: Command raised an exception:" + str(error), hidden=True)
   raise error
 
 @bot.event
