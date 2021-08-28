@@ -8,6 +8,8 @@ authors = ["ay136416 <<>>"]
 python = "^3.8"
 "discord.py" = "^1.7.3"
 discord-py-slash-command = "^3.0.1"
+typing-extensions = "^3.10.0"
+orjson = "^3.6.3"
 
 [tool.poetry.dev-dependencies]
 

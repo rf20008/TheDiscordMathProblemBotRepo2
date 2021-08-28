@@ -1,10 +1,7 @@
-import math, random, os
-import discord
-from nextcord import nextcord
+import math, random, os, discord, nextcord
 import time, datetime, json, aiohttp, copy
 from discord_slash import SlashCommand, SlashContext
-import discord_slash
-import threading
+import discord_slash, threading
 import nextcord.ext.commands, nextcord.ext.tasks
 #constants
 #print("Is it working??")
