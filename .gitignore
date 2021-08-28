@@ -1,2 +1,4 @@
 math_problems.json
 trusted_users.json
+.env
+guild_math_problems.json
