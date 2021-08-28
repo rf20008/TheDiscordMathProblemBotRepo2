@@ -1,4 +1,7 @@
-import discord, math, random, os
+import math, random, os
+#import nextcord as discord
+import discord as old_discord
+import discord
 import time, datetime, json, aiohttp, copy
 from discord_slash import SlashCommand, SlashContext
 import discord_slash
