@@ -1,7 +1,11 @@
 import math, random, os, discord, nextcord
 import time, datetime, json, aiohttp, copy
+from discord.ext import commands, tasks #for discord_slash
 from discord_slash import SlashCommand, SlashContext
 import discord_slash, threading
+
+
+from nextcord.ext.commands import Bot
 import nextcord.ext.commands, nextcord.ext.tasks
 #constants
 #print("Is it working??")
@@ -71,7 +75,7 @@ def generate_new_id():
 #bot = commands.AutoShardedBot(command_prefix="math_problems.")
 help_command = None
 
-bot = commands.Bot(
+bot = Bot(
     command_prefix = commands.when_mentioned_or('math_problems.'),
     help_command = help_command
 )

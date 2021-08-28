@@ -9,7 +9,7 @@ This discord bot is licensed under the GNU license.
 # If you run into issues
 If you run into any issues create an issue or DM me (ay136416#2707)). 
 
-# Contribute / Feature Requests
+# Contribute to my repo!
 
 Open a pull request or DM me!
 
