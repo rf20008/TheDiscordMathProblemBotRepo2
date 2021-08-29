@@ -92,7 +92,7 @@ async def on_ready():
 @bot.event
 async def on_slash_command_error(ctx, error):
   erroredInMainCode=True
-  await ctx.send(":x: Command raised an exception:" + str(error), hidden=True)
+  await ctx.send(":x: Command raised an exception:" + str(error) + "\n Please notify the developers as soon as possible through a github issue.", hidden=True)
   raise error
 
 @bot.event
