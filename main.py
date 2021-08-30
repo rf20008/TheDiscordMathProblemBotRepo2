@@ -4,9 +4,9 @@ from discord.ext import commands, tasks #for discord_slash
 from discord_slash import SlashCommand, SlashContext
 import discord_slash, threading
 
-from discord.ext.commands import Bot, Error
-#from nextcord.ext.commands import Bot, error
-#import nextcord.ext.commands
+
+from nextcord.ext.commands import Bot, error
+import nextcord.ext.commands
 #constants
 #print("Is it working??")
 trusted_users=[]
