@@ -91,6 +91,9 @@ async def on_ready():
   print("The bot has connected to Discord successfully.")
 @bot.event
 async def on_slash_command_error(ctx, error):
+  if isinstance(error,discord.ext.commands.errors.CommandOnCooldown):
+    await ctx.send(str(error))
+    return
   erroredInMainCode=True
   await ctx.send(":x: Command raised an exception:" + str(error) + "\n Please notify the developers as soon as possible through a github issue.", hidden=True)
   raise error
