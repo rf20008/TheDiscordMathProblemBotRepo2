@@ -1,13 +1,12 @@
 import math, random, os, discord
-import time, datetime, json, aiohttp, copy
+import time, datetime, aiohttp, copy
 from discord.ext import commands, tasks #for discord_slash
 from discord_slash import SlashCommand, SlashContext
 import discord_slash, threading
-import nextcord
 
 
 from nextcord.ext.commands import Bot, error
-import nextcord.ext.commands, nextcord.ext.tasks
+import nextcord.ext.commands
 #constants
 #print("Is it working??")
 trusted_users=[]
@@ -99,11 +98,14 @@ async def on_slash_command_error(ctx, error):
 @bot.event
 async def on_command_error(ctx,error):
   
-  if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
+  if isinstance(error, errors.MissingRequiredArgument):
     await ctx.channel.send("Not enough arguments!")
     return
-  if isinstance(error, discord.ext.commands.errors.CommandNotFound):
+  if isinstance(error, errors.CommandNotFound):
     await ctx.channel.send("This command does not exist. Mention me and use help to get a list of all commands!")
+    return
+  if isinstance(error, errors.TooManyArguments):
+    await ctx.send("Too many arguments.")
     return
   print(type(error))
   erroredInMainCode=True
