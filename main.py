@@ -73,15 +73,11 @@ n=discord.ext.commands.Bot("math_problems.")
 #print(trusted_users)
 def generate_new_id():
   return random.randint(0, 10**14)
-#bot = commands.AutoShardedBot(command_prefix="math_problems.")
-
 bot = Bot(
     command_prefix = commands.when_mentioned_or('math_problems.'),
 )
-slash = discord_slash.SlashCommand(bot, sync_commands=True)      # sync_commands is for doing synchronization for 
-                                                                 # every command you add, remove or update in your
-                                                                 # code
-#print("k")
+slash = discord_slash.SlashCommand(bot, sync_commands=True)      
+print(slash)
 
 
 @bot.event
