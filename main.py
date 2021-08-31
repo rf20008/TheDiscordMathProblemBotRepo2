@@ -76,8 +76,8 @@ def generate_new_id():
 bot = Bot(
     command_prefix = commands.when_mentioned_or('math_problems.'),
 )
-slash = discord_slash.SlashCommand(bot, sync_commands=True)      
-print(slash)
+slash = SlashCommand(bot, sync_commands=True)      
+
 
 
 @bot.event
