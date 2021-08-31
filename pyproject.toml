@@ -12,7 +12,6 @@ version = "0.0.1"
 discord-py-slash-command = "^3.0.1"
 "discord.py" = "^1.7.3"
 nextcord = "^2.0.0-alpha.1"
-orjson = "^3.6.3"
 python = "^3.8"
 typing-extensions = "^3.10.0"
 [tool.poetry.dev-dependencies]
