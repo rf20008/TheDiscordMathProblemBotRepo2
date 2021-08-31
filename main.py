@@ -65,7 +65,7 @@ def d():
 t = threading.Thread(target=d,name="The File Saver",daemon=True)
 
 t.start()
-n=Bot("math_problems.")
+n=discord.ext.commands.Bot("math_problems.")
 
 
 
@@ -74,11 +74,9 @@ n=Bot("math_problems.")
 def generate_new_id():
   return random.randint(0, 10**14)
 #bot = commands.AutoShardedBot(command_prefix="math_problems.")
-help_command = None
 
-bot = nextcord.ext.commands.Bot(
+bot = Bot(
     command_prefix = commands.when_mentioned_or('math_problems.'),
-    help_command = help_command
 )
 slash = discord_slash.SlashCommand(bot, sync_commands=True)      # sync_commands is for doing synchronization for 
                                                                  # every command you add, remove or update in your
@@ -95,7 +93,7 @@ async def on_slash_command_error(ctx, error):
     await ctx.send(str(error))
     return
   erroredInMainCode=True
-  await ctx.send(":x: Command raised an exception:" + str(error) + "\n Please notify the developers as soon as possible through a github issue.", hidden=True)
+  await ctx.send("Command raised an exception:" + str(error), hidden=True)
   raise error
 
 @bot.event
