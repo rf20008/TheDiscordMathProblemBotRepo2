@@ -76,7 +76,7 @@ def generate_new_id():
 bot = Bot(
     command_prefix = commands.when_mentioned_or('math_problems.'),
 )
-slash = SlashCommand(bot, sync_commands=True)      
+slash = discord_slash.client.SlashCommand(client=bot, sync_commands=True)      
 
 
 
@@ -272,9 +272,9 @@ async def new_problem(ctx, answer, question, guild_question=False):
       if problem_id not in guildMathProblems[guild_id].keys():
         break
     e = {"answer": answer, "voters": [], "author": ctx.author_id, "solvers":[], "question": question}
-    print(e)
+    #print(e)
     guildMathProblems[guild_id][problem_id] = e
-    print(guildMathProblems[guild_id][problem_id])
+    #print(guildMathProblems[guild_id][problem_id])
     await ctx.send("You have successfully made a math problem!", hidden = True)
     return
   while True:
