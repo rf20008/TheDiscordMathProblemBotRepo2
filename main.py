@@ -1,4 +1,4 @@
-import math, random, os, discord
+import math, random, os, discord,warnings
 import time, datetime, aiohttp, copy
 from discord.ext import commands, tasks #for discord_slash
 from discord_slash import SlashCommand, SlashContext
@@ -19,7 +19,7 @@ guildMathProblems = {}
 guild_maximum_problem_limit=125
 erroredInMainCode = False
 #print("yes")
-
+warnings.simplefilter("error")
 def d():
   #print("e",flush=True)
   global mathProblems,guildMathProblems
