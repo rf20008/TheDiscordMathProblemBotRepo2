@@ -357,7 +357,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
     showSolvedProblems = False
   #print(showSolvedProblems)
   if mathProblems.keys() == []:
-    await ctx.send("There aren't any problems! You should add one!", hidden=True)
+    await ctx.send(embed=ErrorEmbed("There aren't any problems! You should add one!"), hidden=True)
     return
   #if not showSolvedProblems and False not in [ctx.author_id in mathProblems[id]["solvers"] for id in mathProblems.keys()] or (show_guild_problems and (show_only_guild_problems and (guildMathProblems[str(ctx.guild_id)] == {}) or False not in [ctx.author_id in guildMathProblems[guild_id][id]["solvers"] for id in guildMathProblems[guild_id].keys()])) or show_guild_problems and not show_only_guild_problems and False not in [ctx.author_id in mathProblems[id]["solvers"] for id in mathProblems.keys()] and False not in [ctx.author_id in guildMathProblems[guild_id][id]["solvers"] for id in guildMathProblems[guild_id].keys()]:
     #await ctx.send("You solved all the problems! You should add a new one.", hidden=True)
@@ -368,7 +368,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
     for question in guildMathProblems[guild_id].keys():
       if len(e) >= 1930:
         e += "The combined length of the questions is too long.... shortening it!"
-        await ctx.send(e[:1930])
+        await ctx.send(embed=SuccessEmbed(e[:1930]))
         return
       elif not (showSolvedProblems) and ctx.author_id in guildMathProblems[guild_id][question]["solvers"]:
         continue
@@ -380,7 +380,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
       e += str(len(guildMathProblems[guild_id][question]["solvers"])) + "\t"
       e += "(guild)"
   if len(e) > 1930:
-    await ctx.send(e[:1930])
+    await ctx.send(embed=SuccessEmbed(e[:1930]))
     return
   if show_only_guild_problems:
     await ctx.send(e[:1930])
@@ -389,7 +389,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
   for question in mathProblems.keys():
     if len(e) >= 1930:
       e += "The combined length of the questions is too long.... shortening it!"
-      await ctx.send(e[:1930])
+      await ctx.send(embed=SuccessEmbed(e[:1930]))
       return
     elif not (showSolvedProblems) and ctx.author_id in mathProblems[question]["solvers"]:
       continue
