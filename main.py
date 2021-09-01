@@ -30,33 +30,15 @@ def d():
   global vote_threshold
   FileSaverObj = FileSaver()
   FileSaverDict = await FileSaverObj.load_files(True)
-  (math_problems,guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["mathProblems"],FileSaverDict["gui"])
+  (math_problems,guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["mathProblems"],FileSaverDict["guildMathProblems"],
+  FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
 
 
   #print("f")
   while True:  
     #print("o")
     time.sleep(45) 
-    if erroredInMainCode:
-      print("An error happened in the main code. Stopping the program...")
-      exit()
-      #raise Exception
-    print(f"Attempting to save files.")
-    with open("math_problems.json", "w") as file:
-      file.write(json.dumps(mathProblems))
-    with open("trusted_users.txt", "w") as file2:
-      for user in trusted_users:
-        file2.write(str(user))
-        file2.write("\n")
-        #print(user)
-
-    with open("vote_threshold.txt", "w") as file3:
-      file3.write(str(vote_threshold))
-    with open("guild_math_problems.json", "w") as file4:
-      e=json.dumps(obj=guildMathProblems)
-      file4.write(e)
-    
-    print("Successfully saved files!")
+    await FileSaverObj.save_files(True,guildMathProblems,vote_threshold,mathProblems,trusted_users)
       
 t = threading.Thread(target=d,name="The File Saver",daemon=True)
 
