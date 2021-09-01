@@ -1,6 +1,12 @@
 import json
+numFileSavers=0
 class FileSaver:
-  def __init__(self,name="",enabled=True,math_problems_file_name="math_problems.json",guild_math_problems_file_name="guild_math_problems.json",trusted_users_file_name="trusted_users.txt",vote_threshold_file_name="vote_threshold.txt"):
+  def __init__(self,name=None,enabled=True,math_problems_file_name="math_problems.json",guild_math_problems_file_name="guild_math_problems.json",trusted_users_file_name="trusted_users.txt",vote_threshold_file_name="vote_threshold.txt"):
+    """Creates a new FileSaver object."""
+    global numFileSavers
+    numFileSavers+=1
+    if name == None:
+      name = "FileSaver" + str(numFileSavers)
     self.enabled=True
     self.math_problems_file_name=math_problems_file_name
     self.guild_math_problems_file_name=guild_math_problems_file_name
@@ -10,10 +16,13 @@ class FileSaver:
   def __str__(self):
     return self.name
   def enable(self):
+    "Enables self."
     self.enabled=True
   def disable(self):
+    "Disables self"
     self.enabled=False
   async def load_files(self,printSuccessMessages=False):
+    "Loads files from file names specified in self.__init__."
     if not self.enabled:
       raise RuntimeError("I'm not enabled! I can't load files!")
     trusted_users=[]
@@ -30,8 +39,11 @@ class FileSaver:
         
     with open("guild_math_problems.json", "r") as file4:
       guildMathProblems = json.load(fp=file4)
+    if printSuccessMessages:
+      print("Successfully saved files.")
     return {"guildMathProblems":guildMathProblems,"trusted_users":trusted_users,"mathProblems":mathProblems,"vote_threshold":vote_threshold}
   async def save_files(self,printSuccessMessages=False,guild_math_problems_dict,vote_threshold,math_problems_dict,trusted_users_list):
+    "Saves files to file names specified in __init__."
     if not self.enabled:
       raise RuntimeError("I'm not enabled! I can't load files!")
     if printSuccessMessages:
@@ -50,3 +62,5 @@ class FileSaver:
       e=json.dumps(obj=guild_math_problems_dict)
       file4.write(e)
     return
+  def change_name(self,new_name):
+    self.name=new_name

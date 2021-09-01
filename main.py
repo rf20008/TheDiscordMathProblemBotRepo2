@@ -8,6 +8,7 @@ from nextcord import Embed, Color
 from custom_embeds import *
 from nextcord.ext.commands import Bot, errors
 import nextcord.ext.commands
+from save_files import FileSaver
 
 #constants
 #print("Is it working??")
@@ -27,17 +28,10 @@ def d():
   global mathProblems,guildMathProblems
   global trusted_users
   global vote_threshold
-  with open("math_problems.json", "r") as file:
-    mathProblems = json.load(fp=file)
-  with open("trusted_users.txt", "r") as file2:
-    for line in file2:
-      trusted_users.append(int(line))
-  with open("vote_threshold.txt", "r") as file3:
-    for line in file3:
-      vote_threshold = int(line)
-      print(line)
-  with open("guild_math_problems.json", "r") as file4:
-    guildMathProblems = json.load(fp=file4)
+  FileSaverObj = FileSaver()
+  FileSaverDict = await FileSaverObj.load_files(True)
+  (math_problems,guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["mathProblems"],FileSaverDict["gui"])
+
 
   #print("f")
   while True:  
