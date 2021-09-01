@@ -28,7 +28,7 @@ def d():
   global mathProblems,guildMathProblems
   global trusted_users
   global vote_threshold
-  FileSaverObj = FileSaver(enabled=True)
+  FileSaverObj = FileSaver("The Daemon File Saver", enabled=True)
   FileSaverDict = FileSaverObj.load_files(True)
   (math_problems,guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["mathProblems"],FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
 
