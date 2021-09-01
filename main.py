@@ -28,7 +28,7 @@ def the_daemon_file_saver():
   global mathProblems,guildMathProblems
   global trusted_users
   global vote_threshold
-  FileSaverObj = FileSaver("The Daemon File Saver", enabled=True)
+  FileSaverObj = FileSaver("The Daemon File Saver", enabled=True,printSuccessMessagesByDefault=True)
   FileSaverDict = FileSaverObj.load_files(True)
   (math_problems,guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["mathProblems"],FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
 
@@ -39,7 +39,7 @@ def the_daemon_file_saver():
 t = threading.Thread(target=the_daemon_file_saver,name="The File Saver",daemon=True)
 
 t.start()
-n=discord.ext.commands.Bot("math_problems.")
+bot=discord.ext.commands.Bot("math_problems.")
 
 
 
@@ -59,7 +59,7 @@ async def on_ready():
   print("The bot has connected to Discord successfully.")
 
 @bot.event
-async def on_slash_command():
+async def on_slash_command(ctx):
   print("Slash command triggered!")
 @bot.event
 async def on_slash_command_error(ctx, error):
@@ -104,8 +104,8 @@ async def force_load_files(ctx):
     await ctx.send(ErrorEmbed("You aren't trusted and therefore don't have permission to forceload files."))
     return
   try:
-    FileSaver2 = FileSaver(enabled=True)
-    FileSaverDict = FileSaver3.load_files(True)
+    FileSaver2 = FileSaver(enabled=True,printSuccessMessagesByDefault=False)
+    FileSaverDict = FileSaver3.load_files()
     (math_problems,guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["mathProblems"],FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
     FileSaver2.goodbye()
     await ctx.send(embed=SuccessEmbed("Successfully forcefully loaded files!"))
