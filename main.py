@@ -157,7 +157,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
       await ctx.send(embed=ErrorEmbed("Insufficient permissions!"), hidden=True)
       return
     if raw:
-      await ctx.send(str(mathProblems[problem_id]), hidden=True)
+      await ctx.send(embed=SimpleEmbed(description=str(mathProblems[problem_id])), hidden=True)
       return
     e= "Question: "
     e += mathProblems[problem_id]["question"] 
@@ -176,7 +176,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     if raw:
       g = copy.deepcopy(mathProblems[problem_id])
       g.pop("answer")
-      await ctx.send(str(g), hidden=True)
+      await ctx.send(embed=SuccessEmbed(str(g),successTitle="Here is the problem info.") hidden=True)
       return
     e= "Question: "
     e += mathProblems[problem_id]["question"] 
@@ -264,13 +264,15 @@ async def delallbotproblems(ctx):
 async def list_trusted_users(ctx):
 
   await ctx.send("\n".join([str(item) for item in trusted_users]))
-@slash.slash(name="new_problem", description = "Create a new problem", options = [discord_slash.manage_commands.create_option(name="answer", description="The answer to this problem", option_type=4, required=True), discord_slash.manage_commands.create_option(name="question", description="your question", option_type=3, required=True),discord_slash.manage_commands.create_option(name="guild_question", description="Whether it should be a question for the guild", option_type=5, required=False)])
+@slash.slash(name="new_problem", description = "Create a new problem", options = [discord_slash.manage_commands.create_option(name="answer", description="The answer to this problem", option_type=3, required=True), discord_slash.manage_commands.create_option(name="question", description="your question", option_type=3, required=True),discord_slash.manage_commands.create_option(name="guild_question", description="Whether it should be a question for the guild", option_type=5, required=False)])
 async def new_problem(ctx, answer, question, guild_question=False):
   global mathProblems, guildMathProblems
   if len(question) > 250:
     await ctx.send("Your question is too long! Therefore, it cannot be added. The maximum question length is 250 characters.", hidden=True)
     return
-  
+  if len(answer) > 250:
+    await ctx.send("Your answer is longer than 250 characters. Therefore, it is too long and cannot be added.")
+    return
   if guild_question:
     guild_id = str(ctx.guild_id)
     if guild_id == None:
