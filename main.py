@@ -23,7 +23,7 @@ guild_maximum_problem_limit=125
 erroredInMainCode = False
 #print("yes")
 warnings.simplefilter("error")
-def d():
+def the_daemon_file_saver():
   #print("e",flush=True)
   global mathProblems,guildMathProblems
   global trusted_users
@@ -36,7 +36,7 @@ def d():
     time.sleep(45) 
     FileSaverObj.save_files(True,guildMathProblems,vote_threshold,mathProblems,trusted_users)
       
-t = threading.Thread(target=d,name="The File Saver",daemon=True)
+t = threading.Thread(target=the_daemon_file_saver,name="The File Saver",daemon=True)
 
 t.start()
 n=discord.ext.commands.Bot("math_problems.")
