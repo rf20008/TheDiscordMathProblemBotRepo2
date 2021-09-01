@@ -400,7 +400,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
     e += "(" 
     e+= str(len(mathProblems[question]["voters"])) + "/" + str(vote_threshold) + ")" + "\t"
     e += str(len(mathProblems[question]["solvers"])) + "\t"
-  await ctx.send(e[:1930])
+  await ctx.send(embed=SuccessEmbed(e[:1930]))
 
 @slash.slash(name = "set_vote_threshold", description = "Sets the vote threshold", options=[discord_slash.manage_commands.create_option(name="threshold", description="the threshold you want to change it to", option_type=4, required=True)])
 async def set_vote_threshold(ctx,threshold):
@@ -408,10 +408,10 @@ async def set_vote_threshold(ctx,threshold):
   try:
     threshold = int(threshold)
   except:
-    await ctx.send("Invalid threshold argument!", hidden=True)
+    await ctx.send(embed=ErrorEmbed("Invalid threshold argument! (threshold must be an integer)"), hidden=True)
     return
   if ctx.author_id not in trusted_users:
-    await ctx.send("You aren't allowed to do this!", hidden=True)
+    await ctx.send(embed=ErrorEmbed("You aren't allowed to do this!"), hidden=True)
     return
   if threshold <1:
     await ctx.send("You can't set the threshold to smaller than 1.", hidden=True)
