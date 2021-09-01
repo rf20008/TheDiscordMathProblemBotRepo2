@@ -10,7 +10,6 @@ name = "thediscordmathbot"
 version = "0.0.1"
 [tool.poetry.dependencies]
 discord-py-slash-command = "^3.0.1"
-"discord.py" = "^1.7.3"
 nextcord = "^2.0.0-alpha.1"
 python = "^3.8"
 typing-extensions = "^3.10.0"

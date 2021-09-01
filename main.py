@@ -188,7 +188,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     if raw:
       g = copy.deepcopy(mathProblems[problem_id])
       g.pop("answer")
-      await ctx.send(embed=SuccessEmbed(str(g),successTitle="Here is the problem info.") hidden=True)
+      await ctx.send(embed=SuccessEmbed(str(g),successTitle="Here is the problem info."), hidden=True)
       return
     e= "Question: "
     e += mathProblems[problem_id]["question"] 
