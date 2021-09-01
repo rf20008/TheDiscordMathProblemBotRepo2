@@ -312,7 +312,7 @@ async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
         await ctx.send("You have already solved this problem!", hidden = True)
         return
     except KeyError:
-      await ctx.send("This problem doesn't exist!", hidden=True)
+      await ctx.send(embed=ErrorEmbed("This problem doesn't exist!"), hidden=True)
       return
     if guildMathProblems[guild_id][problem_id]["answer"] != answer:
       await ctx.send("Sorry..... but you got it wrong! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.", hidden=True)

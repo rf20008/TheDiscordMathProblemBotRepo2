@@ -8,4 +8,4 @@ class ErrorEmbed(SimpleEmbed):
     super().__init__(title=custom_title,description=description, color=color)
 class SuccessEmbed(SimpleEmbed):
   def __init__(self,description="",color=Color.green(),successTitle="Success!"):
-    super().__init___(title=successTitle,description=description,color=color)
+    super().__init__(title=successTitle,description=description,color=color)
