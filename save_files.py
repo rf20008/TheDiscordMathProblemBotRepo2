@@ -21,7 +21,7 @@ class FileSaver:
   def disable(self):
     "Disables self"
     self.enabled=False
-  async def load_files(self,printSuccessMessages=False):
+  def load_files(self,printSuccessMessages=False):
     "Loads files from file names specified in self.__init__."
     if not self.enabled:
       raise RuntimeError("I'm not enabled! I can't load files!")
@@ -42,7 +42,7 @@ class FileSaver:
     if printSuccessMessages:
       print("Successfully saved files.")
     return {"guildMathProblems":guildMathProblems,"trusted_users":trusted_users,"mathProblems":mathProblems,"vote_threshold":vote_threshold}
-  async def save_files(self,printSuccessMessages,guild_math_problems_dict,vote_threshold,math_problems_dict,trusted_users_list):
+  def save_files(self,printSuccessMessages,guild_math_problems_dict,vote_threshold,math_problems_dict,trusted_users_list):
     "Saves files to file names specified in __init__."
     if not self.enabled:
       raise RuntimeError("I'm not enabled! I can't load files!")
@@ -64,6 +64,6 @@ class FileSaver:
     return
   def change_name(self,new_name):
     self.name=new_name
-  async def goodbye(self):
+  def goodbye(self):
     print(str(self)+": Goodbye.... :(")
     del self

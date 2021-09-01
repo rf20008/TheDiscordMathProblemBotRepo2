@@ -23,18 +23,18 @@ guild_maximum_problem_limit=125
 erroredInMainCode = False
 #print("yes")
 warnings.simplefilter("error")
-async def d():
+def d():
   #print("e",flush=True)
   global mathProblems,guildMathProblems
   global trusted_users
   global vote_threshold
   FileSaverObj = FileSaver(enabled=True)
-  FileSaverDict = await FileSaverObj.load_files(True)
+  FileSaverDict = FileSaverObj.load_files(True)
   (math_problems,guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["mathProblems"],FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
 
   while True:  
     time.sleep(45) 
-    await FileSaverObj.save_files(True,guildMathProblems,vote_threshold,mathProblems,trusted_users)
+    FileSaverObj.save_files(True,guildMathProblems,vote_threshold,mathProblems,trusted_users)
       
 t = threading.Thread(target=d,name="The File Saver",daemon=True)
 
@@ -105,9 +105,9 @@ async def force_load_files(ctx):
     return
   try:
     FileSaver2 = FileSaver(enabled=True)
-    FileSaverDict = await FileSaver3.load_files(True)
+    FileSaverDict = FileSaver3.load_files(True)
     (math_problems,guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["mathProblems"],FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
-    await FileSaver2.goodbye()
+    FileSaver2.goodbye()
     await ctx.send(embed=SuccessEmbed("Successfully forcefully loaded files!"))
     return
   except RuntimeError:
@@ -123,8 +123,8 @@ async def force_save_files(ctx):
     return
   try:
     FileSaver3 = FileSaver(enabled=True)
-    await FileSaver3.save_files(True,guildMathProblems,vote_threshold,mathProblems,trusted_users)
-    await FileSaver3.goodbye()
+    FileSaver3.save_files(True,guildMathProblems,vote_threshold,mathProblems,trusted_users)
+    FileSaver3.goodbye()
     await ctx.send(embed=SuccessEmbed("Successfully saved 4 files!"))
   except RuntimeError:
     await ctx.send(embed=ErrorEmbed("Something went wrong..."))
