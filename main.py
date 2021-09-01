@@ -108,11 +108,23 @@ async def force_load_files(ctx):
     FileSaver2 = FileSaver(enabled=True)
     FileSaverDict = await FileSaverObj.load_files(True)
     (math_problems,guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["mathProblems"],FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
+    await FileSaver2.goodbye()
+    await ctx.send(embed=SuccessEmbed("Successfully forcefully loaded files!"))
     return
   except RuntimeError:
     await ctx.send(embed=ErrorEmbed("Something went wrong..."))
     return
-    
+@slash.slash(name="force_save_files",description="Forcefully saves files (can only be used by trusted users).")
+async def force_save_files(ctx):
+  global mathProblems,guildMathProblems
+  global trusted_users
+  global vote_threshold
+  if ctx.author_id not in trusted_users:
+    await ctx.send(ErrorEmbed("You aren't trusted and therefore don't have permission to forcesave files."))
+    return
+  try:
+    FileSaver3 = FileSaver(enabled=True)
+  
 
 
 

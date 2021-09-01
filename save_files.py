@@ -64,3 +64,6 @@ class FileSaver:
     return
   def change_name(self,new_name):
     self.name=new_name
+  async def goodbye(self):
+    print(str(self)+": Goodbye.... :(")
+    del self
