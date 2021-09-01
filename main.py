@@ -540,33 +540,33 @@ async def delete_problem(ctx, problem_id,is_guild_problem=False):
 async def add_trusted_user(ctx,user):
 
   if ctx.author_id not in trusted_users:
-    await ctx.send("You aren't a trusted user!", hidden=True)
+    await ctx.send(embed=ErrorEmbed("You aren't a trusted user!"), hidden=True)
     return
   if user.id in trusted_users:
-    await ctx.send(f"{user.name} is already a trusted user!", hidden=True)
+    await ctx.send(embed=ErrorEmbed(f"{user.name} is already a trusted user!"), hidden=True)
     return
   trusted_users.append(user.id)
-  await ctx.send(f"Successfully made {user.nick} a trusted user!", hidden=True) 
+  await ctx.send(embed=ErrorEmbed(f"Successfully made {user.nick} a trusted user!"), hidden=True) 
 
 @slash.slash(name="remove_trusted_user", description = "removes a trusted user",options=[discord_slash.manage_commands.create_option(name="user", description="The user you want to take super special bot access from", option_type=6, required=True)])
 async def remove_trusted_user(ctx,user):
 
   if ctx.author_id not in trusted_users:
-    await ctx.send("You aren't a trusted user!", hidden=True)
+    await ctx.send(embed=ErrorEmbed("You aren't a trusted user!"), hidden=True)
     return
   if user.id not in trusted_users:
-    await ctx.send(f"{user.name} isn't a trusted user!", hidden=True)
+    await ctx.send(embed=ErrorEmbed(f"{user.name} isn't a trusted user!", hidden=True))
     return
   trusted_users.pop(trusted_users.index(user.id))
-  await ctx.send(f"Successfully made {user.nick} no longer a trusted user!", hidden=True) 
+  await ctx.send(embed=ErrorEmbed(f"Successfully made {user.nick} no longer a trusted user!"), hidden=True) 
 
 
 @slash.slash(name="ping", description = "Prints latency and takes no arguments")
 async def ping(ctx):
-  await ctx.send(f"Pong! My latency is {round(bot.latency*1000)}ms.", hidden=True)
+  await ctx.send(embed=SuccessEmbed(f"Pong! My latency is {round(bot.latency*1000)}ms."), hidden=True)
 @slash.slash(name="what_is_vote_threshold", description="Prints the vote threshold and takes no arguments")
 async def what_is_vote_threshold(ctx):
-  await ctx.send(f"The vote threshold is {vote_threshold}.",hidden=True)
+  await ctx.send(embed=SuccessEmbed(f"The vote threshold is {vote_threshold}."),hidden=True)
 @slash.slash(name="generateInviteLink", description = "Generates a invite link for this bot! Takes no arguments")
 async def generateInviteLink(ctx):
   await ctx.send(embed=SuccessEmbed("https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147552256&scope=bot%20applications.commands",successTitle),hidden=True)
