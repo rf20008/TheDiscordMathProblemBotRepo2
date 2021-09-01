@@ -274,12 +274,12 @@ async def new_problem(ctx, answer, question, guild_question=False):
   if guild_question:
     guild_id = str(ctx.guild_id)
     if guild_id == None:
-      await ctx.send("You need to be in the guild to make a guild question!")
+      await ctx.send(embed=ErrorEmbed("You need to be in the guild to make a guild question!"))
       return
     if guild_id not in guildMathProblems.keys():
       guildMathProblems[guild_id] = {}
     elif len(guildMathProblems[guild_id]) >= guild_maximum_problem_limit:
-      await ctx.send(ErrorEmbed("You have reached the guild math problem limit."))
+      await ctx.send(embed=ErrorEmbed("You have reached the guild math problem limit."))
       return
     while True:
       problem_id = generate_new_id()
@@ -289,7 +289,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
     #print(e)
     guildMathProblems[guild_id][problem_id] = e
     #print(guildMathProblems[guild_id][problem_id])
-    await ctx.send("You have successfully made a math problem!", hidden = True)
+    await ctx.send(embed=SuccessEmbed("You have successfully made a math problem!",successTitle="Successfully made a new math problem."), hidden = True)
     return
   while True:
     problem_id = generate_new_id()
@@ -305,7 +305,7 @@ async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
   if checking_guild_problem:
     guild_id = ctx.guild_id
     if guild_id == None:
-      await ctx.send("Run this command in a server or set checking_guild_problem to False.")
+      await ctx.send(embed=ErrorEmbed("Run this command in a server or set checking_guild_problem to False."))
       return
     try:
       if ctx.author_id in guildMathProblems[guild_id][problem_id]["solvers"]:
@@ -563,6 +563,15 @@ async def generateInviteLink(ctx):
 #  await ctx.send(first_option,hidden=True)
 # return
 
+@slash.slash(name="github_repo",description = "Returns github repo")
+async def github_repo(ctx):
+  await ctx.send(embed=SuccessEmbed("Repo Link: \n https://github.com/rf20008/TheDiscordMathProblemBotRepo",successTitle="Here is the Github Repository Link."))
+
+@bot.command()
+async def test_embeds(ctx):
+  await ctx.send(embed=SuccessEmbed("Hello"))
+  await ctx.send(embed=ErrorEmbed("Hello!"))
+  await ctx.send(embed=SimpleEmbed("Hello."))
 
 print("The bot has finished setting up and will now run.")
 bot.run(DISCORD_TOKEN)
