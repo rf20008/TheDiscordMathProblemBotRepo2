@@ -322,15 +322,15 @@ async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
       return
     try:
       if ctx.author_id in guildMathProblems[guild_id][problem_id]["solvers"]:
-        await ctx.send("You have already solved this problem!", hidden = True)
+        await ctx.send(embed=ErrorEmbed("You have already solved this problem!"), hidden = True)
         return
     except KeyError:
       await ctx.send(embed=ErrorEmbed("This problem doesn't exist!"), hidden=True)
       return
     if guildMathProblems[guild_id][problem_id]["answer"] != answer:
-      await ctx.send("Sorry..... but you got it wrong! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.", hidden=True)
+      await ctx.send(ErrorEmbed("Sorry..... but you got it wrong! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.",custom_title="Sorry, your answer is wrong."), hidden=True)
     else:
-      await ctx.send("Yay! You are right.", hidden=True)
+      await ctx.send(embed=SuccessEmbed("",successTitle="You answered this question correctly!"), hidden=True)
       mathProblems[problem_id]["solvers"].append(ctx.author_id)  
   try:
     if ctx.author_id in mathProblems[problem_id]["solvers"]:
