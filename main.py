@@ -328,22 +328,22 @@ async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
       await ctx.send(embed=ErrorEmbed("This problem doesn't exist!"), hidden=True)
       return
     if guildMathProblems[guild_id][problem_id]["answer"] != answer:
-      await ctx.send(ErrorEmbed("Sorry..... but you got it wrong! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.",custom_title="Sorry, your answer is wrong."), hidden=True)
+      await ctx.send(embed=ErrorEmbed("Sorry..... but you got it wrong! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.",custom_title="Sorry, your answer is wrong."), hidden=True)
     else:
       await ctx.send(embed=SuccessEmbed("",successTitle="You answered this question correctly!"), hidden=True)
       mathProblems[problem_id]["solvers"].append(ctx.author_id)  
   try:
     if ctx.author_id in mathProblems[problem_id]["solvers"]:
-      await ctx.send("You have already solved this problem!", hidden = True)
+      await ctx.send(embed=ErrorEmbed("You have already solved this problem!",custom_title="Already solved."), hidden = True)
       return
   except KeyError:
-    await ctx.send("This problem doesn't exist!", hidden=True)
+    await ctx.send(embed=ErrorEmbed("This problem doesn't exist!",custom_title="Nonexistant problem."), hidden=True)
     return
 
   if mathProblems[problem_id]["answer"] != answer:
-    await ctx.send("Sorry..... but you got it wrong! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.", hidden=True)
+    await ctx.send(embed=ErrorEmbed("Sorry..... but you got it wrong! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.",custom_title="Sorry, your answer is wrong."), hidden=True)
   else:
-    await ctx.send("Yay! You are right.", hidden=True)
+    await ctx.send(embed=SuccessEmbed("",successTitle="You answered this question correctly!"), hidden=True)
     mathProblems[problem_id]["solvers"].append(ctx.author_id)
 @slash.slash(name="list_all_problems", description = "List all problems stored with the bot", options=[discord_slash.manage_commands.create_option(name="show_solved_problems", description="Whether to show solved problems", option_type=5, required=False),discord_slash.manage_commands.create_option(name="show_guild_problems", description="Whether to show solved problems", option_type=5, required=False),discord_slash.manage_commands.create_option(name="show_only_guild_problems", description="Whether to only show guild problems", option_type=5, required=False)])
 async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=True,show_only_guild_problems=False):
