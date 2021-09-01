@@ -27,7 +27,7 @@ class FileSaver:
       raise RuntimeError("I'm not enabled! I can't load files!")
     trusted_users=[]
     if printSuccessMessages:
-      print(f"{str(self)}: Attempting to load guild_math_problems_dict from {self.guild_math_problems_file_name}, vote_threshold from {self.vote_threshold_file_name}, trusted_users_list from {self.trusted_users_file_name}, and math_problems_dict from {self.math_problems_file_name}.")
+      print(f"{str(self)}: Attempting to load guild_math_problems_dict from {self.guild_math_problems_file_name}, vote_threshold from {self.vote_threshold_file_name}, trusted_users_list from {self.trusted_users_file_name}, and math_problems_dict from {self.math_problems_file_name}...")
     with open("math_problems.json", "r") as file:
       mathProblems = json.load(fp=file)
     with open("trusted_users.txt", "r") as file2:
@@ -47,7 +47,7 @@ class FileSaver:
     if not self.enabled:
       raise RuntimeError("I'm not enabled! I can't load files!")
     if printSuccessMessages:
-      print(f"{str(self)}: Attempting to save guild_math_problems_dict to {self.guild_math_problems_file_name}, vote_threshold to {self.vote_threshold_file_name}, trusted_users_list to  {self.trusted_users_file_name}, and math_problems_dict to {self.math_problems_file_name}.")
+      print(f"{str(self)}: Attempting to save guild_math_problems_dict to {self.guild_math_problems_file_name}, vote_threshold to {self.vote_threshold_file_name}, trusted_users_list to  {self.trusted_users_file_name}, and math_problems_dict to {self.math_problems_file_name}...")
     with open("math_problems.json", "w") as file:
       file.write(json.dumps(math_problems_dict))
     with open("trusted_users.txt", "w") as file2:
