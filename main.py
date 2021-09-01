@@ -5,7 +5,7 @@ from discord_slash import SlashCommand, SlashContext
 import discord_slash, threading
 
 
-from nextcord.ext.commands import Bot
+from nextcord.ext.commands import Bot, errors
 import nextcord.ext.commands
 #constants
 #print("Is it working??")
@@ -76,13 +76,17 @@ def generate_new_id():
 bot = Bot(
     command_prefix = commands.when_mentioned_or('math_problems.'),
 )
-slash = discord_slash.client.SlashCommand(client=bot, sync_commands=True)      
+slash = discord_slash.client.SlashCommand(client=bot, sync_commands=True,application_id=845751152901750824)      
 
 
 
 @bot.event
 async def on_ready():
   print("The bot has connected to Discord successfully.")
+
+@bot.event
+async def on_slash_command():
+  print("Slash command triggered!")
 @bot.event
 async def on_slash_command_error(ctx, error):
   if isinstance(error,discord.ext.commands.errors.CommandOnCooldown):
