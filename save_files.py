@@ -51,7 +51,7 @@ class FileSaver:
     with open("math_problems.json", "w") as file:
       file.write(json.dumps(math_problems_dict))
     with open("trusted_users.txt", "w") as file2:
-      for user in trusted_users:
+      for user in trusted_users_list:
         file2.write(str(user))
         file2.write("\n")
         #print(user)
