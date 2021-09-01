@@ -279,10 +279,10 @@ async def list_trusted_users(ctx):
 async def new_problem(ctx, answer, question, guild_question=False):
   global mathProblems, guildMathProblems
   if len(question) > 250:
-    await ctx.send(embed=ErrorEmbed("Your question is too long! Therefore, it cannot be added. The maximum question length is 250 characters."), hidden=True)
+    await ctx.send(embed=ErrorEmbed("Your question is too long! Therefore, it cannot be added. The maximum question length is 250 characters.",custom_title="Your question is too long."), hidden=True)
     return
-  if len(answer) > 250:
-    await ctx.send("Your answer is longer than 250 characters. Therefore, it is too long and cannot be added.")
+  if len(answer) > 100:
+    await ctx.send(embed=ErrorEmbed(description="Your answer is longer than 100 characters. Therefore, it is too long and cannot be added.",custom_title="Your answer is too long"),hidden=True)
     return
   if guild_question:
     guild_id = str(ctx.guild_id)
