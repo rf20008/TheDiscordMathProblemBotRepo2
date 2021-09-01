@@ -311,7 +311,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
       break
   e = {"answer": answer, "voters": [], "author": ctx.author_id, "solvers":[], "question": question}
   mathProblems[problem_id] = e
-  await ctx.send(embed=SuccessEmbed"You have successfully made a math problem!", hidden = True)
+  await ctx.send(embed=SuccessEmbed("You have successfully made a math problem!"), hidden = True)
 
 @slash.slash(name="check_answer", description = "Check if you are right", options=[discord_slash.manage_commands.create_option(name="problem_id", description="the id of the problem you are trying to check the answer of", option_type=4, required=True),discord_slash.manage_commands.create_option(name="answer", description="your answer", option_type=4, required=True),discord_slash.manage_commands.create_option(name="checking_guild_problem", description="whether checking a guild problem", option_type=5, required = False)])
 async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
