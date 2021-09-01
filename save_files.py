@@ -15,7 +15,7 @@ class FileSaver:
     self.enabled=False
   async def load_files(self,printSuccessMessages=False):
     if not self.enabled:
-      raise RuntimeError("I'm not enabled! I can't save files!")
+      raise RuntimeError("I'm not enabled! I can't load files!")
     trusted_users=[]
     if printSuccessMessages:
       print(f"{str(self)}: Attempting to load guild_math_problems_dict from{self.guild_math_problems_file_name}, vote_threshold from {self.vote_threshold_file_name}, trusted_users_list from {self.trusted_users_file_name}, and math_problems_dict from {self.math_problems_file_name}.")
@@ -31,8 +31,11 @@ class FileSaver:
     with open("guild_math_problems.json", "r") as file4:
       guildMathProblems = json.load(fp=file4)
     return {"guildMathProblems":guildMathProblems,"trusted_users":trusted_users,"mathProblems":mathProblems,"vote_threshold":vote_threshold}
-  async def save_files(guild_math_problems_dict,vote_threshold,math_problems_dict,trusted_users_list):
-    print(f"Attempting to save files.")
+  async def save_files(self,printSuccessMessages=False,guild_math_problems_dict,vote_threshold,math_problems_dict,trusted_users_list):
+    if not self.enabled:
+      raise RuntimeError("I'm not enabled! I can't load files!")
+    if printSuccessMessages:
+      print(f"{str(self)}: Attempting to save guild_math_problems_dict to{self.guild_math_problems_file_name}, vote_threshold to{self.vote_threshold_file_name}, trusted_users_list to {self.trusted_users_file_name}, and math_problems_dict to {self.math_problems_file_name}.")
     with open("math_problems.json", "w") as file:
       file.write(json.dumps(math_problems_dict))
     with open("trusted_users.txt", "w") as file2:
@@ -46,4 +49,4 @@ class FileSaver:
     with open("guild_math_problems.json", "w") as file4:
       e=json.dumps(obj=guild_math_problems_dict)
       file4.write(e)
-    print(f"{str(self)}: Attempting to load guild_math_problems_dict to{self.guild_math_problems_file_name}, vote_threshold to {self.vote_threshold_file_name}, trusted_users_list to {self.trusted_users_file_name}, and math_problems_dict to {self.math_problems_file_name}.")
+    return
