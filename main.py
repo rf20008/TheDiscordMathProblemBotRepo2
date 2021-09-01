@@ -140,7 +140,19 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     if problem_id not in guildMathProblems[guild_id].keys():
       await ctx.send(embed=ErrorEmbed("Problem non-existant!"))
       return
-
+    e= "Question: "
+    e+= guildMathProblems[guild_id][problem_id]["question"] 
+    e+= "\nAuthor: "
+    e+= str(guildMathProblems[guild_id][problem_id]["author"])
+    e+= "\nNumVoters/Vote Threshold: "
+    e+= str(len(guildMathProblems[guild_id][problem_id]["voters"]))
+    e+= "/"
+    e += str(vote_threshold)
+    e+= " \nNumSolvers: "
+    e+= str(len(guildMathProblems[guild_id][problem_id]["solvers"]))
+    e+= "\nAnswer: "
+    e+= str(guildMathProblems[guild_id][problem_id]["answer"])
+    await ctx.send(embedSuccessEmbed(e), hidden=True)
     if show_all_data:
       if not (ctx.author_id == guildMathProblems[guild_id][problem_id]["author"] or ctx.author_id not in trusted_users or (is_guild_problem and ctx.author.guild_permissions.administrator == True)):
         await ctx.send(embed=ErrorEmbed("Insufficient permissions!"), hidden=True)
