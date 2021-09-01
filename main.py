@@ -414,14 +414,14 @@ async def set_vote_threshold(ctx,threshold):
     await ctx.send(embed=ErrorEmbed("You aren't allowed to do this!"), hidden=True)
     return
   if threshold <1:
-    await ctx.send("You can't set the threshold to smaller than 1.", hidden=True)
+    await ctx.send(embed=ErrorEmbed("You can't set the threshold to smaller than 1."), hidden=True)
     return
   vote_threshold=int(threshold)
   for problem in mathProblems.keys():
     x = len(mathProblems[problem]["voters"])
     if x > vote_threshold:
-      await ctx.send(f"Successfully deleted problem #{problem} due to it having {x} votes, {x-threshold} more than the threshold!", hidden=True)
-  await ctx.send(f"The vote threshold has successfully been changed to {threshold}!", hidden=True)
+      await ctx.send(embed=SuccessEmbed(f"Successfully deleted problem #{problem} due to it having {x} votes, {x-threshold} more than the threshold!"), hidden=True)
+  await ctx.send(embed=SuccessEmbed(f"The vote threshold has successfully been changed to {threshold}!"), hidden=True)
 @slash.slash(name="vote", description = "Vote for the deletion of a problem", options=[discord_slash.manage_commands.create_option(name="problem_id", description="problem id of the problem you are attempting to delete", option_type=4, required=True),discord_slash.manage_commands.create_option(name="is_guild_problem", description="problem id of the problem you are attempting to delete", option_type=5, required=False)])
 async def vote(ctx, problem_id,is_guild_problem=False):
   global mathProblems, guildMathProblems
@@ -429,13 +429,13 @@ async def vote(ctx, problem_id,is_guild_problem=False):
     guild_id = str(ctx.guild_id)
     try:
       if ctx.author_id in guildMathProblems[guild_id][problem_id]["voters"]:
-        await ctx.send("You have already voted for the deletion of this problem!", hidden=True)
+        await ctx.send(embed=ErrorEmbed("You have already voted for the deletion of this problem!"), hidden=True)
         return
     except KeyError:
-      await ctx.send("This problem doesn't exist!", hidden=True)
+      await ctx.send(embed=ErrorEmbed("This problem doesn't exist!"), hidden=True)
       return
     if guild_id == None:
-      await ctx.send("You need to be in the guild to make a guild question!")
+      await ctx.send(embed=ErrorEmbed("You need to be in the guild to vote for a guild question!"))
       return
     if guild_id not in guildMathProblems.keys():
       guildMathProblems[guild_id] = {}
