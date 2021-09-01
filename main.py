@@ -103,20 +103,26 @@ async def on_slash_command_error(ctx, error):
 async def on_command_error(ctx,error):
   
   if isinstance(error, errors.MissingRequiredArgument):
-    await ctx.channel.send(ErrorEmbed("Not enough arguments!"))
+    await ctx.channel.send(embed=ErrorEmbed("Not enough arguments!"))
     return
   if isinstance(error, errors.CommandNotFound):
-    await ctx.channel.send(ErrorEmbed("This command does not exist. Mention me and use help to get a list of all commands!"))
+    await ctx.channel.send(embed=ErrorEmbed("This command does not exist. Mention me and use help to get a list of all commands!"))
     return
   if isinstance(error, errors.TooManyArguments):
-    await ctx.send("Too many arguments.")
+    await ctx.send(embed=ErrorEmbed("Too many arguments."))
     return
   print(type(error))
   erroredInMainCode=True
   await ctx.send("Something went wrong! Message the devs ASAP! (Our tags are ay136416#2707 and duck_master#8022)")
   raise error
 
-  
+@slash.slash(name="test_embeds",description="This command will test embeds")
+async def test_embeds(ctx):
+  await ctx.send(embed=SuccessEmbed("Hello"))
+  await ctx.send(embed=ErrorEmbed("Hello!"))
+  await ctx.send(embed=SimpleEmbed("Hello."))
+
+
 @slash.slash(name="show_problem_info", description = "Show problem info", options=[discord_slash.manage_commands.create_option(name="problem_id", description="problem id of the problem you want to show", option_type=4, required=True),discord_slash.manage_commands.create_option(name="show_all_data", description="whether to show all data (only useable by problem authors and trusted users", option_type=5, required=False),discord_slash.manage_commands.create_option(name="raw", description="whether to show data as json?", option_type=5, required=False),discord_slash.manage_commands.create_option(name="is_guild_problem", description="whether the problem you are trying to view is a guild problem", option_type=5, required=False)])
 async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_guild_problem=False):
   problem_id = int(problem_id)
@@ -126,22 +132,22 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     guildMathProblems[guild_id]={}
   if is_guild_problem:
     if guild_id == None:
-      embed1= SimpleEmbed(title="Error", description = "Run this command in the discord server which has this problem, not a DM!")
-      ctx.send(embed1)
+      embed1= ErrorEmbed(title="Error", description = "Run this command in the discord server which has this problem, not a DM!")
+      ctx.send(embed=embed1)
       return
     if guild_id not in guildMathProblems.keys():
       guildMathProblems[guild_id] = {}
     if problem_id not in guildMathProblems[guild_id].keys():
-      await ctx.send("Problem non-existant!")
+      await ctx.send(embed=ErrorEmbed("Problem non-existant!"))
       return
 
     if show_all_data:
       if not (ctx.author_id == guildMathProblems[guild_id][problem_id]["author"] or ctx.author_id not in trusted_users or (is_guild_problem and ctx.author.guild_permissions.administrator == True)):
-        await ctx.send("Insufficient permissions!", hidden=True)
+        await ctx.send(embed=ErrorEmbed("Insufficient permissions!"), hidden=True)
         return
 
     if raw:
-      await ctx.send(str(mathProblems[problem_id]), hidden=True)
+      await ctx.send(embed=SuccessEmbed(str(mathProblems[problem_id])), hidden=True)
       return
   if problem_id not in mathProblems.keys():
     await ctx.send("Problem non-existant!")
@@ -273,7 +279,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
     if guild_id not in guildMathProblems.keys():
       guildMathProblems[guild_id] = {}
     elif len(guildMathProblems[guild_id]) >= guild_maximum_problem_limit:
-      await ctx.send("You have reached the guild math problem limit.")
+      await ctx.send(ErrorEmbed("You have reached the guild math problem limit."))
       return
     while True:
       problem_id = generate_new_id()
