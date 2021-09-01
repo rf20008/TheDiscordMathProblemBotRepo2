@@ -27,7 +27,7 @@ class FileSaver:
       raise RuntimeError("I'm not enabled! I can't load files!")
     trusted_users=[]
     if printSuccessMessages:
-      print(f"{str(self)}: Attempting to load guild_math_problems_dict from{self.guild_math_problems_file_name}, vote_threshold from {self.vote_threshold_file_name}, trusted_users_list from {self.trusted_users_file_name}, and math_problems_dict from {self.math_problems_file_name}.")
+      print(f"{str(self)}: Attempting to load guild_math_problems_dict from {self.guild_math_problems_file_name}, vote_threshold from {self.vote_threshold_file_name}, trusted_users_list from {self.trusted_users_file_name}, and math_problems_dict from {self.math_problems_file_name}.")
     with open("math_problems.json", "r") as file:
       mathProblems = json.load(fp=file)
     with open("trusted_users.txt", "r") as file2:
