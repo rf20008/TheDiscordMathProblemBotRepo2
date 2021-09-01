@@ -95,7 +95,7 @@ async def on_slash_command_error(ctx, error):
     await ctx.send(str(error))
     return
   erroredInMainCode=True
-  Embed = SimpleEmbed(title="Oh no! An error occured!", description=("Command raised an exception:" + str(error)))
+  Embed = ErrorEmbed(title="Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
   await ctx.send(embed=Embed, hidden=True)
   raise error
 
@@ -566,12 +566,6 @@ async def generateInviteLink(ctx):
 @slash.slash(name="github_repo",description = "Returns github repo")
 async def github_repo(ctx):
   await ctx.send(embed=SuccessEmbed("Repo Link: \n https://github.com/rf20008/TheDiscordMathProblemBotRepo",successTitle="Here is the Github Repository Link."))
-
-@bot.command()
-async def test_embeds(ctx):
-  await ctx.send(embed=SuccessEmbed("Hello"))
-  await ctx.send(embed=ErrorEmbed("Hello!"))
-  await ctx.send(embed=SimpleEmbed("Hello."))
 
 print("The bot has finished setting up and will now run.")
 bot.run(DISCORD_TOKEN)
