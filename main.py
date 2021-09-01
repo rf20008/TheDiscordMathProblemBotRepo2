@@ -262,7 +262,7 @@ async def delallbotproblems(ctx):
   global mathProblems
   mathProblems2 = copy.deepcopy(mathProblems)
   if ctx.author_id not in trusted_users:
-    await ctx.send("You aren't trusted!", hidden=True)
+    await ctx.send(embed=ErrorEmbed(":x: You are not a trusted user."), hidden=True)
     return
   numDeletedProblems = 0
   f = mathProblems.keys()
@@ -271,16 +271,15 @@ async def delallbotproblems(ctx):
       mathProblems2.pop(e)
       numDeletedProblems += 1
   mathProblems = mathProblems2
-  await ctx.send(f"Successfully deleted {numDeletedProblems}!")
+  await ctx.send(embed=SuccessEmbed(f"Successfully deleted {numDeletedProblems}!"))
 @slash.slash(name = "list_trusted_users", description = "list all trusted users")
 async def list_trusted_users(ctx):
-
   await ctx.send("\n".join([str(item) for item in trusted_users]))
 @slash.slash(name="new_problem", description = "Create a new problem", options = [discord_slash.manage_commands.create_option(name="answer", description="The answer to this problem", option_type=3, required=True), discord_slash.manage_commands.create_option(name="question", description="your question", option_type=3, required=True),discord_slash.manage_commands.create_option(name="guild_question", description="Whether it should be a question for the guild", option_type=5, required=False)])
 async def new_problem(ctx, answer, question, guild_question=False):
   global mathProblems, guildMathProblems
   if len(question) > 250:
-    await ctx.send("Your question is too long! Therefore, it cannot be added. The maximum question length is 250 characters.", hidden=True)
+    await ctx.send(embed=ErrorEmbed("Your question is too long! Therefore, it cannot be added. The maximum question length is 250 characters."), hidden=True)
     return
   if len(answer) > 250:
     await ctx.send("Your answer is longer than 250 characters. Therefore, it is too long and cannot be added.")
