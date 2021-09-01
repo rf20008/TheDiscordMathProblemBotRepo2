@@ -1,4 +1,5 @@
 math_problems.json
-trusted_users.json
+trusted_users.txt
 .env
 guild_math_problems.json
+vote_threshold.txt
