@@ -150,11 +150,11 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
       await ctx.send(embed=SuccessEmbed(str(mathProblems[problem_id])), hidden=True)
       return
   if problem_id not in mathProblems.keys():
-    await ctx.send("Problem non-existant!")
+    await ctx.send(embed=ErrorEmbed("Problem non-existant!"))
     return
   if show_all_data:
     if not (ctx.author_id == mathProblems[problem_id]["author"] or ctx.author_id not in trusted_users or (is_guild_problem and ctx.author.guild_permissions.administrator == True)):
-      await ctx.send("Insufficient permissions!", hidden=True)
+      await ctx.send(embed=ErrorEmbed("Insufficient permissions!"), hidden=True)
       return
     if raw:
       await ctx.send(str(mathProblems[problem_id]), hidden=True)
@@ -250,7 +250,7 @@ async def delallbotproblems(ctx):
   global mathProblems
   mathProblems2 = copy.deepcopy(mathProblems)
   if ctx.author_id not in trusted_users:
-    await ctx.send("You aren't trusted", hidden=True)
+    await ctx.send("You aren't trusted!", hidden=True)
     return
   numDeletedProblems = 0
   f = mathProblems.keys()
@@ -297,7 +297,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
       break
   e = {"answer": answer, "voters": [], "author": ctx.author_id, "solvers":[], "question": question}
   mathProblems[problem_id] = e
-  await ctx.send("You have successfully made a math problem!", hidden = True)
+  await ctx.send(embed=SuccessEmbed"You have successfully made a math problem!", hidden = True)
 
 @slash.slash(name="check_answer", description = "Check if you are right", options=[discord_slash.manage_commands.create_option(name="problem_id", description="the id of the problem you are trying to check the answer of", option_type=4, required=True),discord_slash.manage_commands.create_option(name="answer", description="your answer", option_type=4, required=True),discord_slash.manage_commands.create_option(name="checking_guild_problem", description="whether checking a guild problem", option_type=5, required = False)])
 async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
@@ -556,7 +556,7 @@ async def what_is_vote_threshold(ctx):
   await ctx.send(f"The vote threshold is {vote_threshold}.",hidden=True)
 @slash.slash(name="generateInviteLink", description = "Generates a invite link for this bot! Takes no arguments")
 async def generateInviteLink(ctx):
-  await ctx.send("https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147552256&scope=bot%20applications.commands",hidden=True)
+  await ctx.send(embed=SuccessEmbed("https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147552256&scope=bot%20applications.commands",successTitle),hidden=True)
 #slash.slash(name="test", description="TEST!",        # Adding a new slash command with our slash variable
 #             options=[discord_slash.manage_commands.create_option(name="first_option", description="Testing!", option_type=3, required=False)])
 #async def test(ctx,first_option=-1):
