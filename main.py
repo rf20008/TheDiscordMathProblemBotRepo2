@@ -3,7 +3,7 @@ import time, datetime, aiohttp, copy
 from discord.ext import commands, tasks #for discord_slash
 from discord_slash import SlashCommand, SlashContext
 import discord_slash, threading
-from random import randint]
+from random import randint
 from nextcord import Embed, Color
 from custom_embeds import *
 from nextcord.ext.commands import Bot, errors
@@ -95,7 +95,7 @@ async def on_slash_command_error(ctx, error):
     await ctx.send(str(error))
     return
   erroredInMainCode=True
-  Embed = (title="Oh no! An error occured!", description="Command raised an exception:" + str(error))
+  Embed = SimpleEmbed(title="Oh no! An error occured!", description=("Command raised an exception:" + str(error)))
   await ctx.send(embed=Embed, hidden=True)
   raise error
 
@@ -103,10 +103,10 @@ async def on_slash_command_error(ctx, error):
 async def on_command_error(ctx,error):
   
   if isinstance(error, errors.MissingRequiredArgument):
-    await ctx.channel.send("Not enough arguments!")
+    await ctx.channel.send(ErrorEmbed("Not enough arguments!"))
     return
   if isinstance(error, errors.CommandNotFound):
-    await ctx.channel.send("This command does not exist. Mention me and use help to get a list of all commands!")
+    await ctx.channel.send(ErrorEmbed("This command does not exist. Mention me and use help to get a list of all commands!"))
     return
   if isinstance(error, errors.TooManyArguments):
     await ctx.send("Too many arguments.")
@@ -126,8 +126,8 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     guildMathProblems[guild_id]={}
   if is_guild_problem:
     if guild_id == None:
-      embed1= Embed(title="Error", description = "Run this command in the discord server which has this problem, not a DM!)
-      ctx.send("Run this command in the discord server which has this problem, not a DM!")
+      embed1= SimpleEmbed(title="Error", description = "Run this command in the discord server which has this problem, not a DM!")
+      ctx.send(embed1)
       return
     if guild_id not in guildMathProblems.keys():
       guildMathProblems[guild_id] = {}
