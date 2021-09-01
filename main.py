@@ -532,12 +532,12 @@ async def delete_problem(ctx, problem_id,is_guild_problem=False):
     await ctx.send(embed=SuccessEmbed("That problem doesn't exist."), hidden=True)
     return
   if ctx.author_id not in trusted_users and mathProblems[problem_id]["author"] != ctx.author_id:
-    await ctx.send("You aren't a trusted user or the author of the problem!", hidden=True)
+    await ctx.send(embed=ErrorEmbed("You aren't a trusted user or the author of the problem!"), hidden=True)
     return
   mathProblems.pop(problem_id)
-  await ctx.send(f"Successfully deleted problem #{problem_id}!", hidden=True)
+  await ctx.send(embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!", hidden=True))
 @slash.slash(name="add_trusted_user", description = "Adds a trusted user",options=[discord_slash.manage_commands.create_option(name="user", description="The user you want to give super special bot access to", option_type=6, required=True)])
-async def remove_trusted_user(ctx,user):
+async def add_trusted_user(ctx,user):
 
   if ctx.author_id not in trusted_users:
     await ctx.send("You aren't a trusted user!", hidden=True)
