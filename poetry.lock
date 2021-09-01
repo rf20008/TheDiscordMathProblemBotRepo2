@@ -48,6 +48,17 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
+name = "discord"
+version = "1.7.3"
+description = "A mirror package for discord.py. Please install that instead."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+"discord.py" = ">=1.7.3"
+
+[[package]]
 name = "discord-py-slash-command"
 version = "3.0.1"
 description = "A simple interaction handler for discord.py."
@@ -134,7 +145,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "fc53c054f760f4763f13a6c207fe4369e4b0cc6fc3b692b47bfb82ceadad772c"
+content-hash = "5901490727aa6ee59e58ff3f7dec7a1f11aad109761ccc32b2c4b0b83d37468f"
 
 [metadata.files]
 aiohttp = [
@@ -187,6 +198,10 @@ attrs = [
 chardet = [
     {file = "chardet-4.0.0-py2.py3-none-any.whl", hash = "sha256:f864054d66fd9118f2e67044ac8981a54775ec5b67aed0441892edb553d21da5"},
     {file = "chardet-4.0.0.tar.gz", hash = "sha256:0d6f53a15db4120f2b08c94f11e7d93d2c911ee118b6b30a04ec3ee8310179fa"},
+]
+discord = [
+    {file = "discord-1.7.3-py3-none-any.whl", hash = "sha256:248d728356e149c818a81b94659047a19305ea1623d4810bbb342f6b7df55f36"},
+    {file = "discord-1.7.3.tar.gz", hash = "sha256:846dd3d66888c2e0a8bd9120d8778a0fe088c003a7f6451668497f14e322a304"},
 ]
 discord-py-slash-command = [
     {file = "discord-py-slash-command-3.0.1.tar.gz", hash = "sha256:77aa60095cf0b6bc2e5024ab9e756adda5b0162b98221bf4f2e9259f49697040"},

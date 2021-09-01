@@ -23,13 +23,12 @@ guild_maximum_problem_limit=125
 erroredInMainCode = False
 #print("yes")
 warnings.simplefilter("error")
-def d():
+async def d():
   #print("e",flush=True)
   global mathProblems,guildMathProblems
   global trusted_users
   global vote_threshold
-  FileSaverObj = FileSaver()
-  FileSaverObj.enable()
+  FileSaverObj = FileSaver(enabled=True)
   FileSaverDict = await FileSaverObj.load_files(True)
   (math_problems,guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["mathProblems"],FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
 
