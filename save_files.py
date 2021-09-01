@@ -1,7 +1,7 @@
 import json
 numFileSavers=0
 class FileSaver:
-  def __init__(self,name=None,enabled=True,math_problems_file_name="math_problems.json",guild_math_problems_file_name="guild_math_problems.json",trusted_users_file_name="trusted_users.txt",vote_threshold_file_name="vote_threshold.txt"):
+  def __init__(self,name=None,enabled=False,math_problems_file_name="math_problems.json",guild_math_problems_file_name="guild_math_problems.json",trusted_users_file_name="trusted_users.txt",vote_threshold_file_name="vote_threshold.txt"):
     """Creates a new FileSaver object."""
     global numFileSavers
     numFileSavers+=1

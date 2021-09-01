@@ -29,14 +29,11 @@ def d():
   global trusted_users
   global vote_threshold
   FileSaverObj = FileSaver()
+  FileSaverObj.enable()
   FileSaverDict = await FileSaverObj.load_files(True)
-  (math_problems,guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["mathProblems"],FileSaverDict["guildMathProblems"],
-  FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
+  (math_problems,guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["mathProblems"],FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
 
-
-  #print("f")
   while True:  
-    #print("o")
     time.sleep(45) 
     await FileSaverObj.save_files(True,guildMathProblems,vote_threshold,mathProblems,trusted_users)
       
@@ -97,6 +94,26 @@ async def test_embeds(ctx):
   await ctx.send(embed=SuccessEmbed("Hello"))
   await ctx.send(embed=ErrorEmbed("Hello!"))
   await ctx.send(embed=SimpleEmbed("Hello."))
+
+
+@slash.slash(name="force_load_files",description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!")
+async def force_load_files(ctx):
+  global mathProblems,guildMathProblems
+  global trusted_users
+  global vote_threshold
+  if ctx.author_id not in trusted_users:
+    await ctx.send(ErrorEmbed("You aren't trusted and therefore don't have permission to forceload files."))
+    return
+  try:
+    FileSaver2 = FileSaver(enabled=True)
+    FileSaverDict = await FileSaverObj.load_files(True)
+    (math_problems,guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["mathProblems"],FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
+    return
+  except RuntimeError:
+    await ctx.send(embed=ErrorEmbed("Something went wrong..."))
+    return
+    
+
 
 
 @slash.slash(name="show_problem_info", description = "Show problem info", options=[discord_slash.manage_commands.create_option(name="problem_id", description="problem id of the problem you want to show", option_type=4, required=True),discord_slash.manage_commands.create_option(name="show_all_data", description="whether to show all data (only useable by problem authors and trusted users", option_type=5, required=False),discord_slash.manage_commands.create_option(name="raw", description="whether to show data as json?", option_type=5, required=False),discord_slash.manage_commands.create_option(name="is_guild_problem", description="whether the problem you are trying to view is a guild problem", option_type=5, required=False)])
