@@ -210,7 +210,7 @@ async def list_all_problem_ids(ctx,show_only_guild_problems=False):
     if guild_id == None:
       await ctx.send("Run this command in a Discord server or set show_only_guild_problems to False!", hidden=True)
       return
-    await ctx.send("\n".join([str(item) for item in mathProblems.keys()])[:1930])
+    await ctx.send(embed=SuccessEmbed("\n".join([str(item) for item in mathProblems.keys()])[:1930],successTitle="Problem IDs:"))
     return
 
   await ctx.send("\n".join([str(item) for item in mathProblems.keys()])[:1930])
@@ -218,7 +218,7 @@ async def list_all_problem_ids(ctx,show_only_guild_problems=False):
 async def generate_new_problems(ctx, num_new_problems_to_generate):
   await ctx.defer()
   if ctx.author_id not in trusted_users:
-    await ctx.send("You aren't trusted!",hidden=True)
+    await ctx.send(embed=ErrorEmbed("You aren't trusted!",hidden=True))
     return
   elif num_new_problems_to_generate > 200:
     await ctx.send("You are trying to create too many problems. Try something smaller than or equal to 200.", hidden=True)
@@ -250,7 +250,7 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
       if problem_id not in mathProblems.keys():
         break
     mathProblems[problem_id] = e
-  await ctx.send("Successfully created new problems.", hidden=True)
+  await ctx.send(embed=SuccessEmbed(f"Successfully created {str(num_new_problems_to_generate)} new problems!"), hidden=True)
 ##@bot.command(help = """Adds a trusted user!
 ##math_problems.add_trusted_user <user_id>
 ##adds the user's id to the trusted users list 
@@ -258,7 +258,7 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
 ##brief = "Adds a trusted user")
 @slash.slash(name="delallbotproblems", description = "delete all automatically generated problems")
 async def delallbotproblems(ctx):
-  await ctx.send("Attempting to delete bot problems",hidden=True)
+  await ctx.send(embed=SimpleEmbed("",description="Attempting to delete bot problems"),hidden=True)
   global mathProblems
   mathProblems2 = copy.deepcopy(mathProblems)
   if ctx.author_id not in trusted_users:
