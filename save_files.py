@@ -40,7 +40,7 @@ class FileSaver:
     with open("guild_math_problems.json", "r") as file4:
       guildMathProblems = json.load(fp=file4)
     if printSuccessMessages:
-      print("Successfully saved files.")
+      print(f"{self.name}: Successfully loaded files.")
     return {"guildMathProblems":guildMathProblems,"trusted_users":trusted_users,"mathProblems":mathProblems,"vote_threshold":vote_threshold}
   def save_files(self,printSuccessMessages,guild_math_problems_dict,vote_threshold,math_problems_dict,trusted_users_list):
     "Saves files to file names specified in __init__."
@@ -55,13 +55,14 @@ class FileSaver:
         file2.write(str(user))
         file2.write("\n")
         #print(user)
-
+  
     with open("vote_threshold.txt", "w") as file3:
       file3.write(str(vote_threshold))
     with open("guild_math_problems.json", "w") as file4:
       e=json.dumps(obj=guild_math_problems_dict)
       file4.write(e)
-    return
+    if printSuccessMessages:
+      print(f"{self.name}: Successfully saved files.")
   def change_name(self,new_name):
     self.name=new_name
   def goodbye(self):
