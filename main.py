@@ -7,6 +7,7 @@ import discord_slash, threading
 
 from nextcord.ext.commands import Bot, errors
 import nextcord.ext.commands
+from nextcord import Embed
 #constants
 #print("Is it working??")
 trusted_users=[]
@@ -93,7 +94,8 @@ async def on_slash_command_error(ctx, error):
     await ctx.send(str(error))
     return
   erroredInMainCode=True
-  await ctx.send("Command raised an exception:" + str(error), hidden=True)
+  Embed = (title="Oh no! An error occured!", description="Command raised an exception:" + str(error))
+  await ctx.send(embed=Embed®, hidden=True)
   raise error
 
 @bot.event
