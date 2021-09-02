@@ -1,7 +1,6 @@
-import math, random, os, discord, warnings, aiohttp, copy, asyncio
+import math, random, os, discord, warnings, aiohttp, copy, asyncio,nextcord
 import discord_slash, threading
-import nextcord
-import return_intents,test
+import return_intents
 
 from time import sleep
 from nextcord.ext import commands, tasks #for discord_slash
@@ -51,10 +50,9 @@ def generate_new_id():
   return random.randint(0, 10**14)
 Intents = return_intents.return_intents()
 bot = nextcord_commands.Bot(
-    command_prefix = nextcord_commands.when_mentioned_or('math_problems.'),intents=Intents,
-    #owner
+    command_prefix = nextcord_commands.when_mentioned_or('math_problems.'),intents=Intents
 )
-bot.load_extension("jishaku")
+#bot.load_extension("jishaku")
 
 slash = discord_slash.client.SlashCommand(client=bot, sync_commands=True,application_id=845751152901750824)      
 #print(slash)
