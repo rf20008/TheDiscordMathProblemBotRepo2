@@ -1,7 +1,7 @@
-import math, random, os, discord, warnings, aiohttp, copy
+import math, random, os, discord, warnings, aiohttp, copy, asyncio
 import discord_slash, threading
 import nextcord
-import return_intents
+import return_intents,test
 
 from time import sleep
 from nextcord.ext import commands, tasks #for discord_slash
@@ -12,6 +12,7 @@ from custom_embeds import *
 from nextcord.ext.commands import errors
 import nextcord.ext.commands as nextcord_commands
 from save_files import FileSaver
+
 #constants
 #print("Is it working??")
 trusted_users=[]
@@ -50,8 +51,10 @@ def generate_new_id():
   return random.randint(0, 10**14)
 Intents = return_intents.return_intents()
 bot = nextcord_commands.Bot(
-    command_prefix = nextcord_commands.when_mentioned_or('math_problems.'),intents=Intents
+    command_prefix = nextcord_commands.when_mentioned_or('math_problems.'),intents=Intents,
+    #owner
 )
+bot.load_extension("jishaku")
 
 slash = discord_slash.client.SlashCommand(client=bot, sync_commands=True,application_id=845751152901750824)      
 #print(slash)
@@ -592,6 +595,5 @@ async def generateInviteLink(ctx):
 @slash.slash(name="github_repo",description = "Returns github repo")
 async def github_repo(ctx):
   await ctx.send(embed=SuccessEmbed("Repo Link: \n https://github.com/rf20008/TheDiscordMathProblemBotRepo",successTitle="Here is the Github Repository Link."))
-
 print("The bot has finished setting up and will now run.")
 bot.run(DISCORD_TOKEN)
