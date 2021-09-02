@@ -562,7 +562,7 @@ async def add_trusted_user(ctx,user):
   trusted_users.append(user.id)
   await ctx.reply(embed=ErrorEmbed(f"Successfully made {user.nick} a trusted user!"), ephemeral=True) 
 
-@slash.slash_command(name="remove_trusted_user", description = "removes a trusted user",options=[discord_slash.manage_commands.create_option(name="user", description="The user you want to take super special bot access from", option_type=6, required=True)])
+@slash.slash_command(name="remove_trusted_user", description = "removes a trusted user",options=[Option(name="user", description="The user you want to take super special bot access from", type=OptionType.USER, required=True)])
 async def remove_trusted_user(ctx,user):
 
   if ctx.author.id not in trusted_users:
