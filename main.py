@@ -2,11 +2,9 @@ import math, random, os, warnings, aiohttp, copy, asyncio, nextcord
 import threading, dislash
 import return_intents
 
-from dislash import InteractionClient, Options, OptionType
+from dislash import InteractionClient, Option, OptionType
 from time import sleep
 from nextcord.ext import commands, tasks #for discord_slash
-
-
 from random import randint
 from nextcord import Embed, Color
 from custom_embeds import *
@@ -26,8 +24,7 @@ guildMathProblems = {}
 guild_maximum_problem_limit=125
 erroredInMainCode = False
 #print("yes")
-warnings.simplefilter("error")
-warnings.simplefilter("default:nextcord.health_check.DistributionWarning")
+
 def the_daemon_file_saver():
   #print("e",flush=True)
   global mathProblems,guildMathProblems

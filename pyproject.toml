@@ -15,4 +15,5 @@ python = "^3.8"
 typing-extensions = "^3.10.0"
 discord = "^1.7.3"
 "dislash.py" = "^1.4.9"
+"discord.py" = "^1.7.3"
 [tool.poetry.dev-dependencies]
