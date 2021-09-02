@@ -1,16 +1,17 @@
-import math, random, os, discord, warnings, json, requests, aiohttp
-import time, datetime, aiohttp, copy
+import math, random, os, discord, warnings, aiohttp, copy
+import discord_slash, threading
+import nextcord
+import return_intents
+
+from time import sleep
 from nextcord.ext import commands, tasks #for discord_slash
 from discord_slash import SlashCommand, SlashContext
-import discord_slash, threading
 from random import randint
 from nextcord import Embed, Color
 from custom_embeds import *
-import nextcord
-from nextcord.ext.commands import Bot, errors
+from nextcord.ext.commands import errors
 import nextcord.ext.commands as nextcord_commands
 from save_files import FileSaver
-import return_intents
 #constants
 #print("Is it working??")
 trusted_users=[]
@@ -34,7 +35,7 @@ def the_daemon_file_saver():
   (math_problems,guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["mathProblems"],FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
 
   while True:  
-    time.sleep(45) 
+    sleep(45) 
     FileSaverObj.save_files(True,guildMathProblems,vote_threshold,mathProblems,trusted_users)
       
 t = threading.Thread(target=the_daemon_file_saver,name="The File Saver",daemon=True)
