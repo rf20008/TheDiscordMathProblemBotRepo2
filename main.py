@@ -359,7 +359,7 @@ async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
   else:
     await ctx.reply(embed=SuccessEmbed("",successTitle="You answered this question correctly!"), ephermal=True)
     mathProblems[problem_id]["solvers"].append(ctx.author.id)
-@slash.slash_command(name="list_all_problems", description = "List all problems stored with the bot", options=[discord_slash.manage_commands.create_option(name="show_solved_problems", description="Whether to show solved problems", option_type=5, required=False),discord_slash.manage_commands.create_option(name="show_guild_problems", description="Whether to show solved problems", option_type=5, required=False),discord_slash.manage_commands.create_option(name="show_only_guild_problems", description="Whether to only show guild problems", option_type=5, required=False)])
+@slash.slash_command(name="list_all_problems", description = "List all problems stored with the bot", options=[Option(name="show_solved_problems", description="Whether to show solved problems", type=OptionType.BOOLEAN, required=False),Option(name="show_guild_problems", description="Whether to show solved problems", type=OptionType.BOOLEAN, required=False),discord_slash.manage_commands.create_option(name="show_only_guild_problems", description="Whether to only show guild problems", type=OptionType.BOOLEAN, required=False)])
 async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=True,show_only_guild_problems=False):
   showSolvedProblems = show_solved_problems
   guild_id = str(ctx.guild_id)
