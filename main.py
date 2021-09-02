@@ -216,7 +216,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     e+= str(len(mathProblems[problem_id]["solvers"]))
   
     await ctx.reply(e, ephermal=True)
-@slash.slash_command(name="list_all_problem_ids", description= "List all problem ids", options=[discord_slash.manage_commands.create_option(name="show_only_guild_problems", description="Whether to show guild problem ids",required=False,option_type=5)])
+@slash.slash_command(name="list_all_problem_ids", description= "List all problem ids", options=[Option(name="show_only_guild_problems", description="Whether to show guild problem ids",required=False,type=OptionType.BOOLEAN)])
 async def list_all_problem_ids(ctx,show_only_guild_problems=False):
   await ctx.defer()
   if show_only_guild_problems:
