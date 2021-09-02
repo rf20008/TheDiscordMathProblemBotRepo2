@@ -581,7 +581,7 @@ async def ping(ctx):
 @slash.slash_command(name="what_is_vote_threshold", description="Prints the vote threshold and takes no arguments")
 async def what_is_vote_threshold(ctx):
   await ctx.reply(embed=SuccessEmbed(f"The vote threshold is {vote_threshold}."),ephemeral=True)
-@slash.slash_command(name="generateInviteLink", description = "Generates a invite link for this bot! Takes no arguments")
+@slash.slash_command(name="generate_invite_link", description = "Generates a invite link for this bot! Takes no arguments")
 async def generateInviteLink(ctx):
   await ctx.reply(embed=SuccessEmbed("https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147552256&scope=bot%20applications.commands",successTitle),ephemeral=True)
 #slash.slash_command(name="test", description="TEST!",        # Adding a new slash command with our slash variable
