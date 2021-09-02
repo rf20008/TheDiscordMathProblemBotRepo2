@@ -525,7 +525,7 @@ async def unvote(ctx,problem_id):
   e+= str(vote_threshold)
   e += " votes on this problem."
   await ctx.reply(embed=SuccessEmbed(e), ephemeral=True)
-@slash.slash_command(name="delete_problem", description = "Deletes a problem", options = [discord_slash.manage_commands.create_option(name="problem_id", description="Problem ID!", option_type=4, required=True),discord_slash.manage_commands.create_option(name="is_guild_problem", description="whether deleting a guild problem", option_type=5, required=False)])
+@slash.slash_command(name="delete_problem", description = "Deletes a problem", options = [Option(name="problem_id", description="Problem ID!", type=OptionType.INTEGER, required=True),Option(name="is_guild_problem", description="whether deleting a guild problem", type=OptionType.USER, required=False)])
 async def delete_problem(ctx, problem_id,is_guild_problem=False):
   global mathProblems, guildMathProblems
   user_id = ctx.author.id
