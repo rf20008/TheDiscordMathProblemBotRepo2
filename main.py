@@ -1,15 +1,16 @@
-import math, random, os, discord,warnings,json
+import math, random, os, discord, warnings, json, requests, aiohttp
 import time, datetime, aiohttp, copy
-from discord.ext import commands, tasks #for discord_slash
+from nextcord.ext import commands, tasks #for discord_slash
 from discord_slash import SlashCommand, SlashContext
 import discord_slash, threading
 from random import randint
 from nextcord import Embed, Color
 from custom_embeds import *
+import nextcord
 from nextcord.ext.commands import Bot, errors
-import nextcord.ext.commands
+import nextcord.ext.commands as nextcord_commands
 from save_files import FileSaver
-
+from return_intents import return_intents
 #constants
 #print("Is it working??")
 trusted_users=[]
@@ -39,7 +40,6 @@ def the_daemon_file_saver():
 t = threading.Thread(target=the_daemon_file_saver,name="The File Saver",daemon=True)
 
 t.start()
-bot=discord.ext.commands.Bot("math_problems.")
 
 
 
@@ -47,11 +47,12 @@ bot=discord.ext.commands.Bot("math_problems.")
 #print(trusted_users)
 def generate_new_id():
   return random.randint(0, 10**14)
-bot = Bot(
-    command_prefix = commands.when_mentioned_or('math_problems.'),
+bot = nextcord_commands.Bot(
+    command_prefix = nextcord_commands.when_mentioned_or('math_problems.'),
 )
-slash = discord_slash.client.SlashCommand(client=bot, sync_commands=True,application_id=845751152901750824)      
 
+slash = discord_slash.client.SlashCommand(client=bot, sync_commands=True,application_id=845751152901750824)      
+print(slash)
 
 
 @bot.event
