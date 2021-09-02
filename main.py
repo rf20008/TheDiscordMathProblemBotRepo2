@@ -550,7 +550,7 @@ async def delete_problem(ctx, problem_id,is_guild_problem=False):
     return
   mathProblems.pop(problem_id)
   await ctx.reply(embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!", ephemeral=True))
-@slash.slash_command(name="add_trusted_user", description = "Adds a trusted user",options=[USER(name="user", description="The user you want to give super special bot access to", type=OptionType.USER, required=True)])
+@slash.slash_command(name="add_trusted_user", description = "Adds a trusted user",options=[Option(name="user", description="The user you want to give super special bot access to", type=OptionType.USER, required=True)])
 async def add_trusted_user(ctx,user):
 
   if ctx.author.id not in trusted_users:
