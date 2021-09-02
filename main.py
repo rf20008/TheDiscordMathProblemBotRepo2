@@ -1,4 +1,4 @@
-import math, random, os, discord, warnings, aiohttp, copy, asyncio,nextcord
+import math, random, os, discord, warnings, aiohttp, copy, asyncio, nextcord
 import discord_slash, threading
 import return_intents
 
@@ -41,8 +41,6 @@ def the_daemon_file_saver():
 t = threading.Thread(target=the_daemon_file_saver,name="The File Saver",daemon=True)
 
 t.start()
-
-
 
 #print("Work please!!!!!")
 #print(trusted_users)
