@@ -71,10 +71,12 @@ async def on_slash_command_error(ctx, error):
   if isinstance(error,discord.ext.commands.errors.CommandOnCooldown):
     await ctx.reply(str(error))
     return
-  erroredInMainCode=True
+  if isinstance(error,dislash.NotOwner):
+    await ctx.reply(embed=ErrorEmbed("You are not the owner of this bot."))
+    return
   Embed = ErrorEmbed(title="Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
   await ctx.reply(embed=Embed, ephermal=True)
-  raise error
+  
 
 @bot.event
 async def on_command_error(ctx,error):
