@@ -416,7 +416,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
     e += str(len(mathProblems[question]["solvers"])) + "\t"
   await ctx.reply(embed=SuccessEmbed(e[:1930]))
 
-@slash.slash_command(name = "set_vote_threshold", description = "Sets the vote threshold", options=[discord_slash.manage_commands.create_option(name="threshold", description="the threshold you want to change it to", option_type=4, required=True)])
+@slash.slash_command(name = "set_vote_threshold", description = "Sets the vote threshold", options=[Options(name="threshold", description="the threshold you want to change it to", type=OptionType.INTEGER, required=True)])
 async def set_vote_threshold(ctx,threshold):
   global vote_threshold
   try:
@@ -436,7 +436,7 @@ async def set_vote_threshold(ctx,threshold):
     if x > vote_threshold:
       await ctx.reply(embed=SuccessEmbed(f"Successfully deleted problem #{problem} due to it having {x} votes, {x-threshold} more than the threshold!"), ephermal=True)
   await ctx.reply(embed=SuccessEmbed(f"The vote threshold has successfully been changed to {threshold}!"), ephermal=True)
-@slash.slash_command(name="vote", description = "Vote for the deletion of a problem", options=[discord_slash.manage_commands.create_option(name="problem_id", description="problem id of the problem you are attempting to delete", option_type=4, required=True),discord_slash.manage_commands.create_option(name="is_guild_problem", description="problem id of the problem you are attempting to delete", option_type=5, required=False)])
+@slash.slash_command(name="vote", description = "Vote for the deletion of a problem", options=[Option(name="problem_id", description="problem id of the problem you are attempting to delete", type=OptionType.INTEGER, required=True),Option(name="is_guild_problem", description="problem id of the problem you are attempting to delete", type=OptionType.BOOLEAN, required=False)])
 async def vote(ctx, problem_id,is_guild_problem=False):
   global mathProblems, guildMathProblems
   if is_guild_problem:
