@@ -1,4 +1,4 @@
-import math, random, os, discord, warnings, aiohttp, copy, asyncio, nextcord
+import math, random, os, warnings, aiohttp, copy, asyncio, nextcord
 import threading, dislash
 import return_intents
 
@@ -27,6 +27,7 @@ guild_maximum_problem_limit=125
 erroredInMainCode = False
 #print("yes")
 warnings.simplefilter("error")
+warnings.simplefilter("default:nextcord.health_check.DistributionWarning")
 def the_daemon_file_saver():
   #print("e",flush=True)
   global mathProblems,guildMathProblems
@@ -55,7 +56,7 @@ bot = nextcord_commands.Bot(
 bot.load_extension("jishaku")
 
 
-slash = dislash.InteractionClient(client=bot,sync-commands=True)
+slash = dislash.InteractionClient(client=bot,sync_commands=True)
 print("Bots successfully created.")
 
 
@@ -85,7 +86,7 @@ async def on_command_error(ctx,error):
     await ctx.channel.send(embed=ErrorEmbed("Not enough arguments!"))
     return
   if isinstance(error, errors.CommandNotFound):
-    await ctx.channel.send(embed=ErrorEmbed("This command does not exist. Mention me and use help to get a list of all commands!"))
+    await ctx.channel.send(embed=ErrorEmbed("This command does not exist."))
     return
   if isinstance(error, errors.TooManyArguments):
     await ctx.reply(embed=ErrorEmbed("Too many arguments."))
