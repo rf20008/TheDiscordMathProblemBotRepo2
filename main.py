@@ -93,7 +93,7 @@ async def on_command_error(ctx,error):
   await ctx.reply("Something went wrong! Message the devs ASAP! (Our tags are ay136416#2707 and duck_master#8022)")
   raise error
 
-@slash.slash(name="test_embeds",description="This command will test embeds")
+@slash.slash_command(name="test_embeds",description="This command will test embeds")
 async def test_embeds(ctx):
   await ctx.reply(embed=SuccessEmbed("Hello"))
   await ctx.reply(embed=ErrorEmbed("Hello!"))
@@ -118,7 +118,7 @@ async def force_load_files(ctx):
   except RuntimeError:
     await ctx.reply(embed=ErrorEmbed("Something went wrong..."))
     return
-@slash.slash(name="force_save_files",description="Forcefully saves files (can only be used by trusted users).")
+@slash.slash_command(name="force_save_files",description="Forcefully saves files (can only be used by trusted users).")
 async def force_save_files(ctx):
   global mathProblems,guildMathProblems
   global trusted_users
@@ -137,7 +137,7 @@ async def force_save_files(ctx):
 
 
 
-@slash.slash(name="show_problem_info", description = "Show problem info", options=[discord_slash.manage_commands.create_option(name="problem_id", description="problem id of the problem you want to show", option_type=4, required=True),discord_slash.manage_commands.create_option(name="show_all_data", description="whether to show all data (only useable by problem authors and trusted users", option_type=5, required=False),discord_slash.manage_commands.create_option(name="raw", description="whether to show data as json?", option_type=5, required=False),discord_slash.manage_commands.create_option(name="is_guild_problem", description="whether the problem you are trying to view is a guild problem", option_type=5, required=False)])
+@slash.slash_command(name="show_problem_info", description = "Show problem info", options=[discord_slash.manage_commands.create_option(name="problem_id", description="problem id of the problem you want to show", option_type=4, required=True),discord_slash.manage_commands.create_option(name="show_all_data", description="whether to show all data (only useable by problem authors and trusted users", option_type=5, required=False),discord_slash.manage_commands.create_option(name="raw", description="whether to show data as json?", option_type=5, required=False),discord_slash.manage_commands.create_option(name="is_guild_problem", description="whether the problem you are trying to view is a guild problem", option_type=5, required=False)])
 async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_guild_problem=False):
   problem_id = int(problem_id)
 
@@ -216,7 +216,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     e+= str(len(mathProblems[problem_id]["solvers"]))
   
     await ctx.reply(e, ephermal=True)
-@slash.slash(name="list_all_problem_ids", description= "List all problem ids", options=[discord_slash.manage_commands.create_option(name="show_only_guild_problems", description="Whether to show guild problem ids",required=False,option_type=5)])
+@slash.slash_command(name="list_all_problem_ids", description= "List all problem ids", options=[discord_slash.manage_commands.create_option(name="show_only_guild_problems", description="Whether to show guild problem ids",required=False,option_type=5)])
 async def list_all_problem_ids(ctx,show_only_guild_problems=False):
   await ctx.defer()
   if show_only_guild_problems:
@@ -228,7 +228,7 @@ async def list_all_problem_ids(ctx,show_only_guild_problems=False):
     return
 
   await ctx.reply("\n".join([str(item) for item in mathProblems.keys()])[:1930])
-@slash.slash(name="generate_new_problems", description= "Generates new problems", options=[discord_slash.manage_commands.create_option(name="num_new_problems_to_generate", description="the number of problems that should be generated", option_type=4, required=True)])
+@slash.slash_command(name="generate_new_problems", description= "Generates new problems", options=[discord_slash.manage_commands.create_option(name="num_new_problems_to_generate", description="the number of problems that should be generated", option_type=4, required=True)])
 async def generate_new_problems(ctx, num_new_problems_to_generate):
   await ctx.defer()
   if ctx.author.id not in trusted_users:
@@ -270,7 +270,7 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
 ##adds the user's id to the trusted users list 
 ##(can only be used by trusted users)""",
 ##brief = "Adds a trusted user")
-@slash.slash(name="delallbotproblems", description = "delete all automatically generated problems")
+@slash.slash_command(name="delallbotproblems", description = "delete all automatically generated problems")
 async def delallbotproblems(ctx):
   await ctx.reply(embed=SimpleEmbed("",description="Attempting to delete bot problems"),ephermal=True)
   global mathProblems
@@ -286,10 +286,10 @@ async def delallbotproblems(ctx):
       numDeletedProblems += 1
   mathProblems = mathProblems2
   await ctx.reply(embed=SuccessEmbed(f"Successfully deleted {numDeletedProblems}!"))
-@slash.slash(name = "list_trusted_users", description = "list all trusted users")
+@slash.slash_command(name = "list_trusted_users", description = "list all trusted users")
 async def list_trusted_users(ctx):
   await ctx.reply("\n".join([str(item) for item in trusted_users]))
-@slash.slash(name="new_problem", description = "Create a new problem", options = [discord_slash.manage_commands.create_option(name="answer", description="The answer to this problem", option_type=3, required=True), discord_slash.manage_commands.create_option(name="question", description="your question", option_type=3, required=True),discord_slash.manage_commands.create_option(name="guild_question", description="Whether it should be a question for the guild", option_type=5, required=False)])
+@slash.slash_command(name="new_problem", description = "Create a new problem", options = [discord_slash.manage_commands.create_option(name="answer", description="The answer to this problem", option_type=3, required=True), discord_slash.manage_commands.create_option(name="question", description="your question", option_type=3, required=True),discord_slash.manage_commands.create_option(name="guild_question", description="Whether it should be a question for the guild", option_type=5, required=False)])
 async def new_problem(ctx, answer, question, guild_question=False):
   global mathProblems, guildMathProblems
   if len(question) > 250:
@@ -326,7 +326,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
   mathProblems[problem_id] = e
   await ctx.reply(embed=SuccessEmbed("You have successfully made a math problem!"), ephermal = True)
 
-@slash.slash(name="check_answer", description = "Check if you are right", options=[discord_slash.manage_commands.create_option(name="problem_id", description="the id of the problem you are trying to check the answer of", option_type=4, required=True),discord_slash.manage_commands.create_option(name="answer", description="your answer", option_type=4, required=True),discord_slash.manage_commands.create_option(name="checking_guild_problem", description="whether checking a guild problem", option_type=5, required = False)])
+@slash.slash_command(name="check_answer", description = "Check if you are right", options=[discord_slash.manage_commands.create_option(name="problem_id", description="the id of the problem you are trying to check the answer of", option_type=4, required=True),discord_slash.manage_commands.create_option(name="answer", description="your answer", option_type=4, required=True),discord_slash.manage_commands.create_option(name="checking_guild_problem", description="whether checking a guild problem", option_type=5, required = False)])
 async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
   global mathProblems,guildMathProblems
   if checking_guild_problem:
@@ -359,7 +359,7 @@ async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
   else:
     await ctx.reply(embed=SuccessEmbed("",successTitle="You answered this question correctly!"), ephermal=True)
     mathProblems[problem_id]["solvers"].append(ctx.author.id)
-@slash.slash(name="list_all_problems", description = "List all problems stored with the bot", options=[discord_slash.manage_commands.create_option(name="show_solved_problems", description="Whether to show solved problems", option_type=5, required=False),discord_slash.manage_commands.create_option(name="show_guild_problems", description="Whether to show solved problems", option_type=5, required=False),discord_slash.manage_commands.create_option(name="show_only_guild_problems", description="Whether to only show guild problems", option_type=5, required=False)])
+@slash.slash_command(name="list_all_problems", description = "List all problems stored with the bot", options=[discord_slash.manage_commands.create_option(name="show_solved_problems", description="Whether to show solved problems", option_type=5, required=False),discord_slash.manage_commands.create_option(name="show_guild_problems", description="Whether to show solved problems", option_type=5, required=False),discord_slash.manage_commands.create_option(name="show_only_guild_problems", description="Whether to only show guild problems", option_type=5, required=False)])
 async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=True,show_only_guild_problems=False):
   showSolvedProblems = show_solved_problems
   guild_id = str(ctx.guild_id)
@@ -416,7 +416,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
     e += str(len(mathProblems[question]["solvers"])) + "\t"
   await ctx.reply(embed=SuccessEmbed(e[:1930]))
 
-@slash.slash(name = "set_vote_threshold", description = "Sets the vote threshold", options=[discord_slash.manage_commands.create_option(name="threshold", description="the threshold you want to change it to", option_type=4, required=True)])
+@slash.slash_command(name = "set_vote_threshold", description = "Sets the vote threshold", options=[discord_slash.manage_commands.create_option(name="threshold", description="the threshold you want to change it to", option_type=4, required=True)])
 async def set_vote_threshold(ctx,threshold):
   global vote_threshold
   try:
@@ -436,7 +436,7 @@ async def set_vote_threshold(ctx,threshold):
     if x > vote_threshold:
       await ctx.reply(embed=SuccessEmbed(f"Successfully deleted problem #{problem} due to it having {x} votes, {x-threshold} more than the threshold!"), ephermal=True)
   await ctx.reply(embed=SuccessEmbed(f"The vote threshold has successfully been changed to {threshold}!"), ephermal=True)
-@slash.slash(name="vote", description = "Vote for the deletion of a problem", options=[discord_slash.manage_commands.create_option(name="problem_id", description="problem id of the problem you are attempting to delete", option_type=4, required=True),discord_slash.manage_commands.create_option(name="is_guild_problem", description="problem id of the problem you are attempting to delete", option_type=5, required=False)])
+@slash.slash_command(name="vote", description = "Vote for the deletion of a problem", options=[discord_slash.manage_commands.create_option(name="problem_id", description="problem id of the problem you are attempting to delete", option_type=4, required=True),discord_slash.manage_commands.create_option(name="is_guild_problem", description="problem id of the problem you are attempting to delete", option_type=5, required=False)])
 async def vote(ctx, problem_id,is_guild_problem=False):
   global mathProblems, guildMathProblems
   if is_guild_problem:
@@ -487,7 +487,7 @@ async def vote(ctx, problem_id,is_guild_problem=False):
   if len(mathProblems[problem_id]["voters"]) >= vote_threshold:
     del mathProblems[problem_id]
     await ctx.reply(embed=SimpleEmbed("This problem has surpassed the threshold and has been deleted!"), ephermal=True)
-@slash.slash(name="unvote", description = "takes away vote for the deletion of a problem", options=[discord_slash.manage_commands.create_option(name="problem_id", description="Problem ID!", option_type=4, required=True)])
+@slash.slash_command(name="unvote", description = "takes away vote for the deletion of a problem", options=[discord_slash.manage_commands.create_option(name="problem_id", description="Problem ID!", option_type=4, required=True)])
 async def unvote(ctx,problem_id):
   global mathProblems, guildMathProblems
   if is_guild_problem:
@@ -525,7 +525,7 @@ async def unvote(ctx,problem_id):
   e+= str(vote_threshold)
   e += " votes on this problem."
   await ctx.reply(embed=SuccessEmbed(e), ephermal=True)
-@slash.slash(name="delete_problem", description = "Deletes a problem", options = [discord_slash.manage_commands.create_option(name="problem_id", description="Problem ID!", option_type=4, required=True),discord_slash.manage_commands.create_option(name="is_guild_problem", description="whether deleting a guild problem", option_type=5, required=False)])
+@slash.slash_command(name="delete_problem", description = "Deletes a problem", options = [discord_slash.manage_commands.create_option(name="problem_id", description="Problem ID!", option_type=4, required=True),discord_slash.manage_commands.create_option(name="is_guild_problem", description="whether deleting a guild problem", option_type=5, required=False)])
 async def delete_problem(ctx, problem_id,is_guild_problem=False):
   global mathProblems, guildMathProblems
   user_id = ctx.author.id
@@ -550,7 +550,7 @@ async def delete_problem(ctx, problem_id,is_guild_problem=False):
     return
   mathProblems.pop(problem_id)
   await ctx.reply(embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!", ephermal=True))
-@slash.slash(name="add_trusted_user", description = "Adds a trusted user",options=[discord_slash.manage_commands.create_option(name="user", description="The user you want to give super special bot access to", option_type=6, required=True)])
+@slash.slash_command(name="add_trusted_user", description = "Adds a trusted user",options=[discord_slash.manage_commands.create_option(name="user", description="The user you want to give super special bot access to", option_type=6, required=True)])
 async def add_trusted_user(ctx,user):
 
   if ctx.author.id not in trusted_users:
@@ -562,7 +562,7 @@ async def add_trusted_user(ctx,user):
   trusted_users.append(user.id)
   await ctx.reply(embed=ErrorEmbed(f"Successfully made {user.nick} a trusted user!"), ephermal=True) 
 
-@slash.slash(name="remove_trusted_user", description = "removes a trusted user",options=[discord_slash.manage_commands.create_option(name="user", description="The user you want to take super special bot access from", option_type=6, required=True)])
+@slash.slash_command(name="remove_trusted_user", description = "removes a trusted user",options=[discord_slash.manage_commands.create_option(name="user", description="The user you want to take super special bot access from", option_type=6, required=True)])
 async def remove_trusted_user(ctx,user):
 
   if ctx.author.id not in trusted_users:
@@ -575,22 +575,22 @@ async def remove_trusted_user(ctx,user):
   await ctx.reply(embed=ErrorEmbed(f"Successfully made {user.nick} no longer a trusted user!"), ephermal=True) 
 
 
-@slash.slash(name="ping", description = "Prints latency and takes no arguments")
+@slash.slash_command(name="ping", description = "Prints latency and takes no arguments")
 async def ping(ctx):
   await ctx.reply(embed=SuccessEmbed(f"Pong! My latency is {round(bot.latency*1000)}ms."), ephermal=True)
-@slash.slash(name="what_is_vote_threshold", description="Prints the vote threshold and takes no arguments")
+@slash.slash_command(name="what_is_vote_threshold", description="Prints the vote threshold and takes no arguments")
 async def what_is_vote_threshold(ctx):
   await ctx.reply(embed=SuccessEmbed(f"The vote threshold is {vote_threshold}."),ephermal=True)
-@slash.slash(name="generateInviteLink", description = "Generates a invite link for this bot! Takes no arguments")
+@slash.slash_command(name="generateInviteLink", description = "Generates a invite link for this bot! Takes no arguments")
 async def generateInviteLink(ctx):
   await ctx.reply(embed=SuccessEmbed("https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147552256&scope=bot%20applications.commands",successTitle),ephermal=True)
-#slash.slash(name="test", description="TEST!",        # Adding a new slash command with our slash variable
+#slash.slash_command(name="test", description="TEST!",        # Adding a new slash command with our slash variable
 #             options=[discord_slash.manage_commands.create_option(name="first_option", description="Testing!", option_type=3, required=False)])
 #async def test(ctx,first_option=-1):
 #  await ctx.reply(first_option,ephermal=True)
 # return
 
-@slash.slash(name="github_repo",description = "Returns github repo")
+@slash.slash_command(name="github_repo",description = "Returns github repo")
 async def github_repo(ctx):
   await ctx.reply(embed=SuccessEmbed("Repo Link: \n https://github.com/rf20008/TheDiscordMathProblemBotRepo",successTitle="Here is the Github Repository Link."))
 print("The bot has finished setting up and will now run.")
