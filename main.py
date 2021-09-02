@@ -10,7 +10,7 @@ import nextcord
 from nextcord.ext.commands import Bot, errors
 import nextcord.ext.commands as nextcord_commands
 from save_files import FileSaver
-from return_intents import return_intents
+import return_intents
 #constants
 #print("Is it working??")
 trusted_users=[]
@@ -47,12 +47,14 @@ t.start()
 #print(trusted_users)
 def generate_new_id():
   return random.randint(0, 10**14)
+Intents = return_intents.return_intents()
 bot = nextcord_commands.Bot(
-    command_prefix = nextcord_commands.when_mentioned_or('math_problems.'),
+    command_prefix = nextcord_commands.when_mentioned_or('math_problems.'),intents=Intents
 )
 
 slash = discord_slash.client.SlashCommand(client=bot, sync_commands=True,application_id=845751152901750824)      
-print(slash)
+#print(slash)
+print("Bots successfully created.")
 
 
 @bot.event
