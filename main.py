@@ -52,7 +52,7 @@ Intents = return_intents.return_intents()
 bot = nextcord_commands.Bot(
     command_prefix = nextcord_commands.when_mentioned_or('math_problems.'),intents=Intents
 )
-#bot.load_extension("jishaku")
+bot.load_extension("jishaku")
 
 slash = discord_slash.client.SlashCommand(client=bot, sync_commands=True,application_id=845751152901750824)      
 #print(slash)
@@ -594,4 +594,5 @@ async def generateInviteLink(ctx):
 async def github_repo(ctx):
   await ctx.send(embed=SuccessEmbed("Repo Link: \n https://github.com/rf20008/TheDiscordMathProblemBotRepo",successTitle="Here is the Github Repository Link."))
 print("The bot has finished setting up and will now run.")
+#slash.run(DISCORD_TOKEN)
 bot.run(DISCORD_TOKEN)
