@@ -289,7 +289,7 @@ async def delallbotproblems(ctx):
 @slash.slash_command(name = "list_trusted_users", description = "list all trusted users")
 async def list_trusted_users(ctx):
   await ctx.reply("\n".join([str(item) for item in trusted_users]))
-@slash.slash_command(name="new_problem", description = "Create a new problem", options = [Option(name="answer", description="The answer to this problem", option_type=OptionType.STRING, required=True), Option(name="question", description="your question", type=OptionType.STRING, required=True),Option(name="guild_question", description="Whether it should be a question for the guild", type=OptionType.BOOLEAN, required=False)])
+@slash.slash_command(name="new_problem", description = "Create a new problem", options = [Option(name="answer", description="The answer to this problem", type=OptionType.STRING, required=True), Option(name="question", description="your question", type=OptionType.STRING, required=True),Option(name="guild_question", description="Whether it should be a question for the guild", type=OptionType.BOOLEAN, required=False)])
 async def new_problem(ctx, answer, question, guild_question=False):
   global mathProblems, guildMathProblems
   if len(question) > 250:
@@ -359,7 +359,7 @@ async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
   else:
     await ctx.reply(embed=SuccessEmbed("",successTitle="You answered this question correctly!"), ephermal=True)
     mathProblems[problem_id]["solvers"].append(ctx.author.id)
-@slash.slash_command(name="list_all_problems", description = "List all problems stored with the bot", options=[Option(name="show_solved_problems", description="Whether to show solved problems", type=OptionType.BOOLEAN, required=False),Option(name="show_guild_problems", description="Whether to show solved problems", type=OptionType.BOOLEAN, required=False),discord_slash.manage_commands.create_option(name="show_only_guild_problems", description="Whether to only show guild problems", type=OptionType.BOOLEAN, required=False)])
+@slash.slash_command(name="list_all_problems", description = "List all problems stored with the bot", options=[Option(name="show_solved_problems", description="Whether to show solved problems", type=OptionType.BOOLEAN, required=False),Option(name="show_guild_problems", description="Whether to show solved problems", type=OptionType.BOOLEAN, required=False),Option(name="show_only_guild_problems", description="Whether to only show guild problems", type=OptionType.BOOLEAN, required=False)])
 async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=True,show_only_guild_problems=False):
   showSolvedProblems = show_solved_problems
   guild_id = str(ctx.guild_id)
