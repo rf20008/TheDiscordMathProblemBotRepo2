@@ -1,4 +1,4 @@
-import math, random, os, warnings, aiohttp, copy, asyncio, nextcord
+import math, random, os, warnings, aiohttp, copy, nextcord, discord
 import threading, dislash
 import return_intents
 
