@@ -2,7 +2,7 @@ import math, random, os, warnings, aiohttp, copy, nextcord, discord
 import threading, dislash
 import return_intents
 
-from dislash import InteractionClient, Option, OptionType
+from dislash import InteractionClient, Option, OptionType, NotOwner
 from time import sleep
 from nextcord.ext import commands, tasks #for discord_slash
 from random import randint
@@ -53,7 +53,7 @@ bot = nextcord_commands.Bot(
 bot.load_extension("jishaku")
 
 
-slash = dislash.InteractionClient(client=bot,sync_commands=True)
+slash = InteractionClient(client=bot,sync_commands=True)
 print("Bots successfully created.")
 
 
@@ -69,7 +69,7 @@ async def on_slash_command_error(ctx, error):
   if isinstance(error,discord.ext.commands.errors.CommandOnCooldown):
     await ctx.reply(str(error))
     return
-  if isinstance(error,dislash.NotOwner):
+  if isinstance(error,NotOwner):
     await ctx.reply(embed=ErrorEmbed("You are not the owner of this bot."))
     return
   Embed = ErrorEmbed(title="Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
