@@ -1,9 +1,9 @@
-import math, random, os, warnings, aiohttp, copy, nextcord, discord
-import threading, dislash
+import math, random, os, warnings, threading, aiohttp, copy, nextcord, discord
+import  dislash
 import return_intents
 
 from dislash import InteractionClient, Option, OptionType, NotOwner
-from time import sleep
+from time import sleep, time
 from nextcord.ext import commands, tasks #for discord_slash
 from random import randint
 from nextcord import Embed, Color
@@ -50,7 +50,7 @@ Intents = return_intents.return_intents()
 bot = nextcord_commands.Bot(
     command_prefix = nextcord_commands.when_mentioned_or('math_problems.'),intents=Intents
 )
-bot.load_extension("jishaku")
+#bot.load_extension("jishaku")
 
 
 slash = InteractionClient(client=bot,sync_commands=True)
