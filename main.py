@@ -62,9 +62,6 @@ async def on_ready():
   print("The bot has connected to Discord successfully.")
 
 @bot.event
-async def on_slash_command(ctx):
-  print("Slash command triggered!")
-@bot.event
 async def on_slash_command_error(ctx, error):
   if isinstance(error,discord.ext.commands.errors.CommandOnCooldown):
     await ctx.reply(str(error))
