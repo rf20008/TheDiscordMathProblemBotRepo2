@@ -44,11 +44,11 @@ class FileSaver:
     if printSuccessMessages or printSuccessMessages==None and self.printSuccessMessagesByDefault:
       print(f"{self.name}: Successfully loaded files.")
     return {"guildMathProblems":guildMathProblems,"trusted_users":trusted_users,"mathProblems":mathProblems,"vote_threshold":vote_threshold}
-  def save_files(self,printSuccessMessages,guild_math_problems_dict,vote_threshold,math_problems_dict,trusted_users_list):
+  def save_files(self,printSuccessMessages=None,guild_math_problems_dict,vote_threshold,math_problems_dict,trusted_users_list):
     "Saves files to file names specified in __init__."
     if not self.enabled:
       raise RuntimeError("I'm not enabled! I can't load files!")
-    if printSuccessMessages:
+    if printSuccessMessages or printSuccessMessages==None and self.printSuccessMessagesByDefault:
       print(f"{str(self)}: Attempting to save guild_math_problems_dict to {self.guild_math_problems_file_name}, vote_threshold to {self.vote_threshold_file_name}, trusted_users_list to  {self.trusted_users_file_name}, and math_problems_dict to {self.math_problems_file_name}...")
     with open("math_problems.json", "w") as file:
       file.write(json.dumps(math_problems_dict))
