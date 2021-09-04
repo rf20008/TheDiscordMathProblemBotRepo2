@@ -1,16 +1,18 @@
 import math, random, os, warnings, threading, aiohttp, copy, nextcord, discord
 import  dislash
 import return_intents
+import nextcord.ext.commands as nextcord_commands
 
-from dislash import InteractionClient, Option, OptionType, NotOwner
+from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 from time import sleep, time
 from nextcord.ext import commands, tasks #for discord_slash
 from random import randint
 from nextcord import Embed, Color
 from custom_embeds import *
 from nextcord.ext.commands import errors
-import nextcord.ext.commands as nextcord_commands
 from save_files import FileSaver
+from user_error import UserError
+
 warnings.simplefilter("ignore")
 #constants
 #print("Is it working??")
@@ -69,7 +71,7 @@ async def on_slash_command_error(ctx, error):
   if isinstance(error,NotOwner):
     await ctx.reply(embed=ErrorEmbed("You are not the owner of this bot."))
     return
-  Embed = ErrorEmbed(title="Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
+  Embed = ErrorEmbed(title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
   await ctx.reply(embed=Embed, ephemeral=True)
   
 
@@ -590,6 +592,26 @@ async def generateInviteLink(ctx):
 @slash.slash_command(name="github_repo",description = "Returns github repo")
 async def github_repo(ctx):
   await ctx.reply(embed=SuccessEmbed("Repo Link: \n https://github.com/rf20008/TheDiscordMathProblemBotRepo",successTitle="Here is the Github Repository Link."))
+@slash.slash_command(name="raise_error", description = "⚠ This command will raise an error. Useful for checking on_slash_command_error", 
+options=[Option(name="error_type",description = "The type of error", choices=[
+  OptionChoice(name="Exception",value="Exception"),
+  OptionChoice(name="Warning", value="Warning"),
+  OptionChoice(name="UserError", value = "UserError")
+  ],required=True), Option(name="error_description",description="The description of the error", type=OptionType.STRING,required=False)])
+async def raise_error(ctx, error_type,error_description = None):
+  if ctx.author.id not in trusted_users:
+    await ctx.send(embed=ErrorEmbed(f"⚠ {ctx.author.mention}, you do not have permission to intentionally raise errors for debugging purposes.",custom_title="Insufficient permission to raise errors."))
+    return
+  if error_description == None:
+    error_description = f"Manually raised error by {ctx.author.mention}"  
+  if error_type == "Exception":
+    error = Exception(error_description)
+  elif error_type == "Warning":
+    error = Warning(error_description)
+  elif error_type == "UserError":
+    error=UserError(error_description)
+  await ctx.send(embed=SuccessEmbed(f"Successfully created error: {str(error)}. Will now raise the error.", successTitle="Successfully raised error."))
+  raise error
 print("The bot has finished setting up and will now run.")
 #slash.run(DISCORD_TOKEN)
 bot.run(DISCORD_TOKEN)
