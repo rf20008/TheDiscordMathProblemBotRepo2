@@ -96,3 +96,12 @@ Return the bot's latency.
 ## what_is_vote_threshold
 
 Says the bot's vote threshold
+
+## github_repo
+
+Returns the link to the bot's github repository 
+
+## raise_error ⚠
+
+Raises an error. Useful for debugging.
+
