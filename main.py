@@ -72,7 +72,10 @@ async def on_slash_command_error(ctx, error):
     await ctx.reply(embed=ErrorEmbed("You are not the owner of this bot."))
     return
   Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
-  await ctx.reply(embed=Embed, ephemeral=True)
+  try:
+    await ctx.reply(embed=Embed, ephemeral=True)
+  except nextcord.errors.Forbidden as e:
+    print(f"Forbidden: {e}")
   
 
 @bot.event
