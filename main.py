@@ -506,7 +506,7 @@ async def unvote(ctx,problem_id):
     except KeyError:
       await ctx.reply(embed=ErrorEmbed("This problem doesn't exist!"), ephemeral=True)
       return
-    guildMathProblems[guild_id][problem_id]["voters"].append(ctx.author.id)
+    guildMathProblems[guild_id][problem_id]["voters"].remove(ctx.author.id)
     e = "You successfully unvoted for the problem's deletion! Now there are"
     e += str(len(guildMathProblems[guild_id][problem_id]["voters"]))
     e += "/"
@@ -545,7 +545,7 @@ async def delete_problem(ctx, problem_id,is_guild_problem=False):
     guildMathProblems[guild_id].pop(problem_id)
     await ctx.reply(embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!"), ephemeral=True)
   if problem_id not in mathProblems.keys():
-    await ctx.reply(embed=SuccessEmbed("That problem doesn't exist."), ephemeral=True)
+    await ctx.reply(embed=ErrorEmbed("That problem doesn't exist."), ephemeral=True)
     return
   if ctx.author.id not in trusted_users and mathProblems[problem_id]["author"] != ctx.author.id:
     await ctx.reply(embed=ErrorEmbed("You aren't a trusted user or the author of the problem!"), ephemeral=True)
