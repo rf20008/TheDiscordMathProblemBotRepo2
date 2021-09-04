@@ -7,6 +7,7 @@ class FileSaver:
     numFileSavers+=1
     if name == None:
       name = "FileSaver" + str(numFileSavers)
+    self.id = numFileSavers
     self.printSuccessMessagesByDefault=printSuccessMessagesByDefault
     self.enabled=True
     self.math_problems_file_name=math_problems_file_name
@@ -66,6 +67,8 @@ class FileSaver:
       print(f"{self.name}: Successfully saved files.")
   def change_name(self,new_name):
     self.name=new_name
+  def my_id(self):
+    return self.id
   def goodbye(self):
     print(str(self)+": Goodbye.... :(")
     del self
