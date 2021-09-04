@@ -1,12 +1,14 @@
 # Legend - global
 *: Only useable by users with the Administrator (considering changing it to Manage Server) permission and global trusted users can use.
 ⚠: Only useable by global trusted users (such as /raise_error)
-**: Not a command (Documentation is here for purposes of me, and those who wish to fork my project/contribute with pull requests :))
-No Mark: Useable by everyone
+**: Not a bot/slash command (Documentation is here for purposes of me, and those who wish to fork my project/contribute with pull requests :))
+***: This is a module/class. Cannot be called.
+No Mark: This is a command without user restrictions
 
-# Misc. Non-Command-Functions 
+# Misc. Non-Command-Functions (not in main.py)
 
-## save_files.FileSaver
+## save_files.FileSaver***
+Exists to clean up the code.
 
 ### __init__**
 save_files.FileSaver.__init__(self,name=None,enabled=False,printSuccessMessagesByDefault=False,math_problems_file_name="math_problems.json",guild_math_problems_file_name="guild_math_problems.json",trusted_users_file_name="trusted_users.txt",vote_threshold_file_name="vote_threshold.txt"):
@@ -56,6 +58,37 @@ Returns self.id (the filesaver number). Takes no arguments.
 ### goodbye*
 
 Deletes the FileSaver object and prints a "Goodbye" message
+
+## return_intents***
+
+### return_intents.return_intents**
+
+This function returns the bot's intents.
+
+## user_error***
+
+### user_error.UserError***
+
+Inherits from the Exception class. Used in /raise_error (which is a trusted users only command, used for debugging on_slash_command_error.)
+
+#### user_error.UserError._raise()
+
+Takes no arguments. Raises self.
+
+## custom_embeds***
+This module exists so I can include embeds easier :)
+
+### custom_embeds.SimpleEmbed***
+A subclass of Embed, with 3 arguments: title, description, and color.
+(Basically just discord.Embed, but its arguments are in a different order.)
+
+### custom_embeds.ErrorEmbed***
+Inherits from custom_embeds.SimpleEmbed. Also takes 3 arguments, except the color is by default set to red, is the second argument, and the title argument is custom_title and is the 3rd argument.
+
+### custom_embeds.SuccessEmbed***
+
+Basically the same as ErrorEmbed. Except the title argument is called successTitle and the default color is green.
+
 
 
 
