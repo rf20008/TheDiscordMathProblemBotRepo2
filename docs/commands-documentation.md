@@ -105,6 +105,6 @@ Returns the link to the bot's github repository
 
 Raises an error. Useful for debugging.
 
-# documentation_link
+## documentation_link
 
 Returns the link to the documentation :)
