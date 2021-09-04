@@ -25,3 +25,6 @@ Recommended invite: https://discord.com/api/oauth2/authorize?client_id=845751152
 
 Invite with 0 permissions: https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=0&scope=bot%20applications.commands
 
+# Documentation
+
+https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs

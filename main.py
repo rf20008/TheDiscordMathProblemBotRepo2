@@ -592,7 +592,7 @@ async def generateInviteLink(ctx):
 #  await ctx.reply(first_option,ephemeral=True)
 # return
 
-@slash.slash_command(name="github_repo",description = "Returns github repo")
+@slash.slash_command(name="github_repo",description = "Returns the link to the github repo")
 async def github_repo(ctx):
   await ctx.reply(embed=SuccessEmbed("Repo Link: \n https://github.com/rf20008/TheDiscordMathProblemBotRepo",successTitle="Here is the Github Repository Link."))
 @slash.slash_command(name="raise_error", description = "⚠ This command will raise an error. Useful for checking on_slash_command_error", 
@@ -615,6 +615,9 @@ async def raise_error(ctx, error_type,error_description = None):
     error=UserError(error_description)
   await ctx.send(embed=SuccessEmbed(f"Successfully created error: {str(error)}. Will now raise the error.", successTitle="Successfully raised error."))
   raise error
+@slash.slash_command(name="documentation_link",description = "Returns the link to the documentation")
+async def documentation_link(ctx):
+  await ctx.send(embed=SuccessEmbed("https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs"))
 print("The bot has finished setting up and will now run.")
 #slash.run(DISCORD_TOKEN)
 bot.run(DISCORD_TOKEN)
