@@ -506,7 +506,7 @@ async def unvote(ctx,problem_id):
     except KeyError:
       await ctx.reply(embed=ErrorEmbed("This problem doesn't exist!"), ephemeral=True)
       return
-    guildMathProblems[guild_id][problem_id]["voters"].append(ctx.author.id)
+    guildMathProblems[guild_id][problem_id]["voters"].remove(ctx.author.id)
     e = "You successfully unvoted for the problem's deletion! Now there are"
     e += str(len(guildMathProblems[guild_id][problem_id]["voters"]))
     e += "/"

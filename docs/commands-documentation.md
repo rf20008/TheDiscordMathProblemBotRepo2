@@ -26,12 +26,37 @@ Generates new 4 function math problems (up to 200 at a time)
 
 ## delallbotproblems ⚠
 
+Deletes all bot-generated problems (generated via /generate_new_problems)
 
+## new_problem
+
+Submit a new problem! You may specify a question (up to 250 characters) and an answer (up to 100 characters). Note that the limitations may be shorter due to restrictions on slash commands.
+
+## check_answer
+
+Check your answer to a specified problem! You need to specify its id, the answer you are giving and whether it is a guild problem (defaults to global).
+
+## list_all_problems
+
+Lists as many math problems as it can but does not list all problems due to Discord character limitations (1930 characters max.) If it does not list all of them, the problems it lists are in the order it iterates over the dictionary (which should be the order in which they were added, oldest to youngest, but if you are forking this bot it may be random.)
+Takes 3 options
+show_solved_problems: whether to show problems that you have already solved
+show_guild_problems: whether to show guild problems
+show_only_guild_problems: whether to only show guild problems and not global ones. Will show nothing if this is set to true but show_guild_problems is not.
+
+## vote
+
+Vote for the deletion of a bad problem!
+The options needed should be self-explanatory.
+
+## unvote
+
+Takes away a deletion vote of a problem.
 
 
 # Miscellaneous Commands
 
-Miscellaneous commands I added for testing/fun/things that might be necessary.
+Miscellaneous commands I added for testing/fun/things that might be necessary. Most of them are restricted to trusted users.
 
 ## test_embeds
 
@@ -44,4 +69,11 @@ Forcefully loads the dictionary of math problems, the dictionary of guild math p
 ## force_save_files ⚠
 
 Forcefully saves the dictionary of math problems, the dictionary of guild math problems, the list of trusted users, and the vote threshold to the files.
+
+## list_trusted_users
+
+Lists the trusted user's ids. Due to a limitation of Discord, it cannot fetch the user's username and discriminator without requesting the Members privileged intent.
+
+## set_vote_threshold ⚠
+Sets the global vote threshold for problems need to get deleted via vote.
 
