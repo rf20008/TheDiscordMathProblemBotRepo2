@@ -287,6 +287,7 @@ async def delallbotproblems(ctx):
   await ctx.reply(embed=SuccessEmbed(f"Successfully deleted {numDeletedProblems}!"))
 @slash.slash_command(name = "list_trusted_users", description = "list all trusted users")
 async def list_trusted_users(ctx):
+  await ctx.send("‍") #the character is a ZWJ
   string_to_return = ""
   for trusted_user in trusted_users:
     try:
