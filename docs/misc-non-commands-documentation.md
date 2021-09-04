@@ -5,6 +5,10 @@
 ***: This is a module/class. Cannot be called.
 No Mark: This is a command without user restrictions
 
+# Why does this document exist? Users won't need it.
+
+This is here for people who want to see how my bot works, or people who want to contribute :)
+
 # Misc. Non-Command-Functions (not in main.py)
 
 ## save_files.FileSaver***
@@ -88,6 +92,18 @@ Inherits from custom_embeds.SimpleEmbed. Also takes 3 arguments, except the colo
 ### custom_embeds.SuccessEmbed***
 
 Basically the same as ErrorEmbed. Except the title argument is called successTitle and the default color is green.
+
+# Misc. Non-Command-Functions in main.py
+
+## the_daemon_file_saver
+
+A function that runs in a different thread (lines 43, 45 starts the thread) that saves the files every 45 seconds. Runs using a save_files.FileSaver() object.
+
+When it is started, it creates a FileSaver object which is enabled and prints messages by default. It then loads the files and saves them to the dictionary. Every 45 seconds, it saves the dictionaries to the files using FileSaver's save_files() method.
+
+## generate_new_id
+
+Generates a random number from 1 to 10,000,000,000 and returns it. Used for generating problem id's. Takes no arguments.
 
 
 
