@@ -43,6 +43,19 @@ mathProblem's argument name is math_problems_dict.
 trusted_users's argument name is math_problems_dict.
 
 Raises a RuntimeError if this object is not enabled when this method is called.
-Also takes an additional argument (printSuccessMessages, before the dictionary names) which defaults to None
+Also takes an additional argument (printSuccessMessages, before the dictionary names) which defaults to None and takes the printSuccessMessagesByDefault argument specified in __init__.
+
+### change_name**
+
+Changes self.name to the new name specified (1 argument, name = new_name, not keyword-only)
+
+### my_id**
+
+Returns self.id (the filesaver number). Takes no arguments.
+
+### goodbye*
+
+Deletes the FileSaver object and prints a "Goodbye" message
+
 
 
