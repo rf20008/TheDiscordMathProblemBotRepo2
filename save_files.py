@@ -44,7 +44,7 @@ class FileSaver:
     if printSuccessMessages or printSuccessMessages==None and self.printSuccessMessagesByDefault:
       print(f"{self.name}: Successfully loaded files.")
     return {"guildMathProblems":guildMathProblems,"trusted_users":trusted_users,"mathProblems":mathProblems,"vote_threshold":vote_threshold}
-  def save_files(self,printSuccessMessages=None,guild_math_problems_dict,vote_threshold,math_problems_dict,trusted_users_list):
+  def save_files(self,printSuccessMessages=None,guild_math_problems_dict={},vote_threshold=3,math_problems_dict={},trusted_users_list={}):
     "Saves files to file names specified in __init__."
     if not self.enabled:
       raise RuntimeError("I'm not enabled! I can't load files!")
