@@ -75,7 +75,7 @@ This function returns the bot's intents.
 
 Inherits from the Exception class. Used in /raise_error (which is a trusted users only command, used for debugging on_slash_command_error.)
 
-#### user_error.UserError._raise()
+#### user_error.UserError._raise()**
 
 Takes no arguments. Raises self.
 
@@ -95,13 +95,13 @@ Basically the same as ErrorEmbed. Except the title argument is called successTit
 
 # Misc. Non-Command-Functions in main.py
 
-## the_daemon_file_saver
+## the_daemon_file_saver**
 
 A function that runs in a different thread (lines 43, 45 starts the thread) that saves the files every 45 seconds. Runs using a save_files.FileSaver() object.
 
 When it is started, it creates a FileSaver object which is enabled and prints messages by default. It then loads the files and saves them to the dictionary. Every 45 seconds, it saves the dictionaries to the files using FileSaver's save_files() method.
 
-## generate_new_id
+## generate_new_id**
 
 Generates a random number from 1 to 10,000,000,000 and returns it. Used for generating problem id's. Takes no arguments.
 
