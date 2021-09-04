@@ -71,9 +71,9 @@ async def on_slash_command_error(ctx, error):
   if isinstance(error,NotOwner):
     await ctx.reply(embed=ErrorEmbed("You are not the owner of this bot."))
     return
-  Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
+  #Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
   try:
-    await ctx.reply(embed=Embed, ephemeral=True)
+    await ctx.reply("Your command raised an exception:" + str(type(error)) + ":" + str(error), ephemeral=True)
   except nextcord.errors.Forbidden as e:
     print(f"Forbidden: {e}")
   
@@ -220,7 +220,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     await ctx.reply(e, ephemeral=True)
 @slash.slash_command(name="list_all_problem_ids", description= "List all problem ids", options=[Option(name="show_only_guild_problems", description="Whether to show guild problem ids",required=False,type=OptionType.BOOLEAN)])
 async def list_all_problem_ids(ctx,show_only_guild_problems=False):
-  await ctx.defer()
+  await ctx.reply(type=5)()
   if show_only_guild_problems:
     guild_id = str(ctx.guild_id)
     if guild_id == None:
@@ -232,7 +232,7 @@ async def list_all_problem_ids(ctx,show_only_guild_problems=False):
   await ctx.reply("\n".join([str(item) for item in mathProblems.keys()])[:1930])
 @slash.slash_command(name="generate_new_problems", description= "Generates new problems", options=[Option(name="num_new_problems_to_generate", description="the number of problems that should be generated", type=OptionType.INTEGER, required=True)])
 async def generate_new_problems(ctx, num_new_problems_to_generate):
-  await ctx.defer()
+  await ctx.reply(type=5)()
   if ctx.author.id not in trusted_users:
     await ctx.reply(embed=ErrorEmbed("You aren't trusted!",ephemeral=True))
     return
@@ -290,16 +290,7 @@ async def delallbotproblems(ctx):
   await ctx.reply(embed=SuccessEmbed(f"Successfully deleted {numDeletedProblems}!"))
 @slash.slash_command(name = "list_trusted_users", description = "list all trusted users")
 async def list_trusted_users(ctx):
-  await ctx.reply("‍") #the character is a ZWJ
-  string_to_return = ""
-  print(trusted_users)
-  for trusted_user in trusted_users:
-    try:
-      user = await bot.fetch_user(trusted_user)
-    except nextcord.NotFound:
-      trusted_users.remove(trusted_user)
-    string_to_return += user.name + "#" + user.discriminator + "\n" 
-  await ctx.reply(string_to_return)
+  await ctx.reply(str(trusted_users))
 @slash.slash_command(name="new_problem", description = "Create a new problem", options = [Option(name="answer", description="The answer to this problem", type=OptionType.STRING, required=True), Option(name="question", description="your question", type=OptionType.STRING, required=True),Option(name="guild_question", description="Whether it should be a question for the guild", type=OptionType.BOOLEAN, required=False)])
 async def new_problem(ctx, answer, question, guild_question=False):
   global mathProblems, guildMathProblems

@@ -1,3 +1,5 @@
 *.json
 .env
 vote_threshold.txt
+*.cpython
+*.__pycache__
