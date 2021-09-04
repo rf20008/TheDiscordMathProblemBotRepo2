@@ -53,6 +53,10 @@ The options needed should be self-explanatory.
 
 Takes away a deletion vote of a problem.
 
+## delete_problem*
+
+Deletes a problem. You must be a global trusted user or have the Administrator permission (and the target must be a guild problem.)
+
 
 # Miscellaneous Commands
 
@@ -77,3 +81,18 @@ Lists the trusted user's ids. Due to a limitation of Discord, it cannot fetch th
 ## set_vote_threshold ⚠
 Sets the global vote threshold for problems need to get deleted via vote.
 
+## add_trusted_user ⚠
+
+Adds a trusted user. Takes one parameter (the user). Mention the user (don't worry, the user should not get pinged)
+
+## remove_trusted_user ⚠
+
+Removes trusted user status from a user.
+
+## ping
+
+Return the bot's latency.
+
+## what_is_vote_threshold
+
+Says the bot's vote threshold
