@@ -620,17 +620,17 @@ async def raise_error(ctx, error_type,error_description = None):
   raise error
 @slash.slash_command(name="documentation",description = "Returns the link to the documentation", 
 options=[Option(name="documentation_type", choices= [
-  OptionChoice(name = "documentation_link",value=""),
+  OptionChoice(name = "documentation_link",value="documentation_link"),
   OptionChoice(name="command_help", value="command_help"),
   OptionChoice(name="function_help", value="function_help"),
   ],required=True),
-  Option(name="help_obj", description = "What you want help on", required=True,type=OptionType.STRING,required=True)])
+  Option(name="help_obj", description = "What you want help on", required=True,type=OptionType.STRING)])
 async def documentation(ctx,documentation_type, help_obj):
   await ctx.reply(type=5)
-  if documentaton_type = "documentation_link"
+  if documentaton_type == "documentation_link":
     await ctx.send(embed=SuccessEmbed(f"""<@{ctx.author.id} [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
   """))
-  elif documentation_type = "function_help":
+  elif documentation_type == "function_help":
     #Inefficient method. There must be a faster way :)) Any ideas? Open an PR.
     fileLines = []
     with open("~/docs/misc-non-commands-documentation.md") as file:
@@ -657,9 +657,11 @@ async def documentation(ctx,documentation_type, help_obj):
           pass #Legend not here!
         try:
           Help_obj2.replace(item,"")
+        except:
+          pass #Legend obj not here
       if lineStr2 != Help_obj2:
         continue # This isn't the thing you are looking for.
-  elif documentation_type = "command_help":
+  elif documentation_type == "command_help":
     #Inefficient method. There must be a faster way :)) Any ideas? Open an PR.
     fileLines = []
     with open("~/docs/commands-documentation.md") as file:
@@ -686,6 +688,8 @@ async def documentation(ctx,documentation_type, help_obj):
           pass #Legend not here!
         try:
           Help_obj2.replace(item,"")
+        except:
+          pass
       if lineStr2 != Help_obj2:
         continue # This isn't the thing you are looking for.
 
