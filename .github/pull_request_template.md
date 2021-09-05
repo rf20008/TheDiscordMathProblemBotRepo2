@@ -4,12 +4,13 @@
 *No description provided.*
 
 # Pull Request Checklist
-- [ ] This PR adds new code.
--   [ ] This PR fixes an issue.
--   [ ] This PR adds a new command.
--   [ ] I have tested my code.
+- [ ] This PR adds/removes code.
+  -  [ ] This PR fixes an issue.
+  -   [ ] This PR adds a new command.
+  -   [ ] I have tested my code.
       -  [ ] My code works.
--   [ ] I have updated the documentation to reflect my changes.
-- [ ] This PR is **not** a code change (README.md, docs, etc)
--   [ ] This PR fixed a grammar mistake
+  - [ ] I have updated the documentation to reflect my changes.
+  - [ ] This PR changes the functionality of a command/removes commands/changes who can use a command/etc
+- [ ] This PR is not a code change.
+  - [ ] This PR fixed a grammar mistake.
   
