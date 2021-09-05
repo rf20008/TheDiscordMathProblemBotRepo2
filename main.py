@@ -621,8 +621,8 @@ async def raise_error(ctx, error_type,error_description = None):
 @slash.slash_command(name="documentation",description = "Returns the link to the documentation", 
 options=[Option(name="documentation_type", choices= [
   OptionChoice(name = "documentation_link",value=""),
-  OptionChoice(name="command_help", value="command_help")
-  OptionChoice(name="function_help", value="function_help")
+  OptionChoice(name="command_help", value="command_help"),
+  OptionChoice(name="function_help", value="function_help"),
   ],required=True),
   Option(name="help_obj", description = "What you want help on", required=True,type=OptionType.STRING,required=True)])
 async def documentation(ctx,documentation_type, help_obj):
@@ -631,21 +631,64 @@ async def documentation(ctx,documentation_type, help_obj):
     await ctx.send(embed=SuccessEmbed(f"""<@{ctx.author.id} [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
   """))
   elif documentation_type = "function_help":
-
+    #Inefficient method. There must be a faster way :)) Any ideas? Open an PR.
     fileLines = []
     with open("~/docs/misc-non-commands-documentation.md") as file:
       for line in file:
         fileLines.append(line)
     for line in fileLines:
       lineStr = str(line)
-      if lineStr[0] != "#":
+      try:
+        if lineStr[0] != "#": #Not a heading
+          continue
+      except: #line is empty
         continue
       e = 0
       for char in lineStr:
         e += 1
         if char != "#":
           break
-      if lineStr[:e].remove("⚠").remove("*").remove("**").remove("***") != help.obj.remove("*").remove("")
+      lineStr2= copy.deepcopy(lineStr)
+      Help_obj2 = copy.deepcopy(help_obj)
+      for item in legendChars:
+        try:
+          lineStr2.replace(item,"")
+        except:
+          pass #Legend not here!
+        try:
+          Help_obj2.replace(item,"")
+      if lineStr2 != Help_obj2:
+        continue # This isn't the thing you are looking for.
+  elif documentation_type = "command_help":
+    #Inefficient method. There must be a faster way :)) Any ideas? Open an PR.
+    fileLines = []
+    with open("~/docs/commands-documentation.md") as file:
+      for line in file:
+        fileLines.append(line)
+    for line in fileLines:
+      lineStr = str(line)
+      try:
+        if lineStr[0] != "#": #Not a heading
+          continue
+      except: #line is empty
+        continue
+      e = 0
+      for char in lineStr:
+        e += 1
+        if char != "#":
+          break
+      lineStr2= copy.deepcopy(lineStr)
+      Help_obj2 = copy.deepcopy(help_obj)
+      for item in legendChars:
+        try:
+          lineStr2.replace(item,"")
+        except:
+          pass #Legend not here!
+        try:
+          Help_obj2.replace(item,"")
+      if lineStr2 != Help_obj2:
+        continue # This isn't the thing you are looking for.
+
 
 
 print("The bot has finished setting up and will now run.")
