@@ -1,5 +1,5 @@
 # What issue are you fixing?
-Please provide the issue number in short hand syntax (#<issue number>).
+<!Please provide the issue number in short hand syntax (#issue_number).>
 # How are you fixing it?
 *No description provided.*
 
