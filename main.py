@@ -589,11 +589,6 @@ async def what_is_vote_threshold(ctx):
 @slash.slash_command(name="generate_invite_link", description = "Generates a invite link for this bot! Takes no arguments")
 async def generateInviteLink(ctx):
   await ctx.reply(embed=SuccessEmbed("https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147552256&scope=bot%20applications.commands",successTitle),ephemeral=True)
-#slash.slash_command(name="test", description="TEST!",        # Adding a new slash command with our slash variable
-#             options=[discord_slash.manage_commands.create_option(name="first_option", description="Testing!", option_type=3, required=False)])
-#async def test(ctx,first_option=-1):
-#  await ctx.reply(first_option,ephemeral=True)
-# return
 
 @slash.slash_command(name="github_repo",description = "Returns the link to the github repo")
 async def github_repo(ctx):
@@ -627,47 +622,19 @@ options=[Option(name="documentation_type", description = "What kind of help you 
   Option(name="help_obj", description = "What you want help on", required=True,type=OptionType.STRING)])
 async def documentation(ctx,documentation_type, help_obj):
   await ctx.reply(type=5)
+  fileBeginHelp = 0
   if documentaton_type == "documentation_link":
     await ctx.send(embed=SuccessEmbed(f"""<@{ctx.author.id} [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
-  """))
+  """),ephemeral=True)
   elif documentation_type == "function_help":
     #Inefficient method. There must be a faster way :)) Any ideas? Open an PR.
+
     fileLines = []
     with open("~/docs/misc-non-commands-documentation.md") as file:
       for line in file:
         fileLines.append(line)
     for line in fileLines:
-      lineStr = str(line)
-      try:
-        if lineStr[0] != "#": #Not a heading
-          continue
-      except: #line is empty
-        continue
-      e = 0
-      for char in lineStr:
-        e += 1
-        if char != "#":
-          break
-      lineStr2= copy.deepcopy(lineStr)
-      Help_obj2 = copy.deepcopy(help_obj)
-      for item in legendChars:
-        try:
-          lineStr2.replace(item,"")
-        except:
-          pass #Legend not here!
-        try:
-          Help_obj2.replace(item,"")
-        except:
-          pass #Legend obj not here
-      if lineStr2 != Help_obj2:
-        continue # This isn't the thing you are looking for.
-  elif documentation_type == "command_help":
-    #Inefficient method. There must be a faster way :)) Any ideas? Open an PR.
-    fileLines = []
-    with open("~/docs/commands-documentation.md") as file:
-      for line in file:
-        fileLines.append(line)
-    for line in fileLines:
+      fileBeginHelp += 1
       lineStr = str(line)
       try:
         if lineStr[0] != "#": #Not a heading
@@ -690,9 +657,67 @@ async def documentation(ctx,documentation_type, help_obj):
           Help_obj2.replace(item,"")
         except:
           pass
-      if lineStr2 != Help_obj2:
+      if lineStr2 == Help_obj2[e:]:
+        str_to_return = ""
+        
+        for line in fileLines[fileBeginHelp:]:
+          try:
+            if str(line)[0] == "#":
+              break
+          except:
+            pass
+          str_to_return += str(line) + "\n"
+        await ctx.send(str_to_return)
+        return
+      else:
         continue # This isn't the thing you are looking for.
+    await ctx.send(embed=ErrorEmbed("Your help has not been found.",custom_title="Help not found :("))
 
+  elif documentation_type == "command_help":
+    #Inefficient method. There must be a faster way :)) Any ideas? Open an PR.
+    fileLines = []
+    with open("~/docs/commands-documentation.md") as file:
+      for line in file:
+        fileLines.append(line)
+    for line in fileLines:
+      fileBeginHelp += 1
+      lineStr = str(line)
+      try:
+        if lineStr[0] != "#": #Not a heading
+          continue
+      except: #line is empty
+        continue
+      e = 0
+      for char in lineStr:
+        e += 1
+        if char != "#":
+          break
+      lineStr2= copy.deepcopy(lineStr)
+      Help_obj2 = copy.deepcopy(help_obj)
+      for item in legendChars:
+        try:
+          lineStr2.replace(item,"")
+        except:
+          pass #Legend not here!
+        try:
+          Help_obj2.replace(item,"")
+        except:
+          pass
+      if lineStr2 == Help_obj2[e:]:
+        str_to_return = ""
+        
+        for line in fileLines[fileBeginHelp:]:
+          try:
+            if str(line)[0] == "#":
+              break
+          except:
+            pass
+          str_to_return += str(line) + "\n"
+        await ctx.send(str_to_return)
+        return
+      else:
+        continue # This isn't the thing you are looking for.
+    await ctx.send(embed=ErrorEmbed("Your help has not been found.",custom_title="Help not found :("))
 
 
 print("The bot has finished setting up and will now run.")
