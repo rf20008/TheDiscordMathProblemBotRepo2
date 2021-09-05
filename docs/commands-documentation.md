@@ -7,8 +7,7 @@ No Mark: This is a command without user restrictions
 
 # Empty messages?
 
-This bot heavily utilizes embeds for its messages. If you deny that permission, the bot will not be able to send its messages.
-
+This bot  utilizes embeds for its messages. If you deny that permission, some messages may be empty (and there may be 403 errors.)
 # Math Problem Related
 
 ## show_problem_info
@@ -76,7 +75,9 @@ Forcefully saves the dictionary of math problems, the dictionary of guild math p
 
 ## list_trusted_users
 
-Lists the trusted user's ids. Due to a limitation of Discord, it cannot fetch the user's username and discriminator without requesting the Members privileged intent.
+Lists the trusted users by mentioning them in an ephemeral message.
+
+Why is this message ephemeral? This is so that they don't actually get pinged. This seems counter-intuitive, but it's the best solution :)
 
 ## set_vote_threshold ⚠
 Sets the global vote threshold for problems need to get deleted via vote.
