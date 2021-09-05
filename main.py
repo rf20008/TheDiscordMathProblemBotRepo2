@@ -616,18 +616,25 @@ async def raise_error(ctx, error_type,error_description = None):
     error=UserError(error_description)
   await ctx.send(embed=SuccessEmbed(f"Successfully created error: {str(error)}. Will now raise the error.", successTitle="Successfully raised error."))
   raise error
-@slash.slash_command(name="documentation_link",description = "Returns the link to the documentation")
-async def documentation_link(ctx):
-  await ctx.send(embed=SuccessEmbed(f"""<@{ctx.author.id} [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
-
-  Quick documentation:
-
-  trusted users are trusted users of this bot, authorized to execute special commands.
-
-
-  
+@slash.slash_command(name="documentation",description = "Returns the link to the documentation", 
+options=[Option(name="documentation_type", choices= [
+  OptionChoice(name = "documentation_link",value=""),
+  OptionChoice(name="command_help", value="command_help")
+  OptionChoice(name="function_help", value="function_help")
+  ],required=True),
+  Option(name="help_obj", description = "What you want help on", required=True,type=OptionType.STRING,required=True)])
+async def documentation(ctx,documentation_type, help_obj):
+  await ctx.reply(type=5)
+  if documentaton_type = "documentation_link"
+    await ctx.send(embed=SuccessEmbed(f"""<@{ctx.author.id} [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
   """))
-
+  elif documentation_type = "function_help"
+    fileLines = []
+    with open("~/docs/misc-non-commands-documentation.md") as file:
+      for line in file:
+        fileLines.append(line)
+    for line in fileLines:
+      lineStr = str(line)
 
 
 print("The bot has finished setting up and will now run.")
