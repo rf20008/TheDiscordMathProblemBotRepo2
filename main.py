@@ -595,7 +595,7 @@ async def generateInviteLink(ctx):
 
 @slash.slash_command(name="github_repo",description = "Returns the link to the github repo")
 async def github_repo(ctx):
-  await ctx.reply(embed=SuccessEmbed("Repo Link: \n https://github.com/rf20008/TheDiscordMathProblemBotRepo",successTitle="Here is the Github Repository Link."))
+  await ctx.reply(embed=SuccessEmbed("[Repo Link:](https://github.com/rf20008/TheDiscordMathProblemBotRepo) ",successTitle="Here is the Github Repository Link."))
 @slash.slash_command(name="raise_error", description = "⚠ This command will raise an error. Useful for checking on_slash_command_error", 
 options=[Option(name="error_type",description = "The type of error", choices=[
   OptionChoice(name="Exception",value="Exception"),
@@ -618,7 +618,15 @@ async def raise_error(ctx, error_type,error_description = None):
   raise error
 @slash.slash_command(name="documentation_link",description = "Returns the link to the documentation")
 async def documentation_link(ctx):
-  await ctx.send(embed=SuccessEmbed("https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs"))
+  await ctx.send(embed=SuccessEmbed(f"""<@{ctx.author.id} [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
+
+  Quick documentation:
+
+  trusted users are trusted users of this bot, authorized to execute special commands.
+
+
+  
+  """))
 
 
 

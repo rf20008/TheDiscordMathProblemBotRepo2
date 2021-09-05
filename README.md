@@ -21,9 +21,7 @@ As soon as you see them, contact me as soon as possible!
 
 # Invite my bot!
 
-Recommended invite: https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=84992&scope=bot%20applications.commands
-
-Invite with 0 permissions: https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=0&scope=bot%20applications.commands
+Recommended invite: https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147568640&scope=bot%20applications.commands
 
 # Documentation
 
