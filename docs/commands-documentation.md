@@ -1,7 +1,10 @@
 # Legend - global
 *: Only useable by users with the Administrator (considering changing it to Manage Server) permission and global trusted users can use.
+
 ⚠: Only useable by global trusted users (such as /raise_error)
+
 **: Not a bot/slash command (Documentation is here for purposes of me, and those who wish to fork my project/contribute with pull requests :))
+
 ***: This is a module/class. Cannot be called.
 
 No Mark: This is a command without user restrictions

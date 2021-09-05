@@ -13,6 +13,8 @@ from nextcord.ext.commands import errors
 from save_files import FileSaver
 from user_error import UserError
 
+
+legendChars = ["*", "⚠", "**", "***"] #Here for documentation_help command
 warnings.simplefilter("ignore")
 #constants
 #print("Is it working??")
@@ -628,13 +630,22 @@ async def documentation(ctx,documentation_type, help_obj):
   if documentaton_type = "documentation_link"
     await ctx.send(embed=SuccessEmbed(f"""<@{ctx.author.id} [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
   """))
-  elif documentation_type = "function_help"
+  elif documentation_type = "function_help":
+
     fileLines = []
     with open("~/docs/misc-non-commands-documentation.md") as file:
       for line in file:
         fileLines.append(line)
     for line in fileLines:
       lineStr = str(line)
+      if lineStr[0] != "#":
+        continue
+      e = 0
+      for char in lineStr:
+        e += 1
+        if char != "#":
+          break
+      if lineStr[:e].remove("⚠").remove("*").remove("**").remove("***") != help.obj.remove("*").remove("")
 
 
 print("The bot has finished setting up and will now run.")
