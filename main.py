@@ -622,8 +622,10 @@ options=[Option(name="documentation_type", description = "What kind of help you 
   Option(name="help_obj", description = "What you want help on", required=True,type=OptionType.STRING)])
 async def documentation(ctx,documentation_type, help_obj):
   await ctx.reply(type=5)
+  print(documentation_type)
+  print(type(documentation_type))
   fileBeginHelp = 0
-  if documentaton_type == "documentation_link":
+  if documentation_type == "documentation_link":
     await ctx.send(embed=SuccessEmbed(f"""<@{ctx.author.id} [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
   """),ephemeral=True)
   elif documentation_type == "function_help":
