@@ -613,7 +613,7 @@ async def raise_error(ctx, error_type,error_description = None):
     error=UserError(error_description)
   await ctx.send(embed=SuccessEmbed(f"Successfully created error: {str(error)}. Will now raise the error.", successTitle="Successfully raised error."))
   raise error
-@slash.slash_command(name="documentation",description = "Returns the link to the documentation", 
+@slash.slash_command(name="documentation",description = "Returns help!", 
 options=[Option(name="documentation_type", description = "What kind of help you want", choices= [
   OptionChoice(name = "documentation_link",value="documentation_link"),
   OptionChoice(name="command_help", value="command_help"),
