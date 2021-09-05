@@ -1,5 +1,4 @@
-*.json
-.env
-vote_threshold.txt
-*.cpython
-*.__pycache__
+*.json # Don't show the actual problems
+.env # I need to keep my secret safe
+*.cpython # These files crash the ide
+*.__pycache__ #these files also crash the ide

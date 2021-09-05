@@ -290,7 +290,11 @@ async def delallbotproblems(ctx):
   await ctx.reply(embed=SuccessEmbed(f"Successfully deleted {numDeletedProblems}!"))
 @slash.slash_command(name = "list_trusted_users", description = "list all trusted users")
 async def list_trusted_users(ctx):
-  await ctx.reply(str(trusted_users))
+  e = ""
+  for item in trusted_users:
+    e += str(item)
+    e+= "\n"
+  await ctx.reply(e)
 @slash.slash_command(name="new_problem", description = "Create a new problem", options = [Option(name="answer", description="The answer to this problem", type=OptionType.STRING, required=True), Option(name="question", description="your question", type=OptionType.STRING, required=True),Option(name="guild_question", description="Whether it should be a question for the guild", type=OptionType.BOOLEAN, required=False)])
 async def new_problem(ctx, answer, question, guild_question=False):
   global mathProblems, guildMathProblems
