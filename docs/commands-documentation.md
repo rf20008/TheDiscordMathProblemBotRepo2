@@ -3,11 +3,13 @@
 ⚠: Only useable by global trusted users (such as /raise_error)
 **: Not a bot/slash command (Documentation is here for purposes of me, and those who wish to fork my project/contribute with pull requests :))
 ***: This is a module/class. Cannot be called.
+
 No Mark: This is a command without user restrictions
 
 # Empty messages?
 
-This bot  utilizes embeds for its messages. If you deny that permission, some messages may be empty (and there may be 403 errors.)
+This bot  utilizes embeds for its messages. If you deny that permission, most messages will be empty (and there may be 403 errors.)
+
 # Math Problem Related
 
 ## show_problem_info
