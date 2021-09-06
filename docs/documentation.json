@@ -218,5 +218,40 @@
           "contents": "Generates a random number from 1 to 10,000,000,000 and returns it. Used for generating problem id's. Takes no arguments."
         }
       ]
+    },
+    {
+      "file_name": "docs/commands-documentation.md",
+    "contains_legend": "true",
+    "contents": [
+      {
+        "indentation_level": 1,
+        "title": "Empty messages?"
+        "contents": "This bot  utilizes embeds for its messages. If you deny that permission, most messages will be empty (and there may be 403 errors.)\n"
+      },
+      {
+        "indentation_level": 1,
+        "title": "Math Problem Related",
+        "contents": "\n" 
+      },
+      {
+        "indentation_level": 2,
+        "title": "show_problem_info"
+        "contents": "Shows the problem info of a problem, excluding its answer (unless the user is a global trusted user/ has the Administrator permission in the guild and the problem is a guild problem  and the show_all_data option is set to True).\n\nRaw: Whether to send it as a dictionary.\n\n"
+      },
+      {
+        "indentation_level": 2,
+        "title": "list_all_problem_ids",
+        "contents": "List all the problem ids of the problems stored withthe bot. Takes a few arguments (show_only_guild_problems: whether to show only guild problems. Otherwise shows only global math problems)"
+      },
+      {
+        "indentation_level": 2,
+        "title": "generate_new_problems ⚠",
+        "contents": "Generates new 4 function math problems (up to 200 at a time)"
+      },
+      {
+        "indentation_level": 2,
+        "title": "delallbotproblems ⚠"
+      }
+    ]
     }
   ]
