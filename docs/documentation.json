@@ -5,10 +5,7 @@
     {"indentation_level": 1,
     "title": "Hello Reader!",
     "contents": "\nHello! I'm a 13 year old who wanted to code a discord bot. \nI made a reminder bot (on replit), but I realized many other bots (giselle, dyno, and sesh, and others) made one.\nI wanted to be unique, so I decided to make this bot. :)\nFeel free to contribute to my project with issues/pull requests! :)"}
-  ]
-      
-    }
-  },
+  ]},
   {
     "file_name": "docs/permissions_needed_and_why.md",
     "contains_legend": "false",
@@ -18,7 +15,8 @@
       "contents": "\n"},
       {"indentation_level": 2,
       "title": "Read Messages",
-      "contents": "\n\nUsed for message related commands. You may revoke this permission, as most of the functionality is in slash commands.\n"},
+      "contents": "\n\nUsed for message related commands. You may revoke this permission, as most of the functionality is in slash commands.\n"
+      },
       {
         "indentation_level": 2,
         "title": "Send Messages",
@@ -40,10 +38,8 @@
         "title": "View Channels",
         "contents": "\n\nMostly needed for message commands. If this permission is revoked:\n1) Message commands will not work\n2) The bot will not appear in the member list."
       }
-
-      
-      ]
-    },
+    ]
+    },{
       "file_name": "docs/misc-non-commands-documentation.md",
       "contains_legend": "true",
       "contents": [
@@ -129,7 +125,7 @@
         },
         {
           "indentation_level": 4,
-          "title": "#### user_error.UserError._raise()**"
+          "title": "user_error.UserError._raise()**"
           "contents": "Takes no arguments. Raises self."
         },
         {

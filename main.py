@@ -29,7 +29,6 @@ guild_maximum_problem_limit=125
 erroredInMainCode = False
 def loading_documentation_thread():
   d = DocumentationFileLoader()
-  d.load_documentation()
   d.load_documentation_into_readable_files()
   del d
 t = threading.Thread(target=loading_documentation_thread)

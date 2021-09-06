@@ -11,8 +11,11 @@ class DocumentationFileLoader:
   def __init__(self):
     pass
   def _load_documentation_file(self):
-     with open("docs/documentation.json", "r") as file:
-      return json.loads(file)
+    e = ""
+    with open("docs/documentation.json", "r") as file:
+      for line in file:
+        e+= str(line) + "\n"
+    return json.loads(e)
   def load_documentation_into_readable_files(self):
     dictToStoreFileContent = {}
     docmentation_from_json = self._load_documentation_file()
