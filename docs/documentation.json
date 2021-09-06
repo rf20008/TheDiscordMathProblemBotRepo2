@@ -164,7 +164,7 @@
           "contents": "Takes no arguments and creates a new DocumentationFileLoader object."
         },
         {
-          "indentation_level": 4
+          "indentation_level": 4,
           "title": "_load_documentation_file**",
           "contents": "Loads the documentation.json file and returns the dictionary-ify'd version of it\n"
         },
@@ -221,7 +221,7 @@
     "contents": [
       {
         "indentation_level": 1,
-        "title": "Empty messages?"
+        "title": "Empty messages?",
         "contents": "This bot  utilizes embeds for its messages. If you deny that permission, most messages will be empty (and there may be 403 errors.)\n"
       },
       {
@@ -231,7 +231,7 @@
       },
       {
         "indentation_level": 2,
-        "title": "show_problem_info"
+        "title": "show_problem_info",
         "contents": "Shows the problem info of a problem, excluding its answer (unless the user is a global trusted user/ has the Administrator permission in the guild and the problem is a guild problem  and the show_all_data option is set to True).\n\nRaw: Whether to send it as a dictionary.\n\n"
       },
       {
