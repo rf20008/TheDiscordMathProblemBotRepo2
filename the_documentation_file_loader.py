@@ -3,8 +3,7 @@ class DocumentationNotFound(Exception):
   def _raise(self):
     raise self
 class DocumentationFileNotFound(DocumentationNotFound):
-  def _raise(self):
-    raise self
+  pass
 
 class DocumentationFileLoader:
   def __init__(self):

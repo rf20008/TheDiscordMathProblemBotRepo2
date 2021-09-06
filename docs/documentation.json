@@ -113,7 +113,37 @@
           "contents": "\n"
         },
         {
-          
+          "indentation_level": 3,
+          "title": "return_indents.return_indents**",
+          "contents": "This function returns the bot's intents."
+        },
+        {
+          "indentation_level": 2
+          "title": "user_error",
+          "contents": "\n"
+        },
+        {
+          "indentation_level": 3,
+          "title": "user_error.UserError***",
+          "contents": "\nInherits from the Exception class. Used in /raise_error (which is a trusted users only command, used for debugging on_slash_command_error.)\n"
+        },
+        {
+          "indentation_level": 4,
+          "title": "#### user_error.UserError._raise()**"
+          "contents": "Takes no arguments. Raises self."
+        },
+        {
+          "indentation_level": 2,
+          "title": "the_documentation_file_loader",
+          "contents": "Custom module I made for loading documentation.json into real documentation.\n"
+        },
+        {
+          "indentation_level": 3,
+          "title": "DocumentationNotFound",
+          "contents": "\n"
+        },
+        {
+          ""
         }
       ]
     }
