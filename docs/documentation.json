@@ -1,5 +1,5 @@
 [
-  {"file_name": "why-i-made-this-project.md", 
+  {"file_name": "docs/why-i-made-this-project.md", 
   "contains_legend": "false",
   "contents": [
     {"indentation_level": 1,
@@ -10,7 +10,7 @@
     }
   },
   {
-    "file_name": "permissions_needed_and_why.md",
+    "file_name": "docs/permissions_needed_and_why.md",
     "contains_legend": "false",
     "contents": [
       {"indentation_level": 1,
@@ -42,6 +42,52 @@
       }
 
       
+      ]
+    },
+      "file_name": "docs/misc-non-commands-documentation.md",
+      "contains_legend": "true",
+      "contents": [
+        {
+          "indentation_level": 1,
+          "title": "Why does thiis document exist? Users won't need it.",
+          "contents": "\nThis is here for people who want to see how my bot works, or people who want to contribute :)\n\n"
+        },
+        {
+          "indentation_level": 1,
+          "title": "Misc. Non-Command-Functions (not in main.py)",
+          "contents": "\n\n"
+        },
+        {
+          "indentation_level": 2,
+          "title": "save_files.FileSaver***",
+          "contents": "Exists to clean up the code."
+        },
+        {
+          "indentation_level": 3,
+          "title": "__init__**",
+          "contents": "save_files.FileSaver.__init__(self,name=None,enabled=False,printSuccessMessagesByDefault=False,math_problems_file_name=\"math_problems.json\",guild_math_problems_file_name=\"guild_math_problems.json\",trusted_users_file_name=\"trusted_users.txt\",vote_threshold_file_name=\"vote_threshold.txt\"):\n\nThis method creates a new FileSaver object with the name specified.\nBy default, it is not enabled and does not print messages by default.\nThe other 4 parameters are the file names. These should not be specified (they are default), unless the file names are not the ones specified.\n"
+        },
+        {
+          "indentation_level": 3,
+          "title": "__str__**",
+          "contents": "\n\nThis method returns its name. Takes no parameters.\n",
+        },
+        {
+          "indentation_level": 3,
+          "title": "enable",
+          "contents": "This method enables the FileSaver object.\n"
+        },
+        {
+          "indentation_level": 3,
+          "title": "disable**",
+          "contents": "Disables the FileSaver. Attempting to call save_files or load_files while the FileSaver is not enabled will raise a RuntimeError."
+        },
+        {
+          "indentation_level": 3,
+          "title": "load_files",
+          "contents": "Actually loads the files. Returns the loaded files in a dictionary.\nThe keys are the same as the variable names (except they are strings.)\n\nRaises a RuntimeError if attempting to call this method on a non-enabled object.\nTakes one default argument (printSuccessMessages), which is set to None by default, if so it defaults to the printSuccessMessagesByDefault attribute set in __init__.\n"
+        },
+        
       ]
     }
   ]
