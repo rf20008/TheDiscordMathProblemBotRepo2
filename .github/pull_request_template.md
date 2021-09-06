@@ -1,5 +1,5 @@
 # What issue are you fixing?
-<!Please provide the issue number in short hand syntax (#issue_number).>
+<!Please provide the issue number in short hand syntax (#issue_number). If you aren't fixing an issue, you can delete this portion. You just need the checklist :)> 
 # How are you fixing it?
 *No description provided.*
 
