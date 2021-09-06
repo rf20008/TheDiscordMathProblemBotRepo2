@@ -135,8 +135,8 @@
         },
         {
           "indentation_level": 3,
-          "title": "DocumentationException***",
-          "contents": "The base exception for the_documentation_file_loader module"
+          "title": "DocumentationException***", 
+          "contents": "The base exception for the_documentation_file_loader module\n"
         },
         {
           "indentation_level": 4,
