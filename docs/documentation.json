@@ -134,16 +134,47 @@
         },
         {
           "indentation_level": 2,
-          "title": "the_documentation_file_loader",
+          "title": "the_documentation_file_loader**",
           "contents": "Custom module I made for loading documentation.json into real documentation.\n"
         },
         {
           "indentation_level": 3,
-          "title": "DocumentationNotFound",
+          "title": "DocumentationException**",
+          "contents": "The base exception for the_documentation_file_loader module"
+        },
+        {
+          "indentation_level": 4,
+          "title": "the_documentation_file_loader.DocumentationNotFound._raise**",
+          "contents": "Takes no arguments. Raises self."
+        },
+        {
+          "indentation_level": 3,
+          "title": "DocumentationNotFound**",
+          "contents": "This exception, or subclasses of it, is raised when Documentation is not found. Is a subclass of DocumentationException."
+        },
+        {
+          "indentation_level": 3,
+          "title": "DocumentationFileNotFound**",
+          "contents": "A custom exception that is raised when a documentation file is not found."
+        },
+        {
+          "indentation_level": 3,
+          "title": "DocumentationFileLoader**",
           "contents": "\n"
         },
         {
-          ""
+          "indentation_level": 4,
+          "title": "__init__**",
+          "contents": "Takes no arguments and creates a new DocumentationFileLoader object."
+        },
+        {
+          "indentation_level": 4
+          "title": "_load_documentation_file**",
+          "contents": "Loads the documentation.json file and returns the dictionary-ify'd version of it\n"
+        },
+        {
+          "indentation_level": 4,
+          "title": "load_"
         }
       ]
     }

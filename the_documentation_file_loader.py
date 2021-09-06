@@ -1,7 +1,9 @@
 import json
-class DocumentationNotFound(Exception):
+class DocumentationException(Exception):
   def _raise(self):
     raise self
+class DocumentationNotFound(DocumentationException):
+  pass
 class DocumentationFileNotFound(DocumentationNotFound):
   pass
 
