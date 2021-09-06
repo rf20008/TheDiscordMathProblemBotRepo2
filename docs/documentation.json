@@ -114,7 +114,7 @@
           "contents": "This function returns the bot's intents."
         },
         {
-          "indentation_level": 2
+          "indentation_level": 2,
           "title": "user_error",
           "contents": "\n"
         },
@@ -125,7 +125,7 @@
         },
         {
           "indentation_level": 4,
-          "title": "user_error.UserError._raise()**"
+          "title": "user_error.UserError._raise()**",
           "contents": "Takes no arguments. Raises self."
         },
         {
