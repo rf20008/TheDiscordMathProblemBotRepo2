@@ -80,7 +80,7 @@ async def on_slash_command_error(ctx, error):
     await ctx.reply(embed=ErrorEmbed("You are not the owner of this bot."))
     return
   #Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
-  await ctx.reply("Your command raised an exception:" + str(type(error)) + ": " + str(error))
+  await ctx.reply("Your command raised an exception:"  + str(error))
   
 
 @bot.event
@@ -634,7 +634,7 @@ async def documentation(ctx,documentation_type, help_obj):
     await ctx.reply(embed=SuccessEmbed(f"""<@{ctx.author.id}> [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
   """),ephemeral=True)
     return None
-  d = DocumentationLoader()
+  d = DocumentationFileLoader()
   try:
     documentation =d.get_documentation({"command_help":"docs/commands-documentation.md",
     "function_help":"docs/misc-non-commands-documentation"}[documentation_type], help_obj)
