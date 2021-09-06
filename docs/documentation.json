@@ -250,8 +250,34 @@
       },
       {
         "indentation_level": 2,
-        "title": "delallbotproblems ⚠"
-      }
+        "title": "delallbotproblems ⚠",
+        "contents": "\nDeletes all bot-generated problems (generated via /generate_new_problems)\n"
+      },
+      {
+        "indentation_level": 2,
+        "title": "new_problem",
+        "contents": "\nSubmit a new problem! You may specify a question (up to 250 characters) and an answer (up to 100 characters). Note that the limitations may be shorter due to restrictions on slash commands.\n\n"
+      },
+      {
+        "indentation_level": 2,
+        "title": "check_answer",
+        "contents": "Check your answer to a specified problem! You need to specify its id, the answer you are giving and whether it is a guild problem (defaults to global)."
+      },
+      {
+        "contents": "Lists as many math problems as it can but does not list all problems due to Discord character limitations (1930 characters max.) If it does not list all of them, the problems it lists are in the order it iterates over the dictionary (which should be the order in which they were added, oldest to youngest, but if you are forking this bot it may be random.)\nTakes 3 options\nshow_solved_problems: whether to show problems that you have already solved\nshow_guild_problems: whether to show guild problems\nshow_only_guild_problems: whether to only show guild problems and not global ones. Will show nothing if this is set to true but show_guild_problems is not."
+      },
+      {
+        "indentation_level": 2,
+        "title": "vote",
+        "contents": "Vote for the deletion of a bad problem!\nThe options needed should be self-explanatory."
+      },
+      {
+        "indentation_level": 2,
+        "title": "unvote",
+        "contents": "Takes away a deletion vote of a problem."
+      },
+      {}
+      
     ]
     }
   ]
