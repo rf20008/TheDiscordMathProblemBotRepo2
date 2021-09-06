@@ -640,10 +640,10 @@ async def documentation(ctx,documentation_type, help_obj):
     "function_help":"docs/misc-non-commands-documentation"}[documentation_type], help_obj)
   except DocumentationNotFound as e:
     if isinstance(e,DocumentationFileNotFound):
-        await ctx.reply(embed=ErrorEmbed("Documentation file was not found. Please report this error!"))
-        return
-      await ctx.reply(embed=ErrorEmbed(str(e)))
+      await ctx.reply(embed=ErrorEmbed("Documentation file was not found. Please report this error!"))
       return
+    await ctx.reply(embed=ErrorEmbed(str(e)))
+    return
     await ctx.reply(documentation)
 
 
