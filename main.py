@@ -632,7 +632,7 @@ async def documentation(ctx,documentation_type, help_obj):
   print(type(documentation_type))
   fileBeginHelp = 0
   if documentation_type == "documentation_link":
-    await ctx.reply(embed=SuccessEmbed(f"""<@{ctx.author.id} [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
+    await ctx.reply(embed=SuccessEmbed(f"""<@{ctx.author.id}> [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
   """),ephemeral=True)
     return
     d = DocumentationLoader()
