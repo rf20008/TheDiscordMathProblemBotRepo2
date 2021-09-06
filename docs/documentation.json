@@ -139,7 +139,7 @@
         },
         {
           "indentation_level": 3,
-          "title": "DocumentationException**",
+          "title": "DocumentationException***",
           "contents": "The base exception for the_documentation_file_loader module"
         },
         {
@@ -149,12 +149,12 @@
         },
         {
           "indentation_level": 3,
-          "title": "DocumentationNotFound**",
+          "title": "DocumentationNotFound***",
           "contents": "This exception, or subclasses of it, is raised when Documentation is not found. Is a subclass of DocumentationException."
         },
         {
           "indentation_level": 3,
-          "title": "DocumentationFileNotFound**",
+          "title": "DocumentationFileNotFound***",
           "contents": "A custom exception that is raised when a documentation file is not found."
         },
         {
@@ -174,7 +174,18 @@
         },
         {
           "indentation_level": 4,
-          "title": "load_"
+          "title": "load_documentation_into_readable_files",
+          "contents": "Loads the documentation from the file into readable files."
+        },
+        {
+          "indentation_level": 4,
+          "title": "get_documentation",
+          "contents": "Fetches the documentation and returns it."
+        },
+        {
+          "indentation_level": 2,
+          "title": "custom_embeds***",
+          "contents": 
         }
       ]
     }
