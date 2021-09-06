@@ -12,9 +12,9 @@ class DocumentationFileLoader:
   def _load_documentation_file(self):
      with open("docs/documentation.json", "r") as file:
       return json.loads(file)
-  def load_files(self):
+  def load_documentation_into_readable_files(self):
     dictToStoreFileContent = {}
-    docmentation_from_json = self._load_documentaiton_file()
+    docmentation_from_json = self._load_documentation_file()
     for item in documentation_from_json:
       dictToStoreFileContent[item["file_name"]] = ""
       if item["contains_legend"] == "true":

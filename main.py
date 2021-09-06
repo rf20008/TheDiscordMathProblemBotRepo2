@@ -27,6 +27,13 @@ mathProblems={}
 guildMathProblems = {}
 guild_maximum_problem_limit=125
 erroredInMainCode = False
+def loading_documentation_thread()
+  d = DocumentationFileLoader()
+  d.load_documentation()
+  d.load_documentation_into_readable_files()
+  del d
+t = threading.Thread(target=loading_documentation_thread)
+t.start()
 #print("yes")
 
 def the_daemon_file_saver():
@@ -626,104 +633,24 @@ async def documentation(ctx,documentation_type, help_obj):
   print(type(documentation_type))
   fileBeginHelp = 0
   if documentation_type == "documentation_link":
-    await ctx.send(embed=SuccessEmbed(f"""<@{ctx.author.id} [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
+    await ctx.reply(embed=SuccessEmbed(f"""<@{ctx.author.id} [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
   """),ephemeral=True)
-  elif documentation_type == "function_help":
-    #Inefficient method. There must be a faster way :)) Any ideas? Open an PR.
-
-    fileLines = []
+    return
+    d = DocumentationLoader()
     try:
-      with open("docs/misc-non-commands-documentation.md") as file:
-        for line in file:
-          fileLines.append(line)
-    except Exception as e:
-      print(e)
-      on_slash_command_error(ctx=ctx,error=e)
-    for line in fileLines:
-      fileBeginHelp += 1
-      lineStr = str(line)
-      try:
-        if lineStr[0] != "#": #Not a heading
-          continue
-      except: #line is empty
-        continue
-      e = 0
-      for char in lineStr:
-        e += 1
-        if char != "#":
-          break
-      lineStr2= copy.deepcopy(lineStr)
-      Help_obj2 = copy.deepcopy(help_obj)
-      for item in legendChars:
-        try:
-          lineStr2.replace(item,"")
-        except:
-          pass #Legend not here!
-        try:
-          Help_obj2.replace(item,"")
-        except:
-          pass
-      if lineStr2 == Help_obj2[e:]:
-        str_to_return = ""
-        
-        for line in fileLines[fileBeginHelp:]:
-          try:
-            if str(line)[0] == "#":
-              break
-          except:
-            pass
-          str_to_return += str(line) + "\n"
-        await ctx.send(str_to_return)
+      documentation =d.get_documentation({"command_help":"docs/commands-documentation.md",
+    "function_help":"docs/misc-non-commands-documentation"}[documentation_type], help_obj)
+    except DocumentationNotFound as e:
+      if isinstance(e,DocumentationFileNotFound):
+        await ctx.reply(embed=ErrorEmbed("Documentation file was not found. Please report this error!"))
         return
-      else:
-        continue # This isn't the thing you are looking for.
-    await ctx.send(embed=ErrorEmbed("Your help has not been found.",custom_title="Help not found :("))
+      await ctx.reply(embed=ErrorEmbed(str(e)))
+      return
+    await ctx.reply(documentation)
 
-  elif documentation_type == "command_help":
-    #Inefficient method. There must be a faster way :)) Any ideas? Open an PR.
-    fileLines = []
-    with open("docs/commands-documentation.md") as file:
-      for line in file:
-        fileLines.append(line)
-    for line in fileLines:
-      fileBeginHelp += 1
-      lineStr = str(line)
-      try:
-        if lineStr[0] != "#": #Not a heading
-          continue
-      except: #line is empty
-        continue
-      e = 0
-      for char in lineStr:
-        e += 1
-        if char != "#":
-          break
-      lineStr2= copy.deepcopy(lineStr)
-      Help_obj2 = copy.deepcopy(help_obj)
-      for item in legendChars:
-        try:
-          lineStr2.replace(item,"")
-        except:
-          pass #Legend not here!
-        try:
-          Help_obj2.replace(item,"")
-        except:
-          pass
-      if lineStr2 == Help_obj2[e:]:
-        str_to_return = ""
-        
-        for line in fileLines[fileBeginHelp:]:
-          try:
-            if str(line)[0] == "#":
-              break
-          except:
-            pass
-          str_to_return += str(line) + "\n"
-        await ctx.send(str_to_return)
-        return
-      else:
-        continue # This isn't the thing you are looking for.
-    await ctx.send(embed=ErrorEmbed("Your help has not been found.",custom_title="Help not found :("))
+
+
+
 
 
 print("The bot has finished setting up and will now run.")
