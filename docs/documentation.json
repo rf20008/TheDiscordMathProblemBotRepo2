@@ -276,8 +276,79 @@
         "title": "unvote",
         "contents": "Takes away a deletion vote of a problem."
       },
-      {}
+      {
+        "indentation_level": 2,
+        "title": "delete_problem",
+        "content": "Deletes a problem. You must be a global trusted user or have the Administrator permission (and the target must be a guild problem.)"
+      },
+      {
+        "indentation_level": 1,
+        "title": "Miscellaneous Commands",
+        "content": "\n\nMiscellaneous commands I added for testing/fun/things that might be necessary. Most of them are restricted to trusted users.\n"
+      },
+      {
+        "indentation_level": 2,
+        "title": "test_embeds",
+        "content": "Prints some test embeds. Will be removed soon."
+      },
+      {
+        "indentation_level": 2,
+        "title": "force_load_files ⚠",
+        "content": "Forcefully loads the dictionary of math problems, the dictionary of guild math problems, the list of trusted users, and the vote threshold from the files. Useful for debugging. Restricted to global trusted users. Runs by creating a FileSaver object and calling it's load_files function, saving the result to the variables."
+      },
+      {
+        "indentation_level": 2,
+        "title": "force_save_files ⚠",
+        "content": "Forcefully saves the dictionary of math problems, the dictionary of guild math problems, the list of trusted users, and the vote threshold to the files."
+      },
+      {
+        "indentation_level": 2,
+        "title": "list_trusted_users",
+        "content": "Lists the trusted users by mentioning them in an ephemeral message.\n\nWhy is this message ephemeral? This is so that they don't actually get pinged. This seems counter-intuitive, but it's the best solution :)"
+      },
+      {
+        "indentation_level": 2,
+        "title": "set_vote_threshold ⚠",
+        "content": "Sets the global vote threshold for problems need to get deleted via vote."
+      },
+      {
+        "indentation_level": 2,
+        "title": "add_trusted_user ⚠",
+        "content": "Adds a trusted user. Takes one parameter (the user). Mention the user (don't worry, the user should not get pinged)"
+      },
+      {
+        "indentation_level": 2,
+        "title": "remove_trusted_user ⚠",
+        "content": "Removes trusted user status from a user."
+      },
+      {
+        "indentation_level": 2,
+        "title": "ping",
+        "content": "Returns the bot's latency"
+      },
+      {
+        "indentation_level": 2,
+        "title": "what_is_vote_threshold",
+        "content": "Print's the global vote threshold for the deletion of math problems :)"
+      },
+      {
+        "indentation_level": 2,
+        "title": "github_repo",
+        "content": "Prints the list to the github repository :)"
+      },
+      {
+        "indentation_level": 2,
+        "title": "raise_error",
+        "content": "Raises an error. Useful for debugging."
+      },
+      {
+        "indentation_level": 2,
+        "title": "documentation",
+        "content": "Help with the documentation of this bot"
+      },
       
-    ]
+      
+      
+      ]
     }
   ]
