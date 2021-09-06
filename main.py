@@ -79,7 +79,7 @@ async def on_slash_command_error(ctx, error):
 
 @bot.event
 async def on_command_error(ctx,error):
-  
+  print(error)
   if isinstance(error, errors.MissingRequiredArgument):
     await ctx.channel.send(embed=ErrorEmbed("Not enough arguments!"))
     return
@@ -632,9 +632,13 @@ async def documentation(ctx,documentation_type, help_obj):
     #Inefficient method. There must be a faster way :)) Any ideas? Open an PR.
 
     fileLines = []
-    with open("~/docs/misc-non-commands-documentation.md") as file:
-      for line in file:
-        fileLines.append(line)
+    try:
+      with open("docs/misc-non-commands-documentation.md") as file:
+        for line in file:
+          fileLines.append(line)
+    except Exception as e:
+      print(e)
+      on_slash_command_error(ctx=ctx,error=e)
     for line in fileLines:
       fileBeginHelp += 1
       lineStr = str(line)
@@ -678,7 +682,7 @@ async def documentation(ctx,documentation_type, help_obj):
   elif documentation_type == "command_help":
     #Inefficient method. There must be a faster way :)) Any ideas? Open an PR.
     fileLines = []
-    with open("~/docs/commands-documentation.md") as file:
+    with open("docs/commands-documentation.md") as file:
       for line in file:
         fileLines.append(line)
     for line in fileLines:
