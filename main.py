@@ -14,7 +14,7 @@ from save_files import FileSaver
 from user_error import UserError
 from the_documentation_file_loader import *
 
-legendChars = ["*", "⚠", "**", "***"] #Here for documentation_help command
+
 warnings.simplefilter("ignore")
 #constants
 #print("Is it working??")
@@ -27,7 +27,7 @@ mathProblems={}
 guildMathProblems = {}
 guild_maximum_problem_limit=125
 erroredInMainCode = False
-def loading_documentation_thread()
+def loading_documentation_thread():
   d = DocumentationFileLoader()
   d.load_documentation()
   d.load_documentation_into_readable_files()
