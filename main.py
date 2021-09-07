@@ -80,7 +80,7 @@ async def on_slash_command_error(ctx, error):
     await ctx.reply(embed=ErrorEmbed("You are not the owner of this bot."))
     return
   #Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
-  await ctx.reply("Your command raised an exception:"  + str(error))
+  await ctx.reply(embed=ErrorEmbed("This command raised an exception:"  + str(error),custom_title="Oh, no! An exception occurred"))
   
 
 @bot.event
