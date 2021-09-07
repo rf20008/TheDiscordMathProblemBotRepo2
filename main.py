@@ -116,7 +116,7 @@ async def force_load_files(ctx):
     await ctx.reply(ErrorEmbed("You aren't trusted and therefore don't have permission to forceload files."))
     return
   try:
-    FileSaver2 = FileSaver(enabled=True,printSuccessMessagesByDefault=False)
+    FileSaver3 = FileSaver(enabled=True,printSuccessMessagesByDefault=False)
     FileSaverDict = FileSaver3.load_files()
     (math_problems,guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["mathProblems"],FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
     FileSaver2.goodbye()
