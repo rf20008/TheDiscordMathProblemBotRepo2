@@ -237,12 +237,13 @@ async def list_all_problem_ids(ctx,show_only_guild_problems=False):
   await ctx.reply("\n".join([str(item) for item in mathProblems.keys()])[:1930])
 @slash.slash_command(name="generate_new_problems", description= "Generates new problems", options=[Option(name="num_new_problems_to_generate", description="the number of problems that should be generated", type=OptionType.INTEGER, required=True)])
 async def generate_new_problems(ctx, num_new_problems_to_generate):
-  await ctx.reply(type=5)()
+  await ctx.reply(type=5)
   if ctx.author.id not in trusted_users:
     await ctx.reply(embed=ErrorEmbed("You aren't trusted!",ephemeral=True))
     return
   elif num_new_problems_to_generate > 200:
     await ctx.reply("You are trying to create too many problems. Try something smaller than or equal to 200.", ephemeral=True)
+  print(1)
   for i in range(num_new_problems_to_generate):
     operation = random.choice(["+", "-", "*", "/", "^"])
     if operation == "^":
