@@ -39,7 +39,8 @@
         "contents": "\n\nMostly needed for message commands. If this permission is revoked:\n1) Message commands will not work\n2) The bot will not appear in the member list."
       }
     ]
-    },{
+    },
+    {
       "file_name": "docs/misc-non-commands-documentation.md",
       "contains_legend": "true",
       "contents": [
@@ -135,12 +136,12 @@
         },
         {
           "indentation_level": 3,
-          "title": "DocumentationException***", 
-          "contents": "The base exception for the_documentation_file_loader module\n"
-        },
+   "hi": "yay",       "title": "DocumentationException***", 
+          "contents": "The base exception for the_documentation_file_loader module\n",
+    "test": 4    },
         {
           "indentation_level": 4,
-          "title": "the_documentation_file_loader.DocumentationNotFound._raise**",
+          "title":"the_documentation_file_loader.DocumentationNotFound._raise**",
           "contents": "Takes no arguments. Raises self."
         },
         {
@@ -290,7 +291,7 @@
       {
         "indentation_level": 2,
         "title": "force_load_files ⚠",
-        "content": "Forcefully loads the dictionary of math problems, the dictionary of guild math problems, the list of trusted users, and the vote threshold from the files. Useful for debugging. Restricted to global trusted users. Runs by creating a FileSaver object and calling it's load_files function, saving the result to the variables."
+        "content": "Forcefully loads the dictionary of math problems, the dictionary of guild math problems, the list of trusted users, and the vote threshold from the files. Useful for debugging. Restricted to global trusted users. Runs by creating a FileSaver object and calling its load_files function, saving the result to the variables."
       },
       {
         "indentation_level": 2,
