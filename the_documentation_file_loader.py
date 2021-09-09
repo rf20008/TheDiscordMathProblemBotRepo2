@@ -44,17 +44,17 @@ No Mark: This is a command without user restrictions"""
   def get_documentation(self,documentationSource,documentationItem):
     _documentation = None
     documentation_from_json = self._load_documentation_file()
-    for item in [Item["file_name"] for Item in documentation_from_json]:
-      print(type(item))
-      if item == documentationSource:
+    for item in documentation_from_json:
+      if item["file_name"] == documentationSource:
         _documentation = item
         break
     if _documentation == None:
       raise DocumentationFileNotFound(f"Documentation file {documentationSource} not found")
-    for item2 in documentation_from_json[item]:
+    for item2 in _documentation["contents"]:
+      print(type("title"))
       if item2["title"] == documentationItem:
         return item2["contents"]
-    raise DocumentationNotFound(f"Documentation for {DocumentationItem} not found.")
+    raise DocumentationNotFound(f"Documentation for {documentationItem} not found.")
     
 
   
