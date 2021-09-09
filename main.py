@@ -639,13 +639,14 @@ async def documentation(ctx,documentation_type, help_obj):
   try:
     documentation =d.get_documentation({"command_help":"docs/commands-documentation.md",
     "function_help":"docs/misc-non-commands-documentation"}[documentation_type], help_obj)
+    print(documentation)
   except DocumentationNotFound as e:
     if isinstance(e,DocumentationFileNotFound):
       await ctx.reply(embed=ErrorEmbed("Documentation file was not found. Please report this error!"))
       return
     await ctx.reply(embed=ErrorEmbed(str(e)))
     return
-    await ctx.reply(documentation)
+  await ctx.reply(documentation)
 
 
 

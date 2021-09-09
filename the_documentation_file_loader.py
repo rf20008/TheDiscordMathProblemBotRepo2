@@ -51,7 +51,7 @@ No Mark: This is a command without user restrictions"""
     if _documentation == None:
       raise DocumentationFileNotFound(f"Documentation file {documentationSource} not found")
     for item2 in _documentation["contents"]:
-      print(type("title"))
+      print(type(item2))
       if item2["title"] == documentationItem:
         return item2["contents"]
     raise DocumentationNotFound(f"Documentation for {documentationItem} not found.")
