@@ -34,7 +34,6 @@ class DocumentationFileLoader:
 No Mark: This is a command without user restrictions"""
       item2 = item["contents"]
       for Item in item2:
-        print(str(Item) + "\n" * 8)
         dictToStoreFileContent[item["file_name"]] += "\n" + "#" * Item["heading_level"] + " " +Item["title"] + "\n" + Item["contents"]
     
     for documentationFileName in dictToStoreFileContent.keys():
