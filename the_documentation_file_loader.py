@@ -18,11 +18,8 @@ class DocumentationFileLoader:
 
   def load_documentation_into_readable_files(self):
     dictToStoreFileContent = {}
-    #print(type(dictToStoreFileContent))
     docs_json = self._load_documentation_file()
-    #print(type(docs_json))
     for item in docs_json:
-      #print(item)
       dictToStoreFileContent[item["file_name"]] = "<! For you Github PR People, this file is dynamically generated from documentation.json. You should consider editing that instead :)>"
       if item["contains_legend"] == "true":
         dictToStoreFileContent[item["file_name"]] += """# Legend - global
@@ -37,6 +34,7 @@ class DocumentationFileLoader:
 No Mark: This is a command without user restrictions"""
       item2 = item["contents"]
       for Item in item2:
+        print(str(Item) + "\n" * 8)
         dictToStoreFileContent[item["file_name"]] += "\n" + "#" * Item["heading_level"] + " " +Item["title"] + "\n" + Item["contents"]
     
     for documentationFileName in dictToStoreFileContent.keys():
