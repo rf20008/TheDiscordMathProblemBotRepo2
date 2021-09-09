@@ -1,4 +1,4 @@
-<!This file is dynamically generated from documentation.json. If you want to contribute or edit this file, edit that instead :)>
+<!This file is dynamically generated from documentation.json. If you want to contribute/this is your fork, edit that instead :)>
 
 # Hello Reader!
 
