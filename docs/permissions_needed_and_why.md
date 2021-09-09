@@ -1,4 +1,4 @@
-<!For you Github PR People, this file is dynamically generated from documentation.json. You should consider editing that instead :)>
+<!This file is dynamically generated from documentation.json. If you want to contribute or edit this file, edit that instead :)>
 
 # Permissions needed
 
