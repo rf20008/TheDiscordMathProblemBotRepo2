@@ -1,5 +1,5 @@
 import math, random, os, warnings, threading, aiohttp, copy, nextcord, discord
-import  dislash
+import dislash
 import return_intents
 import nextcord.ext.commands as nextcord_commands
 
