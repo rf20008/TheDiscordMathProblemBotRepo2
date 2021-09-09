@@ -20,9 +20,10 @@ class DocumentationFileLoader:
     dictToStoreFileContent = {}
     docs_json = self._load_documentation_file()
     for item in docs_json:
-      dictToStoreFileContent[item["file_name"]] = "<! For you Github PR People, this file is dynamically generated from documentation.json. You should consider editing that instead :)>"
+      dictToStoreFileContent[item["file_name"]] = "<!For you Github PR People, this file is dynamically generated from documentation.json. You should consider editing that instead :)>\n"
       if item["contains_legend"] == "true":
         dictToStoreFileContent[item["file_name"]] += """# Legend - global
+        
 *: Only useable by users with the Administrator (considering changing it to Manage Server) permission and global trusted users can use.
 
 ⚠: Only useable by global trusted users (such as /raise_error)

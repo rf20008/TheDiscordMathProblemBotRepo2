@@ -1,4 +1,5 @@
-<! For you Github PR People, this file is dynamically generated from documentation.json. You should consider editing that instead :)>
+<!For you Github PR People, this file is dynamically generated from documentation.json. You should consider editing that instead :)>
+
 # Hello Reader!
 
 Hello! I'm a 13 year old who wanted to code a discord bot. 

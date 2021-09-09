@@ -1,4 +1,6 @@
-<! For you Github PR People, this file is dynamically generated from documentation.json. You should consider editing that instead :)># Legend - global
+<!For you Github PR People, this file is dynamically generated from documentation.json. You should consider editing that instead :)>
+# Legend - global
+        
 *: Only useable by users with the Administrator (considering changing it to Manage Server) permission and global trusted users can use.
 
 ⚠: Only useable by global trusted users (such as /raise_error)
