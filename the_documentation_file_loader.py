@@ -11,15 +11,18 @@ class DocumentationFileLoader:
   def __init__(self):
     pass
   def _load_documentation_file(self):
-    e = ""
     with open("docs/documentation.json", "r") as file:
-      for line in file:
-        e+= str(line) + "\n"
-    return json.loads(e)
+      return json.loads("\n".join([str(item) for item in file]))
+
+	
+
   def load_documentation_into_readable_files(self):
     dictToStoreFileContent = {}
-    docmentation_from_json = self._load_documentation_file()
-    for item in documentation_from_json:
+    #print(type(dictToStoreFileContent))
+    docs_json = self._load_documentation_file()
+    #print(type(docs_json))
+    for item in docs_json:
+      #print(item)
       dictToStoreFileContent[item["file_name"]] = "<! For you Github PR People, this file is dynamically generated from documentation.json. You should consider editing that instead :)>"
       if item["contains_legend"] == "true":
         dictToStoreFileContent[item["file_name"]] += """# Legend - global
@@ -34,8 +37,7 @@ class DocumentationFileLoader:
 No Mark: This is a command without user restrictions"""
       item2 = item["contents"]
       for Item in item2:
-        dictToStoreFileContent[item["file_name"]] += "\n" + "#" * item2["indentation"] + " " +item2["title"] + "\n"
-        dictToStoreFileContent[item["contents"]]
+        dictToStoreFileContent[item["file_name"]] += "\n" + "#" * Item["heading_level"] + " " +Item["title"] + "\n" + Item["contents"]
     
     for documentationFileName in dictToStoreFileContent.keys():
       with open(documentationFileName,"w") as file:
@@ -49,7 +51,7 @@ No Mark: This is a command without user restrictions"""
         _documentation = item
         break
     if _documentation == None:
-      raise DocumentationFileNotFound("Documentation file not found")
+      raise DocumentationFileNotFound(f"Documentation file {documentationSource} not found")
     for item2 in documentation_from_json[item]:
       if item2["title"] == documentationItem:
         return item2["contents"]

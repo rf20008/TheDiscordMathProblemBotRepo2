@@ -2,7 +2,7 @@
 		"file_name": "docs/why-i-made-this-project.md",
 		"contains_legend": "false",
 		"contents": [{
-			"indentation_level": 1,
+			"heading_level": 1,
 			"title": "Hello Reader!",
 			"contents": "\nHello! I'm a 13 year old who wanted to code a discord bot. \nI made a reminder bot (on replit), but I realized many other bots (giselle, dyno, and sesh, and others) made one.\nI wanted to be unique, so I decided to make this bot. :)\nFeel free to contribute to my project with issues/pull requests! :)"
 		}]
@@ -11,33 +11,33 @@
 		"file_name": "docs/permissions_needed_and_why.md",
 		"contains_legend": "false",
 		"contents": [{
-				"indentation_level": 1,
+				"heading_level": 1,
 				"title": "Permissions needed",
 				"contents": "\n"
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "Read Messages",
 				"contents": "\n\nUsed for message related commands. You may revoke this permission, as most of the functionality is in slash commands.\n"
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "Send Messages",
 				"contents": "\n\nUsed to send command replies. If this permission is revoked, many commands will be unresponsive.\n"
 
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "Embed Links",
 				"contents": "\n\nThis permission is needed to send embeds, which are more beautiful versions of messages and used by many bots.\n"
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "Use Slash Commands",
 				"contents": "Mostly used for not running into 403 errors. This permission may be revoked. Although you may run into 403 errors.\n\n"
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "View Channels",
 				"contents": "\n\nMostly needed for message commands. If this permission is revoked:\n1) Message commands will not work\n2) The bot will not appear in the member list."
 			}
@@ -47,174 +47,174 @@
 		"file_name": "docs/misc-non-commands-documentation.md",
 		"contains_legend": "true",
 		"contents": [{
-				"indentation_level": 1,
+				"heading_level": 1,
 				"title": "Why does thiis document exist? Users won't need it.",
 				"contents": "\nThis is here for people who want to see how my bot works, or people who want to contribute :)\n\n"
 			},
 			{
-				"indentation_level": 1,
+				"heading_level": 1,
 				"title": "Misc. Non-Command-Functions (not in main.py)",
 				"contents": "\n\n"
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "save_files.FileSaver***",
 				"contents": "Exists to clean up the code."
 			},
 			{
-				"indentation_level": 3,
+				"heading_level": 3,
 				"title": "__init__**",
 				"contents": "save_files.FileSaver.__init__(self,name=None,enabled=False,printSuccessMessagesByDefault=False,math_problems_file_name=\"math_problems.json\",guild_math_problems_file_name=\"guild_math_problems.json\",trusted_users_file_name=\"trusted_users.txt\",vote_threshold_file_name=\"vote_threshold.txt\"):\n\nThis method creates a new FileSaver object with the name specified.\nBy default, it is not enabled and does not print messages by default.\nThe other 4 parameters are the file names. These should not be specified (they are default), unless the file names are not the ones specified.\n"
 			},
 			{
-				"indentation_level": 3,
+				"heading_level": 3,
 				"title": "__str__**",
 				"contents": "\n\nThis method returns its name. Takes no parameters.\n"
 			},
 			{
-				"indentation_level": 3,
+				"heading_level": 3,
 				"title": "enable",
 				"contents": "This method enables the FileSaver object.\n"
 			},
 			{
-				"indentation_level": 3,
+				"heading_level": 3,
 				"title": "disable**",
 				"contents": "Disables the FileSaver. Attempting to call save_files or load_files while the FileSaver is not enabled will raise a RuntimeError."
 			},
 			{
-				"indentation_level": 3,
+				"heading_level": 3,
 				"title": "load_files**",
 				"contents": "Actually loads the files. Returns the loaded files in a dictionary.\nThe keys are the same as the variable names (except they are strings.)\n\nRaises a RuntimeError if attempting to call this method on a non-enabled object.\nTakes one default argument (printSuccessMessages), which is set to None by default, if so it defaults to the printSuccessMessagesByDefault attribute set in __init__.\n"
 			},
 			{
-				"indentation_level": 3,
+				"heading_level": 3,
 				"title": "change_name**",
 				"contents": "Changes self.name to the new name specified (1 argument, name = new_name, not keyword-only)\n"
 			},
 			{
-				"indentation_level": 3,
+				"heading_level": 3,
 				"title": "save_files**",
 				"contents": "This method saves the files. As this is in a different function, the global keyword may not work, so the things to save must be specified. However, the argument names are different (except for vote_threshold)\nguildMathProblems's argument is guild_math_problems_dict.\nvote_threshold's argument name is vote_threshold.\nmathProblem's argument name is math_problems_dict.\ntrusted_users's argument name is math_problems_dict.\n\nRaises a RuntimeError if this object is not enabled when this method is called.\nAlso takes an additional argument (printSuccessMessages, before the dictionary names) which defaults to None and takes the printSuccessMessagesByDefault argument specified in __init__."
 			},
 			{
-				"indentation_level": 3,
+				"heading_level": 3,
 				"title": "my_id**",
 				"contents": "Returns self.id (the filesaver number). Takes no arguments.\n"
 			},
 			{
-				"indentation_level": 3,
+				"heading_level": 3,
 				"title": "goodbye**",
 				"contents": "Returns self.id (the filesaver number). Takes no arguments.\n"
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "return_indents***",
 				"contents": "\n"
 			},
 			{
-				"indentation_level": 3,
+				"heading_level": 3,
 				"title": "return_indents.return_indents**",
 				"contents": "This function returns the bot's intents."
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "user_error",
 				"contents": "\n"
 			},
 			{
-				"indentation_level": 3,
+				"heading_level": 3,
 				"title": "user_error.UserError***",
 				"contents": "\nInherits from the Exception class. Used in /raise_error (which is a trusted users only command, used for debugging on_slash_command_error.)\n"
 			},
 			{
-				"indentation_level": 4,
+				"heading_level": 4,
 				"title": "user_error.UserError._raise()**",
 				"contents": "Takes no arguments. Raises self."
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "the_documentation_file_loader**",
 				"contents": "Custom module I made for loading documentation.json into real documentation.\n"
 			},
 			{
-				"indentation_level": 3,
+				"heading_level": 3,
 				"hi": "yay",
 				"title": "DocumentationException***",
 				"contents": "The base exception for the_documentation_file_loader module\n",
 				"test": 4
 			},
 			{
-				"indentation_level": 4,
+				"heading_level": 4,
 				"title": "the_documentation_file_loader.DocumentationNotFound._raise**",
 				"contents": "Takes no arguments. Raises self."
 			},
 			{
-				"indentation_level": 3,
+				"heading_level": 3,
 				"title": "DocumentationNotFound***",
 				"contents": "This exception, or subclasses of it, is raised when Documentation is not found. Is a subclass of DocumentationException."
 			},
 			{
-				"indentation_level": 3,
+				"heading_level": 3,
 				"title": "DocumentationFileNotFound***",
 				"contents": "A custom exception that is raised when a documentation file is not found."
 			},
 			{
-				"indentation_level": 3,
+				"heading_level": 3,
 				"title": "DocumentationFileLoader**",
 				"contents": "\n"
 			},
 			{
-				"indentation_level": 4,
+				"heading_level": 4,
 				"title": "__init__**",
 				"contents": "Takes no arguments and creates a new DocumentationFileLoader object."
 			},
 			{
-				"indentation_level": 4,
+				"heading_level": 4,
 				"title": "_load_documentation_file**",
 				"contents": "Loads the documentation.json file and returns the dictionary-ify'd version of it\n"
 			},
 			{
-				"indentation_level": 4,
+				"heading_level": 4,
 				"title": "load_documentation_into_readable_files",
 				"contents": "Loads the documentation from the file into readable files."
 			},
 			{
-				"indentation_level": 4,
+				"heading_level": 4,
 				"title": "get_documentation",
 				"contents": "Fetches the documentation and returns it."
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "custom_embeds***",
 				"contents": "\nThis module exists so I can include embeds easier :)\n"
 			},
 			{
-				"indentation_level": 3,
+				"heading_level": 3,
 				"title": "custom_embeds.SimpleEmbed***",
 				"contents": "A subclass of Embed, with 3 arguments: title, description, and color.\n(Basically just discord.Embed, but its arguments are in a different order.)"
 			},
 			{
-				"indentation_level": 3,
+				"heading_level": 3,
 				"title": "custom_embeds.ErrorEmbed***",
 				"contents": "Inherits from custom_embeds.SimpleEmbed. Also takes 3 arguments, except the color is by default set to red, is the second argument, and the title argument is custom_title and is the 3rd argument."
 			},
 			{
-				"indentation_level": 3,
+				"heading_level": 3,
 				"title": "custom_embeds.SuccessEmbed***",
 				"contents": "Basically the same as ErrorEmbed. Except the title argument is called successTitle and the default color is green.\n"
 			},
 			{
-				"indentation_level": 1,
+				"heading_level": 1,
 				"title": "# Misc. Non-Command-Functions in main.py",
 				"contents": "\n\n"
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "the_daemon_file_saver**",
 				"contents": "A function that runs in a different thread (lines 43, 45 starts the thread) that saves the files every 45 seconds. Runs using a save_files.FileSaver() object.\n\nWhen it is started, it creates a FileSaver object which is enabled and prints messages by default. It then loads the files and saves them to the dictionary. Every 45 seconds, it saves the dictionaries to the files using FileSaver's save_files() method."
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "generate_new_id**",
 				"contents": "Generates a random number from 1 to 10,000,000,000 and returns it. Used for generating problem id's. Takes no arguments."
 			}
@@ -224,125 +224,127 @@
 		"file_name": "docs/commands-documentation.md",
 		"contains_legend": "true",
 		"contents": [{
-				"indentation_level": 1,
+				"heading_level": 1,
 				"title": "Empty messages?",
 				"contents": "This bot  utilizes embeds for its messages. If you deny that permission, most messages will be empty (and there may be 403 errors.)\n"
 			},
 			{
-				"indentation_level": 1,
+				"heading_level": 1,
 				"title": "Math Problem Related",
 				"contents": "\n"
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "show_problem_info",
 				"contents": "Shows the problem info of a problem, excluding its answer (unless the user is a global trusted user/ has the Administrator permission in the guild and the problem is a guild problem  and the show_all_data option is set to True).\n\nRaw: Whether to send it as a dictionary.\n\n"
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "list_all_problem_ids",
 				"contents": "List all the problem ids of the problems stored withthe bot. Takes a few arguments (show_only_guild_problems: whether to show only guild problems. Otherwise shows only global math problems)"
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "generate_new_problems ⚠",
 				"contents": "Generates new 4 function math problems (up to 200 at a time)"
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "delallbotproblems ⚠",
 				"contents": "\nDeletes all bot-generated problems (generated via /generate_new_problems)\n"
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "new_problem",
 				"contents": "\nSubmit a new problem! You may specify a question (up to 250 characters) and an answer (up to 100 characters). Note that the limitations may be shorter due to restrictions on slash commands.\n\n"
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "check_answer",
 				"contents": "Check your answer to a specified problem! You need to specify its id, the answer you are giving and whether it is a guild problem (defaults to global)."
 			},
 			{
+        "heading_level": 2,
+        "title": "list_all_problems",
 				"contents": "Lists as many math problems as it can but does not list all problems due to Discord character limitations (1930 characters max.) If it does not list all of them, the problems it lists are in the order it iterates over the dictionary (which should be the order in which they were added, oldest to youngest, but if you are forking this bot it may be random.)\nTakes 3 options\nshow_solved_problems: whether to show problems that you have already solved\nshow_guild_problems: whether to show guild problems\nshow_only_guild_problems: whether to only show guild problems and not global ones. Will show nothing if this is set to true but show_guild_problems is not."
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "vote",
 				"contents": "Vote for the deletion of a bad problem!\nThe options needed should be self-explanatory."
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "unvote",
 				"contents": "Takes away a deletion vote of a problem."
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "delete_problem",
 				"content": "Deletes a problem. You must be a global trusted user or have the Administrator permission (and the target must be a guild problem.)"
 			},
 			{
-				"indentation_level": 1,
+				"heading_level": 1,
 				"title": "Miscellaneous Commands",
 				"content": "\n\nMiscellaneous commands I added for testing/fun/things that might be necessary. Most of them are restricted to trusted users.\n"
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "test_embeds",
 				"content": "Prints some test embeds. Will be removed soon."
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "force_load_files ⚠",
 				"content": "Forcefully loads the dictionary of math problems, the dictionary of guild math problems, the list of trusted users, and the vote threshold from the files. Useful for debugging. Restricted to global trusted users. Runs by creating a FileSaver object and calling its load_files function, saving the result to the variables."
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "force_save_files ⚠",
 				"content": "Forcefully saves the dictionary of math problems, the dictionary of guild math problems, the list of trusted users, and the vote threshold to the files."
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "list_trusted_users",
 				"content": "Lists the trusted users by mentioning them in an ephemeral message.\n\nWhy is this message ephemeral? This is so that they don't actually get pinged. This seems counter-intuitive, but it's the best solution :)"
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "set_vote_threshold ⚠",
 				"content": "Sets the global vote threshold for problems need to get deleted via vote."
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "add_trusted_user ⚠",
 				"content": "Adds a trusted user. Takes one parameter (the user). Mention the user (don't worry, the user should not get pinged)"
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "remove_trusted_user ⚠",
 				"content": "Removes trusted user status from a user."
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "ping",
 				"content": "Returns the bot's latency"
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "what_is_vote_threshold",
 				"content": "Print's the global vote threshold for the deletion of math problems :)"
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "github_repo",
 				"content": "Prints the list to the github repository :)"
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "raise_error",
 				"content": "Raises an error. Useful for debugging."
 			},
 			{
-				"indentation_level": 2,
+				"heading_level": 2,
 				"title": "documentation",
 				"content": "Help with the documentation of this bot"
 			}
