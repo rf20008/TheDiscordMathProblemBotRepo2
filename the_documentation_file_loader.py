@@ -39,7 +39,7 @@ No Mark: This is a command without user restrictions"""
     for documentationFileName in dictToStoreFileContent.keys():
       with open(documentationFileName,"w") as file:
         file.write(dictToStoreFileContent[documentationFileName])
-    return documentation_from_json
+    return docs_json
   def get_documentation(self,documentationSource,documentationItem):
     _documentation = None
     documentation_from_json = self._load_documentation_file()
