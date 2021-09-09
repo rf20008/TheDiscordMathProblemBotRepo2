@@ -1,5 +1,5 @@
 import math, random, os, warnings, threading, aiohttp, copy, nextcord, discord
-import  dislash
+import dislash
 import return_intents
 import nextcord.ext.commands as nextcord_commands
 
@@ -638,7 +638,7 @@ async def documentation(ctx,documentation_type, help_obj):
   d = DocumentationFileLoader()
   try:
     documentation =d.get_documentation({"command_help":"docs/commands-documentation.md",
-    "function_help":"docs/misc-non-commands-documentation"}[documentation_type], help_obj)
+    "function_help":"docs/misc-non-commands-documentation.md"}[documentation_type], help_obj)
     print(documentation)
   except DocumentationNotFound as e:
     if isinstance(e,DocumentationFileNotFound):
