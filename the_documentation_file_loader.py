@@ -45,7 +45,8 @@ No Mark: This is a command without user restrictions"""
     _documentation = None
     documentation_from_json = self._load_documentation_file()
     for item in [Item["file_name"] for Item in documentation_from_json]:
-      if documentation_from_json[item]["file_name"] == documentationSource:
+      print(type(item))
+      if item == documentationSource:
         _documentation = item
         break
     if _documentation == None:
