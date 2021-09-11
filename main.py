@@ -100,11 +100,6 @@ async def on_command_error(ctx,error):
   await ctx.reply("Something went wrong! Message the devs ASAP! (Our tags are ay136416#2707 and duck_master#8022)")
   raise error
 
-@slash.slash_command(name="test_embeds",description="This command will test embeds")
-async def test_embeds(ctx):
-  await ctx.reply(embed=SuccessEmbed("Hello"))
-  await ctx.reply(embed=ErrorEmbed("Hello!"))
-  await ctx.reply(embed=SimpleEmbed("Hello."))
 
 
 @slash.command(name="force_load_files",description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!")

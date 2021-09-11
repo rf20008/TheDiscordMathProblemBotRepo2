@@ -55,8 +55,6 @@ Deletes a problem. You must be a global trusted user or have the Administrator p
 
 Miscellaneous commands I added for testing/fun/things that might be necessary. Most of them are restricted to trusted users.
 
-## test_embeds
-Prints some test embeds. Will be removed soon.
 ## force_load_files ⚠
 Forcefully loads the dictionary of math problems, the dictionary of guild math problems, the list of trusted users, and the vote threshold from the files. Useful for debugging. Restricted to global trusted users. Runs by creating a FileSaver object and calling its load_files function, saving the result to the variables.
 ## force_save_files ⚠

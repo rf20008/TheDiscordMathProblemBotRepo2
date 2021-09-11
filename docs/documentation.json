@@ -290,11 +290,6 @@
 			},
 			{
 				"heading_level": 2,
-				"title": "test_embeds",
-				"contents": "Prints some test embeds. Will be removed soon."
-			},
-			{
-				"heading_level": 2,
 				"title": "force_load_files ⚠",
 				"contents": "Forcefully loads the dictionary of math problems, the dictionary of guild math problems, the list of trusted users, and the vote threshold from the files. Useful for debugging. Restricted to global trusted users. Runs by creating a FileSaver object and calling its load_files function, saving the result to the variables."
 			},
