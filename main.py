@@ -5,7 +5,7 @@ import nextcord.ext.commands as nextcord_commands
 
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 from time import sleep, time
-from nextcord.ext import commands, tasks #for discord_slash
+from nextcord.ext import commands, tasks 
 from random import randint
 from nextcord import Embed, Color
 from custom_embeds import *
