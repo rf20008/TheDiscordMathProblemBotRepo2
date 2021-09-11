@@ -58,7 +58,7 @@ def generate_new_id():
   return random.randint(0, 10**14)
 Intents = return_intents.return_intents()
 bot = nextcord_commands.Bot(
-    command_prefix = nextcord_commands.when_mentioned_or('math_problems.'),intents=Intents
+    " ",intents=Intents
 )
 #bot.load_extension("jishaku")
 
@@ -603,7 +603,6 @@ async def github_repo(ctx):
 @slash.slash_command(name="raise_error", description = "⚠ This command will raise an error. Useful for checking on_slash_command_error", 
 options=[Option(name="error_type",description = "The type of error", choices=[
   OptionChoice(name="Exception",value="Exception"),
-  OptionChoice(name="Warning", value="Warning"),
   OptionChoice(name="UserError", value = "UserError")
   ],required=True), Option(name="error_description",description="The description of the error", type=OptionType.STRING,required=False)])
 async def raise_error(ctx, error_type,error_description = None):
@@ -614,8 +613,6 @@ async def raise_error(ctx, error_type,error_description = None):
     error_description = f"Manually raised error by {ctx.author.mention}"  
   if error_type == "Exception":
     error = Exception(error_description)
-  elif error_type == "Warning":
-    error = Warning(error_description)
   elif error_type == "UserError":
     error=UserError(error_description)
   await ctx.send(embed=SuccessEmbed(f"Successfully created error: {str(error)}. Will now raise the error.", successTitle="Successfully raised error."))
