@@ -620,8 +620,6 @@ options=[Option(name="documentation_type", description = "What kind of help you 
   ],required=True),
   Option(name="help_obj", description = "What you want help on", required=True,type=OptionType.STRING)])
 async def documentation(ctx,documentation_type, help_obj):
-  print(documentation_type)
-  print(type(documentation_type))
   fileBeginHelp = 0
   if documentation_type == "documentation_link":
     await ctx.reply(embed=SuccessEmbed(f"""<@{ctx.author.id}> [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
@@ -631,7 +629,6 @@ async def documentation(ctx,documentation_type, help_obj):
   try:
     documentation =d.get_documentation({"command_help":"docs/commands-documentation.md",
     "function_help":"docs/misc-non-commands-documentation.md"}[documentation_type], help_obj)
-    print(documentation)
   except DocumentationNotFound as e:
     if isinstance(e,DocumentationFileNotFound):
       await ctx.reply(embed=ErrorEmbed("Documentation file was not found. Please report this error!"))
