@@ -54,7 +54,7 @@ No Mark: This is a command without user restrictions"""
       print(type(item2))
       if item2["title"] == documentationItem:
         return item2["contents"]
-    raise DocumentationNotFound(f"Documentation for {documentationItem} not found.")
+    raise DocumentationNotFound(f"Documentation for {documentationItem} not found")
     
 
   
