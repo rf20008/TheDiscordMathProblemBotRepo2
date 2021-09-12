@@ -113,8 +113,6 @@ Inherits from custom_embeds.SimpleEmbed. Also takes 3 arguments, except the colo
 ### custom_embeds.SuccessEmbed***
 Basically the same as ErrorEmbed. Except the title argument is called successTitle and the default color is green.
 
-<<<<<<< HEAD
-=======
 ## problems_module
 
 
@@ -179,7 +177,6 @@ Adds an empty guild to the cache
 Adds a problem!
 #### delete_problem
 Delete a problem
->>>>>>> 830e1461955a931eb77d437c428d93c8961b2221
 # # Misc. Non-Command-Functions in main.py
 
 

@@ -1,8 +1,9 @@
 import nextcord, json
 
 # This is a module containing MathProblem and MathProblemCache objects. (And exceptions as well!)
-
-class TooLongArgument(Exception):
+class MathProblemsModuleException(Exception):
+  "The base exception for problems_module."
+class TooLongArgument(MathProblemsModuleException):
   '''Raised when an argument passed into MathProblem() is too long.'''
   pass
 class TooLongAnswer(TooLongArgument):
@@ -11,7 +12,7 @@ class TooLongAnswer(TooLongArgument):
 class TooLongQuestion(TooLongArgument):
   """Raised when a question is too long."""
 
-class GuildAlreadyExistsException(Exception):
+class GuildAlreadyExistsException(MathProblemsModuleException):
   "Raised when MathProblemCache.add_empty_guild tries to run on a guild that already has problems."
 
 class MathProblem:
@@ -168,7 +169,12 @@ class MathProblemCache:
       file.write(thing_to_write)
   def get_problem(self,guild_id,problem_id):
     "Gets the problem with this guild id and problem id"
-    return self._dict[guild_id][problem_id]
+    try:
+      guild_id_dict = self._dict[guild_id]
+    except:
+      raise MathProblemsModuleException(f"Guild_id {guild_id} was not found in the cache.")
+    
+    return guild_id_dict[problem_id]
   def fetch_problem(self,guild_id,problem_id):
     "Reloads the cache with the file and then loads the problem."
     self.update_cache()
@@ -177,10 +183,16 @@ class MathProblemCache:
     """Gets the guild problems! Guild must be a Guild object. If you are trying to get global problems, use get_global_problems."""
     if not isinstance(Guild, nextcord.Guild):
       raise TypeError
+    if not Guild.id in self._dict.keys():
+      raise MathProblemsModuleException("Guild id not found.")
     return self._dict[Guild.id].values()
   def get_global_problems(self):
     "Returns global problems"
-    return self._dict[None].values()
+    try:
+      return self._dict[None].values()
+    except:
+      self._dict[None] = {}
+      return {}
   def add_empty_guild(self,Guild):
     "Adds an dictionary that is empty for the guild. Guild must be a nextcord.Guild object"
     if not isinstance(Guild, nextcord.Guild):

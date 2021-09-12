@@ -15,7 +15,6 @@ This bot  utilizes embeds for its messages. If you deny that permission, most me
 
 # Math Problem Related
 
-
 ## show_problem_info
 Shows the problem info of a problem, excluding its answer (unless the user is a global trusted user/ has the Administrator permission in the guild and the problem is a guild problem  and the show_all_data option is set to True).
 
