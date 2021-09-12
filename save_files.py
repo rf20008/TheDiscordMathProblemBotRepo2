@@ -29,11 +29,10 @@ class FileSaver:
     trusted_users=[]
     if printSuccessMessages or printSuccessMessages==None and self.printSuccessMessagesByDefault:
 
-      print(f"{str(self)}: Attempting to load guild_math_problems_dict from {self.guild_math_problems_file_name}, vote_threshold from {self.vote_threshold_file_name}, trusted_users_list from {self.trusted_users_file_name}, and math_problems_dict from {self.math_problems_file_name}...")
+      print(f"{str(self)}: Attempting to load vote_threshold from vote_threshold.txt, trusted_users_list from trusted_users.txt, and math_problems  from math_problems.json...")
     with open("math_problems.json", "r") as file:
       mathProblems = json.load(fp=file)
 
-      print(f"{str(self)}: Attempting to load vote_threshold from vote_threshold.txt, trusted_users_list from trusted_users.txt, and math_problems  from math_problems.json...")
     problems_module.get_main_cache().update_cache()
 
     with open("trusted_users.txt", "r") as file2:

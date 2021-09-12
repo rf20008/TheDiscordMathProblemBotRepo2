@@ -380,9 +380,6 @@
 				"title": "delete_problem",
 				"contents": "Delete a problem"
 			},
-
-
->>>>>>> 830e1461955a931eb77d437c428d93c8961b2221
 			{
 				"heading_level": 1,
 				"title": "# Misc. Non-Command-Functions in main.py",
