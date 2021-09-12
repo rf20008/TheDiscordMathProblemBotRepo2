@@ -33,7 +33,7 @@ class MathProblem:
     self.author=author
   def edit(self,question=None,answer=None,id=None,guild_id=None,voters=None,solvers=None,author=None):
     """Edit a math problem."""
-    if id != None or guild_id != None or voters != None or solvers != None or author !=:
+    if id != None or guild_id != None or voters != None or solvers != None or author != None:
       warnings.warn("You are changing one of the attributes that you should not be changing.", category=RuntimeWarning)
     if question != None:
       if len(question) > 250:
