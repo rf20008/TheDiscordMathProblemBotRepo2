@@ -321,7 +321,12 @@
         "heading_level": 4,
         "title": "get_author",
         "contents": "Returns the author"
-      }
+      },
+      {
+        "heading_level": 4,
+        "title": "is_author",
+        "contents": "Returns if the user is the author"
+      },
 			{
 				"heading_level": 3,
 				"title": "MathProblemCache",

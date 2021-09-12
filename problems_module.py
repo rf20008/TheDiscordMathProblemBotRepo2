@@ -123,6 +123,12 @@ class MathProblem:
     return str(self.convert_to_dict)
   def get_author(self):
     "Returns self.author"
+    return self.author
+  def is_author(self,User):
+    "Returns if the user is the author"
+    if not isinstance(User,nextcord.User) and not isinstance(User,nextcord.Member):
+      raise TypeError
+    return User.id == self.get_author()
     
 
 class MathProblemCache:
