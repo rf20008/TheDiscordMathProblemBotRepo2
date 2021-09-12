@@ -1,15 +1,10 @@
-<<<<<<< HEAD
-import json
-numFileSavers=0
-class FileSaver:
-  def __init__(self,name=None,enabled=False,printSuccessMessagesByDefault=False,math_problems_file_name="math_problems.json",guild_math_problems_file_name="guild_math_problems.json",trusted_users_file_name="trusted_users.txt",vote_threshold_file_name="vote_threshold.txt"):
-=======
+
 import json, problems_module
 numFileSavers=0
 class FileSaver:
   "A class that save files"
   def __init__(self,name=None,enabled=False,printSuccessMessagesByDefault=False,):
->>>>>>> 830e1461955a931eb77d437c428d93c8961b2221
+
     """Creates a new FileSaver object."""
     global numFileSavers
     numFileSavers+=1
@@ -18,13 +13,6 @@ class FileSaver:
     self.id = numFileSavers
     self.printSuccessMessagesByDefault=printSuccessMessagesByDefault
     self.enabled=True
-<<<<<<< HEAD
-    self.math_problems_file_name=math_problems_file_name
-    self.guild_math_problems_file_name=guild_math_problems_file_name
-    self.trusted_users_file_name=trusted_users_file_name
-    self.vote_threshold_file_name=vote_threshold_file_name
-=======
->>>>>>> 830e1461955a931eb77d437c428d93c8961b2221
     self.name=name
   def __str__(self):
     return self.name
