@@ -203,6 +203,8 @@
 				"title": "custom_embeds.SuccessEmbed***",
 				"contents": "Basically the same as ErrorEmbed. Except the title argument is called successTitle and the default color is green.\n"
 			},
+<<<<<<< HEAD
+=======
       {
 				"heading_level": 2,
 				"title": "problems_module",
@@ -380,6 +382,7 @@
 			},
 
 
+>>>>>>> 830e1461955a931eb77d437c428d93c8961b2221
 			{
 				"heading_level": 1,
 				"title": "# Misc. Non-Command-Functions in main.py",
