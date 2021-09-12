@@ -317,7 +317,11 @@
 				"title": "get_num_voters",
 				"contents": "Returns the number of voters of this problem"
 			},
-
+      {
+        "heading_level": 4,
+        "title": "get_author",
+        "contents": "Returns the author"
+      }
 			{
 				"heading_level": 3,
 				"title": "MathProblemCache",

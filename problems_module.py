@@ -1,4 +1,4 @@
-import nextcord, json
+import nextcord, json, warnings
 
 # This is a module containing MathProblem and MathProblemCache objects. (And exceptions as well!)
 class MathProblemsModuleException(Exception):
@@ -17,7 +17,7 @@ class GuildAlreadyExistsException(MathProblemsModuleException):
 
 class MathProblem:
   "For readability purposes :)"
-  def __init__(self,question,answer,id,guild_id=None,voters=[],solvers=[]):
+  def __init__(self,question,answer,id,author,guild_id=None,voters=[],solvers=[]):
     if guild_id != None and not isinstance(guild_id, int):
       raise TypeError
     if len(question) > 250:
@@ -30,8 +30,11 @@ class MathProblem:
     self.guild_id = guild_id
     self.voters = voters
     self.solvers=solvers
-  def edit(self,question=None,answer=None,id=None,guild_id=None,voters=None,solvers=None):
+    self.author=author
+  def edit(self,question=None,answer=None,id=None,guild_id=None,voters=None,solvers=None,author=None):
     """Edit a math problem."""
+    if id != None or guild_id != None or voters != None or solvers != None or author !=:
+      warnings.warn("You are changing one of the attributes that you should not be changing.", category=RuntimeWarning)
     if question != None:
       if len(question) > 250:
         raise TooLongQuestion(f"Question {question} is too long (250+ characters)")
@@ -48,6 +51,8 @@ class MathProblem:
       self.voters = voters
     if solvers != None:
       self.solvers = solvers
+    if author != None:
+      self.author = author
   def convert_to_dict(self):
     """Convert self to a dictionary"""
     if self.guild_id == None:
@@ -61,7 +66,8 @@ class MathProblem:
       "id": self.id,
       "guild_id": guild_id,
       "voters": self.voters,
-      "solvers": self.solvers
+      "solvers": self.solvers,
+      "author": self.author
     }
   def add_voter(self,voter):
     """Adds a voter. Voter must be a nextcord.User object or nextcord.Member object."""
@@ -115,6 +121,9 @@ class MathProblem:
   def __str__(self):
     "Return str(self) by converting it to a dictionary and converting the dictionary to a string"
     return str(self.convert_to_dict)
+  def get_author(self):
+    "Returns self.author"
+    
 
 class MathProblemCache:
   def __init__(self):
@@ -138,7 +147,8 @@ class MathProblemCache:
       id = problem["id"],
       guild_id = guild_id,
       voters = problem["voters"],
-      solvers=problem["solvers"]
+      solvers=problem["solvers"],
+      author=problem["author"]
     )
     return problem2
   def update_cache(self):
