@@ -208,12 +208,11 @@
 				"title": "problems_module",
 				"contents": "\n\n A module made for clarity purposes :)"
 			},
-      {
-        "heading_level": 3,
-        "title": "MathProblemModuleException",
-        "contents": "Base exception for problems_module."
-      }
 			{
+				"heading_level": 3,
+				"title": "MathProblemModuleException",
+				"contents": "Base exception for problems_module."
+			}, {
 				"heading_level": 3,
 				"title": "TooLongArgument",
 				"contents": "Raised when an argument passed into MathProblem() is too long."
