@@ -2,6 +2,10 @@ import math, random, os, warnings, threading, aiohttp, copy, nextcord, discord
 import dislash
 import return_intents
 import nextcord.ext.commands as nextcord_commands
+<<<<<<< HEAD
+=======
+import problems_module
+>>>>>>> 830e1461955a931eb77d437c428d93c8961b2221
 
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 from time import sleep, time
@@ -13,6 +17,10 @@ from nextcord.ext.commands import errors
 from save_files import FileSaver
 from user_error import UserError
 from the_documentation_file_loader import *
+<<<<<<< HEAD
+=======
+from problems_module import get_main_cache
+>>>>>>> 830e1461955a931eb77d437c428d93c8961b2221
 
 
 warnings.simplefilter("ignore")
@@ -42,11 +50,19 @@ def the_daemon_file_saver():
   global vote_threshold
   FileSaverObj = FileSaver("The Daemon File Saver", enabled=True,printSuccessMessagesByDefault=True)
   FileSaverDict = FileSaverObj.load_files(True)
+<<<<<<< HEAD
   (math_problems,guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["mathProblems"],FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
 
   while True:  
     sleep(45) 
     FileSaverObj.save_files(True,guildMathProblems,vote_threshold,mathProblems,trusted_users)
+=======
+  (guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
+
+  while True:  
+    FileSaverObj.save_files(True,guildMathProblems,vote_threshold,mathProblems,trusted_users)
+    sleep(45)
+>>>>>>> 830e1461955a931eb77d437c428d93c8961b2221
       
 t = threading.Thread(target=the_daemon_file_saver,name="The File Saver",daemon=True)
 

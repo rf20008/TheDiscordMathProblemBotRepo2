@@ -203,6 +203,186 @@
 				"title": "custom_embeds.SuccessEmbed***",
 				"contents": "Basically the same as ErrorEmbed. Except the title argument is called successTitle and the default color is green.\n"
 			},
+<<<<<<< HEAD
+=======
+      {
+				"heading_level": 2,
+				"title": "problems_module",
+				"contents": "\n\n A module made for clarity purposes :)"
+			},
+      {
+				"heading_level": 3,
+				"title": "TooLongArgument",
+				"contents": "Raised when an argument passed into MathProblem() is too long."
+			},
+      {
+				"heading_level": 3,
+				"title": "TooLongAnswer",
+				"contents": "Raised when an answer is too long."
+			},
+
+      {
+				"heading_level": 3,
+				"title": "TooLongQuestion",
+				"contents": "Raised when a question's too long"
+			},
+
+      {
+				"heading_level": 3,
+				"title": "GuildAlreadyExistsException",
+				"contents": "Raised when MathProblemCache.add_empty_guild adds a guild that already has problems"
+			},
+      {
+				"heading_level": 3,
+				"title": "MathProblem",
+				"contents": "A class that represents a math problem. Made for readability :)"
+			},
+      {
+				"heading_level": 4,
+				"title": "edit",
+				"contents": "Edits a math problem, changing its question, answer, id, guild_id, voters, and solvers."
+			},
+      {
+				"heading_level": 4,
+				"title": "convert_to_dict",
+				"contents": "Convert a Math Problem into a dictionary in order to be stored"
+			},
+      {
+				"heading_level": 4,
+				"title": "get_answer",
+				"contents": "Returns my answer"
+			},
+      {
+				"heading_level": 4,
+				"title": "get_question",
+				"contents": "Returns my question"
+			},
+      {
+				"heading_level": 4,
+				"title": "check_answer_and_add_checker",
+				"contents": "Checks the answer. if it's correct, adds the solver to the list of its solvers."
+			},
+      {
+				"heading_level": 4,
+				"title": "check_answer",
+				"contents": "Checks the answer"
+			},
+      
+      {
+				"heading_level": 4,
+				"title": "add_voter",
+				"contents": "Adds a voter"
+			},
+
+      {
+				"heading_level": 4,
+				"title": "add_solver",
+				"contents": "Adds a solver"
+			},
+
+      {
+				"heading_level": 4,
+				"title": "my_id",
+				"contents": "Returns the id of it as a list"
+			},
+
+      {
+				"heading_level": 4,
+				"title": "get_voters",
+				"contents": "Returns voters"
+			},
+
+      {
+				"heading_level": 4,
+				"title": "get_solvers",
+				"contents": "Returns my solvers"
+			},
+
+      {
+				"heading_level": 4,
+				"title": "is_voter",
+				"contents": "Returns whether a user is a voter for the deletion of this problem"
+			},
+
+      {
+				"heading_level": 4,
+				"title": "is_solver",
+				"contents": "Returns whether a user is a solver of this problem"
+			},
+
+      {
+				"heading_level": 4,
+				"title": "get_num_voters",
+				"contents": "Returns the number of voters of this problem"
+			},
+      
+      {
+				"heading_level": 3,
+				"title": "MathProblemCache",
+				"contents": "A cache of math problems :)"
+			},
+
+      {
+				"heading_level": 4,
+				"title": "convert_dict_to_math_problem",
+				"contents": "The reverse of mathProblem.to_dict"
+			},
+
+      {
+				"heading_level": 4,
+				"title": "update_cache",
+				"contents": "Updates the cache by re-loading the file. Automatically called upon initialization"
+			},
+
+      {
+				"heading_level": 4,
+				"title": "update_file_cache",
+				"contents": "Updates the file used to store math problems."
+			},
+
+      {
+				"heading_level": 4,
+				"title": "get_problem",
+				"contents": "Gets a problem"
+			},
+
+      {
+				"heading_level": 4,
+				"title": "fetch_problem",
+				"contents": "Reloads the cache and then gets the problem"
+			},
+
+      {
+				"heading_level": 4,
+				"title": "get_guild_problems",
+				"contents": "Get problems from a specific guild."
+			},
+
+      {
+				"heading_level": 4,
+				"title": "get_global_problems",
+				"contents": "Get Global Problems"
+			},
+      {
+				"heading_level": 4,
+				"title": "add_empty_guild",
+				"contents": "Adds an empty guild to the cache"
+			},
+
+      {
+				"heading_level": 4,
+				"title": "add_problem",
+				"contents": "Adds a problem!"
+			},
+
+      {
+				"heading_level": 4,
+				"title": "delete_problem",
+				"contents": "Delete a problem"
+			},
+
+
+>>>>>>> 830e1461955a931eb77d437c428d93c8961b2221
 			{
 				"heading_level": 1,
 				"title": "# Misc. Non-Command-Functions in main.py",
