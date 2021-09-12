@@ -1,6 +1,7 @@
 import json, problems_module
 numFileSavers=0
 class FileSaver:
+  "A class that save files"
   def __init__(self,name=None,enabled=False,printSuccessMessagesByDefault=False,):
     """Creates a new FileSaver object."""
     global numFileSavers
