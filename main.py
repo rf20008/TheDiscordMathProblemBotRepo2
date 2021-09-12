@@ -232,7 +232,6 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     await ctx.reply(e, ephemeral=True)
 @slash.slash_command(name="list_all_problem_ids", description= "List all problem ids", options=[Option(name="show_only_guild_problems", description="Whether to show guild problem ids",required=False,type=OptionType.BOOLEAN)])
 async def list_all_problem_ids(ctx,show_only_guild_problems=False):
-  await ctx.reply(type=5)()
   if show_only_guild_problems:
     guild_id = str(ctx.guild_id)
     if guild_id == None:

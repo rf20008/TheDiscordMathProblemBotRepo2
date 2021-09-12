@@ -117,6 +117,8 @@ Basically the same as ErrorEmbed. Except the title argument is called successTit
 
 
  A module made for clarity purposes :)
+### MathProblemModuleException
+Base exception for problems_module.
 ### TooLongArgument
 Raised when an argument passed into MathProblem() is too long.
 ### TooLongAnswer
