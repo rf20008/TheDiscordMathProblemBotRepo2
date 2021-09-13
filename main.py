@@ -138,7 +138,7 @@ async def force_save_files(ctx):
     global mathProblems,guildMathProblems
     global trusted_users
     global vote_threshold
-    if ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild.id not in main_cache._dict.keys() and ctx.guild.id is not None:
         main_cache.add_empty_guild(ctx.guild)
     if ctx.author.id not in trusted_users:
         await ctx.reply(embed=ErrorEmbed("You aren't trusted and therefore don't have permission to forcesave files."))
@@ -157,7 +157,7 @@ async def force_save_files(ctx):
 Option(name="problem_id",description="problem_id",type=OptionType.INTEGER,required=True),
 Option(name="guild_id",description="The guild id", type=OptionType.INTEGER)])
 async def edit_problem(ctx,new_question,new_answer,problem_id,guild_id):
-    if ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild.id not in main_cache._dict.keys() and ctx.guild.id is not None:
         main_cache.add_empty_guild(ctx.guild)
     try:
         problem = main_cache.get_problem(guild_id,problem_id)
@@ -177,7 +177,7 @@ async def edit_problem(ctx,new_question,new_answer,problem_id,guild_id):
 
 @slash.slash_command(name="show_problem_info", description = "Show problem info", options=[Option(name="problem_id", description="problem id of the problem you want to show", type=OptionType.INTEGER, required=True),Option(name="show_all_data", description="whether to show all data (only useable by problem authors and trusted users", type=OptionType.BOOLEAN, required=False),Option(name="raw", description="whether to show data as json?", type=OptionType.BOOLEAN, required=False),Option(name="is_guild_problem", description="whether the problem you are trying to view is a guild problem", type=OptionType.BOOLEAN, required=False)])
 async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_guild_problem=False):
-    if ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild.id not in main_cache._dict.keys() and ctx.guild.id is not None:
         main_cache.add_empty_guild(ctx.guild)
     problem_id = int(problem_id)
     
@@ -262,7 +262,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
         await ctx.reply(e, ephemeral=True)
 @slash.slash_command(name="list_all_problem_ids", description= "List all problem ids", options=[Option(name="show_only_guild_problems", description="Whether to show guild problem ids",required=False,type=OptionType.BOOLEAN)])
 async def list_all_problem_ids(ctx,show_only_guild_problems=False):
-    if ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild.id not in main_cache._dict.keys() and ctx.guild.id is not None:
         main_cache.add_empty_guild(ctx.guild)
     if show_only_guild_problems:
         guild_id = str(ctx.guild_id)
@@ -280,7 +280,7 @@ async def list_all_problem_ids(ctx,show_only_guild_problems=False):
   
 @slash.slash_command(name="generate_new_problems", description= "Generates new problems", options=[Option(name="num_new_problems_to_generate", description="the number of problems that should be generated", type=OptionType.INTEGER, required=True)])
 async def generate_new_problems(ctx, num_new_problems_to_generate):
-    if ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild.id not in main_cache._dict.keys() and ctx.guild.id is not None:
         main_cache.add_empty_guild(ctx.guild)
     await ctx.reply(type=5)
     if ctx.author.id not in trusted_users:
@@ -332,7 +332,7 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
 ##brief = "Adds a trusted user")
 @slash.slash_command(name="delallbotproblems", description = "delete all automatically generated problems")
 async def delallbotproblems(ctx):
-    if ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild.id not in main_cache._dict.keys() and ctx.guild.id is not None:
         main_cache.add_empty_guild(ctx.guild)
     await ctx.reply(embed=SimpleEmbed("",description="Attempting to delete bot problems"),ephemeral=True)
     numDeletedProblems =0
@@ -343,7 +343,7 @@ async def delallbotproblems(ctx):
     await ctx.reply(embed=SuccessEmbed(f"Successfully deleted {numDeletedProblems}!"))
 @slash.slash_command(name = "list_trusted_users", description = "list all trusted users")
 async def list_trusted_users(ctx):
-    if ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild.id not in main_cache._dict.keys() and ctx.guild.id is not None:
         main_cache.add_empty_guild(ctx.guild)
     e = ""
     for item in trusted_users:
@@ -353,7 +353,7 @@ async def list_trusted_users(ctx):
 @slash.slash_command(name="new_problem", description = "Create a new problem", options = [Option(name="answer", description="The answer to this problem", type=OptionType.STRING, required=True), Option(name="question", description="your question", type=OptionType.STRING, required=True),Option(name="guild_question", description="Whether it should be a question for the guild", type=OptionType.BOOLEAN, required=False)])
 async def new_problem(ctx, answer, question, guild_question=False):
     global mathProblems, guildMathProblems
-    if ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild.id not in main_cache._dict.keys() and ctx.guild.id is not None:
         main_cache.add_empty_guild(ctx.guild)
     if len(question) > 250:
         await ctx.reply(embed=ErrorEmbed("Your question is too long! Therefore, it cannot be added. The maximum question length is 250 characters.",custom_title="Your question is too long."), ephemeral=True)
@@ -398,7 +398,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
 @slash.slash_command(name="check_answer", description = "Check if you are right", options=[Option(name="problem_id", description="the id of the problem you are trying to check the answer of", type=OptionType.INTEGER, required=True),Option(name="answer", description="your answer", type=OptionType.STRING, required=True),Option(name="checking_guild_problem", description="whether checking a guild problem", type=OptionType.BOOLEAN, required = False)])
 async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
     global mathProblems,guildMathProblems
-    if ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild.id not in main_cache._dict.keys() and ctx.guild.id is not None:
         main_cache.add_empty_guild(ctx.guild)
     try:
         problem = main_cache.get_problem(ctx.guild.id if checking_guild_problem else None, problem_id)
@@ -417,7 +417,7 @@ async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
         return
 @slash.slash_command(name="list_all_problems", description = "List all problems stored with the bot", options=[Option(name="show_solved_problems", description="Whether to show solved problems", type=OptionType.BOOLEAN, required=False),Option(name="show_guild_problems", description="Whether to show solved problems", type=OptionType.BOOLEAN, required=False),Option(name="show_only_guild_problems", description="Whether to only show guild problems", type=OptionType.BOOLEAN, required=False)])
 async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=True,show_only_guild_problems=False):
-    if ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild.id not in main_cache._dict.keys() and ctx.guild.id is not None:
         main_cache.add_empty_guild(ctx.guild)
     showSolvedProblems = show_solved_problems
     guild_id = str(ctx.guild_id)
@@ -476,7 +476,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
 
 @slash.slash_command(name = "set_vote_threshold", description = "Sets the vote threshold", options=[Option(name="threshold", description="the threshold you want to change it to", type=OptionType.INTEGER, required=True)])
 async def set_vote_threshold(ctx,threshold):
-    if ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild.id not in main_cache._dict.keys() and ctx.guild.id is not None:
         main_cache.add_empty_guild(ctx.guild)
     global vote_threshold
     try:
@@ -498,7 +498,7 @@ async def set_vote_threshold(ctx,threshold):
 @slash.slash_command(name="vote", description = "Vote for the deletion of a problem", options=[Option(name="problem_id", description="problem id of the problem you are attempting to delete", type=OptionType.INTEGER, required=True),Option(name="is_guild_problem", description="problem id of the problem you are attempting to delete", type=OptionType.BOOLEAN, required=False)])
 async def vote(ctx, problem_id,is_guild_problem=False):
     global mathProblems, guildMathProblems
-    if ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild.id not in main_cache._dict.keys() and ctx.guild.id is not None:
         main_cache.add_empty_guild(ctx.guild)
     try:
         problem = main_cache.get_problem(ctx.guild_id if is_guild_problem else None,problem_id=problem_id)
@@ -521,7 +521,7 @@ async def vote(ctx, problem_id,is_guild_problem=False):
 @slash.slash_command(name="unvote", description = "Vote for the deletion of a problem", options=[Option(name="problem_id", description="problem id of the problem you are attempting to delete", type=OptionType.INTEGER, required=True),Option(name="is_guild_problem", description="problem id of the problem you are attempting to delete", type=OptionType.BOOLEAN, required=False)])
 async def unvote(ctx, problem_id,is_guild_problem=False):
     global mathProblems, guildMathProblems
-    if ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild.id not in main_cache._dict.keys() and ctx.guild.id is not None:
         main_cache.add_empty_guild(ctx.guild)
     try:
         problem = main_cache.get_problem(ctx.guild_id if is_guild_problem else None,problem_id=problem_id)

@@ -181,8 +181,10 @@ Get Global Problems
 Adds an empty guild to the cache
 #### add_problem
 Adds a problem!
-#### delete_problem
+#### remove_problem
 Delete a problem
+#### remove_duplicate_problems
+Removes duplicate math problems
 # # Misc. Non-Command-Functions in main.py
 
 
