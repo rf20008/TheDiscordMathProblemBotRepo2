@@ -85,8 +85,8 @@ class MathProblem:
         return {
             "question": self.question,
             "answer": self.answer,
-            "id": self.id,
-            "guild_id": self.guild_id,
+            "id": str(self.id),
+            "guild_id": str(self.guild_id),
             "voters": self.voters,
             "solvers": self.solvers,
             "author": self.author
@@ -197,6 +197,8 @@ class MathProblemCache:
             file.write(json.dumps(e))
     def get_problem(self,guild_id,problem_id):
         "Gets the problem with this guild id and problem id"
+        if not isinstance(guild_id, str) or not isinstance(problem_id,str):
+          warnings.warn("Either guild_id or problem_id is not a string", category=Warning)
         try:
             guild_id_dict = self._dict[guild_id]
             
@@ -205,7 +207,7 @@ class MathProblemCache:
         try:
           return guild_id_dict[problem_id]
         except:
-          raise Exception("*** Problem not found. Aborting ***")
+          raise Exception("*** Problem not found. Aborting search... ***")
     def fetch_problem(self,guild_id,problem_id):
         "Reloads the cache with the file and then loads the problem."
         self.update_cache()
@@ -256,7 +258,7 @@ class MathProblemCache:
         return Problem
     def remove_problem(self,guild_id,problem_id):
         "Removes a problem. Returns the deleted problem"
-        Problem = self._dict[guild_id][problem_id]
+        Problem = self.get_problem(guild_id,problem_id)
         del self._dict[guild_id][problem_id]
         return Problem
     def remove_duplicate_problems(self):

@@ -48,7 +48,7 @@ def the_daemon_file_saver():
     global vote_threshold
     FileSaverObj = FileSaver("The Daemon File Saver", enabled=True,printSuccessMessagesByDefault=True)
     FileSaverDict = FileSaverObj.load_files(True)
-    (math_problems,guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["mathProblems"],FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
+    (guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
 
     while True:    
         sleep(45) 
@@ -156,7 +156,7 @@ async def edit_problem(ctx,new_question,new_answer,problem_id,guild_id):
     if ctx.guild is not None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
     try:
-        problem = main_cache.get_problem(guild_id,problem_id)
+        problem = main_cache.get_problem(str(guild_id),str(problem_id))
         if not problem.is_author(ctx.author):
             await ctx.reply(embed=ErrorEmbed("You are not the author of this problem and therefore can't edit it!"))
     except:
@@ -178,11 +178,15 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     problem_id = int(problem_id)
     
     guild_id = str(ctx.guild_id)
-    
+    e=str(ctx.guild.id) if is_guild_problem else "null"
+
     if guild_id not in guildMathProblems:
         guildMathProblems[guild_id]={}
-
-    problem = main_cache.get_problem(ctx.guild.id if is_guild_problem else "null",problem_id)
+    try:
+        problem = main_cache.get_problem(e,str(problem_id))
+    except Exception as error:
+      await ctx.send(embed=ErrorEmbed(str(e)))
+      
 
     if is_guild_problem:
         if guild_id == None:
@@ -194,7 +198,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
         if problem_id not in guildMathProblems[guild_id].keys():
             await ctx.reply(embed=ErrorEmbed("Problem non-existant!"))
             return
-        problem = main_cache.get_problem(ctx.guild.id,problem_id)
+        problem = main_cache.get_problem(str(ctx.guild.id),str(problem_id))
         e= "Question: "
         e+= problem.get_question() 
         e+= "\nAuthor: "
@@ -267,7 +271,7 @@ async def list_all_problem_ids(ctx,show_only_guild_problems=False):
         if guild_id == None:
             await ctx.reply("Run this command in a Discord server or set show_only_guild_problems to False!", ephemeral=True)
             return
-        guild_problems = main_cache.get_guild_problems(ctx.guild)
+        guild_problems = main_cache.get_guild_problems(str(ctx.guild))
         thing_to_write = [str(problem.id) for problem in guild_problems]
         await ctx.reply(embed=SuccessEmbed("\n".join(thing_to_write)[:1950],successTitle="Problem IDs:"))
         return
@@ -336,7 +340,7 @@ async def delallbotproblems(ctx):
     numDeletedProblems =0
     problems_to_delete = [problem for problem in main_cache.get_global_problems() if problem.get_author() == 845751152901750824]
     for problem in problems_to_delete:
-        main_cache.remove_problem(problem.guild_id, problem.id)
+        main_cache.remove_problem(str(problem.guild_id), str(problem.id))
         numDeletedProblems+=1
     await ctx.reply(embed=SuccessEmbed(f"Successfully deleted {numDeletedProblems}!"))
 @slash.slash_command(name = "list_trusted_users", description = "list all trusted users")
@@ -378,7 +382,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
           answer=answer,
           id=problem.id,
           author=ctx.author.id,
-          guild_id=ctx.guild.id if is_guild_problem else "null"
+          guild_id=str(ctx.guild.id) if is_guild_problem else "null"
         )
         main_cache.add_problem(problem.id, problem.guild_id,problem)
         
@@ -399,7 +403,7 @@ async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
     if ctx.guild is not None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
     try:
-        problem = main_cache.get_problem(ctx.guild.id if checking_guild_problem else "null", problem_id)
+        problem = main_cache.get_problem(str(ctx.guild.id) if checking_guild_problem else "null", str(problem_id))
         if problem.is_solver(ctx.author):
             await ctx.reply(embed=ErrorEmbed("You have already solved this problem!",custom_title="Already solved."), ephemeral = True)
             return
@@ -461,7 +465,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
             e += "The combined length of the questions is too long.... shortening it!"
             await ctx.reply(embed=SuccessEmbed(e[:1930]))
             return
-        elif not (showSolvedProblems) and ctx.author.id in mathProblems[question]["solvers"]:
+        elif not (showSolvedProblems) and problem.is_solver(ctx.author):
             continue
         e += "\n"
         e += str(problem.id) + "\t"
@@ -499,7 +503,7 @@ async def vote(ctx, problem_id,is_guild_problem=False):
     if ctx.guild is not None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
     try:
-        problem = main_cache.get_problem(ctx.guild_id if is_guild_problem else "null",problem_id=problem_id)
+        problem = main_cache.get_problem(str(ctx.guild_id) if is_guild_problem else "null",problem_id=str(problem_id))
         if problem.is_voter(ctx.author):
             await ctx.reply(embed=ErrorEmbed("You have already voted for the deletion of this problem!"), ephemeral=True)
             return
@@ -513,7 +517,7 @@ async def vote(ctx, problem_id,is_guild_problem=False):
     e+= str(vote_threshold)
     e += " votes on this problem!"
     await ctx.reply(embed=SuccessEmbed(e), ephemeral=True)
-    if len(mathProblems[problem_id]["voters"]) >= vote_threshold:
+    if problem.get_num_voters() >= vote_threshold:
         del mathProblems[problem_id]
         await ctx.reply(embed=SimpleEmbed("This problem has surpassed the threshold and has been deleted!"), ephemeral=True)
 @slash.slash_command(name="unvote", description = "Vote for the deletion of a problem", options=[Option(name="problem_id", description="problem id of the problem you are attempting to delete", type=OptionType.INTEGER, required=True),Option(name="is_guild_problem", description="problem id of the problem you are attempting to delete", type=OptionType.BOOLEAN, required=False)])
@@ -522,7 +526,7 @@ async def unvote(ctx, problem_id,is_guild_problem=False):
     if ctx.guild is not None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
     try:
-        problem = main_cache.get_problem(ctx.guild_id if is_guild_problem else "null",problem_id=problem_id)
+        problem = main_cache.get_problem(str(ctx.guild_id) if is_guild_problem else "null",problem_id=str(problem_id))
         if not problem.is_voter(ctx.author):
             await ctx.reply(embed=ErrorEmbed("You can't unvote since you are not voting."), ephemeral=True)
             return
@@ -548,10 +552,10 @@ async def delete_problem(ctx, problem_id,is_guild_problem=False):
         if problem_id not in main_cache.get_guild_problems(ctx.guild).keys():
             await ctx.reply(embed=ErrorEmbed("That problem doesn't exist."), ephemeral=True)
             return
-        if not (ctx.author.id in trusted_users or not main_cache.get_problem(guild_id,problem_id).is_author() or ctx.author.guild_permissions.administrator):
+        if not (ctx.author.id in trusted_users or not main_cache.get_problem(str(guild_id),str(problem_id)).is_author() or ctx.author.guild_permissions.administrator):
             await ctx.reply(embed=ErrorEmbed("Insufficient permissions"), ephemeral=True)
             return
-        main_cache.remove_problem(guild_id, problem_id)
+        main_cache.remove_problem(str(guild_id), problem_id)
         await ctx.reply(embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!"), ephemeral=True)
     if guild_id == None:
         await ctx.reply(embed=ErrorEmbed("Run this command in the discord server which has the problem, or switch is_guild_problem to False."))
