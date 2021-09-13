@@ -17,7 +17,7 @@ class GuildAlreadyExistsException(MathProblemsModuleException):
 
 class MathProblem:
     "For readability purposes :)"
-    def __init__(self,question,answer,id,author,guild_id=None,voters=[],solvers=[]):
+    def __init__(self,question,answer,id,author,guild_id="null",voters=[],solvers=[]):
         if guild_id != "null" and not isinstance(guild_id, int):
             raise TypeError("guild_id is not an integer")
         if not isinstance(id, int):
