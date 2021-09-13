@@ -352,6 +352,7 @@ async def list_trusted_users(ctx):
     await ctx.reply(e, ephemeral = True)
 @slash.slash_command(name="new_problem", description = "Create a new problem", options = [Option(name="answer", description="The answer to this problem", type=OptionType.STRING, required=True), Option(name="question", description="your question", type=OptionType.STRING, required=True),Option(name="guild_question", description="Whether it should be a question for the guild", type=OptionType.BOOLEAN, required=False)])
 async def new_problem(ctx, answer, question, guild_question=False):
+    print("yay")
     global mathProblems, guildMathProblems
     if ctx.guild is not None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
@@ -368,7 +369,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
             return
         if guild_id not in main_cache._dict.keys():
             main_cache.add_empty_guild(guild_id)
-        elif len(main_cache.get_guild_problems(ctx.Guild)) >= guild_maximum_problem_limit:
+        elif len(main_cache.get_guild_problems(ctx.Guild)) >= guild_maximum_problem_limit and guild_question:
             await ctx.reply(embed=ErrorEmbed("You have reached the guild math problem limit."))
             return
         while True:
@@ -382,6 +383,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
           author=ctx.author.id,
           guild_id=ctx.guild.id if is_guild_problem else "null"
         )
+
         main_cache.add_problem(problem.id, problem.guild_id,problem)
         
         #print(guildMathProblems[guild_id][problem_id])
@@ -391,7 +393,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
         problem_id = generate_new_id()
         if problem_id not in [problem.id for problem in main_cache.get_global_problems()]:
             break
-    problem = problems_module.MathProblem(question=question,answer=answer,id=problem_id,guild_id="null")
+    problem = problems_module.MathProblem(question=question,answer=answer,id=problem_id,guild_id="null",author=ctx.author.id)
     await ctx.reply(embed=SuccessEmbed("You have successfully made a math problem!"), ephemeral = True)
 
 @slash.slash_command(name="check_answer", description = "Check if you are right", options=[Option(name="problem_id", description="the id of the problem you are trying to check the answer of", type=OptionType.INTEGER, required=True),Option(name="answer", description="your answer", type=OptionType.STRING, required=True),Option(name="checking_guild_problem", description="whether checking a guild problem", type=OptionType.BOOLEAN, required = False)])
