@@ -244,7 +244,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
         await ctx.reply(embed=SuccessEmbed(e), ephemeral=True)
     else:
         if raw:
-            g = copy.deepcopy(problem.convert_to_dict)
+            g = copy.deepcopy(problem.convert_to_dict())
             g.pop("answer")
             await ctx.reply(embed=SuccessEmbed(str(g),successTitle="Here is the problem info."), ephemeral=True)
             return
