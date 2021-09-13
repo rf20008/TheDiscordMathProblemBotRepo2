@@ -19,7 +19,7 @@ class MathProblem:
   "For readability purposes :)"
   def __init__(self,question,answer,id,author,guild_id=None,voters=[],solvers=[]):
     if guild_id != None and not isinstance(guild_id, int):
-      raise TypeError
+      raise TypeError("guild_id is not an integer")
     if len(question) > 250:
       raise TooLongQuestion(f"Your question is {len(question) - 250} characters too long. Questions may be up to 250 characters long.")
     self.question = question
@@ -68,13 +68,13 @@ class MathProblem:
   def add_voter(self,voter):
     """Adds a voter. Voter must be a nextcord.User object or nextcord.Member object."""
     if not isinstance(voter,nextcord.User) and not isinstance(voter,nextcord.Member):
-      raise TypeError
+      raise TypeError("User is not a User object")
     if not self.is_voter(voter):
       self.voters.append(voter.id)
   def add_solver(self,solver):
     """Adds a solver. Solver must be a nextcord.User object or nextcord.Member object."""
     if not isinstance(solver,nextcord.User) and not isinstance(solver,nextcord.Member):
-      raise TypeError
+      raise TypeError("Sovler is not a User object")
     if not self.is_solver(solver):
       self.solvers.append(solver.id)
   def get_answer(self):
@@ -86,7 +86,7 @@ class MathProblem:
   def check_answer_and_add_checker(self,answer,potentialSolver):
     "Checks the answer. If it's correct, it adds potentialSolver to the solvers."
     if not isinstance(potentialSolver,nextcord.User) and not isinstance(potentialSolver,nextcord.Member):
-      raise TypeError
+      raise TypeError("potentialSolver is not a User object")
     if self.check_answer(answer):
       self.add_solver(potentialSolver)
   def check_answer(self,answer):
@@ -104,7 +104,7 @@ class MathProblem:
   def is_voter(self,User):
     "Returns True if user is a voter. False otherwise. User must be a nextcord.User or nextcord.Member object."
     if not isinstance(User,nextcord.User) and not isinstance(User,nextcord.Member):
-      raise TypeError
+      raise TypeError("User is not actually a User")
     return User.id in self.get_voters()
   def get_solvers(self):
     "Returns self.solvers"
@@ -112,7 +112,7 @@ class MathProblem:
   def is_solver(self,User):
     "Returns True if user is a solver. False otherwise. User must be a nextcord.User or nextcord.Member object."
     if not isinstance(User,nextcord.User) and not isinstance(User,nextcord.Member):
-      raise TypeError
+      raise TypeError("User is not actually a User")
     return User.id in self.get_solvers()
   def __str__(self):
     "Return str(self) by converting it to a dictionary and converting the dictionary to a string"
@@ -123,7 +123,7 @@ class MathProblem:
   def is_author(self,User):
     "Returns if the user is the author"
     if not isinstance(User,nextcord.User) and not isinstance(User,nextcord.Member):
-      raise TypeError
+      raise TypeError("User is not actually a User")
     return User.id == self.get_author()
   def __eq__(self,other):
     return self.question == other.question and other.answer == self.answer
@@ -139,7 +139,7 @@ class MathProblemCache:
       assert isinstance(problem,dict)
     except AssertionError:
       print(problem)
-      raise TypeError
+      raise TypeError("problem is not actually a Dictionary")
     guild_id = problem["guild_id"]
   
     problem2 = MathProblem(
@@ -179,7 +179,7 @@ class MathProblemCache:
   def get_guild_problems(self,Guild):
     """Gets the guild problems! Guild must be a Guild object. If you are trying to get global problems, use get_global_problems."""
     if not isinstance(Guild, nextcord.Guild):
-      raise TypeError
+      raise TypeError("Guild is not actually a Guild")
     if not Guild.id in self._dict.keys():
       raise MathProblemsModuleException("Guild id not found.")
     return self._dict[Guild.id].values()
@@ -193,7 +193,7 @@ class MathProblemCache:
   def add_empty_guild(self,Guild):
     "Adds an dictionary that is empty for the guild. Guild must be a nextcord.Guild object"
     if not isinstance(Guild, nextcord.Guild):
-      raise TypeError
+      raise TypeError("Guild is not actually a Guild")
     try:
       if self._dict[Guild.id] != {}:
         raise GuildAlreadyExistsException
