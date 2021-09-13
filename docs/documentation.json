@@ -317,16 +317,16 @@
 				"title": "get_num_voters",
 				"contents": "Returns the number of voters of this problem"
 			},
-      {
-        "heading_level": 4,
-        "title": "get_author",
-        "contents": "Returns the author"
-      },
-      {
-        "heading_level": 4,
-        "title": "is_author",
-        "contents": "Returns if the user is the author"
-      },
+			{
+				"heading_level": 4,
+				"title": "get_author",
+				"contents": "Returns the author"
+			},
+			{
+				"heading_level": 4,
+				"title": "is_author",
+				"contents": "Returns if the user is the author"
+			},
 			{
 				"heading_level": 3,
 				"title": "MathProblemCache",
@@ -391,11 +391,11 @@
 				"title": "remove_problem",
 				"contents": "Delete a problem"
 			},
-      {
-        "heading_level": 4,
-        "title": "remove_duplicate_problems",
-        "contents": "Removes duplicate math problems"
-      }
+			{
+				"heading_level": 4,
+				"title": "remove_duplicate_problems",
+				"contents": "Removes duplicate math problems"
+			},
 			{
 				"heading_level": 1,
 				"title": "# Misc. Non-Command-Functions in main.py",
