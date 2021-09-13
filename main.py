@@ -368,36 +368,22 @@ async def new_problem(ctx, answer, question, guild_question=False):
 @slash.slash_command(name="check_answer", description = "Check if you are right", options=[Option(name="problem_id", description="the id of the problem you are trying to check the answer of", type=OptionType.INTEGER, required=True),Option(name="answer", description="your answer", type=OptionType.STRING, required=True),Option(name="checking_guild_problem", description="whether checking a guild problem", type=OptionType.BOOLEAN, required = False)])
 async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
     global mathProblems,guildMathProblems
-    if checking_guild_problem:
-        guild_id = ctx.guild_id
-        if guild_id == None:
-            await ctx.reply(embed=ErrorEmbed("Run this command in a server or set checking_guild_problem to False."))
-            return
-        try:
-            if ctx.author.id in guildMathProblems[guild_id][problem_id]["solvers"]:
-                await ctx.reply(embed=ErrorEmbed("You have already solved this problem!"), ephemeral = True)
-                return
-        except KeyError:
-            await ctx.reply(embed=ErrorEmbed("This problem doesn't exist!"), ephemeral=True)
-            return
-        if guildMathProblems[guild_id][problem_id]["answer"] != answer:
-            await ctx.reply(embed=ErrorEmbed("Sorry..... but you got it wrong! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.",custom_title="Sorry, your answer is wrong."), ephemeral=True)
-        else:
-            await ctx.reply(embed=SuccessEmbed("",successTitle="You answered this question correctly!"), ephemeral=True)
-            mathProblems[problem_id]["solvers"].append(ctx.author.id)    
+
     try:
-        if ctx.author.id in mathProblems[problem_id]["solvers"]:
+        problem = main_cache.get_problem(ctx.guild.id if checking_guild_problem else None, problem_id)
+        if problem.is_solver(ctx.author):
             await ctx.reply(embed=ErrorEmbed("You have already solved this problem!",custom_title="Already solved."), ephemeral = True)
             return
     except KeyError:
         await ctx.reply(embed=ErrorEmbed("This problem doesn't exist!",custom_title="Nonexistant problem."), ephemeral=True)
         return
 
-    if mathProblems[problem_id]["answer"] != answer:
+    if not problem.check_answer(answer):
         await ctx.reply(embed=ErrorEmbed("Sorry..... but you got it wrong! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.",custom_title="Sorry, your answer is wrong."), ephemeral=True)
     else:
         await ctx.reply(embed=SuccessEmbed("",successTitle="You answered this question correctly!"), ephemeral=True)
-        mathProblems[problem_id]["solvers"].append(ctx.author.id)
+        problem.add_solver(ctx.author)
+        return
 @slash.slash_command(name="list_all_problems", description = "List all problems stored with the bot", options=[Option(name="show_solved_problems", description="Whether to show solved problems", type=OptionType.BOOLEAN, required=False),Option(name="show_guild_problems", description="Whether to show solved problems", type=OptionType.BOOLEAN, required=False),Option(name="show_only_guild_problems", description="Whether to only show guild problems", type=OptionType.BOOLEAN, required=False)])
 async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=True,show_only_guild_problems=False):
     showSolvedProblems = show_solved_problems
@@ -418,19 +404,19 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
     e = ""
     e += "Problem Id \t Question \t numVotes \t numSolvers"
     if show_guild_problems:
-        for question in guildMathProblems[guild_id].keys():
+        for problem in main_cache.get_guild_problems(ctx.guild):
             if len(e) >= 1930:
                 e += "The combined length of the questions is too long.... shortening it!"
                 await ctx.reply(embed=SuccessEmbed(e[:1930]))
                 return
-            elif not (showSolvedProblems) and ctx.author.id in guildMathProblems[guild_id][question]["solvers"]:
+            elif not (showSolvedProblems) and problem.is_solver(ctx.author)]:
                 continue
             e += "\n"
-            e += str(question) + "\t"
-            e += str(guildMathProblems[guild_id][question]["question"]) + "\t"
+            e += str(problem.id) + "\t"
+            e += str(problem.get_question()) + "\t"
             e += "(" 
-            e+= str(len(guildMathProblems[guild_id][question]["voters"])) + "/" + str(vote_threshold) + ")" + "\t"
-            e += str(len(guildMathProblems[guild_id][question]["solvers"])) + "\t"
+            e+= str(problem.get_num_voters()) + "/" + str(vote_threshold) + ")" + "\t"
+            e += str(len(problem.get_solvers())) + "\t"
             e += "(guild)"
     if len(e) > 1930:
         await ctx.reply(embed=SuccessEmbed(e[:1930]))
@@ -439,7 +425,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
         await ctx.reply(e[:1930])
         return
 
-    for question in mathProblems.keys():
+    for problem in main_cache.get_global_problems():
         if len(e) >= 1930:
             e += "The combined length of the questions is too long.... shortening it!"
             await ctx.reply(embed=SuccessEmbed(e[:1930]))
@@ -447,12 +433,12 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
         elif not (showSolvedProblems) and ctx.author.id in mathProblems[question]["solvers"]:
             continue
         e += "\n"
-        e += str(question) + "\t"
+        e += str(problem.id) + "\t"
         #print(mathProblems[question])
-        e += str(mathProblems[question]["question"]) + "\t"
+        e += str(problem.get_question()) + "\t"
         e += "(" 
-        e+= str(len(mathProblems[question]["voters"])) + "/" + str(vote_threshold) + ")" + "\t"
-        e += str(len(mathProblems[question]["solvers"])) + "\t"
+        e+= str(problem.get_num_voters) + "/" + str(vote_threshold) + ")" + "\t"
+        e += str(len(problem.get_solvers())) + "\t"
     await ctx.reply(embed=SuccessEmbed(e[:1930]))
 
 @slash.slash_command(name = "set_vote_threshold", description = "Sets the vote threshold", options=[Option(name="threshold", description="the threshold you want to change it to", type=OptionType.INTEGER, required=True)])
