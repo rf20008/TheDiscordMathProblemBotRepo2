@@ -266,7 +266,7 @@ async def list_all_problem_ids(ctx,show_only_guild_problems=False):
             await ctx.reply("Run this command in a Discord server or set show_only_guild_problems to False!", ephemeral=True)
             return
         guild_problems = main_cache.get_guild_problems(ctx.guild)
-        thing_to_write = [problem.id for problem in guild_problems]
+        thing_to_write = [str(problem.id) for problem in guild_problems]
         await ctx.reply(embed=SuccessEmbed("\n".join(thing_to_write)[:1950],successTitle="Problem IDs:"))
         return
 
