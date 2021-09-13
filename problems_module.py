@@ -20,6 +20,18 @@ class MathProblem:
   def __init__(self,question,answer,id,author,guild_id=None,voters=[],solvers=[]):
     if guild_id != "null" and not isinstance(guild_id, int):
       raise TypeError("guild_id is not an integer")
+    if not isinstance(id, int):
+      raise TypeError("id is not an integer")
+    if not isinstance(question, str):
+      raise TypeError("question is not a string")
+    if not isinstance(answer, str):
+      raise TypeError("answer is not a string")
+    if not isinstance(author, int):
+      raise TypeError("author is not an integer")
+    if not isinstance(voters, list):
+      raise TypeError("voters is not a list")
+    if not isinstance(solvers, list):
+      raise TypeError("solvers is not a list")
     if len(question) > 250:
       raise TooLongQuestion(f"Your question is {len(question) - 250} characters too long. Questions may be up to 250 characters long.")
     self.question = question
@@ -33,6 +45,20 @@ class MathProblem:
     self.author=author
   def edit(self,question=None,answer=None,id=None,guild_id=None,voters=None,solvers=None,author=None):
     """Edit a math problem."""
+    if guild_id not in [None,"null"] and not isinstance(guild_id, int):
+      raise TypeError("guild_id is not an integer")
+    if not isinstance(id, int) and id != None:
+      raise TypeError("id is not an integer")
+    if not isinstance(question, str) and question != None:
+      raise TypeError("question is not a string")
+    if not isinstance(answer, str) and answer != None:
+      raise TypeError("answer is not a string")
+    if not isinstance(author, int) and author != None:
+      raise TypeError("author is not an integer")
+    if not isinstance(voters, list) and voters != None:
+      raise TypeError("voters is not a list")
+    if not isinstance(solvers, list) and solvers != None:
+      raise TypeError("solvers is not a list")
     if id != None or guild_id != None or voters != None or solvers != None or author != None:
       warnings.warn("You are changing one of the attributes that you should not be changing.", category=RuntimeWarning)
     if question != None:
