@@ -278,7 +278,7 @@ async def list_all_problem_ids(ctx,show_only_guild_problems=False):
 async def generate_new_problems(ctx, num_new_problems_to_generate):
     if ctx.guild is not None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
-    await ctx.reply(type=5)
+
     if ctx.author.id not in trusted_users:
         await ctx.reply(embed=ErrorEmbed("You aren't trusted!",ephemeral=True))
         return
