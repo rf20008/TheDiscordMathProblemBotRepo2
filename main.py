@@ -322,8 +322,8 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
             if problem_id not in [problem.id for problem in main_cache.get_global_problems()]:
                 break
         Problem = problems_module.MathProblem(
-          question= "What is " + str(num1) + " " +{"times": "*", "plus": "+", 
-          "minus": "-", "divided by": "/"}[operation] + " " + str(num2) + "?",
+          question= "What is " + str(num1) + " " +{"*": "times", "+": "times", 
+          "-": "minus", "/": "divided by"}[operation] + " " + str(num2) + "?",
           answer = answer,
           author = 845751152901750824,
           guild_id = "null",
