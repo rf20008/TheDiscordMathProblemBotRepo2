@@ -218,7 +218,7 @@ class MathProblemCache:
             raise TypeError("Guild is not actually a Guild")
         if not Guild.id in self._dict.keys():
             raise MathProblemsModuleException("Guild id not found.")
-        return self._dict[Guild.id].values()
+        return self._dict[Guild.id]
     def get_global_problems(self):
         "Returns global problems"
         try:
