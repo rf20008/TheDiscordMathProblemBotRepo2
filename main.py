@@ -160,17 +160,19 @@ async def edit_problem(ctx,new_question,new_answer):
 @slash.slash_command(name="show_problem_info", description = "Show problem info", options=[Option(name="problem_id", description="problem id of the problem you want to show", type=OptionType.INTEGER, required=True),Option(name="show_all_data", description="whether to show all data (only useable by problem authors and trusted users", type=OptionType.BOOLEAN, required=False),Option(name="raw", description="whether to show data as json?", type=OptionType.BOOLEAN, required=False),Option(name="is_guild_problem", description="whether the problem you are trying to view is a guild problem", type=OptionType.BOOLEAN, required=False)])
 async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_guild_problem=False):
     problem_id = int(problem_id)
-
+    
     guild_id = str(ctx.guild_id)
+    
     if guild_id not in guildMathProblems:
         guildMathProblems[guild_id]={}
+    problem = main_cache.get_problem(ctx.guild.id,problem_id)
     if is_guild_problem:
         if guild_id == None:
             embed1= ErrorEmbed(title="Error", description = "Run this command in the discord server which has this problem, not a DM!")
             ctx.reply(embed=embed1)
             return
         if guild_id not in guildMathProblems.keys():
-            guildMathProblems[guild_id] = {}
+            main_cache.add_empty_guild(guild_id)
         if problem_id not in guildMathProblems[guild_id].keys():
             await ctx.reply(embed=ErrorEmbed("Problem non-existant!"))
             return
@@ -178,28 +180,29 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
         e= "Question: "
         e+= problem.get_question() 
         e+= "\nAuthor: "
-        e+= str(guildMathProblems[guild_id][problem_id]["author"])
+        e+= str(problem.get_author())
         e+= "\nNumVoters/Vote Threshold: "
-        e+= str(len(guildMathProblems[guild_id][problem_id]["voters"]))
+        e+= str(problem.get_num_voters())
         e+= "/"
         e += str(vote_threshold)
         e+= " \nNumSolvers: "
-        e+= str(len(guildMathProblems[guild_id][problem_id]["solvers"]))
+        e+= str(len(problem.get_solvers()))
         e+= "\nAnswer: "
-        e+= str(guildMathProblems[guild_id][problem_id]["answer"])
+        e+= str(problem.get_answer())
         await ctx.reply(embedSuccessEmbed(e), ephemeral=True)
         if show_all_data:
-            if not (ctx.author.id == guildMathProblems[guild_id][problem_id]["author"] or ctx.author.id not in trusted_users or (is_guild_problem and ctx.author.guild_permissions.administrator == True)):
+            if not (problem.is_author(ctx.author) or ctx.author.id not in trusted_users or (is_guild_problem and ctx.author.guild_permissions.administrator == True)):
                 await ctx.reply(embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True)
                 return
 
         if raw:
-            await ctx.reply(embed=SuccessEmbed(str(mathProblems[problem_id])), ephemeral=True)
+            await ctx.reply(embed=SuccessEmbed(str(problem.convert_to_dict())), ephemeral=True)
             return
     if problem_id not in mathProblems.keys():
         await ctx.reply(embed=ErrorEmbed("Problem non-existant!"))
         return
     if show_all_data:
+      
         if not (ctx.author.id == mathProblems[problem_id]["author"] or ctx.author.id not in trusted_users or (is_guild_problem and ctx.author.guild_permissions.administrator == True)):
             await ctx.reply(embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True)
             return
@@ -207,34 +210,34 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
             await ctx.reply(embed=SimpleEmbed(description=str(mathProblems[problem_id])), ephemeral=True)
             return
         e= "Question: "
-        e += mathProblems[problem_id]["question"] 
+        e += problem.get_question() 
         e+= "\nAuthor: "
-        e+= str(mathProblems[problem_id]["author"])
+        e+= str(problem.get_author())
         e+= "\nNumVoters/Vote Threshold: ("
-        e+= str(len(mathProblems[problem_id]["voters"]))
+        e+= str(problem.get_num_voters())
         e+= "/"
         e += str(vote_threshold)
         e+= ") \nNumSolvers: "
-        e+= str(len(mathProblems[problem_id]["solvers"]))
+        e+= str(len(problem.get_solvers()))
         e+= "\nAnswer: "
-        e+= str(mathProblems[problem_id]["answer"])
-        await ctx.reply(e, ephemeral=True)
+        e+= str(problem.get_answer())
+        await ctx.reply(embed=SuccessEmbed(e), ephemeral=True)
     else:
         if raw:
-            g = copy.deepcopy(mathProblems[problem_id])
+            g = copy.deepcopy(problem.convert_to_dict)
             g.pop("answer")
             await ctx.reply(embed=SuccessEmbed(str(g),successTitle="Here is the problem info."), ephemeral=True)
             return
         e= "Question: "
-        e += mathProblems[problem_id]["question"] 
+        e += problem.get_question() 
         e+= "\nAuthor: "
-        e+= str(mathProblems[problem_id]["author"])
+        e+= str(problem.get_author())
         e+= "\nNumVoters/Vote Threshold: ("
-        e+= str(len(mathProblems[problem_id]["voters"]))
+        e+= str(problem.get_num_voters())
         e+= "/"
         e += str(vote_threshold)
         e+= ") \nNumSolvers: "
-        e+= str(len(mathProblems[problem_id]["solvers"]))
+        e+= str(len(problem.get_solvers()))
     
         await ctx.reply(e, ephemeral=True)
 @slash.slash_command(name="list_all_problem_ids", description= "List all problem ids", options=[Option(name="show_only_guild_problems", description="Whether to show guild problem ids",required=False,type=OptionType.BOOLEAN)])
@@ -244,10 +247,15 @@ async def list_all_problem_ids(ctx,show_only_guild_problems=False):
         if guild_id == None:
             await ctx.reply("Run this command in a Discord server or set show_only_guild_problems to False!", ephemeral=True)
             return
-        await ctx.reply(embed=SuccessEmbed("\n".join([str(item) for item in mathProblems.keys()])[:1930],successTitle="Problem IDs:"))
+        guild_problems = main_cache.get_guild_problems(ctx.guild)
+        thing_to_write = [problem.id for problem in guild_problems]
+        await ctx.reply(embed=SuccessEmbed("\n".join(thing_to_write)[:1950],successTitle="Problem IDs:"))
         return
 
-    await ctx.reply("\n".join([str(item) for item in mathProblems.keys()])[:1930])
+    global_problems = main_cache.get_global_problems()
+    thing_to_write = "\n".join([problem.id for problem in global_problems])
+    await ctx.send(embed=SuccessEmbed(thing_to_write))
+  
 @slash.slash_command(name="generate_new_problems", description= "Generates new problems", options=[Option(name="num_new_problems_to_generate", description="the number of problems that should be generated", type=OptionType.INTEGER, required=True)])
 async def generate_new_problems(ctx, num_new_problems_to_generate):
     await ctx.reply(type=5)
@@ -279,12 +287,19 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
         elif operation == "/":
             answer = round(num1*100 / num2)/100
         #elif op
-        e = {"answer": answer, "voters": [], "author": 845751152901750824, "solvers":[], "question": (str(num1) +" " +    str(operation) + " "+ str(num2) + " (Was automatically created by the bot).")}
         while True:
             problem_id = generate_new_id()
-            if problem_id not in mathProblems.keys():
+            if problem_id not in [problem.id for problem in main_cache.get_global_problems()]:
                 break
-        mathProblems[problem_id] = e
+        Problem = problems_module.MathProblem(
+          question= "What is " + str(num1) + " " +{"times": "*", "plus": "+", 
+          "minus": "-", "divided by": "/"}[operation] + " " + str(num2) + "?",
+          answer = answer,
+          author = 845751152901750824,
+          guild_id = None
+          id = problem_id
+        )
+          main_cache.add_problem(None,problem_id,Problem)
     await ctx.reply(embed=SuccessEmbed(f"Successfully created {str(num_new_problems_to_generate)} new problems!"), ephemeral=True)
 ##@bot.command(help = """Adds a trusted user!
 ##math_problems.add_trusted_user <user_id>
@@ -294,18 +309,11 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
 @slash.slash_command(name="delallbotproblems", description = "delete all automatically generated problems")
 async def delallbotproblems(ctx):
     await ctx.reply(embed=SimpleEmbed("",description="Attempting to delete bot problems"),ephemeral=True)
-    global mathProblems
-    mathProblems2 = copy.deepcopy(mathProblems)
-    if ctx.author.id not in trusted_users:
-        await ctx.reply(embed=ErrorEmbed(":x: You are not a trusted user."), ephemeral=True)
-        return
-    numDeletedProblems = 0
-    f = mathProblems.keys()
-    for e in f:
-        if mathProblems2[e]["author"] == 845751152901750824:
-            mathProblems2.pop(e)
-            numDeletedProblems += 1
-    mathProblems = mathProblems2
+    numDeletedProblems =0
+    problems_to_delete = [problem for problem in main_cache.get_global_problems() if problem.get_author() == 845751152901750824]
+    for problem in problems_to_delete:
+        main_cache.remove_problem(problem.guild_id, problem.id)
+        numDeletedProblems+=1
     await ctx.reply(embed=SuccessEmbed(f"Successfully deleted {numDeletedProblems}!"))
 @slash.slash_command(name = "list_trusted_users", description = "list all trusted users")
 async def list_trusted_users(ctx):
@@ -329,17 +337,23 @@ async def new_problem(ctx, answer, question, guild_question=False):
             await ctx.reply(embed=ErrorEmbed("You need to be in the guild to make a guild question!"))
             return
         if guild_id not in guildMathProblems.keys():
-            guildMathProblems[guild_id] = {}
-        elif len(guildMathProblems[guild_id]) >= guild_maximum_problem_limit:
+            main_cache.add_empty_guild(guild_id)
+        elif len(main_cache.get_guild_problems(ctx.Guild)) >= guild_maximum_problem_limit:
             await ctx.reply(embed=ErrorEmbed("You have reached the guild math problem limit."))
             return
         while True:
             problem_id = generate_new_id()
-            if problem_id not in guildMathProblems[guild_id].keys():
+            if problem_id not in [problem.guild_id for problem in main_cache.get_guild_problems(ctx.Guild)]:
                 break
-        e = {"answer": answer, "voters": [], "author": ctx.author.id, "solvers":[], "question": question}
-        #print(e)
-        guildMathProblems[guild_id][problem_id] = e
+        problem = problems_module.MathProblem(
+          question=question,
+          answer=answer,
+          id=problem.id,
+          author=ctx.author.id,
+          guild_id=ctx.guild.id if is_guild_problem else None
+        )
+        main_cache.add_problem(problem.id, problem.guild_id,problem)
+        
         #print(guildMathProblems[guild_id][problem_id])
         await ctx.reply(embed=SuccessEmbed("You have successfully made a math problem!",successTitle="Successfully made a new math problem."), ephemeral = True)
         return
@@ -477,7 +491,7 @@ async def vote(ctx, problem_id,is_guild_problem=False):
             await ctx.reply(embed=ErrorEmbed("You need to be in the guild to vote for a guild question!"))
             return
         if guild_id not in guildMathProblems.keys():
-            guildMathProblems[guild_id] = {}
+            main_cache.add_empty_guild(guild_id)
         try:
             if ctx.author.id in guildMathProblems[guild_id][problem_id]["voters"]:
                 await ctx.reply(embed=ErrorEmbed("You have already voted for the deletion of this problem!"), ephemeral=True)
@@ -521,7 +535,7 @@ async def unvote(ctx,problem_id):
             await ctx.reply(embed=ErrorEmbed("You need to be in the guild to make a guild question!"))
             return
         if guild_id not in guildMathProblems.keys():
-            guildMathProblems[guild_id] = {}
+            main_cache.add_empty_guild(guild_id)
         try:
             if ctx.author.id not in guildMathProblems[guild_id][problem_id]["voters"]:
                 await ctx.reply(embed=ErrorEmbed("You have not voted for the deletion of this problem!"), ephemeral=True)
