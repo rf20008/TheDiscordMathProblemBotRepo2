@@ -1,7 +1,11 @@
 */math_problems.json 
-*/.env
+**/.env
 *.cpython
 *.pyc
 __pycache__/*
 /__pycache__/*
 */*.json
+**/*.json
+**/__pycache__/**
+.env
+math_problems.json
