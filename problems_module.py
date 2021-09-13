@@ -188,8 +188,13 @@ class MathProblemCache:
         self._dict[item][item2] = self.convert_dict_to_math_problem(dict[item][item2])
   def update_file_cache(self):
     "This method updates the file cache."
+    e = {}
+    for guild_id in self._dict.keys():
+      e[guild_id] = {}
+      for problem_id in self._dict[guild_id].keys():
+        e[guild_id][problem_id] = self._dict[guild_id][problem_id].convert_to_dict()
     with open("math_problems.json", "w") as file:
-      file.write(json.dumps(self._dict))
+      file.write(json.dumps(e))
   def get_problem(self,guild_id,problem_id):
     "Gets the problem with this guild id and problem id"
     try:
