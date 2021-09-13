@@ -122,7 +122,7 @@ async def force_load_files(ctx):
     try:
         FileSaver3 = FileSaver(enabled=True,printSuccessMessagesByDefault=False)
         FileSaverDict = FileSaver3.load_files()
-        (math_problems,guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["mathProblems"],FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
+        (guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
         FileSaver3.goodbye()
         await ctx.reply(embed=SuccessEmbed("Successfully forcefully loaded files!"))
         return
@@ -193,9 +193,9 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
             embed1= ErrorEmbed(title="Error", description = "Run this command in the discord server which has this problem, not a DM!")
             ctx.reply(embed=embed1)
             return
-        if guild_id not in guildMathProblems.keys():
+        if guild_id not in main_cache._dict.keys():
             main_cache.add_empty_guild(guild_id)
-        if problem_id not in guildMathProblems[guild_id].keys():
+        if problem_id not in main_cache.get_guild_problems(ctx.Guild).keys():
             await ctx.reply(embed=ErrorEmbed("Problem non-existant!"))
             return
         problem = main_cache.get_problem(str(ctx.guild.id),str(problem_id))
@@ -220,16 +220,14 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
         if raw:
             await ctx.reply(embed=SuccessEmbed(str(problem.convert_to_dict())), ephemeral=True)
             return
-    if problem_id not in mathProblems.keys():
-        await ctx.reply(embed=ErrorEmbed("Problem non-existant!"))
-        return
+    problem = main_cache.get_problem("null", problem_id)
     if show_all_data:
       
-        if not (ctx.author.id == mathProblems[problem_id]["author"] or ctx.author.id not in trusted_users or (is_guild_problem and ctx.author.guild_permissions.administrator == True)):
+        if not (problem.is_author(ctx.author) or ctx.author.id not in trusted_users or (is_guild_problem and ctx.author.guild_permissions.administrator == True)):
             await ctx.reply(embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True)
             return
         if raw:
-            await ctx.reply(embed=SimpleEmbed(description=str(mathProblems[problem_id])), ephemeral=True)
+            await ctx.reply(embed=SimpleEmbed(description=str(problem.convert_to_dict())), ephemeral=True)
             return
         e= "Question: "
         e += problem.get_question() 
@@ -368,7 +366,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
         if guild_id == None:
             await ctx.reply(embed=ErrorEmbed("You need to be in the guild to make a guild question!"))
             return
-        if guild_id not in guildMathProblems.keys():
+        if guild_id not in main_cache._dict.keys():
             main_cache.add_empty_guild(guild_id)
         elif len(main_cache.get_guild_problems(ctx.Guild)) >= guild_maximum_problem_limit:
             await ctx.reply(embed=ErrorEmbed("You have reached the guild math problem limit."))
@@ -391,10 +389,9 @@ async def new_problem(ctx, answer, question, guild_question=False):
         return
     while True:
         problem_id = generate_new_id()
-        if problem_id not in mathProblems.keys():
+        if problem_id not in [problem.id for problem in main_cache.get_global_problems()]:
             break
-    e = {"answer": answer, "voters": [], "author": ctx.author.id, "solvers":[], "question": question}
-    mathProblems[problem_id] = e
+    problem = problems_module.MathProblem(question=question,answer=answer,id=problem_id,guild_id="null")
     await ctx.reply(embed=SuccessEmbed("You have successfully made a math problem!"), ephemeral = True)
 
 @slash.slash_command(name="check_answer", description = "Check if you are right", options=[Option(name="problem_id", description="the id of the problem you are trying to check the answer of", type=OptionType.INTEGER, required=True),Option(name="answer", description="your answer", type=OptionType.STRING, required=True),Option(name="checking_guild_problem", description="whether checking a guild problem", type=OptionType.BOOLEAN, required = False)])
