@@ -283,6 +283,10 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
     if ctx.guild is not None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
     await ctx.reply(type=5)
+    try:
+      print(ctx.author)
+    except Exception as E:
+      print(E)
     if ctx.author.id not in trusted_users:
         await ctx.reply(embed=ErrorEmbed("You aren't trusted!",ephemeral=True))
         return
@@ -320,10 +324,10 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
           "minus": "-", "divided by": "/"}[operation] + " " + str(num2) + "?",
           answer = answer,
           author = 845751152901750824,
-          guild_id = None,
+          guild_id = "null",
           id = problem_id
         )
-        main_cache.add_problem(None,problem_id,Problem)
+        main_cache.add_problem("null",problem_id,Problem)
     await ctx.reply(embed=SuccessEmbed(f"Successfully created {str(num_new_problems_to_generate)} new problems!"), ephemeral=True)
 ##@bot.command(help = """Adds a trusted user!
 ##math_problems.add_trusted_user <user_id>
@@ -380,7 +384,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
           answer=answer,
           id=problem.id,
           author=ctx.author.id,
-          guild_id=ctx.guild.id if is_guild_problem else None
+          guild_id=ctx.guild.id if is_guild_problem else "null"
         )
         main_cache.add_problem(problem.id, problem.guild_id,problem)
         
@@ -401,7 +405,7 @@ async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
     if ctx.guild is not None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
     try:
-        problem = main_cache.get_problem(ctx.guild.id if checking_guild_problem else None, problem_id)
+        problem = main_cache.get_problem(ctx.guild.id if checking_guild_problem else "null", problem_id)
         if problem.is_solver(ctx.author):
             await ctx.reply(embed=ErrorEmbed("You have already solved this problem!",custom_title="Already solved."), ephemeral = True)
             return
@@ -501,7 +505,7 @@ async def vote(ctx, problem_id,is_guild_problem=False):
     if ctx.guild is not None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
     try:
-        problem = main_cache.get_problem(ctx.guild_id if is_guild_problem else None,problem_id=problem_id)
+        problem = main_cache.get_problem(ctx.guild_id if is_guild_problem else "null",problem_id=problem_id)
         if problem.is_voter(ctx.author):
             await ctx.reply(embed=ErrorEmbed("You have already voted for the deletion of this problem!"), ephemeral=True)
             return
@@ -524,7 +528,7 @@ async def unvote(ctx, problem_id,is_guild_problem=False):
     if ctx.guild is not None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
     try:
-        problem = main_cache.get_problem(ctx.guild_id if is_guild_problem else None,problem_id=problem_id)
+        problem = main_cache.get_problem(ctx.guild_id if is_guild_problem else "null",problem_id=problem_id)
         if not problem.is_voter(ctx.author):
             await ctx.reply(embed=ErrorEmbed("You can't unvote since you are not voting."), ephemeral=True)
             return
@@ -564,7 +568,7 @@ async def delete_problem(ctx, problem_id,is_guild_problem=False):
     if not (ctx.author.id in trusted_users or not main_cache.get_problem(guild_id,problem_id).is_author() or ctx.author.guild_permissions.administrator):
         await ctx.reply(embed=ErrorEmbed("Insufficient permissions"), ephemeral=True)
         return
-    main_cache.remove_problem(None, problem_id)
+    main_cache.remove_problem("null", problem_id)
     await ctx.reply(embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!"), ephemeral=True)
 @slash.slash_command(name="add_trusted_user", description = "Adds a trusted user",options=[Option(name="user", description="The user you want to give super special bot access to", type=OptionType.USER, required=True)])
 async def add_trusted_user(ctx,user):

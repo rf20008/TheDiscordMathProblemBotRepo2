@@ -55,16 +55,12 @@ class MathProblem:
       self.author = author
   def convert_to_dict(self):
     """Convert self to a dictionary"""
-    if self.guild_id == None:
-      guild_id = "None"
-    else:
-      guild_id = self.guild_id
 
     return {
       "question": self.question,
       "answer": self.answer,
       "id": self.id,
-      "guild_id": guild_id,
+      "guild_id": self.guild_id,
       "voters": self.voters,
       "solvers": self.solvers,
       "author": self.author
@@ -145,8 +141,6 @@ class MathProblemCache:
       print(problem)
       raise TypeError
     guild_id = problem["guild_id"]
-    if guild_id == "None":
-      guild_id = None 
   
     problem2 = MathProblem(
       question=problem["question"],
@@ -168,22 +162,8 @@ class MathProblemCache:
         self._dict[item][item2] = self.convert_dict_to_math_problem(dict[item][item2])
   def update_file_cache(self):
     "This method updates the file cache."
-    thing_to_write = "{"
-    for guild_id in self._dict.keys():
-      thing_to_write += "{" + str(guild_id) + ": " 
-      e= False
-      for problem_id in self._dict[guild_id].keys():
-        e= True
-        thing_to_write += str(problem_id) + ": "
-        thing_to_write += str(self._dict[guild_id][problem_id])
-        thing_to_write += ","
-      #if e:
-        #thing_to_write = thing_to_write[len(thing_to_write)-1:] 
-      thing_to_write += "},"
-    #thing_to_write = thing_to_write[len(thing_to_write)-1:]
-    thing_to_write += "}"
     with open("math_problems.json", "w") as file:
-      file.write(thing_to_write)
+      file.write(json.dumps(self._dict))
   def get_problem(self,guild_id,problem_id):
     "Gets the problem with this guild id and problem id"
     try:
@@ -206,9 +186,9 @@ class MathProblemCache:
   def get_global_problems(self):
     "Returns global problems"
     try:
-      return self._dict[None].values()
+      return self._dict['null'].values()
     except:
-      self._dict[None] = {}
+      self._dict['null'] = {}
       return {}
   def add_empty_guild(self,Guild):
     "Adds an dictionary that is empty for the guild. Guild must be a nextcord.Guild object"
@@ -230,7 +210,7 @@ class MathProblemCache:
         Problem = self.convert_dict_to_math_problem(Problem)
       except KeyError:
         raise Exception("Not a valid problem!")
-    if guild_id != None:
+    if guild_id != 'null':
       try:
         if self._dict[guild_id] != {}:
           raise GuildAlreadyExistsException
