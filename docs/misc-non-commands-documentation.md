@@ -157,6 +157,10 @@ Returns whether a user is a voter for the deletion of this problem
 Returns whether a user is a solver of this problem
 #### get_num_voters
 Returns the number of voters of this problem
+#### get_author
+Returns the author
+#### is_author
+Returns if the user is the author
 ### MathProblemCache
 A cache of math problems :)
 #### convert_dict_to_math_problem
