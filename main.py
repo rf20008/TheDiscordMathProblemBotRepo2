@@ -314,7 +314,7 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
         Problem = problems_module.MathProblem(
           question= "What is " + str(num1) + " " +{"*": "times", "+": "times", 
           "-": "minus", "/": "divided by", "^": "to the power of"}[operation] + " " + str(num2) + "?",
-          answer = answer,
+          answer = str(answer),
           author = 845751152901750824,
           guild_id = "null",
           id = problem_id
