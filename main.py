@@ -181,7 +181,9 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     
     if guild_id not in guildMathProblems:
         guildMathProblems[guild_id]={}
-    problem = main_cache.get_problem(ctx.guild.id,problem_id)
+
+    problem = main_cache.get_problem(ctx.guild.id if is_guild_problem else "null",problem_id)
+
     if is_guild_problem:
         if guild_id == None:
             embed1= ErrorEmbed(title="Error", description = "Run this command in the discord server which has this problem, not a DM!")
