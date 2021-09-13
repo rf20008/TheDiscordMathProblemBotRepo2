@@ -271,7 +271,7 @@ async def list_all_problem_ids(ctx,show_only_guild_problems=False):
         return
 
     global_problems = main_cache.get_global_problems()
-    thing_to_write = "\n".join([problem.id for problem in global_problems])
+    thing_to_write = "\n".join([str(problem.id) for problem in global_problems])
     await ctx.send(embed=SuccessEmbed(thing_to_write))
   
 @slash.slash_command(name="generate_new_problems", description= "Generates new problems", options=[Option(name="num_new_problems_to_generate", description="the number of problems that should be generated", type=OptionType.INTEGER, required=True)])
