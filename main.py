@@ -542,7 +542,7 @@ async def delete_problem(ctx, problem_id,is_guild_problem=False):
         main_cache.remove_problem(guild_id, problem_id)
         await ctx.reply(embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!"), ephemeral=True)
     if guild_id == None:
-        await ctx.reply(embed=ErrorEmbed("Run this command in the discord server which has the problem you are trying to delete, or switch is_guild_problem to False."))
+        await ctx.reply(embed=ErrorEmbed("Run this command in the discord server which has the problem, or switch is_guild_problem to False."))
         return
     if problem_id not in main_cache.get_guild_problems(ctx.guild).keys():
         await ctx.reply(embed=ErrorEmbed("That problem doesn't exist."), ephemeral=True)
