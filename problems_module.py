@@ -272,7 +272,8 @@ class MathProblemCache:
                             del self._dict[g1][p1]
                             problemsDeleted += 1
         return problemsDeleted
-
+    def get_guilds(self):
+      return self._dict.keys()
 
 main_cache = MathProblemCache()
 def get_main_cache():
