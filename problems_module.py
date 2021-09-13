@@ -18,7 +18,7 @@ class GuildAlreadyExistsException(MathProblemsModuleException):
 class MathProblem:
   "For readability purposes :)"
   def __init__(self,question,answer,id,author,guild_id=None,voters=[],solvers=[]):
-    if guild_id != None and not isinstance(guild_id, int):
+    if guild_id != "null" and not isinstance(guild_id, int):
       raise TypeError("guild_id is not an integer")
     if len(question) > 250:
       raise TooLongQuestion(f"Your question is {len(question) - 250} characters too long. Questions may be up to 250 characters long.")
