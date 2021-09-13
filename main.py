@@ -54,12 +54,6 @@ def the_daemon_file_saver():
         sleep(45) 
         FileSaverObj.save_files(True,guildMathProblems,vote_threshold,mathProblems,trusted_users)
 
-    (guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
-
-    while True:    
-        FileSaverObj.save_files(True,guildMathProblems,vote_threshold,mathProblems,trusted_users)
-        sleep(45)
-
             
 t = threading.Thread(target=the_daemon_file_saver,name="The File Saver",daemon=True)
 
@@ -285,10 +279,6 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
     if ctx.guild is not None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
     await ctx.reply(type=5)
-    try:
-      print(ctx.author)
-    except Exception as E:
-      print(E)
     if ctx.author.id not in trusted_users:
         await ctx.reply(embed=ErrorEmbed("You aren't trusted!",ephemeral=True))
         return
@@ -323,7 +313,7 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
                 break
         Problem = problems_module.MathProblem(
           question= "What is " + str(num1) + " " +{"*": "times", "+": "times", 
-          "-": "minus", "/": "divided by"}[operation] + " " + str(num2) + "?",
+          "-": "minus", "/": "divided by", "^": "to the power of"}[operation] + " " + str(num2) + "?",
           answer = answer,
           author = 845751152901750824,
           guild_id = "null",
