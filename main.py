@@ -309,7 +309,7 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
           guild_id = None,
           id = problem_id
         )
-          main_cache.add_problem(None,problem_id,Problem)
+        main_cache.add_problem(None,problem_id,Problem)
     await ctx.reply(embed=SuccessEmbed(f"Successfully created {str(num_new_problems_to_generate)} new problems!"), ephemeral=True)
 ##@bot.command(help = """Adds a trusted user!
 ##math_problems.add_trusted_user <user_id>
@@ -428,7 +428,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
                 e += "The combined length of the questions is too long.... shortening it!"
                 await ctx.reply(embed=SuccessEmbed(e[:1930]))
                 return
-            elif not (showSolvedProblems) and problem.is_solver(ctx.author)]:
+            elif not (showSolvedProblems) and problem.is_solver(ctx.author):
                 continue
             e += "\n"
             e += str(problem.id) + "\t"
