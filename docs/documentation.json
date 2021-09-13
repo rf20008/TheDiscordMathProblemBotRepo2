@@ -388,9 +388,14 @@
 
 			{
 				"heading_level": 4,
-				"title": "delete_problem",
+				"title": "remove_problem",
 				"contents": "Delete a problem"
 			},
+      {
+        "heading_level": 4,
+        "title": "remove_duplicate_problems",
+        "contents": "Removes duplicate math problems"
+      }
 			{
 				"heading_level": 1,
 				"title": "# Misc. Non-Command-Functions in main.py",

@@ -21,10 +21,10 @@ class MathProblem:
     if guild_id != None and not isinstance(guild_id, int):
       raise TypeError
     if len(question) > 250:
-      raise TooLongQuestion(f"Question {question} is too long (250+ characters)")
+      raise TooLongQuestion(f"Your question is {len(question) - 250} characters too long. Questions may be up to 250 characters long.")
     self.question = question
     if len(answer) > 100:
-      raise TooLongAnswer(f"Answer {answer} is too long.")
+      raise TooLongAnswer(f"Your answer is {len(question) - 100} characters too long. Answers may be up to 100 characters long.")
     self.answer = answer
     self.id = id
     self.guild_id = guild_id
@@ -37,11 +37,11 @@ class MathProblem:
       warnings.warn("You are changing one of the attributes that you should not be changing.", category=RuntimeWarning)
     if question != None:
       if len(question) > 250:
-        raise TooLongQuestion(f"Question {question} is too long (250+ characters)")
+        raise TooLongQuestion(f"Your question is {len(question) - 250} characters too long. Questions may be up to 250 characters long.")
       self.question = question
     if answer != None:
       if len(answer) > 100:
-        raise TooLongAnswer(f"Answer {answer} is too long.")
+        raise TooLongAnswer(f"Your answer is {len(question) - 100} characters too long. Answers may be up to 100 characters long.")
       self.answer = answer
     if id != None:
       self.id = id
@@ -129,7 +129,8 @@ class MathProblem:
     if not isinstance(User,nextcord.User) and not isinstance(User,nextcord.Member):
       raise TypeError
     return User.id == self.get_author()
-    
+  def __eq__(self,other):
+    return self.question == other.question and other.answer == self.answer
 
 class MathProblemCache:
   def __init__(self):
@@ -244,6 +245,18 @@ class MathProblemCache:
     Problem = self._dict[guild_id][problem_id]
     del self._dict[guild_id][problem_id]
     return Problem
+  def remove_duplicate_problems(self):
+    "Deletes duplicate problems"
+    problemsDeleted = 0
+    for g1 in self._dict.keys():
+      for p1 in self._dict[g1].keys():
+        for g2 in self._dict.keys():
+          for p3 in self._dict.keys():
+            if self._dict[g1][p1] == self._dict[g2][p3] and not (g1 == g2 and p1 != p3):
+              del self._dict[g1][p1]
+              problemsDeleted += 1
+    return problemsDeleted
+
 
 main_cache = MathProblemCache()
 def get_main_cache():

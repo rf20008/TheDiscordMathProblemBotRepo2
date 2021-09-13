@@ -153,11 +153,25 @@ async def force_save_files(ctx):
     
 
 
-@slash.slash_command(name="edit_problem", description = "Edit a problem", options = [Option(name = "new_question", description="The new question", type=OptionType.STRING,required=False),Option(name = "new_answer", description="The new answer", type=OptionType.STRING,required=False)])
-async def edit_problem(ctx,new_question,new_answer):
+@slash.slash_command(name="edit_problem", description = "Edit a problem", options = [Option(name = "new_question", description="The new question", type=OptionType.STRING,required=False),Option(name = "new_answer", description="The new answer", type=OptionType.STRING,required=False),
+Option(name="problem_id",description="problem_id",type=OptionType.INTEGER,required=True),
+Option(name="guild_id",description="The guild id", type=OptionType.INTEGER)])
+async def edit_problem(ctx,new_question,new_answer,problem_id,guild_id):
     if ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
-    await ctx.send("This command is still in the making.")
+    try:
+        problem = main_cache.get_problem(guild_id,problem_id)
+        if not problem.is_author(ctx.author):
+            await ctx.reply(embed=ErrorEmbed("You are not the author of this problem and therefore can't edit it!"))
+    except:
+        await ctx.reply(embed=ErrorEmbed("This problem does not exist."))
+    try:
+        problem.edit(question=new_question,answer=new_answer)
+    except problems_module.TooLongArgument as e:
+        await ctx.reply(embed=ErrorEmbed(str(e)))
+        return
+    await ctx.reply(embed=SuccessEmbed(f"Successfully changed the answer to {new_answer} and question to {new_question}!"))
+      
 
 
 
