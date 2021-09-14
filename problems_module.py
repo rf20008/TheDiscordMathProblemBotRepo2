@@ -246,6 +246,12 @@ class MathProblemCache:
                 Problem = self.convert_dict_to_math_problem(Problem)
             except KeyError:
                 raise Exception("Not a valid problem!")
+        try:
+          if isinstance(self._dict[guild_id][problem_id],MathProblem):
+            raise Exception("Problem already exists")
+        except:
+          pass
+
         if guild_id != 'null':
             try:
                 if self._dict[guild_id] != {}:
