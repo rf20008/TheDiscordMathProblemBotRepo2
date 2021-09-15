@@ -205,9 +205,9 @@ class MathProblemCache:
         except:
             raise MathProblemsModuleException(f"Guild_id {guild_id} was not found in the cache.")
         try:
-          return guild_id_dict[problem_id]
+            return guild_id_dict[problem_id]
         except:
-          raise Exception("*** Problem not found. Aborting search... ***")
+            raise Exception("*** Problem not found. Aborting search... ***")
     def fetch_problem(self,guild_id,problem_id):
         "Reloads the cache with the file and then loads the problem."
         self.update_cache()

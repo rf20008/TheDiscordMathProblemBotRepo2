@@ -209,9 +209,10 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
         e += str(vote_threshold)
         e+= " \nNumSolvers: "
         e+= str(len(problem.get_solvers()))
-        e+= "\nAnswer: "
-        e+= str(problem.get_answer())
-        await ctx.reply(embedSuccessEmbed(e), ephemeral=True)
+        if show_all_data:
+            e+= "\nAnswer: "
+            e+= str(problem.get_answer())
+        
         if show_all_data:
             if not (problem.is_author(ctx.author) or ctx.author.id not in trusted_users or (is_guild_problem and ctx.author.guild_permissions.administrator == True)):
                 await ctx.reply(embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True)
@@ -220,46 +221,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
         if raw:
             await ctx.reply(embed=SuccessEmbed(str(problem.convert_to_dict())), ephemeral=True)
             return
-    problem = main_cache.get_problem("null", problem_id)
-    if show_all_data:
-      
-        if not (problem.is_author(ctx.author) or ctx.author.id not in trusted_users or (is_guild_problem and ctx.author.guild_permissions.administrator == True)):
-            await ctx.reply(embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True)
-            return
-        if raw:
-            await ctx.reply(embed=SimpleEmbed(description=str(problem.convert_to_dict())), ephemeral=True)
-            return
-        e= "Question: "
-        e += problem.get_question() 
-        e+= "\nAuthor: "
-        e+= str(problem.get_author())
-        e+= "\nNumVoters/Vote Threshold: ("
-        e+= str(problem.get_num_voters())
-        e+= "/"
-        e += str(vote_threshold)
-        e+= ") \nNumSolvers: "
-        e+= str(len(problem.get_solvers()))
-        e+= "\nAnswer: "
-        e+= str(problem.get_answer())
-        await ctx.reply(embed=SuccessEmbed(e), ephemeral=True)
-    else:
-        if raw:
-            g = copy.deepcopy(problem.convert_to_dict())
-            g.pop("answer")
-            await ctx.reply(embed=SuccessEmbed(str(g),successTitle="Here is the problem info."), ephemeral=True)
-            return
-        e= "Question: "
-        e += problem.get_question() 
-        e+= "\nAuthor: "
-        e+= str(problem.get_author())
-        e+= "\nNumVoters/Vote Threshold: ("
-        e+= str(problem.get_num_voters())
-        e+= "/"
-        e += str(vote_threshold)
-        e+= ") \nNumSolvers: "
-        e+= str(len(problem.get_solvers()))
-    
-        await ctx.reply(e, ephemeral=True)
+        await ctx.reply(embedSuccessEmbed(e), ephemeral=True)
 @slash.slash_command(name="list_all_problem_ids", description= "List all problem ids", options=[Option(name="show_only_guild_problems", description="Whether to show guild problem ids",required=False,type=OptionType.BOOLEAN)])
 async def list_all_problem_ids(ctx,show_only_guild_problems=False):
     if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
