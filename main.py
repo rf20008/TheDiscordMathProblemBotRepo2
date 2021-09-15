@@ -161,11 +161,9 @@ async def edit_problem(ctx,new_question,new_answer,problem_id,guild_id):
             await ctx.reply(embed=ErrorEmbed("You are not the author of this problem and therefore can't edit it!"))
     except:
         await ctx.reply(embed=ErrorEmbed("This problem does not exist."))
-    try:
-        problem.edit(question=new_question,answer=new_answer)
-    except problems_module.TooLongArgument as e:
-        await ctx.reply(embed=ErrorEmbed(str(e)))
-        return
+
+    problem.edit(question=new_question,answer=new_answer)
+
     await ctx.reply(embed=SuccessEmbed(f"Successfully changed the answer to {new_answer} and question to {new_question}!"))
       
 

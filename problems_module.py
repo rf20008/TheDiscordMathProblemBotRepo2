@@ -253,14 +253,14 @@ class MathProblemCache:
         except:
           pass
 
-        if guild_id != 'null':
-            try:
-                if self._dict[guild_id] != {}:
-                    raise GuildAlreadyExistsException
-                else:
-                    self._dict[guild_id] = {}
-            except:
-                self._dict[guild_id] = {}
+#        if guild_id != 'null':
+#            try:
+#                if self._dict[guild_id] != {}:
+#                    raise GuildAlreadyExistsException
+#                else:
+#                    self._dict[guild_id] = {}
+#            except:
+#                self._dict[guild_id] = {}
         self._dict[guild_id][problem_id] = Problem
         return Problem
     def remove_problem(self,guild_id,problem_id):
