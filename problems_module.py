@@ -158,7 +158,7 @@ class MathProblemCache:
     def __init__(self):
         self._dict = {}
         self.update_cache()
-        print(self._dict)
+
 
     def convert_dict_to_math_problem(self,problem):
         "Convert a dictionary into a math problem. It must be in the expected format."
