@@ -168,12 +168,15 @@ class MathProblemCache:
             print(problem)
             raise TypeError("problem is not actually a Dictionary")
         guild_id = problem["guild_id"]
-    
+        if guild_id == "null":
+            guild_id = "null"
+        else:
+            guild_id = int(guild_id)
         problem2 = MathProblem(
             question=problem["question"],
             answer=problem["answer"],
             id = int(problem["id"]),
-            guild_id = "null" if problem["guild_id"] == "null" else int(problem["guild_id"]),
+            guild_id = guild_id,
             voters = problem["voters"],
             solvers=problem["solvers"],
             author=problem["author"]
