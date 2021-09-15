@@ -158,6 +158,7 @@ class MathProblemCache:
     def __init__(self):
         self._dict = {}
         self.update_cache()
+        print(self._dict)
 
     def convert_dict_to_math_problem(self,problem):
         "Convert a dictionary into a math problem. It must be in the expected format."
@@ -172,7 +173,7 @@ class MathProblemCache:
             question=problem["question"],
             answer=problem["answer"],
             id = int(problem["id"]),
-            guild_id = "null" if problem["guild_id"] == "null" else int(problem["guild_id"]),
+            guild_id = "null" if problem["guild_id"] == "nandull" else int(problem["guild_id"]),
             voters = problem["voters"],
             solvers=problem["solvers"],
             author=problem["author"]
