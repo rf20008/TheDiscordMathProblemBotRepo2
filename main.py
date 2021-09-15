@@ -179,7 +179,10 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     except AttributeError as e:
         await ctx.reply(":( AttributeError")
         return
-    e=ctx.guild.id if is_guild_problem else "null"
+    if is_guild_problem or ctx.guild == None:
+      e = "null"
+    else:
+      e = ctx.guild.id
 
     if guild_id not in guildMathProblems:
         guildMathProblems[guild_id]={}
