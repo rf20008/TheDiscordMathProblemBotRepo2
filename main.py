@@ -185,13 +185,8 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
 
     if guild_id not in guildMathProblems:
         guildMathProblems[guild_id]={}
-    try:
-        problem = main_cache.get_problem(e,str(problem_id))
-    except Exception as error:
-        error2 = str(type(error))[8:]
-        await ctx.send(":(")
-        #await ctx.reply(embed=ErrorEmbed("This command raised an exception: " + error2[:-2] + ": " + str(error),custom_title="Oh, no! An exception occurred"))
-        return
+
+    problem = main_cache.get_problem(e,str(problem_id))
 
     if True:  
         if is_guild_problem and guild_id == None:
