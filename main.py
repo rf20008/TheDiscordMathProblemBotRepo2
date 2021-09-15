@@ -183,8 +183,8 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
 
     if guild_id not in guildMathProblems:
         guildMathProblems[guild_id]={}
-
-    problem = main_cache.get_problem(str(ctx.guild.id) if is_guild_problem else "null", problem_id)
+    yay = str(ctx.guild.id) if is_guild_problem else "null"
+    problem = main_cache.get_problem(yay, problem_id)
 
     if True:  
         if is_guild_problem and guild_id == None:
