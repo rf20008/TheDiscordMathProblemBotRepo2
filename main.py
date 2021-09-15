@@ -195,7 +195,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
             return
         if guild_id not in main_cache._dict.keys():
             main_cache.add_empty_guild(guild_id)
-        if problem_id not in main_cache.get_guild_problems(ctx.Guild).keys():
+        if problem_id not in main_cache.get_guild_problems(ctx.guild).keys():
             await ctx.reply(embed=ErrorEmbed("Problem non-existant!"))
             return
         problem = main_cache.get_problem(ctx.guild.id,str(problem_id))
@@ -318,9 +318,10 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
             problem_id = generate_new_id()
             if problem_id not in [problem.id for problem in main_cache.get_global_problems()]:
                 break
+        q = "What is " + str(num1) + " " +{"*": "times", "+": "times", 
+          "-": "minus", "/": "divided by", "^": "to the power of"}[operation] + " " + str(num2) + "?"
         Problem = problems_module.MathProblem(
-          question= "What is " + str(num1) + " " +{"*": "times", "+": "times", 
-          "-": "minus", "/": "divided by", "^": "to the power of"}[operation] + " " + str(num2) + "?",
+          question= q,
           answer = str(answer),
           author = 845751152901750824,
           guild_id = "null",
@@ -335,6 +336,7 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
 ##brief = "Adds a trusted user")
 @slash.slash_command(name="delallbotproblems", description = "delete all automatically generated problems")
 async def delallbotproblems(ctx):
+
     if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
     await ctx.reply(embed=SimpleEmbed("",description="Attempting to delete bot problems"),ephemeral=True)
@@ -372,21 +374,22 @@ async def new_problem(ctx, answer, question, guild_question=False):
             return
         if guild_id not in main_cache._dict.keys():
             main_cache.add_empty_guild(guild_id)
-        elif len(main_cache.get_guild_problems(ctx.Guild)) >= guild_maximum_problem_limit and guild_question:
+        elif len(main_cache.get_guild_problems(ctx.guild)) >= guild_maximum_problem_limit and guild_question:
             await ctx.reply(embed=ErrorEmbed("You have reached the guild math problem limit."))
             return
         while True:
             problem_id = generate_new_id()
-            if problem_id not in [problem.guild_id for problem in main_cache.get_guild_problems(ctx.Guild)]:
+            if problem_id not in [problem.guild_id for problem in main_cache.get_guild_problems(ctx.guild)]:
                 break
+
+
         problem = problems_module.MathProblem(
           question=question,
           answer=answer,
-          id=problem.id,
+          id=problem_id,
           author=ctx.author.id,
           guild_id=ctx.guild.id if is_guild_problem else "null"
         )
-
         main_cache.add_problem(problem.id, problem.guild_id,problem)
         
         #print(guildMathProblems[guild_id][problem_id])
