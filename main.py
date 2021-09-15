@@ -176,8 +176,11 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
     problem_id = int(problem_id)
-    
-    guild_id = ctx.guild.id
+    try:
+        guild_id = ctx.guild.id
+    except AttributeError as e:
+        await ctx.reply(":( AttributeError")
+        return
     e=ctx.guild.id if is_guild_problem else "null"
 
     if guild_id not in guildMathProblems:
@@ -185,19 +188,17 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     try:
         problem = main_cache.get_problem(e,str(problem_id))
     except Exception as error:
-      await ctx.send(embed=ErrorEmbed(str(e)))
-      
+        error2 = str(type(error))[8:]
+        await ctx.reply(embed=ErrorEmbed("This command raised an exception: " + error2[:-2] + ": " + str(error),custom_title="Oh, no! An exception occurred"))
+        return
 
-    if is_guild_problem:
-        if guild_id == None:
+    if True:  
+        if is_guild_problem and guild_id == None:
             embed1= ErrorEmbed(title="Error", description = "Run this command in the discord server which has this problem, not a DM!")
             ctx.reply(embed=embed1)
             return
         if guild_id not in main_cache._dict.keys():
             main_cache.add_empty_guild(guild_id)
-        if problem_id not in main_cache.get_guild_problems(ctx.guild).keys():
-            await ctx.reply(embed=ErrorEmbed("Problem non-existant!"))
-            return
         problem = main_cache.get_problem(ctx.guild.id,str(problem_id))
         e= "Question: "
         e+= problem.get_question() 
