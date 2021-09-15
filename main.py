@@ -20,7 +20,7 @@ from problems_module import get_main_cache
 
 
 
-warnings.simplefilter("ignore")
+warnings.simplefilter("default")
 #constants
 #print("Is it working??")
 trusted_users=[]
