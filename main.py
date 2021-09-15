@@ -184,7 +184,6 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     if guild_id not in guildMathProblems:
         guildMathProblems[guild_id]={}
     yay = str(ctx.guild.id) if is_guild_problem else "null"
-    print(yay)
     problem = main_cache.get_problem(yay, str(problem_id))
 
     if True:  
@@ -249,7 +248,7 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
         return
     elif num_new_problems_to_generate > 200:
         await ctx.reply("You are trying to create too many problems. Try something smaller than or equal to 200.", ephemeral=True)
-    print(1)
+
     for i in range(num_new_problems_to_generate):
         operation = random.choice(["+", "-", "*", "/", "^"])
         if operation == "^":
@@ -350,7 +349,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
         )
         main_cache.add_problem(problem.id, problem.guild_id,problem)
         
-        #print(guildMathProblems[guild_id][problem_id])
+
         await ctx.reply(embed=SuccessEmbed("You have successfully made a math problem!",successTitle="Successfully made a new math problem."), ephemeral = True)
         return
     while True:
@@ -387,7 +386,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
 
     if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
-    print(2)
+
     showSolvedProblems = show_solved_problems
     guild_id = ctx.guild.id
     if guild_id not in guildMathProblems:
