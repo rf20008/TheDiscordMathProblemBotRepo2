@@ -210,7 +210,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
             e+= str(problem.get_answer())
         
         if show_all_data:
-            if not (problem.is_author(ctx.author) or ctx.author.id not in trusted_users or (is_guild_problem and ctx.author.guild_permissions.administrator == True)):
+            if not ((problem.is_author(ctx.author) or ctx.author.id not in trusted_users or (is_guild_problem and ctx.author.guild_permissions.administrator == True))):
                 await ctx.reply(embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True)
                 return
 
