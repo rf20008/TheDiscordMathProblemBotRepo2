@@ -173,7 +173,7 @@ class MathProblemCache:
             question=problem["question"],
             answer=problem["answer"],
             id = int(problem["id"]),
-            guild_id = "null" if problem["guild_id"] == "nandull" else int(problem["guild_id"]),
+            guild_id = "null" if problem["guild_id"] == "null" else int(problem["guild_id"]),
             voters = problem["voters"],
             solvers=problem["solvers"],
             author=problem["author"]
