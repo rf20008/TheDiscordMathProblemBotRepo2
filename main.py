@@ -189,7 +189,8 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
         problem = main_cache.get_problem(e,str(problem_id))
     except Exception as error:
         error2 = str(type(error))[8:]
-        await ctx.reply(embed=ErrorEmbed("This command raised an exception: " + error2[:-2] + ": " + str(error),custom_title="Oh, no! An exception occurred"))
+        await ctx.send(":(")
+        #await ctx.reply(embed=ErrorEmbed("This command raised an exception: " + error2[:-2] + ": " + str(error),custom_title="Oh, no! An exception occurred"))
         return
 
     if True:  
