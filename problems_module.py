@@ -201,8 +201,10 @@ class MathProblemCache:
             file.write(json.dumps(e))
     def get_problem(self,guild_id,problem_id):
         "Gets the problem with this guild id and problem id"
-        if not isinstance(guild_id, str) or not isinstance(problem_id,str):
-          warnings.warn("Either guild_id or problem_id is not a string", category=Warning)
+        if not isinstance(guild_id, str):
+            warnings.warn("guild_id is not a string", category=RuntimeWarning)
+        if not isinstance(problem_id,str):
+            warnings.warn("problem_id is not a string",category=RuntimeWarning)
         try:
             guild_id_dict = self._dict[guild_id]
             
