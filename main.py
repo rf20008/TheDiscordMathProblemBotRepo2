@@ -185,7 +185,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
         guildMathProblems[guild_id]={}
     yay = str(ctx.guild.id) if is_guild_problem else "null"
     print(yay)
-    problem = main_cache.get_problem(yay, problem_id)
+    problem = main_cache.get_problem(yay, str(problem_id))
 
     if True:  
         if is_guild_problem and guild_id == None:
@@ -217,7 +217,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
         if raw:
             await ctx.reply(embed=SuccessEmbed(str(problem.convert_to_dict())), ephemeral=True)
             return
-        await ctx.reply(embedSuccessEmbed(e), ephemeral=True)
+        await ctx.reply(embed=SuccessEmbed(e), ephemeral=True)
 @slash.slash_command(name="list_all_problem_ids", description= "List all problem ids", options=[Option(name="show_only_guild_problems", description="Whether to show guild problem ids",required=False,type=OptionType.BOOLEAN)])
 async def list_all_problem_ids(ctx,show_only_guild_problems=False):
     if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
