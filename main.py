@@ -171,6 +171,7 @@ async def edit_problem(ctx,new_question,new_answer,problem_id,guild_id):
 
 @slash.slash_command(name="show_problem_info", description = "Show problem info", options=[Option(name="problem_id", description="problem id of the problem you want to show", type=OptionType.INTEGER, required=True),Option(name="show_all_data", description="whether to show all data (only useable by problem authors and trusted users", type=OptionType.BOOLEAN, required=False),Option(name="raw", description="whether to show data as json?", type=OptionType.BOOLEAN, required=False),Option(name="is_guild_problem", description="whether the problem you are trying to view is a guild problem", type=OptionType.BOOLEAN, required=False)])
 async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_guild_problem=False):
+
     if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
     problem_id = int(problem_id)
@@ -179,15 +180,12 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     except AttributeError as e:
         await ctx.reply(":( AttributeError")
         return
-    if is_guild_problem or ctx.guild == None:
-      e = "null"
-    else:
-      e = str(ctx.guild.id)
+
 
     if guild_id not in guildMathProblems:
         guildMathProblems[guild_id]={}
 
-    problem = main_cache.get_problem(e,str(problem_id))
+    problem = main_cache.get_problem(e, problem_id)
 
     if True:  
         if is_guild_problem and guild_id == None:
@@ -196,7 +194,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
             return
         if guild_id not in main_cache._dict.keys():
             main_cache.add_empty_guild(guild_id)
-        problem = main_cache.get_problem(ctx.guild.id,str(problem_id))
+        problem = main_cache.get_problem(str(ctx.guild.id) if is_guild_problem else "null",str(problem_id))
         e= "Question: "
         e+= problem.get_question() 
         e+= "\nAuthor: "
