@@ -388,7 +388,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
           answer=answer,
           id=problem_id,
           author=ctx.author.id,
-          guild_id=ctx.guild.id if is_guild_problem else "null"
+          guild_id=ctx.guild.id if guild_question else "null"
         )
         main_cache.add_problem(problem.id, problem.guild_id,problem)
         
