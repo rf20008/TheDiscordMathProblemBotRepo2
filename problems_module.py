@@ -256,7 +256,7 @@ class MathProblemCache:
             if self._dict[guild_id][problem_id] != None:
                 raise Exception("Problem already exists")
         except:
-            e= self._dict[guild_id])
+            e= self._dict[guild_id]
             e.__setitem__(problem_id, Problem)
             self._dict.__setitem__(e,guild_id)
 
