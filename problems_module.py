@@ -253,10 +253,10 @@ class MathProblemCache:
             except KeyError:
                 raise Exception("Not a valid problem!")
         try:
-          if isinstance(self._dict[guild_id][problem_id],MathProblem):
-            raise Exception("Problem already exists")
+            if self._dict[guild_id][problem_id] != None:
+                raise Exception("Problem already exists")
         except:
-          pass
+            self._dict[guild_id][problem_id] = Problem
 
 #        if guild_id != 'null':
 #            try:
@@ -266,7 +266,7 @@ class MathProblemCache:
 #                    self._dict[guild_id] = {}
 #            except:
 #                self._dict[guild_id] = {}
-        self._dict[guild_id][problem_id] = Problem
+        
         return Problem
     def remove_problem(self,guild_id,problem_id):
         "Removes a problem. Returns the deleted problem"
