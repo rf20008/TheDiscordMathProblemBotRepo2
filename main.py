@@ -334,7 +334,9 @@ async def new_problem(ctx, answer, question, guild_question=False):
         elif len(main_cache.get_guild_problems(ctx.guild)) >= guild_maximum_problem_limit and guild_question:
             await ctx.reply(embed=ErrorEmbed("You have reached the guild math problem limit."))
             return
+
         while True:
+
             problem_id = generate_new_id()
             if problem_id not in [problem.guild_id for problem in main_cache.get_guild_problems(ctx.guild)]:
                 break

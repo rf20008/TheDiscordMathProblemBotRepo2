@@ -250,13 +250,15 @@ class MathProblemCache:
         if isinstance(Problem,dict):
             try:
                 Problem = self.convert_dict_to_math_problem(Problem)
-            except KeyError:
+            except Exception:
                 raise Exception("Not a valid problem!")
         try:
             if self._dict[guild_id][problem_id] != None:
                 raise Exception("Problem already exists")
         except:
-            self._dict[guild_id][problem_id] = Problem
+            e= self._dict[guild_id])
+            e.__setitem__(problem_id, Problem)
+            self._dict.__setitem__(e,guild_id)
 
 #        if guild_id != 'null':
 #            try:
