@@ -374,7 +374,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
 
     problem = problems_module.MathProblem(question=question,answer=answer,id=problem_id,guild_id="null",author=ctx.author.id)
     print(problem.convert_to_dict())
-    main_cache.add_problem(problem_id=problem_id, guild_idproblem.guild_id,problem)
+    main_cache.add_problem(problem_id=problem_id, guild_id=problem.guild_id,problem)
     await ctx.reply(embed=SuccessEmbed("You have successfully made a math problem!"), ephemeral = True)
 
 @slash.slash_command(name="check_answer", description = "Check if you are right", options=[Option(name="problem_id", description="the id of the problem you are trying to check the answer of", type=OptionType.INTEGER, required=True),Option(name="answer", description="your answer", type=OptionType.STRING, required=True),Option(name="checking_guild_problem", description="whether checking a guild problem", type=OptionType.BOOLEAN, required = False)])
