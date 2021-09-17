@@ -285,7 +285,7 @@ class MathProblemCache:
         for g1 in self._dict.keys():
             for p1 in self._dict[g1].keys():
                 for g2 in self._dict.keys():
-                    for p3 in self._dict.keys():
+                    for p3 in self._dict[g2].keys():
                         if self._dict[g1][p1] == self._dict[g2][p3] and not (g1 == g2 and p1 != p3):
                             del self._dict[g1][p1]
                             problemsDeleted += 1

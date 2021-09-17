@@ -375,6 +375,8 @@ async def new_problem(ctx, answer, question, guild_question=False):
         
 
         await ctx.reply(embed=SuccessEmbed("You have successfully made a math problem!",successTitle="Successfully made a new math problem."), ephemeral = True)
+        t=threading.Thread(target=main_cache.remove_duplicate_problems)
+        t.start()
         return
     while True:
         problem_id = generate_new_id()
@@ -385,6 +387,8 @@ async def new_problem(ctx, answer, question, guild_question=False):
     problem = problems_module.MathProblem(question=question,answer=answer,id=problem_id,guild_id="null",author=ctx.author.id)
     main_cache.add_problem(problem_id=problem_id, guild_id=problem.guild_id,Problem=problem)
     await ctx.reply(embed=SuccessEmbed("You have successfully made a math problem!"), ephemeral = True)
+    t=threading.Thread(target=main_cache.remove_duplicate_problems)
+    t.start()
 
 @slash.slash_command(name="check_answer", description = "Check if you are right", options=[Option(name="problem_id", description="the id of the problem you are trying to check the answer of", type=OptionType.INTEGER, required=True),Option(name="answer", description="your answer", type=OptionType.STRING, required=True),Option(name="checking_guild_problem", description="whether checking a guild problem", type=OptionType.BOOLEAN, required = False)])
 async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
