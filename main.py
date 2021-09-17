@@ -359,7 +359,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
           guild_id=guild_id
         )
         print(problem)
-        main_cache.add_problem(problem.guild_id, problem_id,problem)
+        main_cache.add_problem(guild_id=problem.guild_id, problem_id=problem_id,Problem=problem)
         
 
         await ctx.reply(embed=SuccessEmbed("You have successfully made a math problem!",successTitle="Successfully made a new math problem."), ephemeral = True)
