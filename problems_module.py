@@ -245,6 +245,7 @@ class MathProblemCache:
         self._dict[Guild.id] = {}
     def add_problem(self,guild_id,problem_id,Problem):
         "Adds a problem and returns the added MathProblem"
+        print(guild_id,problem_id)
         if not isinstance(Problem,(MathProblem, dict)):
             raise TypeError("Problem is not a valid MathProblem object.")
         if isinstance(Problem,dict):
@@ -256,9 +257,10 @@ class MathProblemCache:
             if self._dict[guild_id][problem_id] != None:
                 raise Exception("Problem already exists")
         except:
-            e= self._dict[guild_id]
-            e[problem_id]= Problem
-            self._dict[guild_id] = e
+            try:
+                self._dict[guild_id][problem_id] = Problem
+            except KeyError as e:
+                self._dict[guild_id][problem_id]["null"] = Problem
 
 #        if guild_id != 'null':
 #            try:
