@@ -178,7 +178,7 @@ async def edit_problem(ctx,problem_id,new_question=None,new_answer=None,guild_id
         else:
             raise Exception("*** No new answer or new question provided. Aborting command...***")
 
-    await ctx.reply(embed=SuccessEmbed(f"Successfully changed the answer to {new_answer} and question to {new_question}!"))
+    await ctx.reply(embed=SuccessEmbed(f"Successfully changed the answer to {new_answer} and question to {new_question}!"),ephemeral=True)
       
 
 
