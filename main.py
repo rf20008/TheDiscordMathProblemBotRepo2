@@ -158,7 +158,7 @@ async def force_save_files(ctx):
 @slash.slash_command(name="edit_problem", description = "edit a problem", options = [
 Option(name="problem_id",description="problem_id",type=OptionType.INTEGER,required=True),
 Option(name="guild_id",description="the guild id", type=OptionType.INTEGER),Option(name = "new_question", description="the new question", type=OptionType.STRING,required=False),Option(name = "new_answer", description="the new answer", type=OptionType.STRING,required=False)])
-async def edit_problem(ctx,new_question,new_answer,problem_id,guild_id):
+async def edit_problem(ctx,new_question=None,new_answer=None,problem_id,guild_id="null"):
     if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
     try:
@@ -167,8 +167,16 @@ async def edit_problem(ctx,new_question,new_answer,problem_id,guild_id):
             await ctx.reply(embed=ErrorEmbed("You are not the author of this problem and therefore can't edit it!"))
     except:
         await ctx.reply(embed=ErrorEmbed("This problem does not exist."))
-
-    problem.edit(question=new_question,answer=new_answer)
+    if new_question != None:
+        if new_answer != None:
+            problem.edit(question=new_question,answer=new_answer)
+        else:
+            problem.edit(question=new_question)
+    else:
+        if new_answer != None:
+            problem.edit(answer=new_answer)
+        else:
+            raise Exception("*** No new answer or new question provided. Aborting command...***")
 
     await ctx.reply(embed=SuccessEmbed(f"Successfully changed the answer to {new_answer} and question to {new_question}!"))
       
