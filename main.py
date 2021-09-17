@@ -1,5 +1,5 @@
 import math, random, os, warnings, threading, aiohttp, copy, nextcord, discord
-import dislash
+import dislash, traceback
 import return_intents
 import nextcord.ext.commands as nextcord_commands
 
@@ -17,6 +17,7 @@ from save_files import FileSaver
 from user_error import UserError
 from the_documentation_file_loader import *
 from problems_module import get_main_cache
+from sys import exc_info
 
 
 
@@ -87,9 +88,8 @@ async def on_slash_command_error(ctx, error):
         await ctx.reply(embed=ErrorEmbed("You are not the owner of this bot."))
         return
     #Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
-    e = str(type(error))[8:]
 
-    await ctx.reply(embed=ErrorEmbed("This command raised an exception: " + e[:-2] + ": " + str(error),custom_title="Oh, no! An exception occurred"))
+    await ctx.reply(embed=ErrorEmbed(traceback.format_exc(),custom_title="Oh, no! An exception occurred"))
     
 
 @bot.event
