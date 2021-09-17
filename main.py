@@ -452,7 +452,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
         #print(mathProblems[question])
         e += str(problem.get_question()) + "\t"
         e += "(" 
-        e+= str(problem.get_num_voters) + "/" + str(vote_threshold) + ")" + "\t"
+        e+= str(problem.get_num_voters()) + "/" + str(vote_threshold) + ")" + "\t"
         e += str(len(problem.get_solvers())) + "\t"
     await ctx.reply(embed=SuccessEmbed(e[:1930]))
 
