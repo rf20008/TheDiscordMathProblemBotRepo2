@@ -354,10 +354,11 @@ async def new_problem(ctx, answer, question, guild_question=False):
         problem = problems_module.MathProblem(
           question=question,
           answer=answer,
-          id=str(problem_id),
+          id=0,
           author=ctx.author.id,
           guild_id=guild_id
         )
+        problem.edit(id=problem_id)
         print(problem)
         main_cache.add_problem(guild_id=problem.guild_id, problem_id=problem_id,Problem=problem)
         
