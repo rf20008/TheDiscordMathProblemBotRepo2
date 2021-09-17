@@ -158,7 +158,7 @@ async def force_save_files(ctx):
 @slash.slash_command(name="edit_problem", description = "edit a problem", options = [
 Option(name="problem_id",description="problem_id",type=OptionType.INTEGER,required=True),
 Option(name="guild_id",description="the guild id", type=OptionType.INTEGER),Option(name = "new_question", description="the new question", type=OptionType.STRING,required=False),Option(name = "new_answer", description="the new answer", type=OptionType.STRING,required=False)])
-async def edit_problem(ctx,new_question=None,new_answer=None,problem_id,guild_id="null"):
+async def edit_problem(ctx,problem_id,new_question=None,new_answer=None,guild_id="null"):
     if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
     try:
