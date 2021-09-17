@@ -152,7 +152,10 @@ class MathProblem:
             raise TypeError("User is not actually a User")
         return User.id == self.get_author()
     def __eq__(self,other):
-        return self.question == other.question and other.answer == self.answer
+        try:
+            return self.question == other.question and other.answer == self.answer
+        except:
+            return False
 
 class MathProblemCache:
     def __init__(self):
