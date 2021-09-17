@@ -100,7 +100,7 @@ class MathProblem:
     def add_solver(self,solver):
         """Adds a solver. Solver must be a nextcord.User object or nextcord.Member object."""
         if not isinstance(solver,nextcord.User) and not isinstance(solver,nextcord.Member):
-            raise TypeError("Sovler is not a User object")
+            raise TypeError("Solver is not a User object")
         if not self.is_solver(solver):
             self.solvers.append(solver.id)
     def get_answer(self):
