@@ -314,8 +314,6 @@ async def list_trusted_users(ctx):
     await ctx.reply(e, ephemeral = True)
 @slash.slash_command(name="new_problem", description = "Create a new problem", options = [Option(name="answer", description="The answer to this problem", type=OptionType.STRING, required=True), Option(name="question", description="your question", type=OptionType.STRING, required=True),Option(name="guild_question", description="Whether it should be a question for the guild", type=OptionType.BOOLEAN, required=False)])
 async def new_problem(ctx, answer, question, guild_question=False):
-
-    global mathProblems, guildMathProblems
     if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
     if len(question) > 250:
@@ -329,9 +327,11 @@ async def new_problem(ctx, answer, question, guild_question=False):
         if guild_id == None:
             await ctx.reply(embed=ErrorEmbed("You need to be in the guild to make a guild question!"))
             return
+
         if guild_id not in main_cache._dict.keys():
             main_cache.add_empty_guild(guild_id)
         elif len(main_cache.get_guild_problems(ctx.guild)) >= guild_maximum_problem_limit and guild_question:
+
             await ctx.reply(embed=ErrorEmbed("You have reached the guild math problem limit."))
             return
 
@@ -341,14 +341,18 @@ async def new_problem(ctx, answer, question, guild_question=False):
             if problem_id not in [problem.guild_id for problem in main_cache.get_guild_problems(ctx.guild)]:
                 break
 
-
+        if guild_question:
+            guild_id = str(ctx.guild.id)
+        else:
+            guild_id = "null"
         problem = problems_module.MathProblem(
           question=question,
           answer=answer,
-          id=problem_id,
+          id=str(problem_id),
           author=ctx.author.id,
-          guild_id=ctx.guild.id if guild_question else "null"
+          guild_id=guild_id
         )
+        print(problem)
         main_cache.add_problem(problem.id, problem.guild_id,problem)
         
 
