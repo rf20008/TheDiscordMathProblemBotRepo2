@@ -165,8 +165,10 @@ async def edit_problem(ctx,problem_id,new_question=None,new_answer=None,guild_id
         problem = main_cache.get_problem(str(guild_id),str(problem_id))
         if not problem.is_author(ctx.author):
             await ctx.reply(embed=ErrorEmbed("You are not the author of this problem and therefore can't edit it!"))
+            return
     except:
         await ctx.reply(embed=ErrorEmbed("This problem does not exist."))
+        return
     if new_question != None:
         if new_answer != None:
             problem.edit(question=new_question,answer=new_answer)
@@ -177,6 +179,7 @@ async def edit_problem(ctx,problem_id,new_question=None,new_answer=None,guild_id
             problem.edit(answer=new_answer)
         else:
             raise Exception("*** No new answer or new question provided. Aborting command...***")
+    print(problem.get_question(),problem.get_answer())
 
     await ctx.reply(embed=SuccessEmbed(f"Successfully changed the answer to {new_answer} and question to {new_question}!"),ephemeral=True)
       

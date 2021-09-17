@@ -1,6 +1,6 @@
 import nextcord, json, warnings
 
-# This is a module containing MathProblem and MathProblemCache objects. (And exceptions as well!)
+# This is a module containing MathProblem and MathProblemCache objects. (And exceptions as well!) This may be useful outside of this discord bot so feel free to use it :) Just follow the MIT+GNU license
 class MathProblemsModuleException(Exception):
     "The base exception for problems_module."
 class TooLongArgument(MathProblemsModuleException):
