@@ -505,7 +505,7 @@ async def vote(ctx, problem_id,is_guild_problem=False):
     except Exception:
         await ctx.reply(embed=ErrorEmbed("This problem doesn't exist!"), ephemeral=True)
         return
-    problem.add_voter()
+    problem.add_voter(ctx.author)
     e = "You successfully voted for the problem's deletion! As long as this problem is not deleted, you can always un-vote. There are "
     e += str(problem.get_num_voters())
     e += "/"
