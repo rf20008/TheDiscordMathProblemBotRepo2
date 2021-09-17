@@ -89,8 +89,8 @@ async def on_slash_command_error(ctx, error):
         return
     #Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
     e = str(type(error))[8:]
-    traceback.print_exc(file=sys.stdout)
-    await ctx.reply(embed=ErrorEmbed("This command raised an exception: " + e[:-2] + ": " + str(error),custom_title="Oh, no! An exception occurred"))
+    
+    await ctx.reply(embed=ErrorEmbed("''"+(traceback.format_exception(etype=type(error),value=str(error),tb=error.__traceback)) + "''",custom_title="Oh, no! An exception occurred"))
 
     
 
