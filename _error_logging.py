@@ -4,7 +4,7 @@ def log_error(error,file_path):
         raise TypeError("file_path is not a string")
     if not isinstance(error,BaseException):
         raise TypeError("error is not an error")
-    e=traceback.format_exception(type(error),errpr,tb=error.__traceback__)
+    e=traceback.format_exception(type(error),error,tb=error.__traceback__)
     try:
         with open(file, "a") as f:
             f.write(time.asctime())
