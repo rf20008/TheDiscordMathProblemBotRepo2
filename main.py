@@ -169,19 +169,23 @@ async def edit_problem(ctx,problem_id,new_question=None,new_answer=None,guild_id
     except:
         await ctx.reply(embed=ErrorEmbed("This problem does not exist."))
         return
+    e = "Successfully"
     if new_question != None:
         if new_answer != None:
             problem.edit(question=new_question,answer=new_answer)
+            e += f"changed the answer to {new_answer} and question to {new_question}!""
         else:
             problem.edit(question=new_question)
+            e += f"changed the question to {new_question}!"
     else:
         if new_answer != None:
             problem.edit(answer=new_answer)
+            e += f"changed the answer to {new_answer}"
         else:
             raise Exception("*** No new answer or new question provided. Aborting command...***")
     print(problem.get_question(),problem.get_answer())
 
-    await ctx.reply(embed=SuccessEmbed(f"Successfully changed the answer to {new_answer} and question to {new_question}!"),ephemeral=True)
+    await ctx.reply(embed=SuccessEmbed(e),ephemeral=True)
       
 
 
