@@ -95,7 +95,7 @@ async def on_slash_command_error(ctx, error):
       f += item
       f += "\n"
     
-    await ctx.reply(embed=ErrorEmbed("''" + f+ "''",custom_title="Oh, no! An exception occurred"))
+    await ctx.reply(embed=ErrorEmbed(f,custom_title="Oh, no! An exception occurred"))
 
     
 
