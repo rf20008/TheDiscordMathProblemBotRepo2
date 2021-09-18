@@ -5,9 +5,9 @@ import nextcord.ext.commands as nextcord_commands
 
 import problems_module
 
-
+from _error_logging import log_error
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
-from time import sleep, time
+from time import sleep, time, asctime
 from nextcord.ext import commands, tasks 
 from random import randint
 from nextcord import Embed, Color
@@ -89,6 +89,7 @@ async def on_slash_command_error(ctx, error):
         return
     #Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
     e = (traceback.format_exception(etype=type(error),value=error,tb=error.__traceback__))
+    log_error(error,"error_logs/log_1.txt")
     f = ""
     for item in e:
       f += item
