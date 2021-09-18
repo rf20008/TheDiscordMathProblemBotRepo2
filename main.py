@@ -173,7 +173,7 @@ async def edit_problem(ctx,problem_id,new_question=None,new_answer=None,guild_id
     if new_question != None:
         if new_answer != None:
             problem.edit(question=new_question,answer=new_answer)
-            e += f"changed the answer to {new_answer} and question to {new_question}!""
+            e += f"changed the answer to {new_answer} and question to {new_question}!"
         else:
             problem.edit(question=new_question)
             e += f"changed the question to {new_question}!"
