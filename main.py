@@ -236,8 +236,6 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
         ) from exc
 
 
-    if guild_id not in guildMathProblems:
-        guildMathProblems[guild_id]={}
     real_guild_id = str(ctx.guild.id) if is_guild_problem else "null"
     problem = main_cache.get_problem(real_guild_id, str(problem_id))
 
