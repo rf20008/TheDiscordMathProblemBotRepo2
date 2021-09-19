@@ -220,7 +220,8 @@ async def edit_problem(ctx,problem_id,new_question=None,new_answer=None,guild_id
             type=OptionType.BOOLEAN, required=False),
     Option(name="raw", description="whether to show data as json?",
            type=OptionType.BOOLEAN, required=False),
-    Option(name="is_guild_problem", description="whether the problem you are trying to view is a guild problem",
+    Option(name="is_guild_problem", 
+           description="whether the problem you are trying to view is a guild problem",
            type=OptionType.BOOLEAN, required=False)])
 async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_guild_problem=False):
     "Show the info of a problem."
@@ -247,16 +248,18 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
             return
         if guild_id not in main_cache._dict.keys():
             main_cache.add_empty_guild(guild_id)
-        problem = main_cache.get_problem(str(ctx.guild.id) if is_guild_problem else "null",str(problem_id))
+        problem = main_cache.get_problem(str(ctx.guild.id) if is_guild_problem else "null",
+                                         str(problem_id))
         Problem__ = f"Question: {problem.get_question()}\nAuthor: {str(problem.get_author())}\nNumVoters/Vote Threshold: {problem.get_num_voters}/{vote_threshold}\nNumSolvers: {len(problem.get_solvers()}"
         
         if show_all_data:
-            e+= f"\nAnswer: {problem.get_answer}"
-        
-        if show_all_data:
-            if not ((problem.is_author(ctx.author) or ctx.author.id not in trusted_users or (is_guild_problem and ctx.author.guild_permissions.administrator == True))):
+            if not ((problem.is_author(ctx.author) or ctx.author.id not in trusted_users or (
+                is_guild_problem and ctx.author.guild_permissions.administrator == True))):
                 await ctx.reply(embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True)
                 return
+            e+= f"\nAnswer: {problem.get_answer}"
+        
+            
 
         if raw:
             await ctx.reply(embed=SuccessEmbed(str(problem.convert_to_dict())), ephemeral=True)
