@@ -57,7 +57,7 @@ def the_daemon_file_saver():
         FileSaverDict["trusted_users"],
         FileSaverDict["vote_threshold"])
 
-    while True:
+    while True: 
         sleep(45) 
         FileSaverObj.save_files(True,guildMathProblems,vote_threshold,mathProblems,trusted_users)
 
@@ -421,9 +421,16 @@ async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
         await ctx.reply(embed=SuccessEmbed("",successTitle="You answered this question correctly!"), ephemeral=True)
         problem.add_solver(ctx.author)
         return
-@slash.slash_command(name="list_all_problems", description = "List all problems stored with the bot", options=[Option(name="show_solved_problems", description="Whether to show solved problems", type=OptionType.BOOLEAN, required=False),Option(name="show_guild_problems", description="Whether to show solved problems", type=OptionType.BOOLEAN, required=False),Option(name="show_only_guild_problems", description="Whether to only show guild problems", type=OptionType.BOOLEAN, required=False)])
+@slash.slash_command(name="list_all_problems", description = "List all problems stored with the bot",
+                     options=[
+                         Option(name="show_solved_problems", description="Whether to show solved problems",
+                                type=OptionType.BOOLEAN, required=False),
+                         Option(name="show_guild_problems", description="Whether to show solved problems",
+                                type=OptionType.BOOLEAN, required=False),
+                         Option(name="show_only_guild_problems", description="Whether to only show guild problems",
+                                type=OptionType.BOOLEAN, required=False)])
 async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=True,show_only_guild_problems=False):
-
+    "List all MathProblems."
     if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
 
@@ -482,34 +489,49 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
         e += str(len(problem.get_solvers())) + "\t"
     await ctx.reply(embed=SuccessEmbed(e[:1930]))
 
-@slash.slash_command(name = "set_vote_threshold", description = "Sets the vote threshold", options=[Option(name="threshold", description="the threshold you want to change it to", type=OptionType.INTEGER, required=True)])
+@slash.slash_command(name = "set_vote_threshold", description = "Sets the vote threshold", options=[
+    Option(name="threshold", description="the threshold you want to change it to",
+           type=OptionType.INTEGER, required=True)])
 async def set_vote_threshold(ctx,threshold):
+    "Set the vote threshold"
     if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
     global vote_threshold
     try:
         threshold = int(threshold)
     except:
-        await ctx.reply(embed=ErrorEmbed("Invalid threshold argument! (threshold must be an integer)"), ephemeral=True)
+        await ctx.reply(embed=ErrorEmbed(
+            "Invalid threshold argument! (threshold must be an integer)"),
+                        ephemeral=True)
         return
     if ctx.author.id not in trusted_users:
         await ctx.reply(embed=ErrorEmbed("You aren't allowed to do this!"), ephemeral=True)
         return
     if threshold <1:
-        await ctx.reply(embed=ErrorEmbed("You can't set the threshold to smaller than 1."), ephemeral=True)
+        await ctx.reply(embed=ErrorEmbed(
+            "You can't set the threshold to smaller than 1."),
+                        ephemeral=True)
         return
     vote_threshold=int(threshold)
     for problem in main_cache.get_global_problems():
         if problem.get_num_voters() > vote_threshold:
             main_cache.remove_problem(problem.guild_id, problem.id)
-    await ctx.reply(embed=SuccessEmbed(f"The vote threshold has successfully been changed to {threshold}!"), ephemeral=True)
-@slash.slash_command(name="vote", description = "Vote for the deletion of a problem", options=[Option(name="problem_id", description="problem id of the problem you are attempting to delete", type=OptionType.INTEGER, required=True),Option(name="is_guild_problem", description="problem id of the problem you are attempting to delete", type=OptionType.BOOLEAN, required=False)])
+    await ctx.reply(embed=SuccessEmbed(f"The vote threshold has successfully been changed to {threshold}!"),
+                    ephemeral=True)
+@slash.slash_command(name="vote", description = "Vote for the deletion of a problem", options=[
+    Option(name="problem_id", description="problem id of the problem you are attempting to delete",
+           type=OptionType.INTEGER, required=True),
+    Option(name="is_guild_problem", description="problem id of the problem you are attempting to delete",
+           type=OptionType.BOOLEAN, required=False)])
 async def vote(ctx, problem_id,is_guild_problem=False):
-    global mathProblems, guildMathProblems
+    "Vote for the deletion of a problem"
+    
     if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
     try:
-        problem = main_cache.get_problem(ctx.guild.id if is_guild_problem else "null",problem_id=str(problem_id))
+        problem = main_cache.get_problem(
+            ctx.guild.id if is_guild_problem else "null",
+                                         problem_id=str(problem_id))
         if problem.is_voter(ctx.author):
             await ctx.reply(embed=ErrorEmbed("You have already voted for the deletion of this problem!"), ephemeral=True)
             return
@@ -526,13 +548,19 @@ async def vote(ctx, problem_id,is_guild_problem=False):
     if problem.get_num_voters() >= vote_threshold:
         del mathProblems[problem_id]
         await ctx.reply(embed=SimpleEmbed("This problem has surpassed the threshold and has been deleted!"), ephemeral=True)
-@slash.slash_command(name="unvote", description = "Vote for the deletion of a problem", options=[Option(name="problem_id", description="problem id of the problem you are attempting to delete", type=OptionType.INTEGER, required=True),Option(name="is_guild_problem", description="problem id of the problem you are attempting to delete", type=OptionType.BOOLEAN, required=False)])
+@slash.slash_command(name="unvote", description = "Vote for the deletion of a problem", options=[
+    Option(name="problem_id", description="problem id of the problem you are attempting to delete",
+           type=OptionType.INTEGER, required=True),
+    Option(name="is_guild_problem", description="problem id of the problem you are attempting to delete",
+           type=OptionType.BOOLEAN, required=False)])
 async def unvote(ctx, problem_id,is_guild_problem=False):
-    global mathProblems, guildMathProblems
+    "Unvote for the deletion of a problem"
+    
     if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
     try:
-        problem = main_cache.get_problem(ctx.guild.id if is_guild_problem else "null",problem_id=str(problem_id))
+        problem = main_cache.get_problem(ctx.guild.id if is_guild_problem else "null",
+                                         problem_id=str(problem_id))
         if not problem.is_voter(ctx.author):
             await ctx.reply(embed=ErrorEmbed("You can't unvote since you are not voting."), ephemeral=True)
             return
@@ -546,9 +574,13 @@ async def unvote(ctx, problem_id,is_guild_problem=False):
     e+= str(vote_threshold)
     e += " votes on this problem!"
     await ctx.reply(embed=SuccessEmbed(e), ephemeral=True)
-@slash.slash_command(name="delete_problem", description = "Deletes a problem", options = [Option(name="problem_id", description="Problem ID!", type=OptionType.INTEGER, required=True),Option(name="is_guild_problem", description="whether deleting a guild problem", type=OptionType.USER, required=False)])
+@slash.slash_command(name="delete_problem", description = "Deletes a problem", options = [
+    Option(name="problem_id", description="Problem ID!",
+           type=OptionType.INTEGER, required=True),
+    Option(name="is_guild_problem", description="whether deleting a guild problem",
+           type=OptionType.USER, required=False)])
 async def delete_problem(ctx, problem_id,is_guild_problem=False):
-    global mathProblems, guildMathProblems
+    "Delete a math problem"
     user_id = ctx.author.id
     guild_id = ctx.guild.id
     if is_guild_problem:
@@ -576,7 +608,9 @@ async def delete_problem(ctx, problem_id,is_guild_problem=False):
     if problem_id not in main_cache.get_guild_problems(ctx.guild).keys():
         await ctx.reply(embed=ErrorEmbed("That problem doesn't exist."), ephemeral=True)
         return
-    if not (ctx.author.id in trusted_users or not main_cache.get_problem(guild_id,problem_id).is_author() or ctx.author.guild_permissions.administrator):
+    if not (ctx.author.id in trusted_users or not
+            (main_cache.get_problem(guild_id,problem_id).is_author())
+            or ctx.author.guild_permissions.administrator):
         await ctx.reply(embed=ErrorEmbed("Insufficient permissions"), ephemeral=True)
         return
     main_cache.remove_problem("null", problem_id)
@@ -586,12 +620,13 @@ async def delete_problem(ctx, problem_id,is_guild_problem=False):
            type=OptionType.USER,
            required=True)])
 async def add_trusted_user(ctx,user):
-
+    "Add a trusted user"
     if ctx.author.id not in trusted_users:
         await ctx.reply(embed=ErrorEmbed("You aren't a trusted user!"), ephemeral=True)
         return
     if user.id in trusted_users:
-        await ctx.reply(embed=ErrorEmbed(f"{user.name} is already a trusted user!"), ephemeral=True)
+        await ctx.reply(embed=ErrorEmbed(f"{user.name} is already a trusted user!"),
+                        ephemeral=True)
         return
     trusted_users.append(user.id)
     await ctx.reply(embed=ErrorEmbed(f"Successfully made {user.nick} a trusted user!"), ephemeral=True) 
