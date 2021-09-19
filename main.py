@@ -249,19 +249,9 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
             main_cache.add_empty_guild(guild_id)
         problem = main_cache.get_problem(str(ctx.guild.id) if is_guild_problem else "null",str(problem_id))
         Problem__ = f"Question: {problem.get_question()}\nAuthor: {str(problem.get_author())}\nNumVoters/Vote Threshold: {problem.get_num_voters}/{vote_threshold}\nNumSolvers: {len(problem.get_solvers()}"
-        problem_= "Question: "
-        problem_+= problem.get_question() 
-        problem_+= "\nAuthor: "
-        problem_+= str(problem.get_author())
-        pr+= "\nNumVoters/Vote Threshold: "
-        e+= str(problem.get_num_voters())
-        e+= "/"
-        e += str(vote_threshold)
-        e+= " \nNumSolvers: "
-        e+= str(len(problem.get_solvers()))
+        
         if show_all_data:
-            e+= "\nAnswer: "
-            e+= str(problem.get_answer())
+            e+= f"\nAnswer: {problem.get_answer}"
         
         if show_all_data:
             if not ((problem.is_author(ctx.author) or ctx.author.id not in trusted_users or (is_guild_problem and ctx.author.guild_permissions.administrator == True))):
@@ -271,7 +261,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
         if raw:
             await ctx.reply(embed=SuccessEmbed(str(problem.convert_to_dict())), ephemeral=True)
             return
-        await ctx.reply(embed=SuccessEmbed(e), ephemeral=True)
+        await ctx.reply(embed=SuccessEmbed(Problem__), ephemeral=True)
 @slash.slash_command(name="list_all_problem_ids", description= "List all problem ids", options=[
     Option(name="show_only_guild_problems", description="Whether to show guild problem ids",required=False,
            type=OptionType.BOOLEAN)])
