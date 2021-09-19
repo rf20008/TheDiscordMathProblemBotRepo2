@@ -28,7 +28,7 @@ DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
 #print(type(DISCORD_TOKEN))
 #print(f"Discord Token: {DISCORD_TOKEN}")
 main_cache = get_main_cache()
-vote_threshold = 1
+vote_threshold = -1
 mathProblems={}
 guildMathProblems = {}
 guild_maximum_problem_limit=125
