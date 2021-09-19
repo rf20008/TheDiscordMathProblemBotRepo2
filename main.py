@@ -229,9 +229,10 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     problem_id = int(problem_id)
     try:
         guild_id = ctx.guild.id
-    except AttributeError as e:
-        await ctx.reply(":( AttributeError")
-        return
+    except AttributeError as exc:
+        raise Exception(
+            "*** AttributeError: guild.id was not found! Please report this error or refrain from using it here***"
+        ) from exc
 
 
     if guild_id not in guildMathProblems:
@@ -247,11 +248,12 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
         if guild_id not in main_cache._dict.keys():
             main_cache.add_empty_guild(guild_id)
         problem = main_cache.get_problem(str(ctx.guild.id) if is_guild_problem else "null",str(problem_id))
-        e= "Question: "
-        e+= problem.get_question() 
-        e+= "\nAuthor: "
-        e+= str(problem.get_author())
-        e+= "\nNumVoters/Vote Threshold: "
+        Problem__ = f"Question: {problem.get_question()}\nAuthor: {str(problem.get_author())}\nNumVoters/Vote Threshold: {problem.get_num_voters}/{vote_threshold}\nNumSolvers: {len(problem.get_solvers()}"
+        problem_= "Question: "
+        problem_+= problem.get_question() 
+        problem_+= "\nAuthor: "
+        problem_+= str(problem.get_author())
+        pr+= "\nNumVoters/Vote Threshold: "
         e+= str(problem.get_num_voters())
         e+= "/"
         e += str(vote_threshold)
