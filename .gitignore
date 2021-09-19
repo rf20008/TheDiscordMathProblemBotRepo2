@@ -134,10 +134,10 @@ dmypy.json
 
 ## me
 
-**/*.json
-vote_threshold.txt
-!docs/documentation.json
-trusted_users.txt
-**/.env
-.env
-
+**/*.json #Sensative
+vote_threshold.txt # Use /what_is_vote_threshold to use. This may be outdated...
+!docs/documentation.json # The documentation needs to be not git-ignored
+trusted_users.txt # /list_trusted_users to list trusted users. This may be outdated
+**/.env # keep my token safe
+.env #keep my token safe :)
+!**/*.py #never ignore any python file :)
