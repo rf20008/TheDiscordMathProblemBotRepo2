@@ -1,4 +1,4 @@
-import math, random, os, warnings, threading, aiohttp, copy, nextcord, discord
+import random, os, warnings, threading, copy, nextcord, discord
 import dislash, traceback, sys
 import return_intents
 import nextcord.ext.commands as nextcord_commands
@@ -8,8 +8,7 @@ import problems_module
 from _error_logging import log_error
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 from time import sleep, time, asctime
-from nextcord.ext import commands, tasks 
-from random import randint
+from nextcord.ext import commands, tasks
 from nextcord import Embed, Color
 from custom_embeds import *
 from nextcord.ext.commands import errors
@@ -47,11 +46,18 @@ def the_daemon_file_saver():
     global mathProblems,guildMathProblems
     global trusted_users
     global vote_threshold
-    FileSaverObj = FileSaver("The Daemon File Saver", enabled=True,printSuccessMessagesByDefault=True)
+    FileSaverObj = FileSaver(name = "The Daemon File Saver",
+                             enabled=True,
+                             printSuccessMessagesByDefault=True)
     FileSaverDict = FileSaverObj.load_files(True)
-    (guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
+    (guildMathProblems,
+     trusted_users,
+     vote_threshold) = (
+        FileSaverDict["guildMathProblems"],
+        FileSaverDict["trusted_users"],
+        FileSaverDict["vote_threshold"])
 
-    while True:    
+    while True:
         sleep(45) 
         FileSaverObj.save_files(True,guildMathProblems,vote_threshold,mathProblems,trusted_users)
 
@@ -300,7 +306,7 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
         q = "What is " + str(num1) + " " +{"*": "times", "+": "times", 
           "-": "minus", "/": "divided by", "^": "to the power of"}[operation] + " " + str(num2) + "?"
         Problem = problems_module.MathProblem(
-          question= q,
+            question= q,
           answer = str(answer),
           author = 845751152901750824,
           guild_id = "null",
@@ -547,18 +553,25 @@ async def delete_problem(ctx, problem_id,is_guild_problem=False):
     guild_id = ctx.guild.id
     if is_guild_problem:
         if guild_id == None:
-            await ctx.reply(embed=ErrorEmbed("Run this command in the discord server which has the problem you are trying to delete, or switch is_guild_problem to False."))
+            await ctx.reply(embed=ErrorEmbed(
+                "Run this command in the discord server which has the problem you are trying to delete, or switch is_guild_problem to False."
+                ))
             return
         if problem_id not in main_cache.get_guild_problems(ctx.guild).keys():
             await ctx.reply(embed=ErrorEmbed("That problem doesn't exist."), ephemeral=True)
             return
-        if not (ctx.author.id in trusted_users or not main_cache.get_problem(str(guild_id),str(problem_id)).is_author() or ctx.author.guild_permissions.administrator):
+        if not (ctx.author.id in trusted_users or not (
+            main_cache.get_problem(str(guild_id),str(problem_id)).is_author()
+            ) or (ctx.author.guild_permissions.administrator)):
             await ctx.reply(embed=ErrorEmbed("Insufficient permissions"), ephemeral=True)
             return
         main_cache.remove_problem(str(guild_id), problem_id)
-        await ctx.reply(embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!"), ephemeral=True)
+        await ctx.reply(
+            embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!"),
+            ephemeral=True)
     if guild_id == None:
-        await ctx.reply(embed=ErrorEmbed("Run this command in the discord server which has the problem, or switch is_guild_problem to False."))
+        await ctx.reply(embed=ErrorEmbed(
+            "Run this command in the discord server which has the problem, or switch is_guild_problem to False."))
         return
     if problem_id not in main_cache.get_guild_problems(ctx.guild).keys():
         await ctx.reply(embed=ErrorEmbed("That problem doesn't exist."), ephemeral=True)
@@ -568,7 +581,10 @@ async def delete_problem(ctx, problem_id,is_guild_problem=False):
         return
     main_cache.remove_problem("null", problem_id)
     await ctx.reply(embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!"), ephemeral=True)
-@slash.slash_command(name="add_trusted_user", description = "Adds a trusted user",options=[Option(name="user", description="The user you want to give super special bot access to", type=OptionType.USER, required=True)])
+@slash.slash_command(name="add_trusted_user", description = "Adds a trusted user",options=[
+    Option(name="user", description="The user you want to give super special bot access to",
+           type=OptionType.USER,
+           required=True)])
 async def add_trusted_user(ctx,user):
 
     if ctx.author.id not in trusted_users:
@@ -580,9 +596,13 @@ async def add_trusted_user(ctx,user):
     trusted_users.append(user.id)
     await ctx.reply(embed=ErrorEmbed(f"Successfully made {user.nick} a trusted user!"), ephemeral=True) 
 
-@slash.slash_command(name="remove_trusted_user", description = "removes a trusted user",options=[Option(name="user", description="The user you want to take super special bot access from", type=OptionType.USER, required=True)])
+@slash.slash_command(name="remove_trusted_user", description = "removes a trusted user",options=
+                     [Option(
+                         name="user",
+                         description="The user you want to take super special bot access from",
+                         type=OptionType.USER, required=True)])
 async def remove_trusted_user(ctx,user):
-
+    "Remove a trusted user"
     if ctx.author.id not in trusted_users:
         await ctx.reply(embed=ErrorEmbed("You aren't a trusted user!"), ephemeral=True)
         return
@@ -596,24 +616,34 @@ async def remove_trusted_user(ctx,user):
 @slash.slash_command(name="ping", description = "Prints latency and takes no arguments")
 async def ping(ctx):
     await ctx.reply(embed=SuccessEmbed(f"Pong! My latency is {round(bot.latency*1000)}ms."), ephemeral=True)
-@slash.slash_command(name="what_is_vote_threshold", description="Prints the vote threshold and takes no arguments")
+@slash.slash_command(name="what_is_vote_threshold",
+                     description="Prints the vote threshold and takes no arguments")
 async def what_is_vote_threshold(ctx):
     await ctx.reply(embed=SuccessEmbed(f"The vote threshold is {vote_threshold}."),ephemeral=True)
 @slash.slash_command(name="generate_invite_link", description = "Generates a invite link for this bot! Takes no arguments")
 async def generateInviteLink(ctx):
-    await ctx.reply(embed=SuccessEmbed("https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147552256&scope=bot%20applications.commands",successTitle),ephemeral=True)
+    await ctx.reply(embed=SuccessEmbed(
+        "https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147552256&scope=bot%20applications.commands")
+                    ,ephemeral=True)
 
 @slash.slash_command(name="github_repo",description = "Returns the link to the github repo")
 async def github_repo(ctx):
-    await ctx.reply(embed=SuccessEmbed("[Repo Link:](https://github.com/rf20008/TheDiscordMathProblemBotRepo) ",successTitle="Here is the Github Repository Link."))
-@slash.slash_command(name="raise_error", description = "⚠ This command will raise an error. Useful for checking on_slash_command_error", 
+    await ctx.reply(embed=SuccessEmbed(
+        "[Repo Link:](https://github.com/rf20008/TheDiscordMathProblemBotRepo) ",
+                                       successTitle="Here is the Github Repository Link."))
+@slash.slash_command(name="raise_error",
+                     description = "⚠ This command will raise an error. Useful for testing on_slash_command_error", 
 options=[Option(name="error_type",description = "The type of error", choices=[
     OptionChoice(name="Exception",value="Exception"),
     OptionChoice(name="UserError", value = "UserError")
-    ],required=True), Option(name="error_description",description="The description of the error", type=OptionType.STRING,required=False)])
+    ],required=True), Option(name="error_description", description="The description of the error",
+                             type=OptionType.STRING,
+                             required=False)])
 async def raise_error(ctx, error_type,error_description = None):
     if ctx.author.id not in trusted_users:
-        await ctx.send(embed=ErrorEmbed(f"⚠ {ctx.author.mention}, you do not have permission to intentionally raise errors for debugging purposes.",custom_title="Insufficient permission to raise errors."))
+        await ctx.send(embed=ErrorEmbed(
+            f"⚠ {ctx.author.mention}, you do not have permission to intentionally raise errors for debugging purposes.",
+            custom_title="Insufficient permission to raise errors."))
         return
     if error_description == None:
         error_description = f"Manually raised error by {ctx.author.mention}"    
@@ -621,7 +651,9 @@ async def raise_error(ctx, error_type,error_description = None):
         error = Exception(error_description)
     elif error_type == "UserError":
         error=UserError(error_description)
-    await ctx.send(embed=SuccessEmbed(f"Successfully created error: {str(error)}. Will now raise the error.", successTitle="Successfully raised error."))
+    await ctx.send(embed=SuccessEmbed(
+        f"Successfully created error: {str(error)}. Will now raise the error.",
+                                      successTitle="Successfully raised error."))
     raise error
 @slash.slash_command(name="documentation",description = "Returns help!", 
 options=[Option(name="documentation_type", description = "What kind of help you want", choices= [
@@ -633,12 +665,14 @@ options=[Option(name="documentation_type", description = "What kind of help you 
 async def documentation(ctx,documentation_type, help_obj):
     fileBeginHelp = 0
     if documentation_type == "documentation_link":
-        await ctx.reply(embed=SuccessEmbed(f"""<@{ctx.author.id}> [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
+        await ctx.reply(embed=SuccessEmbed(
+            f"""<@{ctx.author.id}> [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
     """),ephemeral=True)
         return None
     d = DocumentationFileLoader()
     try:
-        documentation =d.get_documentation({"command_help":"docs/commands-documentation.md",
+        documentation =d.get_documentation(
+            {"command_help":"docs/commands-documentation.md",
         "function_help":"docs/misc-non-commands-documentation.md"}[documentation_type], help_obj)
     except DocumentationNotFound as e:
         if isinstance(e,DocumentationFileNotFound):
