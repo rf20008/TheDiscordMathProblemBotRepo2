@@ -148,7 +148,7 @@ async def force_load_files(ctx):
         return
 @slash.slash_command(name="force_save_files",description="Forcefully saves files (can only be used by trusted users).")
 async def force_save_files(ctx):
-    "Forcefully saves files.
+    "Forcefully saves files."
     global mathProblems,guildMathProblems
     global trusted_users
     global vote_threshold
@@ -248,7 +248,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
             main_cache.add_empty_guild(guild_id)
         problem = main_cache.get_problem(str(ctx.guild.id) if is_guild_problem else "null",
                                          str(problem_id))
-        Problem__ = f"Question: {problem.get_question()}\nAuthor: {str(problem.get_author())}\nNumVoters/Vote Threshold: {problem.get_num_voters}/{vote_threshold}\nNumSolvers: {len(problem.get_solvers()}"
+        Problem__ = f"Question: {problem.get_question()}\nAuthor: {str(problem.get_author())}\nNumVoters/Vote Threshold: {problem.get_num_voters()}/{vote_threshold}\nNumSolvers: {len(problem.get_solvers())}"
         
         if show_all_data:
             if not ((problem.is_author(ctx.author) or ctx.author.id not in trusted_users or (
@@ -331,11 +331,11 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
             problem_id = generate_new_id()
             if problem_id not in [problem.id for problem in main_cache.get_global_problems()]:
                 break
-        q = "What is " + str(num1) + " " +
-        {"*": "times",
+        q = "What is " + str(num1) + " " + {
+        "*": "times",
          "+": "times", 
-          "-": "minus", "
-         /": "divided by",
+          "-": "minus", 
+         "/": "divided by",
          "^": "to the power of"
          }[operation] + " " + str(num2) + "?"
         Problem = problems_module.MathProblem(
@@ -469,7 +469,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
                          Option(name="checking_guild_problem", description="whether checking a guild problem",
                                 type=OptionType.BOOLEAN, required = False)])
 async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
-    "Check if you are right")
+    "Check if you are right"
     global mathProblems,guildMathProblems
     if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
         main_cache.add_empty_guild(ctx.guild)
