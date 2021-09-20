@@ -1,6 +1,9 @@
-from time import time
-from nextcord.ext.commands.errors import CommandOnCooldown
+import time
+import nextcord
 cooldowns = {}
+class OnCooldown(Exception):
+    "This command is on cooldown"
+    pass
 async def check_for_cooldown(ctx,command_name,cooldown_time=5,is_global_cooldown=False,global_cooldown=0):
     "A function that checks for cooldowns. Raises nextcord.ext.commands.errors.CommandOnCooldown if you are on cooldown Otherwise, returns False and sets the user on cooldown. cooldown_time is in seconds."
     global cooldowns

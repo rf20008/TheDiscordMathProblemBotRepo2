@@ -81,3 +81,95 @@ Traceback (most recent call last):
 Exception: *** Problem not found. Aborting search... ***
 
 
+Mon Sep 20 01:14:20 2021
+
+Traceback (most recent call last):
+  File "/home/runner/TheDiscordMathProblemBot/cooldowns.py", line 20, in check_for_cooldown
+    t = cooldowns[command_name][ctx.author.id] - time.time()
+KeyError: 844633345815871519
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1282, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 216, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 212, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 37, in _maybe_cog_call
+    return await self(inter, **params)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "main.py", line 751, in raise_error
+    await check_for_cooldown(ctx,"raise_error",5)
+  File "/home/runner/TheDiscordMathProblemBot/cooldowns.py", line 27, in check_for_cooldown
+    cooldowns[command_name][ctx.author.id] = time.time() + cooldown_time
+AttributeError: 'builtin_function_or_method' object has no attribute 'time'
+
+
+Mon Sep 20 01:14:21 2021
+
+Traceback (most recent call last):
+  File "/home/runner/TheDiscordMathProblemBot/cooldowns.py", line 20, in check_for_cooldown
+    t = cooldowns[command_name][ctx.author.id] - time.time()
+KeyError: 844633345815871519
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1282, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 216, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 212, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 37, in _maybe_cog_call
+    return await self(inter, **params)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "main.py", line 751, in raise_error
+    await check_for_cooldown(ctx,"raise_error",5)
+  File "/home/runner/TheDiscordMathProblemBot/cooldowns.py", line 27, in check_for_cooldown
+    cooldowns[command_name][ctx.author.id] = time.time() + cooldown_time
+AttributeError: 'builtin_function_or_method' object has no attribute 'time'
+
+
+Mon Sep 20 01:14:41 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1282, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 216, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 212, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 37, in _maybe_cog_call
+    return await self(inter, **params)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "main.py", line 766, in raise_error
+    raise error
+Exception: Manually raised error by <@844633345815871519>
+
+
+Mon Sep 20 01:14:43 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1282, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 216, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 212, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 37, in _maybe_cog_call
+    return await self(inter, **params)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "main.py", line 751, in raise_error
+    await check_for_cooldown(ctx,"raise_error",5)
+  File "/home/runner/TheDiscordMathProblemBot/cooldowns.py", line 22, in check_for_cooldown
+    raise CommandOnCooldown(f"You are on cooldown! Try again in {t} seconds.")
+TypeError: __init__() missing 2 required positional arguments: 'retry_after' and 'type'
+
+

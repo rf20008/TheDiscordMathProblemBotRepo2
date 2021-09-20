@@ -4,7 +4,7 @@ import return_intents
 import nextcord.ext.commands as nextcord_commands
 import problems_module
 
-from cooldowns import check_for_cooldown
+from cooldowns import check_for_cooldown, OnCooldown
 from _error_logging import log_error
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 from time import sleep, time
@@ -86,7 +86,7 @@ async def on_ready():
 @bot.event
 async def on_slash_command_error(ctx, error):
     "Function called when a command errors"
-    if isinstance(error,nextcord.ext.commands.errors.CommandOnCooldown):
+    if isinstance(OnCooldown):
         await ctx.reply(str(error))
         return
     e = (traceback.format_exception(etype=type(error),value=error,tb=error.__traceback__))
