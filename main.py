@@ -4,7 +4,7 @@ import return_intents
 import nextcord.ext.commands as nextcord_commands
 import problems_module
 
-from cooldowns import check_for_cooldown
+from cooldowns import await check_for_cooldown
 from _error_logging import log_error
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 from time import sleep, time
@@ -86,7 +86,7 @@ async def on_ready():
 @bot.event
 async def on_slash_command_error(ctx, error):
     "Function called when a command errors"
-    if isinstance(error,discord.ext.commands.errors.CommandOnCooldown):
+    if isinstance(error,nextcord.ext.commands.errors.CommandOnCooldown):
         await ctx.reply(str(error))
         return
     e = (traceback.format_exception(etype=type(error),value=error,tb=error.__traceback__))
@@ -108,7 +108,7 @@ async def on_slash_command_error(ctx, error):
 async def force_load_files(ctx):
     "Forcefully load files"
     global guildMathProblems, trusted_users,vote_threshold
-    if check_for_cooldown(ctx,"force_load_files",5):
+    if await check_for_cooldown(ctx,"force_load_files",5):
         return
     if ctx.author.id not in trusted_users:
         await ctx.reply(ErrorEmbed("You aren't trusted and therefore don't have permission to forceload files."))
@@ -126,7 +126,7 @@ async def force_load_files(ctx):
 @slash.slash_command(name="force_save_files",description="Forcefully saves files (can only be used by trusted users).")
 async def force_save_files(ctx):
     "Forcefully saves files."
-    if not check_for_cooldown(ctx,"force_save_files",5):
+    if not await check_for_cooldown(ctx,"force_save_files",5):
         return
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
@@ -155,7 +155,7 @@ async def force_save_files(ctx):
            type=OptionType.STRING,required=False)])
 async def edit_problem(ctx,problem_id,new_question=None,new_answer=None,guild_id="null"):
     "Allows you to edit a math problem."
-    if check_for_cooldowns(ctx, "edit_problem",0.5):
+    if await check_for_cooldowns(ctx, "edit_problem",0.5):
         return
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
@@ -203,7 +203,7 @@ async def edit_problem(ctx,problem_id,new_question=None,new_answer=None,guild_id
            type=OptionType.BOOLEAN, required=False)])
 async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_guild_problem=False):
     "Show the info of a problem."
-    if check_for_cooldowns(ctx, "edit_problem",0.5):
+    if await check_for_cooldowns(ctx, "edit_problem",0.5):
         return
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
@@ -248,7 +248,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
            type=OptionType.BOOLEAN)])
 async def list_all_problem_ids(ctx,show_only_guild_problems=False):
     "Lists all problem ids."
-    if check_for_cooldowns(ctx, "edit_problem",2.5):
+    if await check_for_cooldowns(ctx, "list_all_problem_ids",2.5):
         return
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
@@ -278,6 +278,8 @@ async def list_all_problem_ids(ctx,show_only_guild_problems=False):
            type=OptionType.INTEGER, required=True)])
 async def generate_new_problems(ctx, num_new_problems_to_generate):
     "Generate new Problems"
+    if await check_for_cooldowns(ctx, "generate_new_problems",0.5):
+        return
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
 
@@ -338,6 +340,8 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
 ##brief = "Adds a trusted user")
 @slash.slash_command(name="delallbotproblems", description = "delete all automatically generated problems")
 async def delallbotproblems(ctx):
+    if await check_for_cooldowns(ctx, "delallbotproblems",10):
+        return
     "Delete all automatically generated problems"
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
@@ -368,6 +372,8 @@ async def list_trusted_users(ctx):
                                        type=OptionType.BOOLEAN, required=False)])
 async def new_problem(ctx, answer, question, guild_question=False):
     "Create a new problem"
+    if await check_for_cooldowns(ctx, "new_problem",5):
+        return
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     if len(question) > 250:
@@ -454,6 +460,9 @@ async def new_problem(ctx, answer, question, guild_question=False):
                                 type=OptionType.BOOLEAN, required = False)])
 async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
     "Check if you are right"
+    if await check_for_cooldowns(ctx, "check_answer",5):
+        return
+
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     try:
@@ -487,6 +496,7 @@ async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
                                 type=OptionType.BOOLEAN, required=False)])
 async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=True,show_only_guild_problems=False):
     "List all MathProblems."
+    await check_for_cooldown(ctx,"list_all_problems")
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
 
@@ -546,6 +556,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
            type=OptionType.INTEGER, required=True)])
 async def set_vote_threshold(ctx,threshold):
     "Set the vote threshold"
+    await check_for_cooldown(ctx,"")
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     global vote_threshold
@@ -577,7 +588,7 @@ async def set_vote_threshold(ctx,threshold):
            type=OptionType.BOOLEAN, required=False)])
 async def vote(ctx, problem_id,is_guild_problem=False):
     "Vote for the deletion of a problem"
-    
+    await check_for_cooldown(5,"vote")
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     try:
@@ -607,7 +618,7 @@ async def vote(ctx, problem_id,is_guild_problem=False):
            type=OptionType.BOOLEAN, required=False)])
 async def unvote(ctx, problem_id,is_guild_problem=False):
     "Unvote for the deletion of a problem"
-    
+    await check_for_cooldown(ctx,"unvote",0.5)
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     try:
@@ -633,6 +644,7 @@ async def unvote(ctx, problem_id,is_guild_problem=False):
            type=OptionType.USER, required=False)])
 async def delete_problem(ctx, problem_id,is_guild_problem=False):
     "Delete a math problem"
+    await check_for_cooldown(ctx,"unvote",0.5)
     guild_id = ctx.guild.id
     if is_guild_problem:
         if guild_id == None:
@@ -672,6 +684,7 @@ async def delete_problem(ctx, problem_id,is_guild_problem=False):
            required=True)])
 async def add_trusted_user(ctx,user):
     "Add a trusted user"
+    await check_for_cooldown(ctx,"add_trusted_user",600)
     if ctx.author.id not in trusted_users:
         await ctx.reply(embed=ErrorEmbed("You aren't a trusted user!"), ephemeral=True)
         return
@@ -689,6 +702,7 @@ async def add_trusted_user(ctx,user):
                          type=OptionType.USER, required=True)])
 async def remove_trusted_user(ctx,user):
     "Remove a trusted user"
+    await check_for_cooldown(ctx,"remove_trusted_user",600)
     if ctx.author.id not in trusted_users:
         await ctx.reply(embed=ErrorEmbed("You aren't a trusted user!"), ephemeral=True)
         return
@@ -701,22 +715,26 @@ async def remove_trusted_user(ctx,user):
 
 @slash.slash_command(name="ping", description = "Prints latency and takes no arguments")
 async def ping(ctx):
+    await check_for_cooldown(ctx,"ping",5)
     "Ping the bot! This returns its latency in ms."
     await ctx.reply(embed=SuccessEmbed(f"Pong! My latency is {round(bot.latency*1000)}ms."), ephemeral=True)
 @slash.slash_command(name="what_is_vote_threshold",
                      description="Prints the vote threshold and takes no arguments")
 async def what_is_vote_threshold(ctx):
-    "Returns the vote thresho,d"
+    "Returns the vote threshold"
+    await check_for_cooldown(ctx,"what_is_vote_threshold",5)
     await ctx.reply(embed=SuccessEmbed(f"The vote threshold is {vote_threshold}."),ephemeral=True)
 @slash.slash_command(name="generate_invite_link", description = "Generates a invite link for this bot! Takes no arguments")
-async def generateInviteLink(ctx):
+async def generate_invite_link(ctx):
     "Generate an invite link for the bot."
+    await check_for_cooldown(ctx,"generateInviteLink",5)
     await ctx.reply(embed=SuccessEmbed(
         "https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147552256&scope=bot%20applications.commands")
                     ,ephemeral=True)
 
 @slash.slash_command(name="github_repo",description = "Returns the link to the github repo")
 async def github_repo(ctx):
+    await check_for_cooldown(ctx,"github_repo",5)
     await ctx.reply(embed=SuccessEmbed(
         "[Repo Link:](https://github.com/rf20008/TheDiscordMathProblemBotRepo) ",
                                        successTitle="Here is the Github Repository Link."))
@@ -730,6 +748,7 @@ options=[Option(name="error_type",description = "The type of error", choices=[
                              required=False)])
 async def raise_error(ctx, error_type,error_description = None):
     "Intentionally raise an Error. Useful for debugging... :-)"
+    await check_for_cooldown(ctx,"raise_error",5)
     if ctx.author.id not in trusted_users:
         await ctx.send(embed=ErrorEmbed(
             f"⚠ {ctx.author.mention}, you do not have permission to intentionally raise errors for debugging purposes.",
@@ -754,6 +773,7 @@ options=[Option(name="documentation_type", description = "What kind of help you 
     Option(name="help_obj", description = "What you want help on", required=True,type=OptionType.STRING)])
 async def documentation(ctx,documentation_type, help_obj):
     "Prints documentation :-)"
+    await check_for_cooldown(ctx,"documentation",0.1)
     if documentation_type == "documentation_link":
         await ctx.reply(embed=SuccessEmbed(
             f"""<@{ctx.author.id}> [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
