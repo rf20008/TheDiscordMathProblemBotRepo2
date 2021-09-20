@@ -4,7 +4,7 @@ import return_intents
 import nextcord.ext.commands as nextcord_commands
 import problems_module
 
-from cooldowns import await check_for_cooldown
+from cooldowns import check_for_cooldown
 from _error_logging import log_error
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 from time import sleep, time
