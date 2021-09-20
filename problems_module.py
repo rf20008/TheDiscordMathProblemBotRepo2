@@ -14,6 +14,8 @@ class TooLongQuestion(TooLongArgument):
 
 class GuildAlreadyExistsException(MathProblemsModuleException):
     "Raised when MathProblemCache.add_empty_guild tries to run on a guild that already has problems."
+class ProblemNotFoundException(MathProblemsModuleException):
+  "Raised when a problem is not found."
 
 class MathProblem:
     "For readability purposes :)"
@@ -216,7 +218,7 @@ class MathProblemCache:
         try:
             return guild_id_dict[problem_id]
         except:
-            raise Exception("*** Problem not found. Aborting search... ***")
+            raise ProblemNotFound("*** Problem not found. Aborting search... ***")
     def fetch_problem(self,guild_id,problem_id):
         "Reloads the cache with the file and then loads the problem."
         self.update_cache()

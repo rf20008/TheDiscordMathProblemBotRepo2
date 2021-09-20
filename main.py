@@ -2,8 +2,8 @@ import random, os, warnings, threading, copy, nextcord, discord
 import dislash, traceback, sys
 import return_intents
 import nextcord.ext.commands as nextcord_commands
-
 import problems_module
+
 
 from _error_logging import log_error
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
@@ -223,7 +223,7 @@ async def edit_problem(ctx,problem_id,new_question=None,new_answer=None,guild_id
            type=OptionType.BOOLEAN, required=False)])
 async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_guild_problem=False):
     "Show the info of a problem."
-    if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     problem_id = int(problem_id)
     try:
@@ -239,10 +239,10 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
 
     if True:  
         if is_guild_problem and guild_id == None:
-            embed1= ErrorEmbed(title="Error", description = "Run this command in the discord server which has this problem, not a DM!")
+            embed1= ErrorEmbed( description = "Run this command in the discord server which has this problem, not a DM!")
             ctx.reply(embed=embed1)
             return
-        if guild_id not in main_cache._dict.keys():
+        if guild_id not in main_cache.get_guilds():
             main_cache.add_empty_guild(guild_id)
         problem = main_cache.get_problem(str(ctx.guild.id) if is_guild_problem else "null",
                                          str(problem_id))
@@ -253,7 +253,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
                 is_guild_problem and ctx.author.guild_permissions.administrator == True))):
                 await ctx.reply(embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True)
                 return
-            e+= f"\nAnswer: {problem.get_answer}"
+            Problem__+= f"\nAnswer: {problem.get_answer}"
         
             
 
@@ -265,7 +265,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     Option(name="show_only_guild_problems", description="Whether to show guild problem ids",required=False,
            type=OptionType.BOOLEAN)])
 async def list_all_problem_ids(ctx,show_only_guild_problems=False):
-    if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     if show_only_guild_problems:
         guild_id = ctx.guild.id
@@ -293,15 +293,14 @@ async def list_all_problem_ids(ctx,show_only_guild_problems=False):
            type=OptionType.INTEGER, required=True)])
 async def generate_new_problems(ctx, num_new_problems_to_generate):
     "Generate new Problems"
-    if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
 
     if ctx.author.id not in trusted_users:
         await ctx.reply(embed=ErrorEmbed("You aren't trusted!",ephemeral=True))
         return
-    elif num_new_problems_to_generate > 200:
-        await ctx.reply("You are trying to create too many problems. Try something smaller than or equal to 200.",
-                        ephemeral=True)
+    if num_new_problems_to_generate > 200:
+        await ctx.reply("You are trying to create too many problems. Try something smaller than or equal to 200.",ephermal=T)
 
     for i in range(num_new_problems_to_generate): # basic problems for now.... :(
         operation = random.choice(["+", "-", "*", "/", "^"])
@@ -355,7 +354,7 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
 @slash.slash_command(name="delallbotproblems", description = "delete all automatically generated problems")
 async def delallbotproblems(ctx):
     "Delete all automatically generated problems"
-    if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     await ctx.reply(embed=SimpleEmbed("",description="Attempting to delete bot problems"),ephemeral=True) #may get rid of later? :)
     numDeletedProblems = 0
@@ -368,12 +367,12 @@ async def delallbotproblems(ctx):
 @slash.slash_command(name = "list_trusted_users", description = "list all trusted users")
 async def list_trusted_users(ctx):
     "List all trusted users."
-    if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
-    e = ""
+    __trusted_users = ""
     for item in trusted_users:
-        e += "<@" + str(item) + ">"
-        e+= "\n"
+        __trusted_users += "<@" + str(item) + ">"
+        __trusted_users+= "\n"
     await ctx.reply(e, ephemeral = True)
 @slash.slash_command(name="new_problem", description = "Create a new problem",
                      options = [Option(name="answer", description="The answer to this problem",
@@ -384,7 +383,7 @@ async def list_trusted_users(ctx):
                                        type=OptionType.BOOLEAN, required=False)])
 async def new_problem(ctx, answer, question, guild_question=False):
     "Create a new problem"
-    if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     if len(question) > 250:
         await ctx.reply(embed=ErrorEmbed(
@@ -396,6 +395,8 @@ async def new_problem(ctx, answer, question, guild_question=False):
             description="Your answer is longer than 100 characters. Therefore, it is too long and cannot be added.",
                                          custom_title="Your answer is too long"),
                         ephemeral=True)
+        t2=threading.Thread(target=main_cache.remove_duplicate_problems)
+        t2.start()
         return
     if guild_question:
         guild_id = ctx.guild.id
@@ -403,7 +404,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
             await ctx.reply(embed=ErrorEmbed("You need to be in the guild to make a guild question!"))
             return
 
-        if guild_id not in main_cache._dict.keys():
+        if guild_id not in main_cache.get_guilds():
             main_cache.add_empty_guild(guild_id)
         elif len(main_cache.get_guild_problems(ctx.guild)) >= guild_maximum_problem_limit and guild_question:
 
@@ -436,8 +437,8 @@ async def new_problem(ctx, answer, question, guild_question=False):
         await ctx.reply(embed=SuccessEmbed("You have successfully made a math problem!",
                                            successTitle="Successfully made a new math problem."),
                         ephemeral = True)
-        t=threading.Thread(target=main_cache.remove_duplicate_problems)
-        t.start()
+        t2=threading.Thread(target=main_cache.remove_duplicate_problems)
+        t2.start()
         return
     while True:
         problem_id = generate_new_id()
@@ -468,8 +469,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
                                 type=OptionType.BOOLEAN, required = False)])
 async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
     "Check if you are right"
-    global mathProblems,guildMathProblems
-    if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     try:
         problem = main_cache.get_problem(ctx.guild.id if checking_guild_problem else "null", str(problem_id))
@@ -502,17 +502,13 @@ async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
                                 type=OptionType.BOOLEAN, required=False)])
 async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=True,show_only_guild_problems=False):
     "List all MathProblems."
-    if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
 
     showSolvedProblems = show_solved_problems
     guild_id = ctx.guild.id
     if guild_id not in guildMathProblems:
         guildMathProblems[guild_id]={}
-    if showSolvedProblems != "":
-        showSolvedProblems = True
-    else:
-        showSolvedProblems = False
     #print(showSolvedProblems)
     if mathProblems.keys() == []:
         await ctx.reply(embed=ErrorEmbed("There aren't any problems! You should add one!"), ephemeral=True)
@@ -528,7 +524,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
                 e += "The combined length of the questions is too long.... shortening it!"
                 await ctx.reply(embed=SuccessEmbed(e[:1930]))
                 return
-            elif not (showSolvedProblems) and problem.is_solver(ctx.author):
+            if not (showSolvedProblems) and problem.is_solver(ctx.author):
                 continue
             e += "\n"
             e += str(problem.id) + "\t"
@@ -549,7 +545,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
             e += "The combined length of the questions is too long.... shortening it!"
             await ctx.reply(embed=SuccessEmbed(e[:1930]))
             return
-        elif not (showSolvedProblems) and problem.is_solver(ctx.author):
+        if not (showSolvedProblems) and problem.is_solver(ctx.author):
             continue
         e += "\n"
         e += str(problem.id) + "\t"
@@ -565,12 +561,12 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
            type=OptionType.INTEGER, required=True)])
 async def set_vote_threshold(ctx,threshold):
     "Set the vote threshold"
-    if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     global vote_threshold
     try:
         threshold = int(threshold)
-    except:
+    except TypeError:
         await ctx.reply(embed=ErrorEmbed(
             "Invalid threshold argument! (threshold must be an integer)"),
                         ephemeral=True)
@@ -597,7 +593,7 @@ async def set_vote_threshold(ctx,threshold):
 async def vote(ctx, problem_id,is_guild_problem=False):
     "Vote for the deletion of a problem"
     
-    if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     try:
         problem = main_cache.get_problem(
@@ -606,7 +602,7 @@ async def vote(ctx, problem_id,is_guild_problem=False):
         if problem.is_voter(ctx.author):
             await ctx.reply(embed=ErrorEmbed("You have already voted for the deletion of this problem!"), ephemeral=True)
             return
-    except Exception:
+    except problems_module.ProblemNotFound:
         await ctx.reply(embed=ErrorEmbed("This problem doesn't exist!"), ephemeral=True)
         return
     problem.add_voter(ctx.author)
@@ -627,7 +623,7 @@ async def vote(ctx, problem_id,is_guild_problem=False):
 async def unvote(ctx, problem_id,is_guild_problem=False):
     "Unvote for the deletion of a problem"
     
-    if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     try:
         problem = main_cache.get_problem(ctx.guild.id if is_guild_problem else "null",
@@ -635,7 +631,7 @@ async def unvote(ctx, problem_id,is_guild_problem=False):
         if not problem.is_voter(ctx.author):
             await ctx.reply(embed=ErrorEmbed("You can't unvote since you are not voting."), ephemeral=True)
             return
-    except Exception:
+    except problems_module.ProblemNotFound:
         await ctx.reply(embed=ErrorEmbed("This problem doesn't exist!"), ephemeral=True)
         return
     problem.voters.remove(ctx.author.id)
@@ -652,7 +648,6 @@ async def unvote(ctx, problem_id,is_guild_problem=False):
            type=OptionType.USER, required=False)])
 async def delete_problem(ctx, problem_id,is_guild_problem=False):
     "Delete a math problem"
-    user_id = ctx.author.id
     guild_id = ctx.guild.id
     if is_guild_problem:
         if guild_id == None:
