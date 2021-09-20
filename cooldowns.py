@@ -1,7 +1,7 @@
 from time import time
 from nextcord.ext.commands.errors import CommandOnCooldown
 cooldowns = {}
-async def check_for_cooldown(ctx,command_name,cooldown_time=5,is_global_cooldown=False):
+async def check_for_cooldown(ctx,command_name,cooldown_time=5,is_global_cooldown=False,global_cooldown=0):
     "A function that checks for cooldowns. Raises nextcord.ext.commands.errors.CommandOnCooldown if you are on cooldown Otherwise, returns False and sets the user on cooldown. cooldown_time is in seconds."
     global cooldowns
     if command_name not in cooldowns.keys():
@@ -14,7 +14,8 @@ async def check_for_cooldown(ctx,command_name,cooldown_time=5,is_global_cooldown
         if cooldowns["_global"][ctx.author.id] - time.time() > 0:
             raise CommandOnCooldown(f"You are on cooldown (this applies to all commands. Try again in {cooldowns['_global'][ctx.author.id] - time.time()} seconds.)")
     except:
-        pass
+        if is_global_cooldown:
+            cooldowns["_global"][ctx.author.id] = time.time() + global_cooldown
     try:
         t = cooldowns[command_name][ctx.author.id] - time.time()
         if t > 0:
@@ -25,5 +26,6 @@ async def check_for_cooldown(ctx,command_name,cooldown_time=5,is_global_cooldown
     except KeyError:
         cooldowns[command_name][ctx.author.id] = time.time() + cooldown_time
         return False
+    
 
     
