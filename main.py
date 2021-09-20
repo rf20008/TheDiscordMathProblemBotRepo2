@@ -716,13 +716,16 @@ async def remove_trusted_user(ctx,user):
 
 @slash.slash_command(name="ping", description = "Prints latency and takes no arguments")
 async def ping(ctx):
+    "Ping the bot! This returns its latency in ms."
     await ctx.reply(embed=SuccessEmbed(f"Pong! My latency is {round(bot.latency*1000)}ms."), ephemeral=True)
 @slash.slash_command(name="what_is_vote_threshold",
                      description="Prints the vote threshold and takes no arguments")
 async def what_is_vote_threshold(ctx):
+    "Returns the vote thresho,d"
     await ctx.reply(embed=SuccessEmbed(f"The vote threshold is {vote_threshold}."),ephemeral=True)
 @slash.slash_command(name="generate_invite_link", description = "Generates a invite link for this bot! Takes no arguments")
 async def generateInviteLink(ctx):
+    "Generate an invite link for the bot."
     await ctx.reply(embed=SuccessEmbed(
         "https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147552256&scope=bot%20applications.commands")
                     ,ephemeral=True)
@@ -741,6 +744,7 @@ options=[Option(name="error_type",description = "The type of error", choices=[
                              type=OptionType.STRING,
                              required=False)])
 async def raise_error(ctx, error_type,error_description = None):
+    "Intentionally raise an Error. Useful for debugging... :-)"
     if ctx.author.id not in trusted_users:
         await ctx.send(embed=ErrorEmbed(
             f"⚠ {ctx.author.mention}, you do not have permission to intentionally raise errors for debugging purposes.",
@@ -764,7 +768,7 @@ options=[Option(name="documentation_type", description = "What kind of help you 
     ],required=True),
     Option(name="help_obj", description = "What you want help on", required=True,type=OptionType.STRING)])
 async def documentation(ctx,documentation_type, help_obj):
-    fileBeginHelp = 0
+    "Prints documentation :-)"
     if documentation_type == "documentation_link":
         await ctx.reply(embed=SuccessEmbed(
             f"""<@{ctx.author.id}> [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
@@ -772,7 +776,7 @@ async def documentation(ctx,documentation_type, help_obj):
         return None
     d = DocumentationFileLoader()
     try:
-        documentation =d.get_documentation(
+        _documentation =d.get_documentation(
             {"command_help":"docs/commands-documentation.md",
         "function_help":"docs/misc-non-commands-documentation.md"}[documentation_type], help_obj)
     except DocumentationNotFound as e:
@@ -781,7 +785,7 @@ async def documentation(ctx,documentation_type, help_obj):
             return
         await ctx.reply(embed=ErrorEmbed(str(e)))
         return
-    await ctx.reply(documentation)
+    await ctx.reply(_documentation)
 
 
 
