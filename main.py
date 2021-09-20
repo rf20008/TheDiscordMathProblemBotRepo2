@@ -1,4 +1,4 @@
-import random, os, warnings, threading, copy, nextcord
+import random, os, warnings, threading, copy, nextcord, discord
 import dislash, traceback
 import return_intents
 import nextcord.ext.commands as nextcord_commands
@@ -144,9 +144,6 @@ async def force_load_files(ctx):
 @slash.slash_command(name="force_save_files",description="Forcefully saves files (can only be used by trusted users).")
 async def force_save_files(ctx):
     "Forcefully saves files."
-    global mathProblems,guildMathProblems
-    global trusted_users
-    global vote_threshold
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     if ctx.author.id not in trusted_users:
@@ -297,7 +294,7 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
         await ctx.reply(embed=ErrorEmbed("You aren't trusted!",ephemeral=True))
         return
     if num_new_problems_to_generate > 200:
-        await ctx.reply("You are trying to create too many problems. Try something smaller than or equal to 200.",ephermal=T)
+        await ctx.reply("You are trying to create too many problems. Try something smaller than or equal to 200.",ephemeral=True)
 
     for i in range(num_new_problems_to_generate): # basic problems for now.... :(
         operation = random.choice(["+", "-", "*", "/", "^"])
@@ -370,7 +367,7 @@ async def list_trusted_users(ctx):
     for item in trusted_users:
         __trusted_users += "<@" + str(item) + ">"
         __trusted_users+= "\n"
-    await ctx.reply(e, ephemeral = True)
+    await ctx.reply(__trusted_user, ephemeral = True)
 @slash.slash_command(name="new_problem", description = "Create a new problem",
                      options = [Option(name="answer", description="The answer to this problem",
                                        type=OptionType.STRING, required=True),
