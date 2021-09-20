@@ -292,7 +292,10 @@ class MathProblemCache:
                 for g2 in c.keys():
                     for p3 in c[g2].keys():
                         if self._dict[g1][p1] == c[g2][p3] and not (g1 == g2 and p1 != p3):
-                            del d[g1][p1]
+                            try:
+                                del d[g1][p1]
+                            except KeyError:
+                                continue
                             problemsDeleted += 1
         self._dict = d
         return problemsDeleted
