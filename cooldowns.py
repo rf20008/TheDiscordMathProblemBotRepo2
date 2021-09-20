@@ -15,14 +15,14 @@ async def check_for_cooldown(ctx,command_name,cooldown_time=5,is_global_cooldown
         command_name = "_global"
     try:
         if cooldowns["_global"][ctx.author.id] - time.time() > 0:
-            raise CommandOnCooldown(f"You are on cooldown (this applies to all commands. Try again in {cooldowns['_global'][ctx.author.id] - time.time()} seconds.)")
+            raise OnCooldown(f"You are on cooldown (this applies to all commands. Try again in {cooldowns['_global'][ctx.author.id] - time.time()} seconds.)")
     except:
         if is_global_cooldown:
             cooldowns["_global"][ctx.author.id] = time.time() + global_cooldown
     try:
         t = cooldowns[command_name][ctx.author.id] - time.time()
         if t > 0:
-            raise CommandOnCooldown(f"You are on cooldown! Try again in {t} seconds.")
+            raise OnCooldown(f"You are on cooldown! Try again in {t} seconds.")
         else:
             cooldowns[command_name][ctx.author.id] = time.time() + cooldown_time
             return False

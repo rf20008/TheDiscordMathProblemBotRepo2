@@ -86,7 +86,7 @@ async def on_ready():
 @bot.event
 async def on_slash_command_error(ctx, error):
     "Function called when a command errors"
-    if isinstance(OnCooldown):
+    if isinstance(error,OnCooldown):
         await ctx.reply(str(error))
         return
     e = (traceback.format_exception(etype=type(error),value=error,tb=error.__traceback__))
@@ -155,7 +155,7 @@ async def force_save_files(ctx):
            type=OptionType.STRING,required=False)])
 async def edit_problem(ctx,problem_id,new_question=None,new_answer=None,guild_id="null"):
     "Allows you to edit a math problem."
-    if await check_for_cooldowns(ctx, "edit_problem",0.5):
+    if await check_for_cooldown(ctx, "edit_problem",0.5):
         return
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
@@ -203,7 +203,7 @@ async def edit_problem(ctx,problem_id,new_question=None,new_answer=None,guild_id
            type=OptionType.BOOLEAN, required=False)])
 async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_guild_problem=False):
     "Show the info of a problem."
-    if await check_for_cooldowns(ctx, "edit_problem",0.5):
+    if await check_for_cooldown(ctx, "edit_problem",0.5):
         return
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
@@ -248,7 +248,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
            type=OptionType.BOOLEAN)])
 async def list_all_problem_ids(ctx,show_only_guild_problems=False):
     "Lists all problem ids."
-    if await check_for_cooldowns(ctx, "list_all_problem_ids",2.5):
+    if await check_for_cooldown(ctx, "list_all_problem_ids",2.5):
         return
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
@@ -278,7 +278,7 @@ async def list_all_problem_ids(ctx,show_only_guild_problems=False):
            type=OptionType.INTEGER, required=True)])
 async def generate_new_problems(ctx, num_new_problems_to_generate):
     "Generate new Problems"
-    if await check_for_cooldowns(ctx, "generate_new_problems",0.5):
+    if await check_for_cooldown(ctx, "generate_new_problems",0.5):
         return
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
@@ -340,7 +340,7 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
 ##brief = "Adds a trusted user")
 @slash.slash_command(name="delallbotproblems", description = "delete all automatically generated problems")
 async def delallbotproblems(ctx):
-    if await check_for_cooldowns(ctx, "delallbotproblems",10):
+    if await check_for_cooldown(ctx, "delallbotproblems",10):
         return
     "Delete all automatically generated problems"
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
@@ -372,7 +372,7 @@ async def list_trusted_users(ctx):
                                        type=OptionType.BOOLEAN, required=False)])
 async def new_problem(ctx, answer, question, guild_question=False):
     "Create a new problem"
-    if await check_for_cooldowns(ctx, "new_problem",5):
+    if await check_for_cooldown(ctx, "new_problem",5):
         return
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
@@ -460,7 +460,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
                                 type=OptionType.BOOLEAN, required = False)])
 async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
     "Check if you are right"
-    if await check_for_cooldowns(ctx, "check_answer",5):
+    if await check_for_cooldown(ctx, "check_answer",5):
         return
 
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
