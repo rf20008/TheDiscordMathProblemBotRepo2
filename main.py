@@ -43,9 +43,9 @@ t.start()
 
 def the_daemon_file_saver():
     #print("e",flush=True)
-    global mathProblems,guildMathProblems
-    global trusted_users
-    global vote_threshold
+    global guildMathProblems, trusted_users,vote_threshold
+    
+    
     FileSaverObj = FileSaver(name = "The Daemon File Saver",
                              enabled=True,
                              printSuccessMessagesByDefault=True)
@@ -107,32 +107,30 @@ async def on_slash_command_error(ctx, error):
 
     
 
-@bot.event
-async def on_command_error(ctx,error):
-    "This function is called when a legacy command errored. I might get rid of this."
-    print(error)
-    if isinstance(error, errors.MissingRequiredArgument):
-        await ctx.channel.send(embed=ErrorEmbed("Not enough arguments!"))
-        return
-    if isinstance(error, errors.CommandNotFound):
-        await ctx.channel.send(embed=ErrorEmbed("This command does not exist."))
-        return
-    if isinstance(error, errors.TooManyArguments):
-        await ctx.reply(embed=ErrorEmbed("Too many arguments."))
-        return
-    print(type(error))
-    erroredInMainCode=True
-    await ctx.reply("Something went wrong! Message the devs ASAP! (Our tags are ay136416#2707 and duck_master#8022)")
-    raise error
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 @slash.command(name="force_load_files",description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!")
 async def force_load_files(ctx):
     "Forcefully load files"
-    global mathProblems,guildMathProblems
-    global trusted_users
-    global vote_threshold
+    global guildMathProblems, trusted_users,vote_threshold
     if ctx.author.id not in trusted_users:
         await ctx.reply(ErrorEmbed("You aren't trusted and therefore don't have permission to forceload files."))
         return
@@ -152,7 +150,7 @@ async def force_save_files(ctx):
     global mathProblems,guildMathProblems
     global trusted_users
     global vote_threshold
-    if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     if ctx.author.id not in trusted_users:
         await ctx.reply(embed=ErrorEmbed("You aren't trusted and therefore don't have permission to forcesave files."))
@@ -179,7 +177,7 @@ async def force_save_files(ctx):
            type=OptionType.STRING,required=False)])
 async def edit_problem(ctx,problem_id,new_question=None,new_answer=None,guild_id="null"):
     "Allows you to edit a math problem."
-    if ctx.guild != None and ctx.guild.id not in main_cache._dict.keys():
+    if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     try:
         problem = main_cache.get_problem(str(guild_id),str(problem_id))
@@ -188,7 +186,7 @@ async def edit_problem(ctx,problem_id,new_question=None,new_answer=None,guild_id
                 "You are not the author of this problem and therefore can't edit it!"
                 ))
             return
-    except:
+    except KeyError:
         await ctx.reply(embed=ErrorEmbed("This problem does not exist."))
         return
     e = "Successfully"
