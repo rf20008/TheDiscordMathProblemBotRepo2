@@ -4,7 +4,7 @@ import return_intents
 import nextcord.ext.commands as nextcord_commands
 import problems_module
 
-
+from cooldowns import check_for_cooldown
 from _error_logging import log_error
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 from time import sleep, time
@@ -28,6 +28,7 @@ main_cache = get_main_cache()
 vote_threshold = -1
 mathProblems={}
 guildMathProblems = {}
+cooldowns = {}
 guild_maximum_problem_limit=125
 erroredInMainCode = False
 def loading_documentation_thread():
@@ -102,32 +103,13 @@ async def on_slash_command_error(ctx, error):
     
     await ctx.reply(embed=ErrorEmbed(f,custom_title="Oh, no! An exception occurred"))
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 @slash.command(name="force_load_files",description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!")
 async def force_load_files(ctx):
     "Forcefully load files"
     global guildMathProblems, trusted_users,vote_threshold
+    if check_for_cooldown(ctx,"force_load_files",5):
+        return
     if ctx.author.id not in trusted_users:
         await ctx.reply(ErrorEmbed("You aren't trusted and therefore don't have permission to forceload files."))
         return
@@ -144,6 +126,8 @@ async def force_load_files(ctx):
 @slash.slash_command(name="force_save_files",description="Forcefully saves files (can only be used by trusted users).")
 async def force_save_files(ctx):
     "Forcefully saves files."
+    if not check_for_cooldown(ctx,"force_save_files",5):
+        return
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     if ctx.author.id not in trusted_users:
@@ -171,6 +155,8 @@ async def force_save_files(ctx):
            type=OptionType.STRING,required=False)])
 async def edit_problem(ctx,problem_id,new_question=None,new_answer=None,guild_id="null"):
     "Allows you to edit a math problem."
+    if check_for_cooldowns(ctx, "edit_problem",0.5):
+        return
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     try:
@@ -217,6 +203,8 @@ async def edit_problem(ctx,problem_id,new_question=None,new_answer=None,guild_id
            type=OptionType.BOOLEAN, required=False)])
 async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_guild_problem=False):
     "Show the info of a problem."
+    if check_for_cooldowns(ctx, "edit_problem",0.5):
+        return
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     problem_id = int(problem_id)
@@ -259,6 +247,9 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     Option(name="show_only_guild_problems", description="Whether to show guild problem ids",required=False,
            type=OptionType.BOOLEAN)])
 async def list_all_problem_ids(ctx,show_only_guild_problems=False):
+    "Lists all problem ids."
+    if check_for_cooldowns(ctx, "edit_problem",2.5):
+        return
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     if show_only_guild_problems:

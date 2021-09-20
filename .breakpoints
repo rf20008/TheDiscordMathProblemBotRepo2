@@ -1,11 +1,19 @@
 {
   "files": {
+    "main.py": [
+      {
+        "id": "fb990c77-3e9a-44d7-ad7c-a28ba407f806",
+        "line": 106,
+        "version": 54235,
+        "index": 3108
+      }
+    ],
     "pylint-1.rtf": [
       {
         "id": "1ddd3d5f-2ea0-4dac-bc2b-aa3442505323",
-        "line": 2,
-        "version": 32,
-        "index": 26
+        "line": 1,
+        "version": 52,
+        "index": 0
       }
     ]
   }
