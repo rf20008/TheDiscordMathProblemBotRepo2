@@ -1,5 +1,5 @@
-import random, os, warnings, threading, copy, nextcord, discord
-import dislash, traceback, sys
+import random, os, warnings, threading, copy, nextcord
+import dislash, traceback
 import return_intents
 import nextcord.ext.commands as nextcord_commands
 import problems_module
@@ -7,16 +7,13 @@ import problems_module
 
 from _error_logging import log_error
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
-from time import sleep, time, asctime
-from nextcord.ext import commands, tasks
-from nextcord import Embed, Color
+from time import sleep, time
 from custom_embeds import *
-from nextcord.ext.commands import errors
 from save_files import FileSaver
 from user_error import UserError
 from the_documentation_file_loader import *
 from problems_module import get_main_cache
-from sys import exc_info
+
 
 
 
