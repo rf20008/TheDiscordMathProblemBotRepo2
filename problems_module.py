@@ -1,4 +1,5 @@
 import nextcord, json, warnings
+from copy import deepcopy
 
 # This is a module containing MathProblem and MathProblemCache objects. (And exceptions as well!) This may be useful outside of this discord bot so feel free to use it :) Just follow the MIT+GNU license
 class MathProblemsModuleException(Exception):
@@ -284,13 +285,16 @@ class MathProblemCache:
     def remove_duplicate_problems(self):
         "Deletes duplicate problems"
         problemsDeleted = 0
+        c = deepcopy(self._dict)
+        d = deepcopy(c)
         for g1 in self._dict.keys():
             for p1 in self._dict[g1].keys():
-                for g2 in self._dict.keys():
-                    for p3 in self._dict[g2].keys():
-                        if self._dict[g1][p1] == self._dict[g2][p3] and not (g1 == g2 and p1 != p3):
-                            del self._dict[g1][p1]
+                for g2 in c.keys():
+                    for p3 in c[g2].keys():
+                        if self._dict[g1][p1] == c[g2][p3] and not (g1 == g2 and p1 != p3):
+                            del d[g1][p1]
                             problemsDeleted += 1
+        self._dict = d
         return problemsDeleted
     def get_guilds(self):
       return self._dict.keys()
