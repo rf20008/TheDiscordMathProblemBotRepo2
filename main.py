@@ -89,19 +89,19 @@ async def on_slash_command_error(ctx, error):
     if isinstance(error,OnCooldown):
         await ctx.reply(str(error))
         return
-    e = (traceback.format_exception(etype=type(error),value=error,tb=error.__traceback__))
+    error_traceback = (traceback.format_exception(etype=type(error),value=error,tb=error.__traceback__))
     log_error(error,"error_logs/log_1.txt") # Log the error
     if isinstance(error,NotOwner):
         await ctx.reply(embed=ErrorEmbed("You are not the owner of this bot."))
         return
     #Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
     
-    f = ""
-    for item in e:
+    _error_traceback = ""
+    for item in error_traceback:
       f += item
       f += "\n"
     
-    await ctx.reply(embed=ErrorEmbed(f,custom_title="Oh, no! An exception occurred"))
+    await ctx.reply(embed=ErrorEmbed(_error_traceback,custom_title="Oh, no! An exception occurred"))
 
 
 @slash.command(name="force_load_files",description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!")
