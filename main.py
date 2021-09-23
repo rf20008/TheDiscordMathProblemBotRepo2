@@ -805,7 +805,7 @@ async def debug(ctx,debug):
   debug_dict["num_guild_problems"] = len(main_cache.get_guild_problems(ctx.guild))
   correct_permissions = {
     "read_messages": "✅" if my_permissions.read_messages else "❌", #can I read messages?
-    "send_messages": "✅" if my_permissions.send_messages else "❌" #can I send messages?
+    "send_messages": "✅" if my_permissions.send_messages else "❌", #can I send messages?
     "embed_links": "✅" if my_permissions.embed_links else "❌", #can I embed links? 
     "use_application_commands": "✅" if my_permissions.use_application_commands else "❌", #can I use application commands?
     "read_message_history" = "✅" if my_permissions.read_messages else "❌"y #can I read message history?
