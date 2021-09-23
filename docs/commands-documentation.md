@@ -81,4 +81,4 @@ Raises an error. Useful for debugging.
 ## documentation
 Help with the documentation of this bot
 ## debug
-Provides helpful debug information :-)
+Provides helpful debug information :-) You can choose to send the message ephermally or not. By default, it is sent ephermally.
