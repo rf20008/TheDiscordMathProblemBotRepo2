@@ -20,7 +20,7 @@ class ProblemNotFoundException(MathProblemsModuleException):
 
 class MathProblem:
     "For readability purposes :)"
-    def __init__(self,question,answer,id,author,guild_id="null",voters=[],solvers=[]):
+    def __init__(self,question,answer,id,author,guild_id="null", voters=[],solvers=[], cache=None):
         if guild_id != "null" and not isinstance(guild_id, int):
             raise TypeError("guild_id is not an integer")
         if not isinstance(id, int):
@@ -35,6 +35,10 @@ class MathProblem:
             raise TypeError("voters is not a list")
         if not isinstance(solvers, list):
             raise TypeError("solvers is not a list")
+        if _cache is None:
+            warnings.warn("_cache is None. This may cause errors", RuntimeWarning)
+        if not isinstance(_cache,MathProblemCache) and cache is not None:
+            raise TypeError("_cache is not a MathProblemCache.")
         if len(question) > 250:
             raise TooLongQuestion(f"Your question is {len(question) - 250} characters too long. Questions may be up to 250 characters long.")
         self.question = question
@@ -46,6 +50,7 @@ class MathProblem:
         self.voters = voters
         self.solvers=solvers
         self.author=author
+        self._cache = cache
     def edit(self,question=None,answer=None,id=None,guild_id=None,voters=None,solvers=None,author=None):
         """Edit a math problem."""
         if guild_id not in [None,"null"] and not isinstance(guild_id, int):
@@ -65,12 +70,15 @@ class MathProblem:
         if id != None or guild_id != None or voters != None or solvers != None or author != None:
             warnings.warn("You are changing one of the attributes that you should not be changing.", category=RuntimeWarning)
         if question != None:
-            if len(question) > 250:
-                raise TooLongQuestion(f"Your question is {len(question) - 250} characters too long. Questions may be up to 250 characters long.")
+            if (self._cache is not None and len(question) > self._cache.max_question_length) or (len(question) > 250 and self._cache is None):
+                if self._cache is not None:
+                    raise TooLongQuestion(f"Your question is {len(question) - self._cache.max_question_length} characters too long. Questions may be up to {self._cache.max_question_length} characters long.")
+                else:
+                    raise TooLongQuestion(f"Your question is {len(question) - 250} characters too long. Questions may be up to 250 characters long.")
             self.question = question
-        if answer != None:
-            if len(answer) > 100:
-                raise TooLongAnswer(f"Your answer is {len(question) - 100} characters too long. Answers may be up to 100 characters long.")
+        if (self._cache is not None and len(question) > self._cache.max_question_length) or (len(answer) > 100 and self._cache is None):
+            if self._cache is not None:
+                raise TooLongAnswer(f"Your answer is {len(question) - self._cache.max_answer_length} characters too long. Answers may be up to {self._cache.max_answer_length} characters long.")
             self.answer = answer
         if id != None:
             self.id = id
@@ -161,9 +169,22 @@ class MathProblem:
             return False
 
 class MathProblemCache:
-    def __init__(self):
+    def __init__(self,max_answer_length=100,max_question_limit=250,
+    max_guild_problems=125):
         self._dict = {}
         self.update_cache()
+        self._max_answer = max_answer_length
+        self._max_question = max_question_limit
+        self._guild_limit = max_guild_problems
+    @property
+    def max_answer_length(self):
+        return self._max_answer
+    @property
+    def max_question_length(self):
+        return self._max_question
+    @property
+    def max_guild_problems(self):
+        return self._guild_limit
 
 
     def convert_dict_to_math_problem(self,problem):

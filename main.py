@@ -789,7 +789,14 @@ async def documentation(ctx,documentation_type, help_obj):
   Option(name="raw",description="raw debug data?",type=OptionType.BOOLEAN,required=False)
 ])
 async def debug(ctx,debug):
-  pass
+  "Provides helpful debug informaton :-)"
+  guild = ctx.guild
+  me = guild.me
+  my_permissions = me.guild_permissions
+  debug_dict = {}
+  debug_dict["guild_id"] = ctx.guild.id
+  debug_dict["author_id"] = ctx.author.id
+  debug_dict["problem_limit"]
 
 
 print("The bot has finished setting up and will now run.")
