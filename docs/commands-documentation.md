@@ -13,6 +13,8 @@ No Mark: This is a command without user restrictions
 # Empty messages?
 This bot  utilizes embeds for its messages. If you deny that permission, most messages will be empty (and there may be 403 errors.)
 
+# Why is there a cooldown of 100ms on commands?
+This is to prevent spam. Some commands have longer cooldowns.
 # Math Problem Related
 
 ## show_problem_info

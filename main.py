@@ -98,8 +98,8 @@ async def on_slash_command_error(ctx, error):
     
     _error_traceback = ""
     for item in error_traceback:
-      f += item
-      f += "\n"
+      _error_traceback += item
+      _error_traceback += "\n"
     
     await ctx.reply(embed=ErrorEmbed(_error_traceback,custom_title="Oh, no! An exception occurred"))
 
@@ -804,21 +804,29 @@ async def debug(ctx,debug):
   debug_dict["reached_max_problems?"] = "✅" if len(main_cache.get_guild_problems(guild)) >= main_cache.max_guild_problems else "❌"
   debug_dict["num_guild_problems"] = len(main_cache.get_guild_problems(ctx.guild))
   correct_permissions = {
-    "read_message_history": "✅" if my_permissions.read_messages else "❌",
-    "read_messages": "✅" if my_permissions.read_messages else "❌", #can I read messages?
-    "send_messages": "✅" if my_permissions.send_messages else "❌", #can I send messages?
-    "embed_links": "✅" if my_permissions.embed_links else "❌", #can I embed links? 
-    "use_application_commands": "✅" if my_permissions.use_application_commands else "❌"
+      "read_message_history": "✅" if my_permissions.read_messages else "❌",
+      "read_messages": "✅" if my_permissions.read_messages else "❌", #can  I read messages?
+      "send_messages": "✅" if my_permissions.send_messages else "❌", #can I send messages?
+      "embed_links": "✅" if my_permissions.embed_links else "❌", #can I embed links? 
+      "use_application_commands": "✅" if my_permissions.use_application_commands else "❌"
      
   }
   debug_dict["correct_permissions"] = correct_permissions
   if raw:
       await ctx.reply(str(debug_dict))
   else:
-    text = ""
-    for item in debug_dict.keys():
-      if not isinstance(debug_dict[item], dict):
-        text += "item: " + f"''{debug_dict[item]}''"
+      text = ""
+      for item in debug_dict.keys():
+        if not isinstance(debug_dict[item], dict):
+          text += "item: " + f"''{debug_dict[item]}''"
+      else:
+          for item in debug_dict[item].keys():
+              if not isinstance(debug_dict[item], dict):
+                  text += "item: " + f"''{debug_dict[item]}''"
+              else:
+                  raise RecursionError from Exception("***Nested too much***")
+
+      await ctx.reply(text)
 
 
 
