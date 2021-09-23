@@ -15,7 +15,7 @@ If you run into any issues create an issue or DM me (ay136416#2707)).
 
 # Contribute to this project!
 
-Open a pull request or issue and I will be sure to look at it.
+Open a pull request or issue and I will be sure to look at it. (And probably merge it as well :))
 
 # If you see an error
 

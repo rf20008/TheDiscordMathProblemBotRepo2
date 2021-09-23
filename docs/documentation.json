@@ -426,6 +426,11 @@
 				"title": "Empty messages?",
 				"contents": "This bot  utilizes embeds for its messages. If you deny that permission, most messages will be empty (and there may be 403 errors.)\n"
 			},
+      {
+        "heading_level": 1,
+        "title": "Why is there a cooldown of 100ms on commands?",
+        "contents": "This is to prevent spam. Some commands have longer cooldowns."
+      }
 			{
 				"heading_level": 1,
 				"title": "Math Problem Related",

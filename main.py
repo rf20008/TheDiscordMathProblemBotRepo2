@@ -322,7 +322,8 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
           answer = str(answer),
           author = 845751152901750824,
           guild_id = "null",
-          id = problem_id
+          id = problem_id,
+          cache=main_cache
         )
         main_cache.add_problem("null",problem_id,Problem)
     await ctx.reply(embed=SuccessEmbed(
@@ -411,7 +412,8 @@ async def new_problem(ctx, answer, question, guild_question=False):
           answer=answer,
           id=problem_id,
           author=ctx.author.id,
-          guild_id=guild_id
+          guild_id=guild_id,
+          cache = main_cache
         )
         print(problem)
         main_cache.add_problem(guild_id=guild_id,
@@ -435,7 +437,8 @@ async def new_problem(ctx, answer, question, guild_question=False):
                                           ,answer=answer,
                                           id=problem_id,
                                           guild_id="null",
-                                          author=ctx.author.id)
+                                          author=ctx.author.id,
+                                          cache = main_cache)
     main_cache.add_problem(problem_id=problem_id,
                            guild_id=problem.guild_id,
                            Problem=problem)
@@ -789,14 +792,33 @@ async def documentation(ctx,documentation_type, help_obj):
   Option(name="raw",description="raw debug data?",type=OptionType.BOOLEAN,required=False)
 ])
 async def debug(ctx,debug):
-  "Provides helpful debug informaton :-)"
+  "Provides helpful debug information :-)"
+  await check_for_cooldown(ctx,"debug",cooldown=0.1,is_global_cooldown=False)
   guild = ctx.guild
   me = guild.me
   my_permissions = me.guild_permissions
   debug_dict = {}
   debug_dict["guild_id"] = ctx.guild.id
   debug_dict["author_id"] = ctx.author.id
-  debug_dict["problem_limit"]
+  debug_dict["problem_limit"] = main_cache.max_guild_problems # the problem limit
+  debug_dict["reached_max_problems?"] = "✅" if len(main_cache.get_guild_problems(guild)) >= main_cache.max_guild_problems else "❌"
+  debug_dict["num_guild_problems"] = len(main_cache.get_guild_problems(ctx.guild))
+  correct_permissions = {
+    "read_messages": "✅" if my_permissions.read_messages else "❌", #can I read messages?
+    "send_messages": "✅" if my_permissions.send_messages else "❌" #can I send messages?
+    "embed_links": "✅" if my_permissions.embed_links else "❌", #can I embed links? 
+    "use_application_commands": "✅" if my_permissions.use_application_commands else "❌", #can I use application commands?
+    "read_message_history" = "✅" if my_permissions.read_messages else "❌"y #can I read message history?
+  }
+  debug_dict["correct_permissions"] = correct_permissions
+  if raw:
+      await ctx.reply(str(debug_dict))
+  else:
+    text = ""
+    for item in debug_dict.keys():
+      if not isinstance(debug_dict[item], dict):
+        text += "item: " + f"''{debug_dict[item]}''"
+
 
 
 print("The bot has finished setting up and will now run.")
