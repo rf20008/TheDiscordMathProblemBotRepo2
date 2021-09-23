@@ -55,7 +55,7 @@
 				"heading_level": 1,
 				"title": "⚠ This file may be deprecated",
 				"contents": "Since the internal workings of the bot may not be updated that often,  this file might ***not*** be up-to-date. Function docstrings should, however. :-)"
-			}, 
+			},
 			{
 				"heading_level": 1,
 				"title": "Misc. Non-Command-Functions (not in main.py)",
@@ -426,11 +426,11 @@
 				"title": "Empty messages?",
 				"contents": "This bot  utilizes embeds for its messages. If you deny that permission, most messages will be empty (and there may be 403 errors.)\n"
 			},
-      {
-        "heading_level": 1,
-        "title": "Why is there a cooldown of 100ms on commands?",
-        "contents": "This is to prevent spam. Some commands have longer cooldowns."
-      }
+			{
+				"heading_level": 1,
+				"title": "Why is there a cooldown of 100ms on commands?",
+				"contents": "This is to prevent spam. Some commands have longer cooldowns."
+			},
 			{
 				"heading_level": 1,
 				"title": "Math Problem Related",
