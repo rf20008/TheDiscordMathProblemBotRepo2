@@ -6,7 +6,7 @@ def log_error(error,file_path=""):
         raise TypeError("error is not an error")
     if file_path == "":
         now = datetime.datetime.now()
-        file_path = str(now.year) + " " + str({
+        file_path = "error_logs/" + str(now.year) + " " + str({
         1: "January",
         2: "Febuary,",
         3: "March",

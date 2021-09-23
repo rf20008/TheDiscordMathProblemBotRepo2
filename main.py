@@ -90,7 +90,7 @@ async def on_slash_command_error(ctx, error):
         await ctx.reply(str(error))
         return
     error_traceback = (traceback.format_exception(etype=type(error),value=error,tb=error.__traceback__))
-    log_error(error,"error_logs/log_1.txt") # Log the error
+    log_error(error) # Log the error
     if isinstance(error,NotOwner):
         await ctx.reply(embed=ErrorEmbed("You are not the owner of this bot."))
         return
