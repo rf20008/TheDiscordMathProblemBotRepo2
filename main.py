@@ -789,9 +789,10 @@ async def documentation(ctx,documentation_type, help_obj):
     await ctx.reply(_documentation)
 
 @slash.slash_command(name="debug",description="Help for debugging :-)",options=[
-  Option(name="raw",description="raw debug data?",type=OptionType.BOOLEAN,required=False)
+  Option(name="raw",description="raw debug data?",type=OptionType.BOOLEAN,required=False),
+  Option(name="send_ephermally",description="Send the debug message ephermally?",type=OptionType.BOOLEAN,required=False)
 ])
-async def debug(ctx,debug):
+async def debug(ctx,debug=False,send_ephermally=True):
   "Provides helpful debug information :-)"
   await check_for_cooldown(ctx,"debug",cooldown=0.1,is_global_cooldown=False)
   guild = ctx.guild
@@ -813,7 +814,7 @@ async def debug(ctx,debug):
   }
   debug_dict["correct_permissions"] = correct_permissions
   if raw:
-      await ctx.reply(str(debug_dict))
+      await ctx.reply(str(debug_dict),ephemeral = send_ephermally)
   else:
       text = ""
       for item in debug_dict.keys():
@@ -826,7 +827,7 @@ async def debug(ctx,debug):
               else:
                   raise RecursionError from Exception("***Nested too much***")
 
-      await ctx.reply(text)
+      await ctx.reply(text,ephemeral = send_ephermally)
 
 
 
