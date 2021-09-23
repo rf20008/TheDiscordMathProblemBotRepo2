@@ -342,7 +342,7 @@ async def delallbotproblems(ctx):
     await ctx.reply(embed=SimpleEmbed("",description="Attempting to delete bot problems"),ephemeral=True) #may get rid of later? :)
     numDeletedProblems = 0
     problems_to_delete = [problem for problem in main_cache.get_global_problems() if
-                          problem.get_author() == 845751152901750824]
+                          problem.get_author() == bot.user.id]
     for problem in problems_to_delete:
         main_cache.remove_problem(str(problem.guild_id), str(problem.id))
         numDeletedProblems+=1
@@ -785,7 +785,11 @@ async def documentation(ctx,documentation_type, help_obj):
         return
     await ctx.reply(_documentation)
 
-
+@slash.slash_command(name="debug",description="Help for debugging :-)",options=[
+  Option(name="raw",description="raw debug data?",type=OptionType.BOOLEAN,required=False)
+])
+async def debug(ctx,debug):
+  pass
 
 
 print("The bot has finished setting up and will now run.")

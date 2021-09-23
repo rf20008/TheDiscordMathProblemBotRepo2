@@ -53,6 +53,11 @@
 			},
 			{
 				"heading_level": 1,
+				"title": "⚠ This file may be deprecated",
+				"contents": "Since the internal workings of the bot may not be updated that often,  this file might ***not*** be up-to-date. Function docstrings should, however. :-)"
+			}, 
+			{
+				"heading_level": 1,
 				"title": "Misc. Non-Command-Functions (not in main.py)",
 				"contents": "\n\n"
 			},
@@ -535,6 +540,11 @@
 				"heading_level": 2,
 				"title": "documentation",
 				"contents": "Help with the documentation of this bot"
+			},
+			{
+				"heading_level": 2,
+				"title": "debug",
+				"contents": "Provides helpful debug information :-)"
 			}
 		]
 	}

@@ -78,3 +78,5 @@ Prints the list to the github repository :)
 Raises an error. Useful for debugging.
 ## documentation
 Help with the documentation of this bot
+## debug
+Provides helpful debug information :-)

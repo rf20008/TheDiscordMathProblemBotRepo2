@@ -15,6 +15,8 @@ No Mark: This is a command without user restrictions
 This is here for people who want to see how my bot works, or people who want to contribute :)
 
 
+# ⚠ This file may be deprecated
+Since the internal workings of the bot may not be updated that often,  this file might ***not*** be up-to-date. Function docstrings should, however. :-)
 # Misc. Non-Command-Functions (not in main.py)
 
 
