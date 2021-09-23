@@ -16,7 +16,9 @@ class TooLongQuestion(TooLongArgument):
 class GuildAlreadyExistsException(MathProblemsModuleException):
     "Raised when MathProblemCache.add_empty_guild tries to run on a guild that already has problems."
 class ProblemNotFoundException(MathProblemsModuleException):
-  "Raised when a problem is not found."
+    "Raised when a problem is not found."
+class TooManyProblems(MathProblemsModuleException):
+    "Raised when trying to add problems when there is already the maximum number of problems."
 
 class MathProblem:
     "For readability purposes :)"
@@ -79,6 +81,8 @@ class MathProblem:
         if (self._cache is not None and len(question) > self._cache.max_question_length) or (len(answer) > 100 and self._cache is None):
             if self._cache is not None:
                 raise TooLongAnswer(f"Your answer is {len(question) - self._cache.max_answer_length} characters too long. Answers may be up to {self._cache.max_answer_length} characters long.")
+            else:
+                raise TooLongAnswer(f"Your answer is {len(question) - 100} characters too long. Answers may be up to 100 characters long.")
             self.answer = answer
         if id != None:
             self.id = id
@@ -272,6 +276,8 @@ class MathProblemCache:
         self._dict[Guild.id] = {}
     def add_problem(self,guild_id,problem_id,Problem):
         "Adds a problem and returns the added MathProblem"
+        if len(self._dict[guild_id]) > self.max_guild_problems:
+            raise TooManyProblems(f"There are already {self.max_guild_problems} problems!")
         if not isinstance(Problem,(MathProblem, dict)):
             raise TypeError("Problem is not a valid MathProblem object.")
         if isinstance(Problem,dict):
@@ -323,7 +329,7 @@ class MathProblemCache:
     def get_guilds(self):
       return self._dict.keys()
 
-main_cache = MathProblemCache()
+main_cache = MathProblemCache(max_answer_length=100,max_question_limit=250,max_guild_problems=125)
 def get_main_cache():
     "Returns the main cache."
     return main_cache
