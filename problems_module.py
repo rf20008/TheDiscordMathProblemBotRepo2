@@ -23,8 +23,8 @@ class TooManyProblems(MathProblemsModuleException):
 class MathProblem:
     "For readability purposes :)"
     def __init__(self,question,answer,id,author,guild_id="null", voters=[],solvers=[], cache=None):
-        if guild_id != "null" and not isinstance(guild_id, int):
-            raise TypeError("guild_id is not an integer")
+        if guild_id != "null" and not isinstance(guild_id, str):
+            raise TypeError("guild_id is not an string")
         if not isinstance(id, int):
             raise TypeError("id is not an integer")
         if not isinstance(question, str):
@@ -157,7 +157,7 @@ class MathProblem:
         return User.id in self.get_solvers()
     def __str__(self):
         "Return str(self) by converting it to a dictionary and converting the dictionary to a string"
-        return str(self.convert_to_dict)
+        return str(self.convert_to_dict())
     def get_author(self):
         "Returns self.author"
         return self.author
