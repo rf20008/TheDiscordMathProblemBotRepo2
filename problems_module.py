@@ -192,6 +192,7 @@ class MathProblemCache:
     @property
     def max_guild_problems(self):
         return self._guild_limit
+    
 
 
     def convert_dict_to_math_problem(self,problem):
@@ -199,7 +200,6 @@ class MathProblemCache:
         try:
             assert isinstance(problem,dict)
         except AssertionError:
-            print(problem)
             raise TypeError("problem is not actually a Dictionary")
         guild_id = problem["guild_id"]
         if guild_id == "null":
@@ -257,14 +257,9 @@ class MathProblemCache:
         if not isinstance(Guild, nextcord.Guild):
             raise TypeError("Guild is not actually a Guild")
         try:
-            return self._dict[Guild.id].values()
-        except KeyError as exc:
-            self.add_empty_guild(Guild)
-            try:
-                return self.get_guild_problems(Guild)
-                
-            except Exception as exc:
-                raise RecursionError("***Too many repeats...***") from exc
+            return self._dict[str(Guild.id)].values()
+        except Exception as exc:
+            raise Exception("Something bad happened...") from exc
         
     def get_global_problems(self):
         "Returns global problems"
@@ -337,7 +332,9 @@ class MathProblemCache:
         self._dict = d
         return problemsDeleted
     def get_guilds(self):
-      return self._dict.keys()
+        return self._dict.keys()
+    def __str__(self):
+        return str(self._dict)
 
 main_cache = MathProblemCache(max_answer_length=100,max_question_limit=250,max_guild_problems=125)
 def get_main_cache():
