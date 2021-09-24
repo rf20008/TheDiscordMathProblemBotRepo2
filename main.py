@@ -822,7 +822,7 @@ async def debug(ctx,raw=False,send_ephermally=True):
         text = ""
         for item in debug_dict:
             if not isinstance([item], dict):
-                text += f": {item}: {debug_dict.get(item)}\n"
+                text += f"{item}: {debug_dict.get(item)}\n"
             else:
                 for item2 in item:
                     if not isinstance(item2, dict):
