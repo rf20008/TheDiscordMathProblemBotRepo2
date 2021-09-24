@@ -257,7 +257,7 @@ class MathProblemCache:
         if not isinstance(Guild, nextcord.Guild):
             raise TypeError("Guild is not actually a Guild")
         try:
-            return self._dict[Guild.id]
+            return self._dict[Guild.id].values()
         except KeyError as exc:
             self.add_empty_guild(Guild)
             try:
