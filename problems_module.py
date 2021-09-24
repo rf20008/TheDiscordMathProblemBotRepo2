@@ -39,7 +39,7 @@ class MathProblem:
             raise TypeError("solvers is not a list")
         if cache is None:
             warnings.warn("_cache is None. This may cause errors", RuntimeWarning)
-        if not isinstance(_cache,MathProblemCache) and cache is not None:
+        if not isinstance(cache,MathProblemCache) and cache is not None:
             raise TypeError("_cache is not a MathProblemCache.")
         if len(question) > 250:
             raise TooLongQuestion(f"Your question is {len(question) - 250} characters too long. Questions may be up to 250 characters long.")
@@ -57,21 +57,21 @@ class MathProblem:
         """Edit a math problem."""
         if guild_id not in [None,"null"] and not isinstance(guild_id, int):
             raise TypeError("guild_id is not an integer")
-        if not isinstance(id, int) and id != None:
+        if not isinstance(id, int) and id is not None:
             raise TypeError("id is not an integer")
-        if not isinstance(question, str) and question != None:
+        if not isinstance(question, str) and question is not None:
             raise TypeError("question is not a string")
-        if not isinstance(answer, str) and answer != None:
+        if not isinstance(answer, str) and answer is not None:
             raise TypeError("answer is not a string")
-        if not isinstance(author, int) and author != None:
+        if not isinstance(author, int) and author is not None:
             raise TypeError("author is not an integer")
-        if not isinstance(voters, list) and voters != None:
+        if not isinstance(voters, list) and voters is not None:
             raise TypeError("voters is not a list")
-        if not isinstance(solvers, list) and solvers != None:
+        if not isinstance(solvers, list) and solvers is not None:
             raise TypeError("solvers is not a list")
-        if id != None or guild_id != None or voters != None or solvers != None or author != None:
+        if id is not None or guild_id is not None or voters is not None or solvers is not None or author is not None:
             warnings.warn("You are changing one of the attributes that you should not be changing.", category=RuntimeWarning)
-        if question != None:
+        if question is not None:
             if (self._cache is not None and len(question) > self._cache.max_question_length) or (len(question) > 250 and self._cache is None):
                 if self._cache is not None:
                     raise TooLongQuestion(f"Your question is {len(question) - self._cache.max_question_length} characters too long. Questions may be up to {self._cache.max_question_length} characters long.")
@@ -84,15 +84,15 @@ class MathProblem:
             else:
                 raise TooLongAnswer(f"Your answer is {len(question) - 100} characters too long. Answers may be up to 100 characters long.")
             self.answer = answer
-        if id != None:
+        if id is not None:
             self.id = id
-        if guild_id != None:
+        if guild_id is not None:
             self.guild_id = guild_id
-        if voters != None:
+        if voters is not None:
             self.voters = voters
-        if solvers != None:
+        if solvers is not None:
             self.solvers = solvers
-        if author != None:
+        if author is not None:
             self.author = author
     def convert_to_dict(self):
         """Convert self to a dictionary"""
@@ -167,6 +167,9 @@ class MathProblem:
             raise TypeError("User is not actually a User")
         return User.id == self.get_author()
     def __eq__(self,other):
+        "Return self==other"
+        if not isinstance(self, type(other)):
+            return False
         try:
             return self.question == other.question and other.answer == self.answer
         except:
@@ -270,8 +273,8 @@ class MathProblemCache:
         try:
             if self._dict[Guild.id] != {}:
                 raise GuildAlreadyExistsException
-        except:
-            pass
+        except KeyError:
+            self._dict[Guild.id] = {}
             
         self._dict[Guild.id] = {}
     def add_problem(self,guild_id,problem_id,Problem):
@@ -286,7 +289,7 @@ class MathProblemCache:
             except Exception:
                 raise Exception("Not a valid problem!")
         try:
-            if self._dict[guild_id][problem_id] != None:
+            if self._dict[guild_id][problem_id] is not None:
                 raise Exception("Problem already exists")
         except:
             try:
