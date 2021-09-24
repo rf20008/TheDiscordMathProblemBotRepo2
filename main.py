@@ -817,15 +817,17 @@ async def debug(ctx,raw=False,send_ephermally=True):
     debug_dict["correct_permissions"] = correct_permissions
     if raw:
         await ctx.reply(str(debug_dict),ephemeral = send_ephermally)
+        return
     else:
         text = ""
-        for item in debug_dict.keys():
-            if not isinstance(debug_dict[item], dict):
-                text += "item: " + f"''{debug_dict[item]}''"
+        for item in debug_dict:
+            print(item)
+            if not isinstance([item], dict):
+                text += f"{debug_dict.index(item)}: " + f"''{item}''"
             else:
-                for item in debug_dict[item].keys():
+                for item2 in item:
                     if not isinstance(debug_dict[item], dict):
-                        text += "item: " + f"''{debug_dict[item]}''"
+                        text += f"{item2}: " + f"''{debug_dict[item]}''"
                     else:
                         raise RecursionError from Exception("***Nested too much***")
 
