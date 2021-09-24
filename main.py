@@ -793,7 +793,7 @@ async def documentation(ctx,documentation_type, help_obj):
   Option(name="send_ephermally",description="Send the debug message ephermally?",type=OptionType.BOOLEAN,required=False)
 ])
 async def debug(ctx,debug=False,send_ephermally=True):
-  "Provides helpful debug information :-)"
+    "Provides helpful debug information :-)"
     await check_for_cooldown(ctx,"debug",0.1,is_global_cooldown=False)
     guild = ctx.guild
     if ctx.guild is None:
@@ -829,7 +829,7 @@ async def debug(ctx,debug=False,send_ephermally=True):
                     else:
                         raise RecursionError from Exception("***Nested too much***")
 
-      await ctx.reply(text,ephemeral = send_ephermally)
+    await ctx.reply(text,ephemeral = send_ephermally)
 
 
 
