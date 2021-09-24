@@ -794,38 +794,40 @@ async def documentation(ctx,documentation_type, help_obj):
 ])
 async def debug(ctx,debug=False,send_ephermally=True):
   "Provides helpful debug information :-)"
-  await check_for_cooldown(ctx,"debug",cooldown=0.1,is_global_cooldown=False)
-  guild = ctx.guild
-  me = guild.me
-  my_permissions = me.guild_permissions
-  debug_dict = {}
-  debug_dict["guild_id"] = ctx.guild.id
-  debug_dict["author_id"] = ctx.author.id
-  debug_dict["problem_limit"] = main_cache.max_guild_problems # the problem limit
-  debug_dict["reached_max_problems?"] = "✅" if len(main_cache.get_guild_problems(guild)) >= main_cache.max_guild_problems else "❌"
-  debug_dict["num_guild_problems"] = len(main_cache.get_guild_problems(ctx.guild))
-  correct_permissions = {
-      "read_message_history": "✅" if my_permissions.read_messages else "❌",
-      "read_messages": "✅" if my_permissions.read_messages else "❌", #can  I read messages?
-      "send_messages": "✅" if my_permissions.send_messages else "❌", #can I send messages?
-      "embed_links": "✅" if my_permissions.embed_links else "❌", #can I embed links? 
-      "use_application_commands": "✅" if my_permissions.use_application_commands else "❌"
-     
+    await check_for_cooldown(ctx,"debug",0.1,is_global_cooldown=False)
+    guild = ctx.guild
+    if ctx.guild is None:
+        await ctx.reply("This command can only be ran in servers!")
+        return
+    me = guild.me
+    my_permissions = me.guild_permissions
+    debug_dict = {}
+    debug_dict["guild_id"] = ctx.guild.id
+    debug_dict["author_id"] = ctx.author.id
+    debug_dict["problem_limit"] = main_cache.max_guild_problems # the problem limit
+    debug_dict["reached_max_problems?"] = "✅" if len(main_cache.get_guild_problems(guild)) >= main_cache.max_guild_problems else "❌"
+    debug_dict["num_guild_problems"] = len(main_cache.get_guild_problems(ctx.guild))
+    correct_permissions = {
+        "read_message_history": "✅" if my_permissions.read_messages else "❌",
+        "read_messages": "✅" if my_permissions.read_messages else "❌", #can I read messages?
+        "send_messages": "✅" if my_permissions.send_messages else "❌", #can I send messages?
+        "embed_links": "✅" if my_permissions.embed_links else "❌", #can I embed links? 
+        "use_application_commands": "✅" if my_permissions.use_application_commands else "❌"
   }
-  debug_dict["correct_permissions"] = correct_permissions
-  if raw:
-      await ctx.reply(str(debug_dict),ephemeral = send_ephermally)
-  else:
-      text = ""
-      for item in debug_dict.keys():
-        if not isinstance(debug_dict[item], dict):
-          text += "item: " + f"''{debug_dict[item]}''"
-      else:
-          for item in debug_dict[item].keys():
-              if not isinstance(debug_dict[item], dict):
-                  text += "item: " + f"''{debug_dict[item]}''"
-              else:
-                  raise RecursionError from Exception("***Nested too much***")
+    debug_dict["correct_permissions"] = correct_permissions
+    if raw:
+        await ctx.reply(str(debug_dict),ephemeral = send_ephermally)
+    else:
+        text = ""
+        for item in debug_dict.keys():
+            if not isinstance(debug_dict[item], dict):
+                text += "item: " + f"''{debug_dict[item]}''"
+            else:
+                for item in debug_dict[item].keys():
+                    if not isinstance(debug_dict[item], dict):
+                        text += "item: " + f"''{debug_dict[item]}''"
+                    else:
+                        raise RecursionError from Exception("***Nested too much***")
 
       await ctx.reply(text,ephemeral = send_ephermally)
 
