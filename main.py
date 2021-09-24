@@ -821,13 +821,12 @@ async def debug(ctx,raw=False,send_ephermally=True):
     else:
         text = ""
         for item in debug_dict:
-            print(item)
             if not isinstance([item], dict):
-                text += f"{debug_dict.index(item)}: " + f"''{item}''"
+                text += f"{debug_dict.get(item)}: " + f"''{item}''"
             else:
                 for item2 in item:
-                    if not isinstance(debug_dict[item], dict):
-                        text += f"{item2}: " + f"''{debug_dict[item]}''"
+                    if not isinstance(item2, dict):
+                        text += f"{item.get(item2)}: " + f"''{debug_dict[item]}''"
                     else:
                         raise RecursionError from Exception("***Nested too much***")
 
