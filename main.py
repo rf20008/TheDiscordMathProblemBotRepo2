@@ -812,7 +812,7 @@ async def debug(ctx,debug=False,send_ephermally=True):
         "read_messages": "✅" if my_permissions.read_messages else "❌", #can I read messages?
         "send_messages": "✅" if my_permissions.send_messages else "❌", #can I send messages?
         "embed_links": "✅" if my_permissions.embed_links else "❌", #can I embed links? 
-        "use_application_commands": "✅" if my_permissions.use_application_commands else "❌"
+        "use_application_commands": "✅" if my_permissions.use_slash_commands else "❌"
   }
     debug_dict["correct_permissions"] = correct_permissions
     if raw:

@@ -259,7 +259,12 @@ class MathProblemCache:
         try:
             return self._dict[Guild.id]
         except KeyError as exc:
-            raise MathProblemsModuleException("Guild not found.") from exc
+            self.add_empty_guild(Guild)
+            try:
+                return self.get_guild_problems(Guild)
+                
+            except Exception as exc:
+                raise RecursionError("***Too many repeats...***") from exc
         
     def get_global_problems(self):
         "Returns global problems"
