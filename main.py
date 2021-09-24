@@ -792,7 +792,7 @@ async def documentation(ctx,documentation_type, help_obj):
   Option(name="raw",description="raw debug data?",type=OptionType.BOOLEAN,required=False),
   Option(name="send_ephermally",description="Send the debug message ephermally?",type=OptionType.BOOLEAN,required=False)
 ])
-async def debug(ctx,debug=False,send_ephermally=True):
+async def debug(ctx,raw=False,send_ephermally=True):
     "Provides helpful debug information :-)"
     await check_for_cooldown(ctx,"debug",0.1,is_global_cooldown=False)
     guild = ctx.guild
