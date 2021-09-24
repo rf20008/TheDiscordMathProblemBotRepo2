@@ -34,3 +34,63 @@ Traceback (most recent call last):
 AttributeError: 'NoneType' object has no attribute 'me'
 
 
+Fri Sep 24 00:36:43 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1282, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 216, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 212, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 37, in _maybe_cog_call
+    return await self(inter, **params)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "main.py", line 808, in debug
+    debug_dict["reached_max_problems?"] = "✅" if len(main_cache.get_guild_problems(guild)) >= main_cache.max_guild_problems else "❌"
+  File "/home/runner/TheDiscordMathProblemBot/problems_module.py", line 257, in get_guild_problems
+    raise MathProblemsModuleException("Guild id not found.")
+problems_module.MathProblemsModuleException: Guild id not found.
+
+
+Fri Sep 24 00:37:36 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1282, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 216, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 212, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 37, in _maybe_cog_call
+    return await self(inter, **params)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "main.py", line 808, in debug
+    debug_dict["reached_max_problems?"] = "✅" if len(main_cache.get_guild_problems(guild)) >= main_cache.max_guild_problems else "❌"
+  File "/home/runner/TheDiscordMathProblemBot/problems_module.py", line 257, in get_guild_problems
+    raise MathProblemsModuleException("Guild id not found.")
+problems_module.MathProblemsModuleException: Guild id not found.
+
+
+Fri Sep 24 00:38:31 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1282, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 216, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 212, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 37, in _maybe_cog_call
+    return await self(inter, **params)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "main.py", line 436, in new_problem
+    problem = problems_module.MathProblem(question=question
+  File "/home/runner/TheDiscordMathProblemBot/problems_module.py", line 40, in __init__
+    if _cache is None:
+NameError: name '_cache' is not defined
+
+

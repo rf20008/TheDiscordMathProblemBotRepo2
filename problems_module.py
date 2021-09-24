@@ -37,7 +37,7 @@ class MathProblem:
             raise TypeError("voters is not a list")
         if not isinstance(solvers, list):
             raise TypeError("solvers is not a list")
-        if _cache is None:
+        if cache is None:
             warnings.warn("_cache is None. This may cause errors", RuntimeWarning)
         if not isinstance(_cache,MathProblemCache) and cache is not None:
             raise TypeError("_cache is not a MathProblemCache.")
