@@ -256,9 +256,11 @@ class MathProblemCache:
         """Gets the guild problems! Guild must be a Guild object. If you are trying to get global problems, use get_global_problems."""
         if not isinstance(Guild, nextcord.Guild):
             raise TypeError("Guild is not actually a Guild")
-        if not Guild.id in self._dict.keys():
-            raise MathProblemsModuleException("Guild id not found.")
-        return self._dict[Guild.id]
+        try:
+            return self._dict[Guild.id]
+        except KeyError as exc:
+            raise MathProblemsModuleException("Guild not found.") from exc
+        
     def get_global_problems(self):
         "Returns global problems"
         try:
