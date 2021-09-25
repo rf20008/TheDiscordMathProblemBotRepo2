@@ -273,10 +273,10 @@ class MathProblemCache:
         if not isinstance(Guild, nextcord.Guild):
             raise TypeError("Guild is not actually a Guild")
         try:
-            if self._dict[Guild.id] != {}:
+            if self._dict[str(Guild.id)] != {}:
                 raise GuildAlreadyExistsException
         except KeyError:
-            self._dict[Guild.id] = {}
+            self._dict[str(Guild.id)] = {}
             
         self._dict[Guild.id] = {}
     def add_problem(self,guild_id,problem_id,Problem):
@@ -289,11 +289,14 @@ class MathProblemCache:
             try:
                 Problem = self.convert_dict_to_math_problem(Problem)
             except Exception:
-                raise Exception("Not a valid problem!")
+                raise MathProblemsModuleException("Not a valid problem!")
         try:
             if self._dict[guild_id][problem_id] is not None:
                 raise Exception("Problem already exists")
-        except:
+        except BaseException as e:
+            if not instance(e,KeyError):
+                  raise RuntimeError("Something bad happened... please report this! And maybe try to fix it?") from e
+            
             try:
                 self._dict[guild_id][problem_id] = Problem
             except KeyError as e:
@@ -311,6 +314,8 @@ class MathProblemCache:
         return Problem
     def remove_problem(self,guild_id,problem_id):
         "Removes a problem. Returns the deleted problem"
+        if not isinstance(guild_id, str):
+            warnings.warn("guild_id is not a string. There might be an error...", Warning)
         Problem = self.get_problem(guild_id,problem_id)
         del self._dict[guild_id][problem_id]
         return Problem
