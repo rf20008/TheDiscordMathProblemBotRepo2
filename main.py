@@ -101,7 +101,10 @@ async def on_slash_command_error(ctx, error):
       _error_traceback += item
       _error_traceback += "\n"
     
-    await ctx.reply(embed=ErrorEmbed(_error_traceback,custom_title="Oh, no! An exception occurred"))
+    await ctx.reply(embed=ErrorEmbed(
+        _error_traceback,
+        custom_title="Oh, no! An exception occurred", 
+        footer=f"Time: {str(time.asctime())}"))
 
 
 @slash.command(name="force_load_files",description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!")

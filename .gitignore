@@ -131,13 +131,26 @@ dmypy.json
 .pyre/
 
 
+#VScode gitignore
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
 
 ## me
 
-**/*.json #Sensative
+**/*.json # I don't want to push the problems :-)
 vote_threshold.txt # Use /what_is_vote_threshold to use. This may be outdated...
 !docs/documentation.json # The documentation needs to be not git-ignored
 trusted_users.txt # /list_trusted_users to list trusted users. This may be outdated
 **/.env # keep my token safe
 .env #keep my token safe :)
 !**/*.py #never ignore any python file :)
+!**/.gitignore
+pylint-1.rtf
