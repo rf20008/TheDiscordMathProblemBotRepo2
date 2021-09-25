@@ -7,7 +7,7 @@ import problems_module
 from cooldowns import check_for_cooldown, OnCooldown
 from _error_logging import log_error
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
-from time import sleep, time
+from time import sleep, time, asctime
 from custom_embeds import *
 from save_files import FileSaver
 from user_error import UserError
@@ -108,7 +108,7 @@ async def on_slash_command_error(ctx, error):
     await ctx.reply(embed=ErrorEmbed(
         _error_traceback,
         custom_title="Oh, no! An exception occurred", 
-        footer=f"Time: {str(time.asctime())} Commit hash: {get_git_revision_hash()} "))
+        footer=f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} "))
 
 
 @slash.command(name="force_load_files",description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!")
