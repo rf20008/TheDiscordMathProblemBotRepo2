@@ -51,7 +51,7 @@ def the_daemon_file_saver():
     FileSaverObj = FileSaver(name = "The Daemon File Saver",
                              enabled=True,
                              printSuccessMessagesByDefault=True)
-    FileSaverDict = FileSaverObj.load_files(True)
+    FileSaverDict = FileSaverObj.load_files(main_cache,True)
     (guildMathProblems,
      trusted_users,
      vote_threshold) = (
@@ -122,7 +122,7 @@ async def force_load_files(ctx):
         return
     try:
         FileSaver3 = FileSaver(enabled=True,printSuccessMessagesByDefault=False)
-        FileSaverDict = FileSaver3.load_files()
+        FileSaverDict = FileSaver3.load_files(main_cache)
         (guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
         FileSaver3.goodbye()
         await ctx.reply(embed=SuccessEmbed("Successfully forcefully loaded files!"))
@@ -141,7 +141,7 @@ async def force_save_files(ctx):
         return
     try:
         FileSaver2 = FileSaver(enabled=True)
-        FileSaver2.save_files(True,guildMathProblems,vote_threshold,mathProblems,trusted_users)
+        FileSaver2.save_files(True,guildMathProblems,vote_threshold,mathProblems,trusted_users,main_cache=main_cache)
         FileSaver2.goodbye()
         await ctx.reply(embed=SuccessEmbed("Successfully saved 4 files!"))
     except RuntimeError as exc:

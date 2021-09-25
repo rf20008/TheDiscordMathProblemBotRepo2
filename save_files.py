@@ -22,8 +22,10 @@ class FileSaver:
   def disable(self):
     "Disables self"
     self.enabled=False
-  def load_files(self,printSuccessMessages=None):
+  def load_files(self,main_cache,printSuccessMessages=None):
     "Loads files from file names specified in self.__init__."
+    if not isinstance(main_cache,problems_module.MathProblemCache):
+        raise TypeError("main_cache is not a MathProblemCache.")
     if not self.enabled:
       raise RuntimeError("I'm not enabled! I can't load files!")
     trusted_users=[]
@@ -33,7 +35,7 @@ class FileSaver:
     with open("math_problems.json", "r") as file:
       mathProblems = json.load(fp=file)
 
-    problems_module.get_main_cache().update_cache()
+    main_cache.update_cache()
 
     with open("trusted_users.txt", "r") as file2:
       for line in file2:
@@ -48,8 +50,10 @@ class FileSaver:
       print(f"{self.name}: Successfully loaded files.")
 
     return {"guildMathProblems":guildMathProblems,"trusted_users":trusted_users,"mathProblems":mathProblems,"vote_threshold":vote_threshold}
-  def save_files(self,printSuccessMessages=None,guild_math_problems_dict={},vote_threshold=3,math_problems_dict={},trusted_users_list={}):
+  def save_files(self,printSuccessMessages=None,guild_math_problems_dict={},vote_threshold=3,math_problems_dict={},trusted_users_list={},main_cache=None):
     "Saves files to file names specified in __init__."
+    if not isinstance(main_cache,problems_module.MathProblemCache):
+        raise TypeError("main_cache is not a MathProblemCache.")
     if not self.enabled:
       raise RuntimeError("I'm not enabled! I can't load files!")
     if printSuccessMessages or printSuccessMessages==None and self.printSuccessMessagesByDefault:

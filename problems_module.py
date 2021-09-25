@@ -294,7 +294,7 @@ class MathProblemCache:
             if self._dict[guild_id][problem_id] is not None:
                 raise Exception("Problem already exists")
         except BaseException as e:
-            if not instance(e,KeyError):
+            if not isinstance(e,KeyError):
                   raise RuntimeError("Something bad happened... please report this! And maybe try to fix it?") from e
             
             try:
