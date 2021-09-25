@@ -15,7 +15,7 @@ If you run into any issues create an issue or DM me (ay136416#2707)).
 
 # Contribute !
 
-Please open a PR!
+If you open a PR/Issue, I'll look at it and maybe merge it!
 
 # Invite my bot!
 

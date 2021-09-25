@@ -41,7 +41,7 @@ t.start()
 
 def get_git_revision_hash() -> str:
     "A method that gets the git revision hash. Credit to https://stackoverflow.com/a/21901260 for the code :-)"
-    return subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
+    return subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()[:7] #[7:] is here because of the commit hash, the rest of this function is from stack overflow
 
 def the_daemon_file_saver():
     #print("e",flush=True)
