@@ -13,13 +13,9 @@ This discord bot and all of its code is licensed under the combined terms of the
 # If you run into issues
 If you run into any issues create an issue or DM me (ay136416#2707)). 
 
-# Contribute to this project!
+# Contribute !
 
-Open a pull request or issue and I will be sure to look at it. (And probably merge it as well :))
-
-# If you see an error
-
-As soon as you see them, contact me as soon as possible!
+Please open a PR!
 
 # Invite my bot!
 
@@ -28,3 +24,9 @@ Recommended invite: https://discord.com/api/oauth2/authorize?client_id=845751152
 # Documentation
 
 https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs
+
+# Attribution
+https://stackoverflow.com/a/21901260 for the get_git_revision_hash :-)
+nextcord + discord devs for their libraries
+
+

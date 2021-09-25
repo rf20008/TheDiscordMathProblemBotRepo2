@@ -1,4 +1,4 @@
-import random, os, warnings, threading, copy, nextcord, discord
+import random, os, warnings, threading, copy, nextcord, discord, subprocess
 import dislash, traceback
 import return_intents
 import nextcord.ext.commands as nextcord_commands
@@ -32,12 +32,16 @@ cooldowns = {}
 guild_maximum_problem_limit=125
 erroredInMainCode = False
 def loading_documentation_thread():
+    "This thread reloads the documentation."
     d = DocumentationFileLoader()
     d.load_documentation_into_readable_files()
     del d
 t = threading.Thread(target=loading_documentation_thread)
 t.start()
-#print("yes")
+
+def get_git_revision_hash() -> str:
+    "A method that gets the git revision hash. Credit to https://stackoverflow.com/a/21901260 for the code :-)"
+    return subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
 
 def the_daemon_file_saver():
     #print("e",flush=True)
@@ -104,7 +108,7 @@ async def on_slash_command_error(ctx, error):
     await ctx.reply(embed=ErrorEmbed(
         _error_traceback,
         custom_title="Oh, no! An exception occurred", 
-        footer=f"Time: {str(time.asctime())}"))
+        footer=f"Time: {str(time.asctime())} Commit hash: {get_git_revision_hash()} "))
 
 
 @slash.command(name="force_load_files",description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!")
