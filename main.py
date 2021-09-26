@@ -19,11 +19,10 @@ from problems_module import get_main_cache
 
 warnings.simplefilter("default")
 #constants
-#print("Is it working??")
+
 trusted_users=[]
 DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
-#print(type(DISCORD_TOKEN))
-#print(f"Discord Token: {DISCORD_TOKEN}")
+
 main_cache = get_main_cache()
 vote_threshold = -1
 mathProblems={}
@@ -67,8 +66,6 @@ t = threading.Thread(target=the_daemon_file_saver,name="The File Saver",daemon=T
 
 t.start()
 
-#print("Work please!!!!!")
-#print(trusted_users)
 def generate_new_id():
     return random.randint(0, 10**14)
 Intents = return_intents.return_intents()
@@ -187,7 +184,6 @@ async def edit_problem(ctx,problem_id,new_question=None,new_answer=None,guild_id
             e += f"changed the answer to {new_answer}"
         else:
             raise Exception("*** No new answer or new question provided. Aborting command...***")
-    print(problem.get_question(),problem.get_answer())
 
     await ctx.reply(embed=SuccessEmbed(e),ephemeral=True)
       
@@ -421,7 +417,6 @@ async def submit_problem(ctx, answer, question, guild_question=False):
           guild_id=guild_id,
           cache = main_cache
         )
-        print(problem)
         main_cache.add_problem(guild_id=guild_id,
                                problem_id=problem_id,
                                Problem=problem)
@@ -505,7 +500,6 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
     guild_id = ctx.guild.id
     if guild_id not in guildMathProblems:
         guildMathProblems[guild_id]={}
-    #print(showSolvedProblems)
     if mathProblems.keys() == []:
         await ctx.reply(embed=ErrorEmbed("There aren't any problems! You should add one!"), ephemeral=True)
         return
@@ -545,7 +539,6 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
             continue
         e += "\n"
         e += str(problem.id) + "\t"
-        #print(mathProblems[question])
         e += str(problem.get_question()) + "\t"
         e += "(" 
         e+= str(problem.get_num_voters()) + "/" + str(vote_threshold) + ")" + "\t"

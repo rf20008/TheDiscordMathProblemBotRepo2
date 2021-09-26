@@ -3,9 +3,15 @@
     "main.py": [
       {
         "id": "fb990c77-3e9a-44d7-ad7c-a28ba407f806",
-        "line": 106,
-        "version": 57847,
-        "index": 3190
+        "line": 52,
+        "version": 58056,
+        "index": 1753
+      },
+      {
+        "id": "143247e7-b731-4ee6-8038-ab2c78a58ed7",
+        "line": 420,
+        "version": 58060,
+        "index": 18352
       }
     ],
     "pylint-1.rtf": [
