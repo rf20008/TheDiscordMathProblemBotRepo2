@@ -50,8 +50,9 @@ class FileSaver:
       print(f"{self.name}: Successfully loaded files.")
 
     return {"guildMathProblems":guildMathProblems,"trusted_users":trusted_users,"mathProblems":mathProblems,"vote_threshold":vote_threshold}
-  def save_files(self,printSuccessMessages=None,guild_math_problems_dict={},vote_threshold=3,math_problems_dict={},trusted_users_list={},main_cache=None):
+  def save_files(self,main_cache=None,printSuccessMessages=None,guild_math_problems_dict={},vote_threshold=3,math_problems_dict={},trusted_users_list={},):
     "Saves files to file names specified in __init__."
+    print(type(main_cache))
     if not isinstance(main_cache,problems_module.MathProblemCache):
         raise TypeError("main_cache is not a MathProblemCache.")
     if not self.enabled:
