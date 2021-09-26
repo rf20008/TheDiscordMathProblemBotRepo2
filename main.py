@@ -364,7 +364,7 @@ async def list_trusted_users(ctx):
     for item in trusted_users:
         __trusted_users += "<@" + str(item) + ">"
         __trusted_users+= "\n"
-    await ctx.reply(__trusted_user, ephemeral = True)
+    await ctx.reply(__trusted_users, ephemeral = True)
 @slash.slash_command(name="new_problem", description = "Create a new problem",
                      options = [Option(name="answer", description="The answer to this problem",
                                        type=OptionType.STRING, required=True),
