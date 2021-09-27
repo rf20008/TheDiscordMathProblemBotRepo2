@@ -1,4 +1,4 @@
-import random, os, warnings, threading, copy, nextcord, discord, subprocess
+import random, os, warnings, threading, copy, nextcord, subprocess
 import dislash, traceback
 import return_intents
 import nextcord.ext.commands as nextcord_commands
@@ -369,7 +369,8 @@ async def list_trusted_users(ctx):
                                        type=OptionType.BOOLEAN, required=False)])
 async def submit_problem(ctx, answer, question, guild_question=False):
     "Create & submit a new problem"
-    await check_for_cooldown(ctx, "new_problem",5)
+
+    await check_for_cooldown(ctx, "submit_problem",5)
 
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
@@ -458,6 +459,7 @@ async def submit_problem(ctx, answer, question, guild_question=False):
 async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
     "Check if you are right"
     await check_for_cooldown(ctx, "check_answer",5)
+    print(3)
 
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)

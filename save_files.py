@@ -59,7 +59,7 @@ class FileSaver:
       raise RuntimeError("I'm not enabled! I can't load files!")
     if printSuccessMessages or printSuccessMessages==None and self.printSuccessMessagesByDefault:
       print(f"{str(self)}: Attempting to save math problems vote_threshold to vote_threshold.txt, trusted_users_list to  trusted_users.txt...")
-    problems_module.get_main_cache().update_file_cache()
+    main_cache.update_file_cache()
 
     with open("trusted_users.txt", "w") as file2:
       for user in trusted_users_list:

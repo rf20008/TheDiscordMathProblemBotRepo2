@@ -130,7 +130,7 @@ aiohttp = ">=3.6.0,<3.8.0"
 
 [package.extras]
 docs = ["sphinx (==4.0.2)", "sphinxcontrib_trio (==1.1.2)", "sphinxcontrib-websupport"]
-speed = ["orjson (>=3.5.4)"]
+speed = ["orjson (>=3.5.4)", "aiodns (>=1.1)", "brotli", "cchardet"]
 voice = ["PyNaCl (>=1.3.0,<1.5)"]
 
 [[package]]
@@ -164,7 +164,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "a52614379ae7b2d9f0f2429cb66bcfec962b5ced9de192bced32f5f85f506eaf"
+content-hash = "43e5f36d177e585c7d44d685250e69387adc93a201e2c5c62b0b99d07040ebe3"
 
 [metadata.files]
 aiohttp = [
@@ -278,7 +278,7 @@ multidict = [
     {file = "multidict-5.1.0.tar.gz", hash = "sha256:25b4e5f22d3a37ddf3effc0710ba692cfc792c2b9edfb9c05aefe823256e84d5"},
 ]
 nextcord = [
-    {file = "nextcord-2.0.0a2.tar.gz", hash = "sha256:fcae92330105d817ac35f0de35da0bf6b1ad880d63515f12c812a621c4c76fe8"},
+    {file = "nextcord-2.0.0a3.tar.gz", hash = "sha256:f45933be7052db13d29ef30061ef75af3d413dfcb0d1f7c3757fe7f8478002f1"},
 ]
 orjson = [
     {file = "orjson-3.6.3-cp310-cp310-manylinux_2_24_aarch64.whl", hash = "sha256:5f78ed46b179585272a5670537f2203dbb7b3e2f8e4db1be72839cc423e2daef"},
