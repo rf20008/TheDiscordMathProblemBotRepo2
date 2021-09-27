@@ -59,7 +59,7 @@ def the_daemon_file_saver():
 
     while True: 
         sleep(45) 
-        FileSaverObj.save_files(main_cache,True,guildMathProblems,vote_threshold,mathProblems,trusted_users)
+        FileSaverObj.save_files(main_cache,False,guildMathProblems,vote_threshold,mathProblems,trusted_users)
 
             
 t = threading.Thread(target=the_daemon_file_saver,name="The File Saver",daemon=True)

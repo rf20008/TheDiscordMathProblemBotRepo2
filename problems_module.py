@@ -19,6 +19,8 @@ class ProblemNotFoundException(MathProblemsModuleException):
     "Raised when a problem is not found."
 class TooManyProblems(MathProblemsModuleException):
     "Raised when trying to add problems when there is already the maximum number of problems."
+class ProblemNotFound(MathProblemsModuleException):
+    "Raised when a problem isn't found"
 
 class MathProblem:
     "For readability purposes :)"

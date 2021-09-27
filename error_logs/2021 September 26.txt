@@ -34,3 +34,30 @@ Traceback (most recent call last):
 TypeError: save_files() got multiple values for argument 'main_cache'
 
 
+Sun Sep 26 23:16:22 2021
+
+Traceback (most recent call last):
+  File "/home/runner/TheDiscordMathProblemBot/problems_module.py", line 248, in get_problem
+    return guild_id_dict[problem_id]
+KeyError: '1'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1282, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 216, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 212, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 37, in _maybe_cog_call
+    return await self(inter, **params)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "main.py", line 219, in show_problem_info
+    problem = main_cache.get_problem(real_guild_id, str(problem_id))
+  File "/home/runner/TheDiscordMathProblemBot/problems_module.py", line 250, in get_problem
+    raise ProblemNotFound("*** Problem not found. Aborting search... ***")
+NameError: name 'ProblemNotFound' is not defined
+
+
