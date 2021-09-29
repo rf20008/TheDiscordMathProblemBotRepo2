@@ -19,6 +19,8 @@ class ProblemNotFoundException(MathProblemsModuleException):
     "Raised when a problem is not found."
 class TooManyProblems(MathProblemsModuleException):
     "Raised when trying to add problems when there is already the maximum number of problems."
+class ProblemNotFound(MathProblemsModuleException):
+    "Raised when a problem isn't found"
 
 class MathProblem:
     "For readability purposes :)"
@@ -193,7 +195,14 @@ class MathProblemCache:
     def max_guild_problems(self):
         return self._guild_limit
     
-
+    def convert_to_dict(self):
+        e = {}
+        for guild_id in self._dict.keys():
+            e[guild_id] = {}
+            for problem_id in self._dict[guild_id].keys():
+                print(guild_id, problem_id)
+                e[guild_id][problem_id] = self.get_problem(guild_id,problem_id).convert_to_dict()
+        return e
 
     def convert_dict_to_math_problem(self,problem):
         "Convert a dictionary into a math problem. It must be in the expected format."
@@ -295,7 +304,7 @@ class MathProblemCache:
                 raise Exception("Problem already exists")
         except BaseException as e:
             if not isinstance(e,KeyError):
-                  raise RuntimeError("Something bad happened... please report this! And maybe try to fix it?") from e
+                raise RuntimeError("Something bad happened... please report this! And maybe try to fix it?") from e
             
             try:
                 self._dict[guild_id][problem_id] = Problem
