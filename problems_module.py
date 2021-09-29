@@ -179,7 +179,14 @@ class MathProblem:
 
 class MathProblemCache:
     def __init__(self,max_answer_length=100,max_question_limit=250,
-    max_guild_problems=125):
+    max_guild_problems=125,warnings_or_errors = "warnings"):
+        if warnings_or_errors not in ["warnings", "errors"]:
+            raise ValueError(f"warnings_or_errors is {warnings_or_errors}, not 'warnings' or 'errors'")
+        if warnings_or_errors == "warnings":
+            self.warnings == True
+        else:
+            self.warnings = False
+
         self._dict = {}
         self.update_cache()
         self._max_answer = max_answer_length
@@ -245,9 +252,15 @@ class MathProblemCache:
     def get_problem(self,guild_id,problem_id):
         "Gets the problem with this guild id and problem id"
         if not isinstance(guild_id, str):
-            warnings.warn("guild_id is not a string", category=RuntimeWarning)
+            if self.warnings:
+                warnings.warn("guild_id is not a string", category=RuntimeWarning)
+            else:
+                raise TypeError("guild_id is not a string")
         if not isinstance(problem_id,str):
-            warnings.warn("problem_id is not a string",category=RuntimeWarning)
+            if self.warnings:
+                warnings.warn("problem_id is not a string",category=RuntimeWarning)
+            else:
+                raise TypeError("problem_id is not a string")
         try:
             guild_id_dict = self._dict[guild_id]
             
@@ -256,11 +269,7 @@ class MathProblemCache:
         try:
             return guild_id_dict[problem_id]
         except:
-            raise ProblemNotFound("*** Problem not found. Aborting search... ***")
-    def fetch_problem(self,guild_id,problem_id):
-        "Reloads the cache with the file and then loads the problem."
-        self.update_cache()
-        return self.get_problem(guild_id, problem_id)
+            raise ProblemNotFound(f"*** No problem found with guild_id {guild_id} and problem_id {problem_id}!***")
     def get_guild_problems(self,Guild):
         """Gets the guild problems! Guild must be a Guild object. If you are trying to get global problems, use get_global_problems."""
         if not isinstance(Guild, nextcord.Guild):
@@ -290,6 +299,16 @@ class MathProblemCache:
         self._dict[Guild.id] = {}
     def add_problem(self,guild_id,problem_id,Problem):
         "Adds a problem and returns the added MathProblem"
+        if not isinstance(guild_id,str):
+            if self.warnings:
+                warnings.warn("guild_id is not a string.... this may cause an exception")
+            else:
+                raise TypeError("guild_id is not a string.")
+        if not isinstance(problem_id,str):
+            if self.warnings:
+                warnings.warn("problem_id is not a string.... this may cause an exception")
+            else:
+                raise TypeError("problem_id is not a string.")
         if len(self._dict[guild_id]) > self.max_guild_problems:
             raise TooManyProblems(f"There are already {self.max_guild_problems} problems!")
         if not isinstance(Problem,(MathProblem, dict)):
@@ -301,7 +320,7 @@ class MathProblemCache:
                 raise MathProblemsModuleException("Not a valid problem!")
         try:
             if self._dict[guild_id][problem_id] is not None:
-                raise Exception("Problem already exists")
+                raise MathProblemsModuleException("Problem already exists")
         except BaseException as e:
             if not isinstance(e,KeyError):
                 raise RuntimeError("Something bad happened... please report this! And maybe try to fix it?") from e
@@ -324,7 +343,11 @@ class MathProblemCache:
     def remove_problem(self,guild_id,problem_id):
         "Removes a problem. Returns the deleted problem"
         if not isinstance(guild_id, str):
-            warnings.warn("guild_id is not a string. There might be an error...", Warning)
+            if self.warnings:
+                warnings.warn("guild_id is not a string. There might be an error...", Warning)
+            else:
+                raise TypeError("guild_id is not a string")
+
         Problem = self.get_problem(guild_id,problem_id)
         del self._dict[guild_id][problem_id]
         return Problem
