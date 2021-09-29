@@ -1,4 +1,4 @@
-import random, os, warnings, threading, copy, nextcord, discord, subprocess
+import random, os, warnings, threading, copy, nextcord, subprocess
 import dislash, traceback
 import return_intents
 import nextcord.ext.commands as nextcord_commands
@@ -19,11 +19,10 @@ from problems_module import get_main_cache
 
 warnings.simplefilter("default")
 #constants
-#print("Is it working??")
+
 trusted_users=[]
 DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
-#print(type(DISCORD_TOKEN))
-#print(f"Discord Token: {DISCORD_TOKEN}")
+
 main_cache = get_main_cache()
 vote_threshold = -1
 mathProblems={}
@@ -44,9 +43,8 @@ def get_git_revision_hash() -> str:
     return subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()[:7] #[7:] is here because of the commit hash, the rest of this function is from stack overflow
 
 def the_daemon_file_saver():
-    #print("e",flush=True)
+
     global guildMathProblems, trusted_users,vote_threshold
-    
     
     FileSaverObj = FileSaver(name = "The Daemon File Saver",
                              enabled=True,
@@ -61,15 +59,13 @@ def the_daemon_file_saver():
 
     while True: 
         sleep(45) 
-        FileSaverObj.save_files(True,guildMathProblems,vote_threshold,mathProblems,trusted_users)
+        FileSaverObj.save_files(main_cache,False,guildMathProblems,vote_threshold,mathProblems,trusted_users)
 
             
 t = threading.Thread(target=the_daemon_file_saver,name="The File Saver",daemon=True)
 
 t.start()
 
-#print("Work please!!!!!")
-#print(trusted_users)
 def generate_new_id():
     return random.randint(0, 10**14)
 Intents = return_intents.return_intents()
@@ -141,7 +137,7 @@ async def force_save_files(ctx):
         return
     try:
         FileSaver2 = FileSaver(enabled=True)
-        FileSaver2.save_files(True,guildMathProblems,vote_threshold,mathProblems,trusted_users,main_cache=main_cache)
+        FileSaver2.save_files(main_cache,True,guildMathProblems,vote_threshold,mathProblems,trusted_users)
         FileSaver2.goodbye()
         await ctx.reply(embed=SuccessEmbed("Successfully saved 4 files!"))
     except RuntimeError as exc:
@@ -188,7 +184,6 @@ async def edit_problem(ctx,problem_id,new_question=None,new_answer=None,guild_id
             e += f"changed the answer to {new_answer}"
         else:
             raise Exception("*** No new answer or new question provided. Aborting command...***")
-    print(problem.get_question(),problem.get_answer())
 
     await ctx.reply(embed=SuccessEmbed(e),ephemeral=True)
       
@@ -365,16 +360,17 @@ async def list_trusted_users(ctx):
         __trusted_users += "<@" + str(item) + ">"
         __trusted_users+= "\n"
     await ctx.reply(__trusted_users, ephemeral = True)
-@slash.slash_command(name="new_problem", description = "Create a new problem",
+@slash.slash_command(name="submit_problem", description = "Create a new problem",
                      options = [Option(name="answer", description="The answer to this problem",
                                        type=OptionType.STRING, required=True),
                                 Option(name="question", description="your question",
                                        type=OptionType.STRING, required=True),
                                 Option(name="guild_question", description="Whether it should be a question for the guild",
                                        type=OptionType.BOOLEAN, required=False)])
-async def new_problem(ctx, answer, question, guild_question=False):
-    "Create a new problem"
-    await check_for_cooldown(ctx, "new_problem",5)
+async def submit_problem(ctx, answer, question, guild_question=False):
+    "Create & submit a new problem"
+
+    await check_for_cooldown(ctx, "submit_problem",5)
 
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
@@ -422,7 +418,6 @@ async def new_problem(ctx, answer, question, guild_question=False):
           guild_id=guild_id,
           cache = main_cache
         )
-        print(problem)
         main_cache.add_problem(guild_id=guild_id,
                                problem_id=problem_id,
                                Problem=problem)
@@ -431,8 +426,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
         await ctx.reply(embed=SuccessEmbed("You have successfully made a math problem!",
                                            successTitle="Successfully made a new math problem."),
                         ephemeral = True)
-        t2=threading.Thread(target=main_cache.remove_duplicate_problems)
-        t2.start()
+
         return
     while True:
         problem_id = generate_new_id()
@@ -465,6 +459,7 @@ async def new_problem(ctx, answer, question, guild_question=False):
 async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
     "Check if you are right"
     await check_for_cooldown(ctx, "check_answer",5)
+    print(3)
 
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
@@ -507,7 +502,6 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
     guild_id = ctx.guild.id
     if guild_id not in guildMathProblems:
         guildMathProblems[guild_id]={}
-    #print(showSolvedProblems)
     if mathProblems.keys() == []:
         await ctx.reply(embed=ErrorEmbed("There aren't any problems! You should add one!"), ephemeral=True)
         return
@@ -547,7 +541,6 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
             continue
         e += "\n"
         e += str(problem.id) + "\t"
-        #print(mathProblems[question])
         e += str(problem.get_question()) + "\t"
         e += "(" 
         e+= str(problem.get_num_voters()) + "/" + str(vote_threshold) + ")" + "\t"
