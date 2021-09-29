@@ -242,13 +242,8 @@ class MathProblemCache:
                 self._dict[item][item2] = self.convert_dict_to_math_problem(dict[item][item2])
     def update_file_cache(self):
         "This method updates the file cache."
-        e = {}
-        for guild_id in self._dict.keys():
-            e[guild_id] = {}
-            for problem_id in self._dict[guild_id].keys():
-                e[guild_id][problem_id] = self._dict[guild_id][problem_id].convert_to_dict()
         with open("math_problems.json", "w") as file:
-            file.write(json.dumps(e))
+            file.write(json.dumps(self.convert_to_dict))
     def get_problem(self,guild_id,problem_id):
         "Gets the problem with this guild id and problem id"
         if not isinstance(guild_id, str):
@@ -373,7 +368,7 @@ class MathProblemCache:
     def __str__(self):
         return str(self._dict)
 
-main_cache = MathProblemCache(max_answer_length=100,max_question_limit=250,max_guild_problems=125)
+main_cache = MathProblemCache(max_answer_length=100,max_question_limit=250,max_guild_problems=125,warnings_or_errors="errors")
 def get_main_cache():
     "Returns the main cache."
     return main_cache
