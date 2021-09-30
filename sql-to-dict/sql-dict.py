@@ -55,10 +55,13 @@ class SQLDict:
         if len(choosers) != len(self.chooserNames):
             raise ValueError(f"{len(choosers)} choosers provided, expected {len(self.chooserNames)} choosers")
         for item in choosers.keys():
-            if item not in self.chooserNames:
-                raise ValueError(f"Did not expect chooser argument {item}, valid values are {', '.join(self.chooserNames)}")
+            if item not in self.choosers:
+                raise ValueError(f"Did not expect chooser argument {item.name}, valid values are {', '.join([item.name for item in self.chooserNames])}")
         
-
+        for item in wanted:
+            if item not in self.selects:
+                raise ValueError(f"Did not expect wanted argument {item}, valid values are {', '.join(self.selects)}")
+        
         connection = self.connection #Establish connection
         query = "SELECT "
         for item in range(len(wanted)):
@@ -66,6 +69,11 @@ class SQLDict:
             if item != len(wanted) - 1:
                 query += ","
         query += "WHERE"
-
+        for item in range(len(choosers)):
+            query += f"{choosers[item].name} = {choosers[item].value_wanted}
+            if item != len(choosers) - 1:
+                query += "AND"
+        connection.execute(query)
+            
 
         
