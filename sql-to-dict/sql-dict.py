@@ -3,9 +3,9 @@ class CannotConnectException(Exception):
     "Raised when the SQLDICT can't connect"
     pass
 class SQLChooser:
-    def __init__(self, choosernameStr, chooserWanted):
-        self.choosernamestr = choosernameStr
-        self.chooserWanted = chooserWanted
+    def __init__(self, name, value_wanted):
+        self.name = name
+        self.value_wanted = value_wanted
 class SQLColumn:
     "Used in SQLDict.__init__ for chooserNames and selects"
     def __init__(self, name, datatype="VARCHAR", can_be_null=True):
@@ -14,7 +14,7 @@ class SQLColumn:
         self.can_be_null = can_be_null
     def __str__(self):
         e = self.name +"\t" + self.datatype
-        if self.can_be_null:
+        if not self.can_be_null:
             e += "\t" + "NOT NULL"
         return e
 
@@ -22,17 +22,22 @@ class SQLColumn:
 
 class SQLDict:
     "A custom class that represents a dictionary, but instead of being stored in RAM, it's stored in SQL"
-    def __init__(self,database_name, name,tablename, chooserNames = [SQLColumn("_key")], selects = [SQLColumn("_value")]):
+    def __init__(self,database_name, name,tablename, choosers = [SQLColumn("_key")], selects = [SQLColumn("_value")]):
         self.database_name = database_name
-        assert isinstance(chooserNames, list)
+        assert isinstance(choosers, list)
         assert isinstance(selects, list)
-        self.chooserNames = chooserNames
+        self.choosers = choosers
         self.selects = selects
         self.name = name #each SqlDict
         #test connection to database, and initialize my table
         connection = self.connection
         query = f"CREATE TABLE {self.name} (" 
-        for item in chooserNames:
+        for item in range(len(choosers)):
+            query += str(choosers[item])
+            if item != len(choosers) - 1:
+                query += ","
+            query += "\n"
+        query += ");"
 
         connection.execute(query) #initialize the table
 
@@ -56,9 +61,11 @@ class SQLDict:
 
         connection = self.connection #Establish connection
         query = "SELECT "
-        for item in wanted:
-            query += item
-            query += ","
+        for item in range(len(wanted)):
+            query += wanted[item]
+            if item != len(wanted) - 1:
+                query += ","
+        query += "WHERE"
 
 
         
