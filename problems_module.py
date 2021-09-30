@@ -183,7 +183,7 @@ class MathProblemCache:
         if warnings_or_errors not in ["warnings", "errors"]:
             raise ValueError(f"warnings_or_errors is {warnings_or_errors}, not 'warnings' or 'errors'")
         if warnings_or_errors == "warnings":
-            self.warnings == True
+            self.warnings = True
         else:
             self.warnings = False
 
