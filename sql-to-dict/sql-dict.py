@@ -41,6 +41,16 @@ class SQLDict:
 
         connection.execute(query) #initialize the table
 
+    def __generate_query_str__(self,middle,wanted):
+
+        query = "SELECT "
+        for item in range(len(wanted)):
+            query += wanted[item]
+            if item != len(wanted) - 1:
+                query += ", "
+        query += f" {middle} FROM {self.name}"
+        return query
+        
 
     @property
     def connection(self):
@@ -63,17 +73,16 @@ class SQLDict:
                 raise ValueError(f"Did not expect wanted argument {item}, valid values are {', '.join(self.selects)}")
         
         connection = self.connection #Establish connection
-        query = "SELECT "
-        for item in range(len(wanted)):
-            query += wanted[item]
-            if item != len(wanted) - 1:
-                query += ","
-        query += "WHERE"
+        q = ""
         for item in range(len(choosers)):
-            query += f"{choosers[item].name} = {choosers[item].value_wanted}
+            q += f"{choosers[item].name} = {choosers[item].value_wanted}"
             if item != len(choosers) - 1:
-                query += "AND"
-        connection.execute(query)
+                q += "AND"
+        q += f" FROM {self.name}"
+        self.connection.execute(self.__generate_query_str__(middle = q, wanted = wanted))
+    def set_item(self,choosers,selects):
+        for item
+
             
 
         
