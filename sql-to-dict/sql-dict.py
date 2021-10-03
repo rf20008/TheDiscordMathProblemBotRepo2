@@ -17,6 +17,8 @@ class SQLColumn:
         if not self.can_be_null:
             e += "\t" + "NOT NULL"
         return e
+class InvalidKeywordException(Exception):
+    "Raised when an invalid keyword is given"
 
 
 
@@ -41,16 +43,14 @@ class SQLDict:
 
         connection.execute(query) #initialize the table
 
-    def __generate_query_str__(self,middle,wanted):
-
-        query = "SELECT "
-        for item in range(len(wanted)):
-            query += wanted[item]
-            if item != len(wanted) - 1:
-                query += ", "
-        query += f" {middle} FROM {self.name}"
+    def __where_clause__(self,choosers):
+        "A helper function that provides the help clause"
+        query = "WHERE"
+        for item in range(len(choosers)):
+            query += f"{choosers[item].name} = {choosers[item].value_wanted}"
+            if item != len(choosers) - 1:
+                query += "AND"
         return query
-        
 
     @property
     def connection(self):
@@ -64,7 +64,7 @@ class SQLDict:
         choosers is a list of SQLChoosers"""
         if len(choosers) != len(self.chooserNames):
             raise ValueError(f"{len(choosers)} choosers provided, expected {len(self.chooserNames)} choosers")
-        for item in choosers.keys():
+        for item in choosers:
             if item not in self.choosers:
                 raise ValueError(f"Did not expect chooser argument {item.name}, valid values are {', '.join([item.name for item in self.chooserNames])}")
         
@@ -73,15 +73,31 @@ class SQLDict:
                 raise ValueError(f"Did not expect wanted argument {item}, valid values are {', '.join(self.selects)}")
         
         connection = self.connection #Establish connection
-        q = ""
-        for item in range(len(choosers)):
-            q += f"{choosers[item].name} = {choosers[item].value_wanted}"
-            if item != len(choosers) - 1:
-                q += "AND"
-        q += f" FROM {self.name}"
-        self.connection.execute(self.__generate_query_str__(middle = q, wanted = wanted))
-    def set_item(self,choosers,selects):
-        for item
+        query = "SELECT"
+        for item in range(len(wanted)): #Generate the second part (SELECT columns)
+            query += wanted[item]
+            if item != len(wanted) - 1:
+                query += ", "
+        query += self.__where_clause__(choosers)
+        self.connection.execute(query + f" {query} FROM {self.name}")
+    def set_item(self,choosers,**selects):
+        "Set the item located at choosers to selects (keyword arguments (keyword name: new value))"
+        for item in choosers:
+            if item not in self.choosers:
+                raise ValueError(f"Did not expect chooser argument {item.name}, valid values are {', '.join([item.name for item in self.chooserNames])}")
+        
+        for item in selects.keys:
+            if item not in [i.item for i in self.selects]:
+                raise InvalidKeywordException(f"Did not expect keyword argument {item}")
+        q = f"UPDATE {self.name} \nSET "
+        for item in selects.keys(): #GENERATE SET column1=value....
+            q += f"{item} = {selects[item]}"
+        q += "\n"
+        q += self.__where_clause__(choosers)
+        self.connection.execute(q)
+    
+
+        
 
             
 
