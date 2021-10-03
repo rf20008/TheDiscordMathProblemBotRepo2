@@ -80,6 +80,7 @@ class SQLDict:
                 query += ", "
         query += self.__where_clause__(choosers)
         self.connection.execute(query + f" {query} FROM {self.name}")
+        self.connection.commit()
     def set_item(self,choosers,**selects):
         "Set the item located at choosers to selects (keyword arguments (keyword name: new value))"
         for item in choosers:
@@ -95,6 +96,7 @@ class SQLDict:
         q += "\n"
         q += self.__where_clause__(choosers)
         self.connection.execute(q)
+        self.connection.commit()
     
 
         
