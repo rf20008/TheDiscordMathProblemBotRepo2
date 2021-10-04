@@ -19,7 +19,10 @@ class SQLColumn:
         return e
 class InvalidKeywordException(Exception):
     "Raised when an invalid keyword is given"
-
+    pass
+class ColumnNotFound(Exception):
+    "Raised when a column is not found"
+    pass
 
 
 class SQLDict:
@@ -62,9 +65,9 @@ class SQLDict:
             return sqlite3.connect(self.database_name)
         except Exception as e:
             raise CannotConnectException(f"Can't connect to database {self.database_name}, maybe you made a typo?") from e
-    def _connect_and_commit(self,query,_execute_before_querying_=lambda: 0, 
-    _execute_between_querying_and_committing_=lambda: 0, 
-    _execute_after_committing_=lambda: 0,return_results_of_execution=False):
+    def _connect_and_commit(self,query,_execute_before_querying_=lambda: None, 
+    _execute_between_querying_and_committing_=lambda: None, 
+    _execute_after_committing_=lambda: None,return_results_of_execution=False):
         """A helper function for connecting and committing. You can pass in callables to _execute_before_querying, _execute_between_querying_and_commiting, and _execute_after_committing.
     They must take a argument that is the instance of this sqldict. (and _execute_between_querying_and_committing and _execute_after_committing_ must take a Cursor object as its second argument) And they must be in the format (callable, options)."""
         assert isinstance(_execute_after_committing_, function)
@@ -103,7 +106,8 @@ class SQLDict:
         query += self.__where_clause__(choosers)
         cursor = self.connection.cursor
         e = cursor.execute(query + f" {query} FROM {self.name}")
-        
+        no = lambda cursor: cursor.fetchall()
+        no(cursor)
         self.connection.commit()
     def set_item(self,choosers,**selects):
         "Set the item located at choosers to selects (keyword arguments (keyword name: new value))"
@@ -120,7 +124,16 @@ class SQLDict:
         q += "\n"
         q += self.__where_clause__(choosers)
         self._connect_and_commit(q)
-    
+    def get_column(self,column_name: str):
+        "Get the list of columns."
+        query = f"SELECT {column_name} \nFROM {self.name}"
+        result = self._connect_and_commit(query,_execute_after_committing_ = (lambda self, cursor: cursor.fetchall(),[]),return_results_of_execution=True)
+        return result[2] #the list of Rows returned by _execute_after_committing_
+
+
+
+
+
 
         
 
