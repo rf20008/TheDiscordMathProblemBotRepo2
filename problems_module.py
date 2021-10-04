@@ -243,7 +243,7 @@ class MathProblemCache:
     def update_file_cache(self):
         "This method updates the file cache."
         with open("math_problems.json", "w") as file:
-            file.write(json.dumps(self.convert_to_dict))
+            file.write(json.dumps(self.convert_to_dict()))
     def get_problem(self,guild_id,problem_id):
         "Gets the problem with this guild id and problem id"
         if not isinstance(guild_id, str):
