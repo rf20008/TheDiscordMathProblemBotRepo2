@@ -154,3 +154,4 @@ trusted_users.txt # /list_trusted_users to list trusted users. This may be outda
 !**/*.py #never ignore any python file :)
 !**/.gitignore
 pylint-1.rtf
+.DS_Store
