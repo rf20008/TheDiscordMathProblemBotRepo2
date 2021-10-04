@@ -1,4 +1,4 @@
-import sqlite3
+import sqlite3, copy
 class CannotConnectException(Exception):
     "Raised when the SQLDICT can't connect"
     pass
@@ -125,10 +125,24 @@ class SQLDict:
         q += self.__where_clause__(choosers)
         self._connect_and_commit(q)
     def get_column(self,column_name: str):
-        "Get the list of columns."
+        "Get a column's contents."
         query = f"SELECT {column_name} \nFROM {self.name}"
         result = self._connect_and_commit(query,_execute_after_committing_ = (lambda self, cursor: cursor.fetchall(),[]),return_results_of_execution=True)
         return result[2] #the list of Rows returned by _execute_after_committing_
+    def get_columns(self,columns:list):
+        "Get the contents of the columns given"
+        columns_to_return = {}
+        for c in columns:
+            columns_to_return[c] = self.get_column(c)
+        return columns_to_return
+    @property
+    def columns(self):
+        c = copy.deepcopy(self.choosers)
+        s = copy.deepcopy(self.selects)
+        return c.extend(s)
+    def return_everything(self):
+        "Basically converts this into a dict :-) However, there isn't a way to turn a dictionary into a SQLDict :("
+        return self.columns([column.name for column in self.columns])
 
 
 
