@@ -1,18 +1,17 @@
 import random, os, warnings, threading, copy, nextcord, subprocess
 import dislash, traceback
-import return_intents
 import nextcord.ext.commands as nextcord_commands
-import problems_module
-import cogs
-from cooldowns import check_for_cooldown, OnCooldown
-from _error_logging import log_error
+from cooldowns import check_for_cooldown
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 from time import sleep, time, asctime
-from custom_embeds import *
-from save_files import FileSaver
-from user_error import UserError
-from the_documentation_file_loader import *
-from problems_module import get_main_cache
+
+from custom_embeds import ErrorEmbed, SuccessEmbed
+problems_module = None
+FileSaver = None
+successEmbed = None
+errorEmbed = None
+the_documentation_file_loader = None
+slash = None
 class DeveloperCommands(nextcord_commands.Cog):
     def __init__(self, bot):
         self.bot=bot
@@ -93,7 +92,7 @@ class DeveloperCommands(nextcord_commands.Cog):
                 f"""<@{ctx.author.id}> [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
         """),ephemeral=True)
             return None
-        d = DocumentationFileLoader()
+        documentation_loader = the_documentation_file_loader.DocumentationFileLoader()
         try:
             _documentation =d.get_documentation(
                 {"command_help":"docs/commands-documentation.md",
@@ -151,6 +150,10 @@ class DeveloperCommands(nextcord_commands.Cog):
         await ctx.reply(text,ephemeral = send_ephermally)
 
 def setup(bot):
+    global problems_module, SuccessEmbed, ErrorEmbed, the_documentation_file_loader, slash
+    b = bot._transport_modules
+    (problems_module, SuccessEmbed, ErrorEmbed, the_documentation_file_loader) = (b["problems_module"], b["custom_embeds"].SuccessEmbed, b["custom_embeds"].ErrorEmbed, b["the_documentation_file_loader"])
+    slash = bot.slash
     bot.add_cog(DeveloperCommands(bot))
 def teardown(bot):
     bot.remove_cog("DeveloperCommands")
