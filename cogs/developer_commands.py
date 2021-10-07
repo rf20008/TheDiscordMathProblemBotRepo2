@@ -15,41 +15,42 @@ class DeveloperCommands(HelperCog):
     def __init__(self, bot):
         super().__init__(self,bot)
         self.bot=bot
+    @dislash.cooldown(5)
     @slash_command(name="force_load_files",description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!")
     async def force_load_files(self,ctx):
         "Forcefully load files"
-        await check_for_cooldown(ctx,"force_load_files",5)
 
         if ctx.author.id not in self.bot.trusted_users:
-            await ctx.reply(ErrorEmbed("You aren't trusted and therefore don't have permission to forceload files."))
+            await ctx.reply(self.custom_embeds.ErrorEmbed("You aren't trusted and therefore don't have permission to forceload files."))
             return
         try:
             FileSaver3 = FileSaver(enabled=True,printSuccessMessagesByDefault=False)
             FileSaverDict = FileSaver3.load_files(self.bot.main_cache)
             (guildMathProblems,self.bot.trusted_users,self.bot.vote_threshold) = (FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
             FileSaver3.goodbye()
-            await ctx.reply(embed=SuccessEmbed("Successfully forcefully loaded files!"))
+            await ctx.reply(embed=self.custom_embeds.SuccessEmbed("Successfully forcefully loaded files!"))
             return
         except RuntimeError:
-            await ctx.reply(embed=ErrorEmbed("Something went wrong..."))
+            await ctx.reply(embed=self.custom_embeds.ErrorEmbed("Something went wrong..."))
             return
+    @dislash.cooldown(5)
     @slash_command(name="force_save_files",description="Forcefully saves files (can only be used by trusted users).")
     async def force_save_files(self,ctx):
         "Forcefully saves files."
-        await check_for_cooldown(ctx,"force_save_files",5)
         if ctx.guild != None and ctx.guild.id not in self.bot.main_cache.get_guilds():
             self.bot.main_cache.add_empty_guild(ctx.guild)
         if ctx.author.id not in self.bot.trusted_users:
-            await ctx.reply(embed=ErrorEmbed("You aren't trusted and therefore don't have permission to forcesave files."))
+            await ctx.reply(embed=self.custom_embeds.ErrorEmbed("You aren't trusted and therefore don't have permission to forcesave files."))
             return
         try:
             FileSaver2 = FileSaver(enabled=True)
             FileSaver2.save_files(self.bot.main_cache,True,{},self.bot.vote_threshold,{},self.bot.trusted_users)
             FileSaver2.goodbye()
-            await ctx.reply(embed=SuccessEmbed("Successfully saved 4 files!"))
+            await ctx.reply(embed=self.custom_embeds.SuccessEmbed("Successfully saved 4 files!"))
         except RuntimeError as exc:
-            await ctx.reply(embed=ErrorEmbed("Something went wrong..."))
+            await ctx.reply(embed=self.custom_embeds.ErrorEmbed("Something went wrong..."))
             raise exc
+    @dislash.cooldown(5)
     @slash_command(name="raise_error",
                      description = "⚠ This command will raise an error. Useful for testing on_slash_command_error", 
     options=[Option(name="error_type",description = "The type of error", choices=[
@@ -59,9 +60,8 @@ class DeveloperCommands(HelperCog):
                              required=False)])
     async def raise_error(self,ctx, error_type,error_description = None):
         "Intentionally raise an Error. Useful for debugging... :-)"
-        await check_for_cooldown(ctx,"raise_error",5)
         if ctx.author.id not in self.bot.trusted_users:
-            await ctx.send(embed=ErrorEmbed(
+            await ctx.send(embed=self.custom_embeds.ErrorEmbed(
                 f"⚠ {ctx.author.mention}, you do not have permission to intentionally raise errors for debugging purposes.",
                 custom_title="Insufficient permission to raise errors."))
             return
@@ -71,10 +71,11 @@ class DeveloperCommands(HelperCog):
             error = Exception(error_description)
         else:
             raise RuntimeError(f"Unknown error: {error_type}")
-        await ctx.send(embed=SuccessEmbed(
+        await ctx.send(embed=self.custom_embeds.SuccessEmbed(
             f"Successfully created error: {str(error)}. Will now raise the error.",
                                           successTitle="Successfully raised error."))
         raise error
+    @dislash.cooldown(0.1)
     @slash_command(name="documentation",description = "Returns help!", 
     options=[Option(name="documentation_type", description = "What kind of help you want", choices= [
         OptionChoice(name = "documentation_link",value="documentation_link"),
@@ -86,7 +87,7 @@ class DeveloperCommands(HelperCog):
         "Prints documentation :-)"
         await check_for_cooldown(ctx,"documentation",0.1)
         if documentation_type == "documentation_link":
-            await ctx.reply(embed=SuccessEmbed(
+            await ctx.reply(embed=self.custom_embeds.SuccessEmbed(
                 f"""<@{ctx.author.id}> [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
         """),ephemeral=True)
             return None
@@ -97,9 +98,9 @@ class DeveloperCommands(HelperCog):
             "function_help":"docs/misc-non-commands-documentation.md"}[documentation_type], help_obj)
         except the_documentation_file_loader.DocumentationNotFound as e:
             if isinstance(e,the_documentation_file_loader.DocumentationFileNotFound):
-                await ctx.reply(embed=ErrorEmbed("Documentation file was not found. Please report this error!"))
+                await ctx.reply(embed=self.custom_embeds.ErrorEmbed("Documentation file was not found. Please report this error!"))
                 return
-            await ctx.reply(embed=ErrorEmbed(str(e)))
+            await ctx.reply(embed=self.custom_embeds.ErrorEmbed(str(e)))
             return
         await ctx.reply(_documentation)
 
