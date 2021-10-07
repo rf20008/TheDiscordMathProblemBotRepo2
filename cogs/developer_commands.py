@@ -18,7 +18,6 @@ class DeveloperCommands(nextcord_commands.Cog):
     @slash_command(name="force_load_files",description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!")
     async def force_load_files(self,ctx):
         "Forcefully load files"
-        global guildMathProblems, trusted_users,vote_threshold
         await check_for_cooldown(ctx,"force_load_files",5)
 
         if ctx.author.id not in self.bot.trusted_users:
@@ -27,7 +26,7 @@ class DeveloperCommands(nextcord_commands.Cog):
         try:
             FileSaver3 = FileSaver(enabled=True,printSuccessMessagesByDefault=False)
             FileSaverDict = FileSaver3.load_files(self.bot.main_cache)
-            (guildMathProblems,trusted_users,vote_threshold) = (FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
+            (guildMathProblems,self.bot.trusted_users,self.bot.vote_threshold) = (FileSaverDict["guildMathProblems"],FileSaverDict["trusted_users"],FileSaverDict["vote_threshold"])
             FileSaver3.goodbye()
             await ctx.reply(embed=SuccessEmbed("Successfully forcefully loaded files!"))
             return
@@ -45,7 +44,7 @@ class DeveloperCommands(nextcord_commands.Cog):
             return
         try:
             FileSaver2 = FileSaver(enabled=True)
-            FileSaver2.save_files(self.bot.main_cache,True,guildMathProblems,vote_threshold,{},trusted_users)
+            FileSaver2.save_files(self.bot.main_cache,True,{},self.bot.vote_threshold,{},self.bot.trusted_users)
             FileSaver2.goodbye()
             await ctx.reply(embed=SuccessEmbed("Successfully saved 4 files!"))
         except RuntimeError as exc:
@@ -54,9 +53,8 @@ class DeveloperCommands(nextcord_commands.Cog):
     @slash_command(name="raise_error",
                      description = "⚠ This command will raise an error. Useful for testing on_slash_command_error", 
     options=[Option(name="error_type",description = "The type of error", choices=[
-        OptionChoice(name="Exception",value="Exception"),
-        OptionChoice(name="UserError", value = "UserError")
-        ],required=True), Option(name="error_description", description="The description of the error",
+        OptionChoice(name="Exception",value="Exception")],required=True), 
+        Option(name="error_description", description="The description of the error",
                              type=OptionType.STRING,
                              required=False)])
     async def raise_error(self,ctx, error_type,error_description = None):
@@ -71,8 +69,8 @@ class DeveloperCommands(nextcord_commands.Cog):
             error_description = f"Manually raised error by {ctx.author.mention}"    
         if error_type == "Exception":
             error = Exception(error_description)
-        elif error_type == "UserError":
-            error=UserError(error_description)
+        else:
+            raise RuntimeError(f"Unknown error: {error_type}")
         await ctx.send(embed=SuccessEmbed(
             f"Successfully created error: {str(error)}. Will now raise the error.",
                                           successTitle="Successfully raised error."))
@@ -94,11 +92,11 @@ class DeveloperCommands(nextcord_commands.Cog):
             return None
         documentation_loader = the_documentation_file_loader.DocumentationFileLoader()
         try:
-            _documentation =d.get_documentation(
+            _documentation =documentation_loader.get_documentation(
                 {"command_help":"docs/commands-documentation.md",
             "function_help":"docs/misc-non-commands-documentation.md"}[documentation_type], help_obj)
-        except DocumentationNotFound as e:
-            if isinstance(e,DocumentationFileNotFound):
+        except the_documentation_file_loader.DocumentationNotFound as e:
+            if isinstance(e,the_documentation_file_loader.DocumentationFileNotFound):
                 await ctx.reply(embed=ErrorEmbed("Documentation file was not found. Please report this error!"))
                 return
             await ctx.reply(embed=ErrorEmbed(str(e)))
@@ -151,9 +149,7 @@ class DeveloperCommands(nextcord_commands.Cog):
 
 def setup(bot):
     global problems_module, SuccessEmbed, ErrorEmbed, the_documentation_file_loader, slash
-    b = bot._transport_modules
-    (problems_module, SuccessEmbed, ErrorEmbed, the_documentation_file_loader) = (b["problems_module"], b["custom_embeds"].SuccessEmbed, b["custom_embeds"].ErrorEmbed, b["the_documentation_file_loader"])
-    slash = bot.slash
+    
     bot.add_cog(DeveloperCommands(bot))
 def teardown(bot):
     bot.remove_cog("DeveloperCommands")
