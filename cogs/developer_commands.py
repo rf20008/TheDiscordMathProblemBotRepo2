@@ -1,19 +1,19 @@
 import random, os, warnings, threading, copy, nextcord, subprocess
 import dislash, traceback
 import nextcord.ext.commands as nextcord_commands
-from cooldowns import check_for_cooldown
-from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
+from dislash import *
 from time import sleep, time, asctime
-
-from custom_embeds import ErrorEmbed, SuccessEmbed
+from helper_cog import HelperCog
 problems_module = None
 FileSaver = None
 successEmbed = None
 errorEmbed = None
 the_documentation_file_loader = None
 slash = None
-class DeveloperCommands(nextcord_commands.Cog):
+check_for_cooldown = None
+class DeveloperCommands(HelperCog):
     def __init__(self, bot):
+        super().__init__(self,bot)
         self.bot=bot
     @slash_command(name="force_load_files",description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!")
     async def force_load_files(self,ctx):
