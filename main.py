@@ -1,9 +1,10 @@
 import random, os, warnings, threading, copy, nextcord, subprocess
+from dislash.application_commands.core import check
 import dislash, traceback
 import return_intents
 import nextcord.ext.commands as nextcord_commands
 import problems_module, custom_embeds, save_files, the_documentation_file_loader
-import cogs
+from cogs import *
 from cooldowns import check_for_cooldown, OnCooldown
 from _error_logging import log_error
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
@@ -74,9 +75,9 @@ bot = nextcord_commands.Bot(
 )
 bot.main_cache = main_cache
 bot.trusted_users = trusted_users
-bot._transport_modules = {"problems_module": problems_module,"save_files": save_files, "the_documentation_file_loader": the_documentation_file_loader}
-
-bot.add_cog(cogs.developer_commands.DeveloperCommands(bot))
+bot._transport_modules = {"problems_module": problems_module,"save_files": save_files, "the_documentation_file_loader": the_documentation_file_loader, "check_for_cooldown": check_for_cooldown}
+print(help(helper_cog))
+bot.add_cog(developer_commands.DeveloperCommands(bot))
 #bot.load_extension("jishaku")
 
 
