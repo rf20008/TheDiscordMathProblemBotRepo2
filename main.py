@@ -1,7 +1,7 @@
 import random, os, warnings, threading, copy, nextcord, subprocess
 from dislash.application_commands.core import check
 import dislash, traceback
-import return_intents
+import return_intents, checks, custom_embeds
 import nextcord.ext.commands as nextcord_commands
 import problems_module, custom_embeds, save_files, the_documentation_file_loader
 from cogs import developer_commands
@@ -75,7 +75,11 @@ bot = nextcord_commands.Bot(
 )
 bot.main_cache = main_cache
 bot.trusted_users = trusted_users
-bot._transport_modules = {"problems_module": problems_module,"save_files": save_files, "the_documentation_file_loader": the_documentation_file_loader, "check_for_cooldown": check_for_cooldown, "custom_embeds": custom_embeds}
+bot._transport_modules = {
+    "problems_module": problems_module,"save_files": save_files, 
+    "the_documentation_file_loader": the_documentation_file_loader, 
+    "check_for_cooldown": check_for_cooldown, "custom_embeds": custom_embeds,
+    "checks": checks}
 bot.add_cog(developer_commands.DeveloperCommands(bot))
 #bot.load_extension("jishaku")
 

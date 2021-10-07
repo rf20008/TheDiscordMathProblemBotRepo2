@@ -155,3 +155,5 @@ trusted_users.txt # /list_trusted_users to list trusted users. This may be outda
 !**/.gitignore
 pylint-1.rtf
 .DS_Store
+**/__pycache__/**
+!**/__init__.py

@@ -15,6 +15,7 @@ class HelperCog(nextcord.ext.commands.Cog):
         self.bot = bot
         self.check_for_cooldown = self.bot._transport_modules["check_for_cooldown"]
         self.custom_embeds = self.bot._transport_modules["custom_embeds"]
+        self.checks = self.bot._transport_modules["checks"]
     @property
     def trusted_users(self):
         "Syntactic sugar? A shorthand for self.bot.trusted_users"
