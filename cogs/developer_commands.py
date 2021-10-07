@@ -103,7 +103,7 @@ class DeveloperCommands(HelperCog):
             await ctx.reply(embed=self.custom_embeds.ErrorEmbed(str(e)))
             return
         await ctx.reply(_documentation)
-
+    @dislash.cooldown
     @slash_command(name="debug",description="Help for debugging :-)",options=[
       Option(name="raw",description="raw debug data?",type=OptionType.BOOLEAN,required=False),
       Option(name="send_ephermally",description="Send the debug message ephermally?",type=OptionType.BOOLEAN,required=False)

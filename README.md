@@ -1,8 +1,6 @@
 [![Powered by Nextcord](https://custom-icon-badges.herokuapp.com/badge/-Powered%20by%20Nextcord-0d1620?logo=nextcord)](https://github.com/nextcord/nextcord "Powered by Nextcord Python API Wrapper")
 
-# The Discord Math Problem Bot
-
-This is a discord bot! All help is appreciated.
+#
 
 # License
 
@@ -13,7 +11,7 @@ This discord bot and all of its code is licensed under the combined terms of the
 # If you run into issues
 If you run into any issues create an issue or DM me (ay136416#2707)). 
 
-# Contribute !
+# Contribute :-)
 
 If you open a PR/Issue, I'll look at it and maybe merge it!
 
@@ -28,5 +26,4 @@ https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs
 # Attribution
 https://stackoverflow.com/a/21901260 for the get_git_revision_hash :-)
 nextcord + discord devs for their libraries
-
 
