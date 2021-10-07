@@ -4,7 +4,6 @@ import nextcord.ext.commands as nextcord_commands
 from dislash import *
 from time import sleep, time, asctime
 from helper_cog import *
-print(HelperCog)
 problems_module = None
 FileSaver = None
 successEmbed = None
