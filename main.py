@@ -80,6 +80,7 @@ bot._transport_modules = {
     "the_documentation_file_loader": the_documentation_file_loader, 
     "check_for_cooldown": check_for_cooldown, "custom_embeds": custom_embeds,
     "checks": checks}
+bot.blacklisted_users = []
 bot.add_cog(developer_commands.DeveloperCommands(bot))
 #bot.load_extension("jishaku")
 
