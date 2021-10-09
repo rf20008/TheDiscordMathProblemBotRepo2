@@ -1,6 +1,5 @@
 import nextcord, json, warnings
 from copy import deepcopy
-import sql-to-dict
 
 # This is a module containing MathProblem and MathProblemCache objects. (And exceptions as well!) This may be useful outside of this discord bot so feel free to use it :) Just follow the MIT+GNU license
 class MathProblemsModuleException(Exception):
