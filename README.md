@@ -1,7 +1,5 @@
 [![Powered by Nextcord](https://custom-icon-badges.herokuapp.com/badge/-Powered%20by%20Nextcord-0d1620?logo=nextcord)](https://github.com/nextcord/nextcord "Powered by Nextcord Python API Wrapper")
 
-#
-
 # License
 
 
@@ -11,9 +9,10 @@ This discord bot and all of its code is licensed under the combined terms of the
 # If you run into issues
 If you run into any issues create an issue or DM me (ay136416#2707)). 
 
+
 # Contribute :-)
 
-If you open a PR/Issue, I'll look at it and maybe merge it!
+If you open a PR/Issue, I'll look at it and maybe merge it! 
 
 # Invite my bot!
 

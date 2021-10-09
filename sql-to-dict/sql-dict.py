@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> refs/remotes/origin/master
 import sqlite3, copy
 class CannotConnectException(Exception):
     "Raised when the SQLDICT can't connect"

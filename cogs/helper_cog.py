@@ -44,6 +44,8 @@ class HelperCog(nextcord.ext.commands.Cog):
         if not bypass_argument_checks:
             if not isinstance(new_trusted_users, (list, tuple)):
                 raise TypeError(f"new_trusted_users is of type {type(new_trusted_users)}, not list")
+            if len(new_trusted_users) == 0:
+                warn("You are removing all trusted users", Warning)
         self.bot.trusted_users = new_trusted_users
 
 

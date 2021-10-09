@@ -1,10 +1,17 @@
+<<<<<<< HEAD
+=======
+#
+>>>>>>> refs/remotes/origin/master
 import random, os, warnings, threading, copy, nextcord, subprocess
 import dislash, traceback
 import nextcord.ext.commands as nextcord_commands
 from dislash import *
 from time import sleep, time, asctime
+<<<<<<< HEAD
 
 from nextcord.ext.commands.converter import is_generic_type
+=======
+>>>>>>> refs/remotes/origin/master
 from . import *
 problems_module = None
 FileSaver = None
@@ -15,9 +22,14 @@ slash = None
 check_for_cooldown = None
 class DeveloperCommands(HelperCog):
     def __init__(self, bot):
+<<<<<<< HEAD
         super().__init__(bot)
         self.bot=bot
         print(self.checks.is_not_blacklisted)
+=======
+        super().__init__(self,bot)
+        self.bot=bot
+>>>>>>> refs/remotes/origin/master
     @dislash.cooldown(1,5)
     @slash_command(name="force_load_files",description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!")
     async def force_load_files(self,ctx):
@@ -36,6 +48,10 @@ class DeveloperCommands(HelperCog):
         except RuntimeError:
             await ctx.reply(embed=self.custom_embeds.ErrorEmbed("Something went wrong..."))
             return
+<<<<<<< HEAD
+=======
+
+>>>>>>> refs/remotes/origin/master
     @dislash.cooldown(1,5)
     @slash_command(name="force_save_files",description="Forcefully saves files (can only be used by trusted users).")
     async def force_save_files(self,ctx):
@@ -53,6 +69,12 @@ class DeveloperCommands(HelperCog):
         except RuntimeError as exc:
             await ctx.reply(embed=self.custom_embeds.ErrorEmbed("Something went wrong..."))
             raise exc
+<<<<<<< HEAD
+=======
+
+
+    @dislash.cooldown(5)
+>>>>>>> refs/remotes/origin/master
     @dislash.cooldown(1,5)
     @slash_command(name="raise_error",
                      description = "⚠ This command will raise an error. Useful for testing on_slash_command_error", 
@@ -78,6 +100,10 @@ class DeveloperCommands(HelperCog):
             f"Successfully created error: {str(error)}. Will now raise the error.",
                                           successTitle="Successfully raised error."))
         raise error
+<<<<<<< HEAD
+=======
+
+>>>>>>> refs/remotes/origin/master
     @dislash.cooldown(1,0.1)
     @slash_command(name="documentation",description = "Returns help!", 
     options=[Option(name="documentation_type", description = "What kind of help you want", choices= [
@@ -106,6 +132,10 @@ class DeveloperCommands(HelperCog):
             await ctx.reply(embed=self.custom_embeds.ErrorEmbed(str(e)))
             return
         await ctx.reply(_documentation)
+<<<<<<< HEAD
+=======
+
+>>>>>>> refs/remotes/origin/master
     @dislash.cooldown(1,0.1)
     @slash_command(name="debug",description="Help for debugging :-)",options=[
       Option(name="raw",description="raw debug data?",type=OptionType.BOOLEAN,required=False),
@@ -113,6 +143,10 @@ class DeveloperCommands(HelperCog):
     ])
     async def debug(self,ctx,raw=False,send_ephermally=True):
         "Provides helpful debug information :-)"
+<<<<<<< HEAD
+=======
+        await check_for_cooldown(ctx,"debug",0.1,is_global_cooldown=False)
+>>>>>>> refs/remotes/origin/master
         guild = ctx.guild
         if ctx.guild is None:
             await ctx.reply("This command can only be ran in servers!")

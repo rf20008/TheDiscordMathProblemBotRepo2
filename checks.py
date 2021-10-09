@@ -1,5 +1,4 @@
 import dislash, nextcord
-
 bot = None
 def setup(_bot):
     global bot

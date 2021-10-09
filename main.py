@@ -715,3 +715,4 @@ async def github_repo(ctx):
 print("The bot has finished setting up and will now run.")
 #slash.run(DISCORD_TOKEN)
 bot.run(DISCORD_TOKEN)
+

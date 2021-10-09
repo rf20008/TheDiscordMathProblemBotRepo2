@@ -157,3 +157,7 @@ pylint-1.rtf
 .DS_Store
 **/__pycache__/**
 !**/__init__.py
+
+.DS_Store
+**/__pycache__/**
+!**/__init__.py
