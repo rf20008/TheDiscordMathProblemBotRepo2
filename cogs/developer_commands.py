@@ -15,7 +15,7 @@ slash = None
 check_for_cooldown = None
 class DeveloperCommands(HelperCog):
     def __init__(self, bot):
-        super().__init__(self,bot)
+        super().__init__(bot)
         self.bot=bot
         print(self.checks.is_not_blacklisted)
     @dislash.cooldown(1,5)
