@@ -10,6 +10,11 @@ class CustomCheckFailure(dislash.ApplicationCommandError):
 class NotTrustedUser(CustomCheckFailure):
     "Raised when trying to run a command that requires trusted user permissions but you aren't a trusted user"
     pass
+
+class BlacklistedException(CustomCheckFailure):
+    "Raised when trying to run a command, but something you are trying to use is blacklisted"
+    pass
+
 def custom_check(function= lambda inter: True, args: list = [], exceptionToRaiseIfFailed = None):
     "A check template :-)"
     def predicate(inter):
@@ -36,4 +41,11 @@ def test():
     "This check will never pass"
     def predicate(inter):
         raise CustomCheckFailure("This check (test) will never pass")
+    return dislash.check(predicate)
+def is_not_blacklisted():
+    "Check to make sure the user is not blacklisted"
+    def predicate(inter):
+        if inter.author.id in bot.blacklisted_users:
+            raise BlacklistedException("You are blacklisted from the bot. This should not happen (as there is no way to blacklist people at runtime, and the blacklisted users list clears upon restarts. Please report this with a Github Issue! )")
+        return True
     return dislash.check(predicate)

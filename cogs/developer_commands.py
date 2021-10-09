@@ -1,9 +1,10 @@
+#
 import random, os, warnings, threading, copy, nextcord, subprocess
 import dislash, traceback
 import nextcord.ext.commands as nextcord_commands
 from dislash import *
 from time import sleep, time, asctime
-from helper_cog import *
+from . import *
 problems_module = None
 FileSaver = None
 successEmbed = None
@@ -15,7 +16,7 @@ class DeveloperCommands(HelperCog):
     def __init__(self, bot):
         super().__init__(self,bot)
         self.bot=bot
-    @dislash.cooldown(5)
+    @dislash.cooldown(1,5)
     @slash_command(name="force_load_files",description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!")
     async def force_load_files(self,ctx):
         "Forcefully load files"
@@ -33,7 +34,8 @@ class DeveloperCommands(HelperCog):
         except RuntimeError:
             await ctx.reply(embed=self.custom_embeds.ErrorEmbed("Something went wrong..."))
             return
-    @dislash.cooldown(5)
+
+    @dislash.cooldown(1,5)
     @slash_command(name="force_save_files",description="Forcefully saves files (can only be used by trusted users).")
     async def force_save_files(self,ctx):
         "Forcefully saves files."
@@ -50,7 +52,10 @@ class DeveloperCommands(HelperCog):
         except RuntimeError as exc:
             await ctx.reply(embed=self.custom_embeds.ErrorEmbed("Something went wrong..."))
             raise exc
+
+
     @dislash.cooldown(5)
+    @dislash.cooldown(1,5)
     @slash_command(name="raise_error",
                      description = "⚠ This command will raise an error. Useful for testing on_slash_command_error", 
     options=[Option(name="error_type",description = "The type of error", choices=[
@@ -75,7 +80,8 @@ class DeveloperCommands(HelperCog):
             f"Successfully created error: {str(error)}. Will now raise the error.",
                                           successTitle="Successfully raised error."))
         raise error
-    @dislash.cooldown(0.1)
+
+    @dislash.cooldown(1,0.1)
     @slash_command(name="documentation",description = "Returns help!", 
     options=[Option(name="documentation_type", description = "What kind of help you want", choices= [
         OptionChoice(name = "documentation_link",value="documentation_link"),
@@ -103,7 +109,8 @@ class DeveloperCommands(HelperCog):
             await ctx.reply(embed=self.custom_embeds.ErrorEmbed(str(e)))
             return
         await ctx.reply(_documentation)
-    @dislash.cooldown
+
+    @dislash.cooldown(1,0.1)
     @slash_command(name="debug",description="Help for debugging :-)",options=[
       Option(name="raw",description="raw debug data?",type=OptionType.BOOLEAN,required=False),
       Option(name="send_ephermally",description="Send the debug message ephermally?",type=OptionType.BOOLEAN,required=False)

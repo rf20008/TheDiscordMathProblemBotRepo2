@@ -1,17 +1,25 @@
 {
   "files": {
+    "checks.py": [
+      {
+        "id": "c6b96174-a07b-4dc4-9965-c0ac8910ce60",
+        "line": 2,
+        "version": 5,
+        "index": 25
+      }
+    ],
     "main.py": [
       {
         "id": "fb990c77-3e9a-44d7-ad7c-a28ba407f806",
-        "line": 52,
-        "version": 58304,
-        "index": 1717
+        "line": 2,
+        "version": 58308,
+        "index": 67
       },
       {
         "id": "143247e7-b731-4ee6-8038-ab2c78a58ed7",
-        "line": 70,
-        "version": 58304,
-        "index": 2237
+        "line": 2,
+        "version": 58308,
+        "index": 67
       }
     ],
     "pylint-1.rtf": [
