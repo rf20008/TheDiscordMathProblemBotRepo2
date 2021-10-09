@@ -28,10 +28,11 @@ class HelperCog(nextcord.ext.commands.Cog):
             assert isinstance(ctx, (nextcord.ext.commands.Context, dislash.BaseInteraction))
             if ctx.author.id not in self.trusted_users:
                 raise RuntimeError(f"Sadly, you're not allowed to do this, {ctx.author.mention} ☹️")
-        if not isinstance(new_vote_threshold, int):
-            raise TypeError(f"new_vote_threshold is of type {type(new_vote_threshold)}, not int")
-        if new_vote_threshold <= 0:
-            raise ValueError("new_vote_threshold must be bigger than 0")
+        if not bypass_argument_checks:
+            if not isinstance(new_vote_threshold, int):
+                raise TypeError(f"new_vote_threshold is of type {type(new_vote_threshold)}, not int")
+            if new_vote_threshold <= 0:
+                raise ValueError("new_vote_threshold must be bigger than 0")
         self.bot.vote_threshold = new_vote_threshold
     def _change_trusted_users(self,new_trusted_users,ctx=None,*,bypass_ctx_check = False,bypass_argument_checks = False):
         "A helper method that will change the trusted_users"

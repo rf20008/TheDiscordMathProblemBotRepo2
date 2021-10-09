@@ -10,11 +10,9 @@ class CustomCheckFailure(dislash.ApplicationCommandError):
 class NotTrustedUser(CustomCheckFailure):
     "Raised when trying to run a command that requires trusted user permissions but you aren't a trusted user"
     pass
-
 class BlacklistedException(CustomCheckFailure):
     "Raised when trying to run a command, but something you are trying to use is blacklisted"
     pass
-
 def custom_check(function= lambda inter: True, args: list = [], exceptionToRaiseIfFailed = None):
     "A check template :-)"
     def predicate(inter):

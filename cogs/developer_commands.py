@@ -1,10 +1,20 @@
+<<<<<<< HEAD
+=======
 #
+>>>>>>> refs/remotes/origin/master
 import random, os, warnings, threading, copy, nextcord, subprocess
 import dislash, traceback
 import nextcord.ext.commands as nextcord_commands
 from dislash import *
 from time import sleep, time, asctime
+
 from .helper_cog import HelperCog
+
+
+from nextcord.ext.commands.converter import is_generic_type
+
+
+from . import *
 problems_module = None
 FileSaver = None
 successEmbed = None
@@ -15,10 +25,12 @@ check_for_cooldown = None
 checks = None
 class DeveloperCommands(HelperCog):
     def __init__(self, bot):
+
         global checks
         super().__init__(bot)
         self.bot=bot
         checks = self.checks
+
     @dislash.cooldown(1,5)
     @slash_command(name="force_load_files",description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!")
     async def force_load_files(self,ctx):
@@ -38,6 +50,7 @@ class DeveloperCommands(HelperCog):
             await ctx.reply(embed=self.custom_embeds.ErrorEmbed("Something went wrong..."))
             return
 
+
     @dislash.cooldown(1,5)
     @slash_command(name="force_save_files",description="Forcefully saves files (can only be used by trusted users).")
     async def force_save_files(self,ctx):
@@ -56,6 +69,11 @@ class DeveloperCommands(HelperCog):
             await ctx.reply(embed=self.custom_embeds.ErrorEmbed("Something went wrong..."))
             raise exc
 
+
+
+
+
+    @dislash.cooldown(5)
     @dislash.cooldown(1,5)
     @slash_command(name="raise_error",
                      description = "⚠ This command will raise an error. Useful for testing on_slash_command_error", 
@@ -81,6 +99,7 @@ class DeveloperCommands(HelperCog):
             f"Successfully created error: {str(error)}. Will now raise the error.",
                                           successTitle="Successfully raised error."))
         raise error
+
 
     @dislash.cooldown(1,0.1)
     @slash_command(name="documentation",description = "Returns help!", 
@@ -118,7 +137,6 @@ class DeveloperCommands(HelperCog):
     ])
     async def debug(self,ctx,raw=False,send_ephermally=True):
         "Provides helpful debug information :-)"
-        await check_for_cooldown(ctx,"debug",0.1,is_global_cooldown=False)
         guild = ctx.guild
         if ctx.guild is None:
             await ctx.reply("This command can only be ran in servers!")

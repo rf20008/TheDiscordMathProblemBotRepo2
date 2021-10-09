@@ -1,7 +1,5 @@
 [![Powered by Nextcord](https://custom-icon-badges.herokuapp.com/badge/-Powered%20by%20Nextcord-0d1620?logo=nextcord)](https://github.com/nextcord/nextcord "Powered by Nextcord Python API Wrapper")
 
-
-
 # License
 
 
@@ -28,4 +26,3 @@ https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs
 https://stackoverflow.com/a/21901260 for the get_git_revision_hash :-)
 nextcord + discord devs for their libraries
 
-<!-- -->
