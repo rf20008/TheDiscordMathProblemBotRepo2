@@ -7,10 +7,8 @@ class HelperCog(nextcord.ext.commands.Cog):
     "A helper cog :-) However, by itself, it does not implement any commands."
     def __init__(self,bot):
         "Helpful __init__, the entire reason I decided to make this so I could transfer modules"
-        super().__init__(self,bot)
-        self.b = deepcopy(bot._transport_modules)
+        self.b = bot._transport_modules
         (self.problems_module, self.SuccessEmbed, self.ErrorEmbed, self.the_documentation_file_loader) = (self.b["problems_module"], self.b["custom_embeds"].SuccessEmbed, self.b["custom_embeds"].ErrorEmbed, self.b["the_documentation_file_loader"])
-        del self.b
         self.slash = bot.slash
         self.bot = bot
         self.check_for_cooldown = self.bot._transport_modules["check_for_cooldown"]

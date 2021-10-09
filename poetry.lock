@@ -76,16 +76,6 @@ lint = ["black", "flake8", "isort", "sphinx", "sphinx-rtd-theme"]
 readthedocs = ["sphinx", "sphinx-rtd-theme"]
 
 [[package]]
-<<<<<<< HEAD
-=======
-name = "replit"
-version = "3.2.4"
-description = "replit.py library, a library for interacting with replit"
-category = "main"
-optional = false
-python-version = ">=3.9.0"
-[[package]]
->>>>>>> refs/remotes/origin/master
 name = "discord.py"
 version = "1.7.3"
 description = "A Python wrapper for the Discord API"

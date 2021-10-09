@@ -4,7 +4,7 @@ import dislash, traceback
 import nextcord.ext.commands as nextcord_commands
 from dislash import *
 from time import sleep, time, asctime
-from . import *
+from .helper_cog import HelperCog
 problems_module = None
 FileSaver = None
 successEmbed = None
@@ -12,10 +12,13 @@ errorEmbed = None
 the_documentation_file_loader = None
 slash = None
 check_for_cooldown = None
+checks = None
 class DeveloperCommands(HelperCog):
     def __init__(self, bot):
-        super().__init__(self,bot)
+        global checks
+        super().__init__(bot)
         self.bot=bot
+        checks = self.checks
     @dislash.cooldown(1,5)
     @slash_command(name="force_load_files",description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!")
     async def force_load_files(self,ctx):
@@ -53,8 +56,6 @@ class DeveloperCommands(HelperCog):
             await ctx.reply(embed=self.custom_embeds.ErrorEmbed("Something went wrong..."))
             raise exc
 
-
-    @dislash.cooldown(5)
     @dislash.cooldown(1,5)
     @slash_command(name="raise_error",
                      description = "⚠ This command will raise an error. Useful for testing on_slash_command_error", 
