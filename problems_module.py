@@ -1,5 +1,8 @@
+from types import ClassMethodDescriptorType
 import nextcord, json, warnings
 from copy import deepcopy
+import sqldict #https://github.com/skylergrammer/sqldict/
+
 
 # This is a module containing MathProblem and MathProblemCache objects. (And exceptions as well!) This may be useful outside of this discord bot so feel free to use it :) Just follow the MIT+GNU license
 class MathProblemsModuleException(Exception):
@@ -12,16 +15,19 @@ class TooLongAnswer(TooLongArgument):
     pass
 class TooLongQuestion(TooLongArgument):
     """Raised when a question is too long."""
-
+    pass
 class GuildAlreadyExistsException(MathProblemsModuleException):
     "Raised when MathProblemCache.add_empty_guild tries to run on a guild that already has problems."
+    pass
 class ProblemNotFoundException(MathProblemsModuleException):
     "Raised when a problem is not found."
+    pass
 class TooManyProblems(MathProblemsModuleException):
     "Raised when trying to add problems when there is already the maximum number of problems."
+    pass
 class ProblemNotFound(MathProblemsModuleException):
     "Raised when a problem isn't found"
-
+    pass
 class MathProblem:
     "For readability purposes :)"
     def __init__(self,question,answer,id,author,guild_id="null", voters=[],solvers=[], cache=None):
@@ -96,6 +102,26 @@ class MathProblem:
             self.solvers = solvers
         if author is not None:
             self.author = author
+    @classmethod
+    def from_dict(_class,_dict):
+        assert isinstance(_dict, dict)
+        problem = _dict
+        guild_id = problem["guild_id"]
+        if guild_id == "null":
+            guild_id = "null"
+        else:
+            guild_id = int(guild_id)
+        problem2 = MathProblem(
+            question=problem["question"],
+            answer=problem["answer"],
+            id = int(problem["id"]),
+            guild_id = guild_id,
+            voters = problem["voters"],
+            solvers=problem["solvers"],
+            author=problem["author"]
+        )
+        return problem2
+
     def convert_to_dict(self):
         """Convert self to a dictionary"""
 
@@ -180,11 +206,14 @@ class MathProblem:
         "A method that when called, returns a string, that when executed, returns an object that is equal to this one. Also implements repr(self)"
         return f"""problems_module.MathProblem(question={self.question},
         answer = {self.answer}, id = {self.id}, guild_id={self.guild_id},
-        voters={self.voters},solvers={self.solvers},author={self.author}"""
+        voters={self.voters},solvers={self.solvers},author={self.author},cache={None})""" # If I stored the problems, then there would be an infinite loop
 
 class MathProblemCache:
     def __init__(self,max_answer_length=100,max_question_limit=250,
-    max_guild_problems=125,warnings_or_errors = "warnings"):
+    max_guild_problems=125,warnings_or_errors = "warnings",
+    sql_dict_db_name = "problems_module.db",name="1"):
+        sqldict.make_sql_table([], db_name = sql_dict_db_name)
+
         if warnings_or_errors not in ["warnings", "errors"]:
             raise ValueError(f"warnings_or_errors is {warnings_or_errors}, not 'warnings' or 'errors'")
         if warnings_or_errors == "warnings":
@@ -192,11 +221,12 @@ class MathProblemCache:
         else:
             self.warnings = False
 
-        self._dict = {}
-        self.update_cache()
+        self.load_from_sql()
         self._max_answer = max_answer_length
         self._max_question = max_question_limit
         self._guild_limit = max_guild_problems
+        self._sql_dict = sqldict.SqlDict(name=f"MathProblemCache{name}")
+
     @property
     def max_answer_length(self):
         return self._max_answer
@@ -206,7 +236,11 @@ class MathProblemCache:
     @property
     def max_guild_problems(self):
         return self._guild_limit
-    
+    #def load_from_sql(self):
+    #    for item in self._sql_dict.keys():
+    #        MathProblem.from_dict(self._sql_dict[item])
+
+
     def convert_to_dict(self):
         e = {}
         for guild_id in self._dict.keys():
@@ -215,7 +249,7 @@ class MathProblemCache:
                 print(guild_id, problem_id)
                 e[guild_id][problem_id] = self.get_problem(guild_id,problem_id).convert_to_dict()
         return e
-
+  
     def convert_dict_to_math_problem(self,problem):
         "Convert a dictionary into a math problem. It must be in the expected format."
         try:
@@ -313,23 +347,24 @@ class MathProblemCache:
             raise TooManyProblems(f"There are already {self.max_guild_problems} problems!")
         if not isinstance(Problem,(MathProblem, dict)):
             raise TypeError("Problem is not a valid MathProblem object.")
-        if isinstance(Problem,dict):
+        if isinstance(Problem,MathProblem):
             try:
-                Problem = self.convert_dict_to_math_problem(Problem)
+                Problem = Problem.convert_to_dict()
             except Exception:
                 raise MathProblemsModuleException("Not a valid problem!")
+        else:
+            try: # make sure this is a valid problem
+                MathProblem.from_dict(Problem) # If this is invaid, then there will be a keyerror
+            except KeyError:
+                raise MathProblemsModuleException("Problem is not a valid problem")
         try:
-            if self._dict[guild_id][problem_id] is not None:
+            if self.get_problem(guild_id,problem_id) is not None:
                 raise MathProblemsModuleException("Problem already exists")
         except BaseException as e:
             if not isinstance(e,KeyError):
                 raise RuntimeError("Something bad happened... please report this! And maybe try to fix it?") from e
             
-            try:
-                self._dict[guild_id][problem_id] = Problem
-            except KeyError as e:
-                self._dict[guild_id][problem_id]["null"] = Problem
-
+        self._sql_dict[f"{guild_id}:{problem_id}"] = Problem
 #        if guild_id != 'null':
 #            try:
 #                if self._dict[guild_id] != {}:
