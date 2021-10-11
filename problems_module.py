@@ -227,7 +227,7 @@ class MathProblemCache:
     max_guild_problems=125,warnings_or_errors = "warnings",
     sql_dict_db_name = "problems_module.db",name="1",
     update_cache_by_default_when_requesting=True):
-        make_sql_table([], db_name = sql_dict_db_name)
+        sqldict.make_sql_table([], db_name = sql_dict_db_name)
 
         if warnings_or_errors not in ["warnings", "errors"]:
             raise ValueError(f"warnings_or_errors is {warnings_or_errors}, not 'warnings' or 'errors'")
@@ -236,7 +236,7 @@ class MathProblemCache:
         else:
             self.warnings = False
 
-
+        self.load_from_sql()
         self._max_answer = max_answer_length
         self._max_question = max_question_limit
         self._guild_limit = max_guild_problems

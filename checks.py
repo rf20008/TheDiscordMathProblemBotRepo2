@@ -4,7 +4,7 @@ def setup(_bot):
     global bot
     bot = _bot
     return "Success!"
-class CustomCheckFailure(dislash.ApplicationCommandError):
+class CustomCheckFailure(dislash.InteractionCheckFailure):
     "Raised when a custom check fails. Some checks raise exceptions inherited from this."
     pass
 class NotTrustedUser(CustomCheckFailure):
