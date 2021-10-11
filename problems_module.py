@@ -1,6 +1,8 @@
-from types import ClassMethodDescriptorType
+from types import *
+import sqlite3
 import nextcord, json, warnings
 from copy import deepcopy
+from nextcord import guild
 import sqldict #https://github.com/skylergrammer/sqldict/
 
 
@@ -211,7 +213,8 @@ class MathProblem:
 class MathProblemCache:
     def __init__(self,max_answer_length=100,max_question_limit=250,
     max_guild_problems=125,warnings_or_errors = "warnings",
-    sql_dict_db_name = "problems_module.db",name="1"):
+    sql_dict_db_name = "problems_module.db",name="1",
+    update_cache_by_default_when_requesting=True):
         sqldict.make_sql_table([], db_name = sql_dict_db_name)
 
         if warnings_or_errors not in ["warnings", "errors"]:
@@ -226,7 +229,7 @@ class MathProblemCache:
         self._max_question = max_question_limit
         self._guild_limit = max_guild_problems
         self._sql_dict = sqldict.SqlDict(name=f"MathProblemCache{name}")
-
+        self.update_cache_by_default_when_requesting=update_cache_by_default_when_requesting
     @property
     def max_answer_length(self):
         return self._max_answer
@@ -272,17 +275,22 @@ class MathProblemCache:
         )
         return problem2
     def update_cache(self):
-        "This method replaces the new cache with the cache from the file."
-        with open("math_problems.json","r") as file:
-            dict = json.loads("".join([str(thing) for thing in file]))
-        for item in dict.keys():
-            self._dict[item] = {}
-            for item2 in dict[item].keys():
-                self._dict[item][item2] = self.convert_dict_to_math_problem(dict[item][item2])
-    def update_file_cache(self):
-        "This method updates the file cache."
-        with open("math_problems.json", "w") as file:
-            file.write(json.dumps(self.convert_to_dict()))
+        "Method revamped! This method updates the cache of the guilds, the guild problems, and the cache of the global problems"
+        guild_problems = {}
+        guild_ids = []
+        global_problems = []
+        for key in self._sql_dict.keys():
+            p = key.partition(":")
+            if p[0] not in guild_ids: #Update guild ids: Check if here
+                guild_ids.append(p[0])
+                guild_problems[p[0]] = {} #Also do this so I don't need to worry about keyerrors because it will update too
+            #Check for guild problems
+            #guaranteed to be a new problem :-)
+            guild_problems[p[0]] = MathProblem.from_dict(self._sql_dict[key]) #Convert it to a math problem
+        global_problems = guild_problems["null"] #contention            
+        self.guild_problems = guild_problems
+        self.guild_ids = guild_ids
+        self.global_problems = global_problems
     def get_problem(self,guild_id,problem_id):
         "Gets the problem with this guild id and problem id"
         if not isinstance(guild_id, str):
@@ -295,42 +303,35 @@ class MathProblemCache:
                 warnings.warn("problem_id is not a string",category=RuntimeWarning)
             else:
                 raise TypeError("problem_id is not a string")
+        #Iterate through all problems! This takes O(N^2) time. However, nested SQLDicts don't exist. Any ideas? Please help :-)
         try:
-            guild_id_dict = self._dict[guild_id]
-            
-        except:
-            raise MathProblemsModuleException(f"Guild_id {guild_id} was not found in the cache.")
-        try:
-            return guild_id_dict[problem_id]
+            return self._sql_dict[f"{guild_id}:{problem_id}"]
         except:
             raise ProblemNotFound(f"*** No problem found with guild_id {guild_id} and problem_id {problem_id}!***")
+
     def get_guild_problems(self,Guild):
         """Gets the guild problems! Guild must be a Guild object. If you are trying to get global problems, use get_global_problems."""
-        if not isinstance(Guild, nextcord.Guild):
-            raise TypeError("Guild is not actually a Guild")
-        try:
-            return self._dict[str(Guild.id)].values()
-        except Exception as exc:
-            raise Exception("Something bad happened...") from exc
+        if self.update_cache_by_default_when_requesting:
+            self.update_cache()
+        return self.guild_problems[Guild.id]
         
     def get_global_problems(self):
         "Returns global problems"
-        try:
-            return self._dict['null'].values()
-        except:
-            self._dict['null'] = {}
-            return {}
+        if self.update_cache_by_default_when_requesting:
+            self.update_cache()
+        return self.global_problems
     def add_empty_guild(self,Guild):
         "Adds an dictionary that is empty for the guild. Guild must be a nextcord.Guild object"
-        if not isinstance(Guild, nextcord.Guild):
-            raise TypeError("Guild is not actually a Guild")
-        try:
-            if self._dict[str(Guild.id)] != {}:
-                raise GuildAlreadyExistsException
-        except KeyError:
-            self._dict[str(Guild.id)] = {}
-            
-        self._dict[Guild.id] = {}
+        pass #No longer needed
+        #if not isinstance(Guild, nextcord.Guild):
+        #    raise TypeError("Guild is not actually a Guild")
+        #try:
+        #    if self._dict[str(Guild.id)] != {}:
+        #        raise GuildAlreadyExistsException
+        #except KeyError:
+        #    self._dict[str(Guild.id)] = {}
+        #    
+        #self._dict[Guild.id] = {}
     def add_problem(self,guild_id,problem_id,Problem):
         "Adds a problem and returns the added MathProblem"
         if not isinstance(guild_id,str):
@@ -343,7 +344,7 @@ class MathProblemCache:
                 warnings.warn("problem_id is not a string.... this may cause an exception")
             else:
                 raise TypeError("problem_id is not a string.")
-        if len(self._dict[guild_id]) > self.max_guild_problems:
+        if len(self.guild_problems[guild_id]) > self.max_guild_problems:
             raise TooManyProblems(f"There are already {self.max_guild_problems} problems!")
         if not isinstance(Problem,(MathProblem, dict)):
             raise TypeError("Problem is not a valid MathProblem object.")
@@ -384,7 +385,9 @@ class MathProblemCache:
                 raise TypeError("guild_id is not a string")
 
         Problem = self.get_problem(guild_id,problem_id)
-        del self._dict[guild_id][problem_id]
+        with sqlite3.connect(self.sql_dict.name) as connection: # The sqldict does not implement deletion, so I have to do sql magic
+            connection.cursor.execute(f"DELETE FROM {self._sql_dict.__tablename__} WHERE key = \"{str(guild_id)}:{str(problem_id)}")
+        
         return Problem
     def remove_duplicate_problems(self):
         "Deletes duplicate problems"
@@ -404,9 +407,11 @@ class MathProblemCache:
         self._dict = d
         return problemsDeleted
     def get_guilds(self):
-        return self._dict.keys()
+        if self.update_cache_by_default_when_requesting:
+            self.update_cache()
+        return self.guild_ids
     def __str__(self):
-        return str(self._dict)
+        raise NotImplementedError
 
 main_cache = MathProblemCache(max_answer_length=100,max_question_limit=250,max_guild_problems=125,warnings_or_errors="errors")
 def get_main_cache():
