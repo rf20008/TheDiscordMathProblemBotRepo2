@@ -22,7 +22,6 @@ check_for_cooldown = None
 checks = None
 class DeveloperCommands(HelperCog):
     def __init__(self, bot):
-
         global checks
         super().__init__(bot)
         self.bot=bot
@@ -121,7 +120,6 @@ class DeveloperCommands(HelperCog):
             await ctx.reply(embed=self.custom_embeds.ErrorEmbed(str(e)))
             return
         await ctx.reply(_documentation)
-
     @dislash.cooldown(1,0.1)
     @slash_command(name="debug",description="Help for debugging :-)",options=[
       Option(name="raw",description="raw debug data?",type=OptionType.BOOLEAN,required=False),

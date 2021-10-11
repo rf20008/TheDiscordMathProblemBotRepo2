@@ -1,10 +1,22 @@
 from types import *
-import sqlite3
+from sqlite3 import *
 import nextcord, json, warnings
 from copy import deepcopy
 from nextcord import guild
+import pickle
 import sqldict #https://github.com/skylergrammer/sqldict/
-
+def make_sql_table(kv_list, db_name, key_format="String", value_format="BLOB", serializer=pickle):
+    with connect(db_name) as conn:
+        cur = conn.cursor()
+        try:
+            cur.execute('''CREATE TABLE kv_store (key {} PRIMARY KEY, val  {})'''.format(key_format, value_format))
+        except OperationalError:
+            pass
+        for k,v in kv_list:
+            if serializer is None:
+                cur.execute('INSERT OR IGNORE INTO kv_store VALUES (?,?)', (k, v))
+            else:
+                cur.execute('INSERT OR IGNORE INTO kv_store VALUES (?,?)', (k, serializer.dumps(v)))
 
 # This is a module containing MathProblem and MathProblemCache objects. (And exceptions as well!) This may be useful outside of this discord bot so feel free to use it :) Just follow the MIT+GNU license
 class MathProblemsModuleException(Exception):
@@ -215,7 +227,7 @@ class MathProblemCache:
     max_guild_problems=125,warnings_or_errors = "warnings",
     sql_dict_db_name = "problems_module.db",name="1",
     update_cache_by_default_when_requesting=True):
-        sqldict.make_sql_table([], db_name = sql_dict_db_name)
+        make_sql_table([], db_name = sql_dict_db_name)
 
         if warnings_or_errors not in ["warnings", "errors"]:
             raise ValueError(f"warnings_or_errors is {warnings_or_errors}, not 'warnings' or 'errors'")
@@ -224,7 +236,7 @@ class MathProblemCache:
         else:
             self.warnings = False
 
-        self.load_from_sql()
+
         self._max_answer = max_answer_length
         self._max_question = max_question_limit
         self._guild_limit = max_guild_problems
