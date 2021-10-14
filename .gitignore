@@ -161,3 +161,7 @@ pylint-1.rtf
 .DS_Store
 **/__pycache__/**
 !**/__init__.py
+
+# SQL, I don't want to show my problems
+**/*.db
+**/*.sqlite3
