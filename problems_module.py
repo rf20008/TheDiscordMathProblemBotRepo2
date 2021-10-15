@@ -3,9 +3,11 @@ from sqlite3 import *
 import nextcord, json, warnings
 from copy import deepcopy
 from nextcord import guild
-import pickle
+import pickle, sqlite3
 import sqldict #https://github.com/skylergrammer/sqldict/
 def make_sql_table(kv_list, db_name, key_format="String", value_format="BLOB", serializer=pickle):
+    #A simple fix from https://github.com/skylergrammer/sqldict/blob/master/sqldict/__init__.py
+    #(I opened a pull request, but it has not been merged (the last commit was 5 years ago))
     with connect(db_name) as conn:
         cur = conn.cursor()
         try:
