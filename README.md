@@ -28,3 +28,25 @@ nextcord + discord devs for their libraries
 SQLDict: https://github.com/skylergrammer/sqldict
 
 
+# Help for self-hosting my bot (or )
+My code is open source, so you can! There are bugs, so you should probably help me instead. I won't stop you from self-hosting though.
+
+## Steps
+(This assumes you already have knowledge of the command line and how to make a new discord application)
+1. Create a new Discord application with a bot user. Save the token (you will need it later)
+2. Update Python to 3.9/3.10
+3. Create a venv (execute ``python3.10 -m venv /path/to/new/virtual/environment``)
+4. move to your new venv (use the cd command)
+5. Install poetry, a dependency installer (``pip3 install git+https://github.com/python-poetry/poetry.git``). You can also optionally install it outside.
+6. Clone my repo (``git clone https://github.com/rf20008/TheDiscordMathProblemBotRepo``)
+7. move to the new directory containing the repository you cloned (which should be this one. The folder name is the same name as the repository name)
+8. Create a .env file inside the repository folder. Inside it, you need to put 
+``DISCORD_TOKEN = `<your discord token>` `` (Replace `<your discord token>`) with the discord bot token you got from the bot user you made.
+9. Run the main.py file (```python3.10 main.py```)
+10. Invite the bot bot (use the invite link, but replace the client_id field with your bot's client id)
+## Update the bot with my changes
+
+1. Run ``cd path/to/your/repo/``
+2. Run ``git pull`` (updates the repo)
+3. If there are any merge conflicts, please fix them. Then do step 2. If there are no merge conflicts, skip this step
+4. Stop your bot! And then re-start it again
