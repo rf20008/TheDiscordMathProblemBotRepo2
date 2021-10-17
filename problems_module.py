@@ -1,8 +1,9 @@
 from types import *
 from sqlite3 import *
-import nextcord, json, warnings
+from typing import *
+import nextcord, json, warnings, dislash
 from copy import deepcopy
-from nextcord import guild
+from nextcord import *
 import pickle, sqlite3
 import sqldict #https://github.com/skylergrammer/sqldict/
 def make_sql_table(kv_list, db_name, key_format="String", value_format="BLOB", serializer=pickle):
@@ -21,6 +22,7 @@ def make_sql_table(kv_list, db_name, key_format="String", value_format="BLOB", s
                 cur.execute('INSERT OR IGNORE INTO kv_store VALUES (?,?)', (k, serializer.dumps(v)))
 
 # This is a module containing MathProblem and MathProblemCache objects. (And exceptions as well!) This may be useful outside of this discord bot so feel free to use it :) Just follow the MIT+GNU license
+#Exceptions
 class MathProblemsModuleException(Exception):
     "The base exception for problems_module."
 class TooLongArgument(MathProblemsModuleException):
@@ -44,9 +46,12 @@ class TooManyProblems(MathProblemsModuleException):
 class ProblemNotFound(MathProblemsModuleException):
     "Raised when a problem isn't found"
     pass
+class ProblemNotWrittenException(MathProblemsModuleException):
+    "Raised when trying to grade a written problem but the problem is not graded"
+    pass
 class MathProblem:
     "For readability purposes :)"
-    def __init__(self,question,answer,id,author,guild_id="null", voters=[],solvers=[], cache=None):
+    def __init__(self,question,answer,id,author,guild_id="null", voters=[],solvers=[], cache=None,answers=[]):
         if guild_id != "null" and not isinstance(guild_id, str):
             raise TypeError("guild_id is not an string")
         if not isinstance(id, int):
@@ -61,6 +66,9 @@ class MathProblem:
             raise TypeError("voters is not a list")
         if not isinstance(solvers, list):
             raise TypeError("solvers is not a list")
+        if not isinstance(answers, list):
+            raise TypeError("answers isn't a list")
+        
         if cache is None:
             warnings.warn("_cache is None. This may cause errors", RuntimeWarning)
         if not isinstance(cache,MathProblemCache) and cache is not None:
@@ -77,7 +85,8 @@ class MathProblem:
         self.solvers=solvers
         self.author=author
         self._cache = cache
-    def edit(self,question=None,answer=None,id=None,guild_id=None,voters=None,solvers=None,author=None):
+        self.answers = answers
+    def edit(self,question=None,answer=None,id=None,guild_id=None,voters=None,solvers=None,author=None, answers = None):
         """Edit a math problem."""
         if guild_id not in [None,"null"] and not isinstance(guild_id, int):
             raise TypeError("guild_id is not an integer")
@@ -93,6 +102,8 @@ class MathProblem:
             raise TypeError("voters is not a list")
         if not isinstance(solvers, list) and solvers is not None:
             raise TypeError("solvers is not a list")
+        if not isinstance(answers, list) and answers is not None:
+            raise TypeError("answers is not a list")
         if id is not None or guild_id is not None or voters is not None or solvers is not None or author is not None:
             warnings.warn("You are changing one of the attributes that you should not be changing.", category=RuntimeWarning)
         if question is not None:
@@ -107,6 +118,14 @@ class MathProblem:
                 raise TooLongAnswer(f"Your answer is {len(question) - self._cache.max_answer_length} characters too long. Answers may be up to {self._cache.max_answer_length} characters long.")
             else:
                 raise TooLongAnswer(f"Your answer is {len(question) - 100} characters too long. Answers may be up to 100 characters long.")
+        for answer in range(len(answers)):
+            if self._cache is not None:
+                if len(answers[answer]) > 100:
+                    raise TooLongAnswer(f"Answer #{answer} is {len(answers[answer])-100} characters too long. Answers can be up to a 100 characters long")
+            else:
+                if len(answers[answer]) > self._cache.max_answer_length:
+                    raise TooLongAnswer(f"Answer #{answer} is {len(answers[answer]) - self._cache.max_answer_length} characters too long. Answers can be up to {self._cache.max_answer_length} characters long.")
+        if answer is not None:
             self.answer = answer
         if id is not None:
             self.id = id
@@ -163,8 +182,11 @@ class MathProblem:
         if not self.is_solver(solver):
             self.solvers.append(solver.id)
     def get_answer(self):
-        "Return my answer."
+        "Return my answer. This has been deprecated"
         return self.answer
+    def get_answers(self):
+        "Return my possible answers"
+        return [self.answer, *self.answers] 
     def get_question(self):
         "Return my question."
         return self.question
@@ -176,7 +198,8 @@ class MathProblem:
             self.add_solver(potentialSolver)
     def check_answer(self,answer):
         "Checks the answer. Returns True if it's correct and False otherwise."
-        return answer == self.get_answer()
+        return answer in self.get_answers()
+        
     def my_id(self):
         "Returns id & guild_id in a list. id is first and guild_id is second."
         return [self.id, self.guild_id]
@@ -224,13 +247,34 @@ class MathProblem:
         answer = {self.answer}, id = {self.id}, guild_id={self.guild_id},
         voters={self.voters},solvers={self.solvers},author={self.author},cache={None})""" # If I stored the problems, then there would be an infinite loop
 
+class Quiz: 
+    pass
+
+
+class QuizMathProblem(MathProblem):
+    "A class that represents a Quiz Math Problem"
+    def __init__(self,question,answer,id,author,guild_id="null", voters=[],solvers=[], cache=None,answers=[],is_written=False,quiz: Quiz= None, max_score=-1):
+        "A method that allows the creation of new QuizMathProblems"
+        if not isinstance(quiz. Quiz):
+            raise TypeError(f"quiz is of type {quiz.__class.__name}, not Quiz") # Here to help me debug
+        
+        super().__init__(question,answer,id,author,guild_id,voters,solvers,cache,answers) # 
+        self.is_written = False
+        self.quiz = quiz
+        self.max_score = max_score
+        self.min_score = 0
+
+    def grade(self,ctx: Union(nextcord.ext.commands.Context, dislash.BaseInteraction), score):
+        if not isinstance(ctx, (nextcord.ext.commands.Context, dislash.BaseInteraction)):
+            raise TypeError
+
 class MathProblemCache:
     def __init__(self,max_answer_length=100,max_question_limit=250,
     max_guild_problems=125,warnings_or_errors = "warnings",
     sql_dict_db_name = "problems_module.db",name="1",
     update_cache_by_default_when_requesting=True):
         sqldict.make_sql_table([], db_name = sql_dict_db_name)
-
+        self.sql_dict_db_name = sql_dict_db_name
         if warnings_or_errors not in ["warnings", "errors"]:
             raise ValueError(f"warnings_or_errors is {warnings_or_errors}, not 'warnings' or 'errors'")
         if warnings_or_errors == "warnings":
