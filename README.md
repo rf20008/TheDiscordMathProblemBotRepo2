@@ -31,11 +31,7 @@ SQLDict: https://github.com/skylergrammer/sqldict
 # Help for self-hosting my bot (or )
 My code is open source, so you can! There are bugs, so you should probably help me instead. I won't stop you from self-hosting though.
 
-<<<<<<< HEAD
 ## Steps
-=======
-## steps
->>>>>>> 3f90f81959e7cd03ea6f43da9f438404d345ed92
 (This assumes you already have knowledge of the command line and how to make a new discord application)
 1. Create a new Discord application with a bot user. Save the token (you will need it later)
 2. Update Python to 3.9/3.10
