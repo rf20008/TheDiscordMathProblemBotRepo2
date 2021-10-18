@@ -86,8 +86,8 @@ class MathProblem:
         self.author=author
         self._cache = cache
         self.answers = answers
-    def edit(self,question=None,answer=None,id=None,guild_id=None,voters=None,solvers=None,author=None, answers = None):
-        """Edit a math problem."""
+    def edit(self,question=None,answer=None,id=None,guild_id=None,voters=None,solvers=None,author=None, answers = None) -> None:
+        """Edit a math problem. The edit is in place"""
         if guild_id not in [None,"null"] and not isinstance(guild_id, int):
             raise TypeError("guild_id is not an integer")
         if not isinstance(id, int) and id is not None:
@@ -161,6 +161,7 @@ class MathProblem:
         """Convert self to a dictionary"""
 
         return {
+            "type": "MathProblem",
             "question": self.question,
             "answer": self.answer,
             "id": str(self.id),
@@ -199,7 +200,7 @@ class MathProblem:
     def check_answer(self,answer):
         "Checks the answer. Returns True if it's correct and False otherwise."
         return answer in self.get_answers()
-        
+
     def my_id(self):
         "Returns id & guild_id in a list. id is first and guild_id is second."
         return [self.id, self.guild_id]
@@ -247,13 +248,48 @@ class MathProblem:
         answer = {self.answer}, id = {self.id}, guild_id={self.guild_id},
         voters={self.voters},solvers={self.solvers},author={self.author},cache={None})""" # If I stored the problems, then there would be an infinite loop
 
-class Quiz: 
-    pass
+
+class QuizSubmissionAnswer:
+    "A class that represents an answer for a singular problem"
+    def __init__(self, answer: str= "", problem= None):
+        self.answer = answer
+        self.problem = problem
+class QuizSubmission:
+    "A class that represents someone's submission to a graded quiz"
+    def __init__(self,user: nextcord.User, quiz):
+        self.user_id = user.id
+        self.quiz_id = quiz.id
+        self.mutable = True
+        self.answers = [QuizSubmissionAnswer(problem=question) for question in quiz]
+    def get_my_quiz(self):
+        return get_main_cache().get_quiz(self.quiz_id)
+    def set_answer(self,problem_id, Answer):
+        "Set the answer of a quiz problem"
+        if not self.mutable:
+            raise RuntimeError("This instance is not mutable")
+        for answer in self.answers:
+            if answer.problem.id == problem_id:
+                answer.answer = Answer
+    def to_dict(self):
+        t = {
+            "mutable": self.mutable,
+            "quiz_id": self.quiz_id,
+            "user_id": self.user_id,
+            "answer": []
+        }
+        for answer in self.answers:
+            t["answer"].append({"problem_id": answer.problem.id, "answer": answer.answer})
+        return t
+    @classmethod
+    def from_dict(cls, Dict):
+        c = cls(user_id=Dict["user_id"], quiz_id = "quiz_id")
+
+
 
 
 class QuizMathProblem(MathProblem):
     "A class that represents a Quiz Math Problem"
-    def __init__(self,question,answer,id,author,guild_id="null", voters=[],solvers=[], cache=None,answers=[],is_written=False,quiz: Quiz= None, max_score=-1):
+    def __init__(self,question,answer,id,author,guild_id="null", voters=[],solvers=[], cache=None,answers=[],is_written=False,quiz=  None, max_score=-1):
         "A method that allows the creation of new QuizMathProblems"
         if not isinstance(quiz. Quiz):
             raise TypeError(f"quiz is of type {quiz.__class.__name}, not Quiz") # Here to help me debug
@@ -263,10 +299,68 @@ class QuizMathProblem(MathProblem):
         self.quiz = quiz
         self.max_score = max_score
         self.min_score = 0
+    def edit(self,question=None,answer=None,id=None,guild_id=None,voters=None,solvers=None,author=None, answers = None,is_written=None, quiz = None, max_score: int = -1):
+        super().edit(question,answer,id,guild_id,voters,solvers,author,answers)
+        if not isinstance(quiz, Quiz):
+            raise TypeError(f"quiz is of type {quiz.__class.__name}, not Quiz") # Here to help me debug
+        self.quiz = Quiz
+        if not isinstance(is_written, bool):
+            raise TypeError("is_written is not of type bool")
+    def to_dict(self):
+        return {
+            "type": "QuizMathProblem",
+            "question": self.question,
+            "answer": self.answer,
+            "id": str(self.id),
+            "guild_id": str(self.guild_id),
+            "voters": self.voters,
+            "solvers": self.solvers,
+            "author": self.author,
+            "quiz_id": self.quiz.id,
+            "is_written": self.is_written,
+            "max_score": self.max_score
+        }
+    @classmethod
+    def from_dict(cls, Dict):
+        Dict.pop("type")
+        return cls(*Dict)
+    
+        
+class Quiz(list): 
+    "Essentially a list, so it implements everything that a list does, but it has an additional attribute submissions which is a list of QuizSubmissions"
+    def __init__(self, id, *args, **kwargs):
+        super().__init__(**args, **kwargs)
+        self._submissions = []
+        self.id = id
+    def add_submission(self,submission):
+        assert isinstance(submission, QuizSubmission)
+        submission.mutable = False
+        self.submissions.append(submission)
+    @property
+    def submissions(self):
+        return self.submissions
+    @classmethod
+    def from_dict(cls,Dict: dict):
+        problemsAsType = []
+        submissions = []
+        Problems = Dict["problems"]
+        for p in Problems:
+            problemsAsType.append(QuizMathProblem.from_dict(p))
+        problemsAsType.sort(key= lambda problem: problem.id)
 
-    def grade(self,ctx: Union(nextcord.ext.commands.Context, dislash.BaseInteraction), score):
-        if not isinstance(ctx, (nextcord.ext.commands.Context, dislash.BaseInteraction)):
-            raise TypeError
+        for s in Dict["submissions"]:
+            submissions.append(QuizSubmission.from_dict(s))
+        c = cls([])
+        c.extend(problemsAsType)
+        c._submissions = submissions
+        c.id = Dict["id"]
+        return c
+    def to_dict(self):
+        "Convert this instance into a Dictionary to be stored in SQL"
+        Problems = [problem.to_dict() for problem in self]
+        Submissions = [submission.to_dict for submission in self.submissions]
+        return {"problems": Problems, "submissions": Submissions, "id": self.id}
+           
 
 class MathProblemCache:
     def __init__(self,max_answer_length=100,max_question_limit=250,
