@@ -1,4 +1,4 @@
-from types import *
+from typing import *
 from sqlite3 import *
 from typing import *
 import nextcord, json, warnings, dislash
@@ -6,20 +6,22 @@ from copy import deepcopy
 from nextcord import *
 import pickle, sqlite3
 import sqldict #https://github.com/skylergrammer/sqldict/
-def make_sql_table(kv_list, db_name, key_format="String", value_format="BLOB", serializer=pickle):
+def make_sql_table(kv_list="kv_store", db_name=Exception, key_format="String", value_format="BLOB", serializer=pickle, table_name="kv_store",):
     #A simple fix from https://github.com/skylergrammer/sqldict/blob/master/sqldict/__init__.py
     #(I opened a pull request, but it has not been merged (the last commit was 5 years ago))
+    if db_name == Exception:
+        raise Exception
     with connect(db_name) as conn:
         cur = conn.cursor()
         try:
-            cur.execute('''CREATE TABLE kv_store (key {} PRIMARY KEY, val  {})'''.format(key_format, value_format))
+            cur.execute(f'''CREATE TABLE {table_name} IF NOT EXISTS (key {key_format} PRIMARY KEY, val  {value_format})''')
         except OperationalError:
             pass
         for k,v in kv_list:
             if serializer is None:
-                cur.execute('INSERT OR IGNORE INTO kv_store VALUES (?,?)', (k, v))
+                cur.execute('INSERT OR IGNORE INTO {table_name} VALUES (?,?)', (k, v))
             else:
-                cur.execute('INSERT OR IGNORE INTO kv_store VALUES (?,?)', (k, serializer.dumps(v)))
+                cur.execute('INSERT OR IGNORE INTO {table_name} VALUES (?,?)', (k, serializer.dumps(v)))
 
 # This is a module containing MathProblem and MathProblemCache objects. (And exceptions as well!) This may be useful outside of this discord bot so feel free to use it :) Just follow the MIT+GNU license
 #Exceptions
@@ -251,17 +253,22 @@ class MathProblem:
 
 class QuizSubmissionAnswer:
     "A class that represents an answer for a singular problem"
-    def __init__(self, answer: str= "", problem= None):
+    def __init__(self, answer: str= "", problem_id= None,quiz_id = 0):
         self.answer = answer
-        self.problem = problem
+        self.problem_id = problem_id
+        self.grade = 0
+        self.quiz_id = quiz_id
+    def set_grade(self,grade):
+        self.grade=grade
+
 class QuizSubmission:
     "A class that represents someone's submission to a graded quiz"
-    def __init__(self,user: nextcord.User, quiz):
+    def __init__(self,user: nextcord.User, quiz_id):
         self.user_id = user.id
-        self.quiz_id = quiz.id
+        self.quiz_id = quiz_id
         self.mutable = True
-        self.answers = [QuizSubmissionAnswer(problem=question) for question in quiz]
-    def get_my_quiz(self):
+        self.answers = [QuizSubmissionAnswer(problem=question) for question in self.get_my_quiz()]
+    def get_my_quiz(self) -> None:
         return get_main_cache().get_quiz(self.quiz_id)
     def set_answer(self,problem_id, Answer):
         "Set the answer of a quiz problem"
@@ -282,7 +289,13 @@ class QuizSubmission:
         return t
     @classmethod
     def from_dict(cls, Dict):
+        "Convert a dictionary into a QuizSubmission"
         c = cls(user_id=Dict["user_id"], quiz_id = "quiz_id")
+        for answer in Dict["answers"]:
+            c.answers.append(QuizSubmissionAnswer(answer["answer"], problem_id= answer["problem_id"]))
+        c.mutable = Dict["mutable"]
+        return c
+
 
 
 
@@ -367,7 +380,11 @@ class MathProblemCache:
     max_guild_problems=125,warnings_or_errors = "warnings",
     sql_dict_db_name = "problems_module.db",name="1",
     update_cache_by_default_when_requesting=True):
-        sqldict.make_sql_table([], db_name = sql_dict_db_name)
+        with sqlite3.connect(sql_dict_db_name) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='';")
+        make_sql_table([], db_name = sql_dict_db_name)
+        make_sql_table([], sql_dict_db_name, )
         self.sql_dict_db_name = sql_dict_db_name
         if warnings_or_errors not in ["warnings", "errors"]:
             raise ValueError(f"warnings_or_errors is {warnings_or_errors}, not 'warnings' or 'errors'")
@@ -375,12 +392,13 @@ class MathProblemCache:
             self.warnings = True
         else:
             self.warnings = False
-
+        
         self.load_from_sql()
         self._max_answer = max_answer_length
         self._max_question = max_question_limit
         self._guild_limit = max_guild_problems
         self._sql_dict = sqldict.SqlDict(name=f"MathProblemCache{name}")
+        self.quizzes_sql_dict = sqldict.SqlDict(name = "TheQuizStorer", table_name = "quizzes_kv_store")
         self.update_cache_by_default_when_requesting=update_cache_by_default_when_requesting
     @property
     def max_answer_length(self):
@@ -558,12 +576,18 @@ class MathProblemCache:
                             problemsDeleted += 1
         self._dict = d
         return problemsDeleted
-    def get_guilds(self):
+    def get_guilds(self) -> List[int]:
         if self.update_cache_by_default_when_requesting:
             self.update_cache()
         return self.guild_ids
+    def add_quiz(self,quiz: Quiz) -> Quiz:
+        "Add a quiz"
+        self.quizzes_sql_dict[]
     def __str__(self):
         raise NotImplementedError
+    def get_quiz(self, quiz_id: int) -> Optional[Quiz]:
+        "Get the quiz with the id specified. Returns None if not found"
+        
 
 main_cache = MathProblemCache(max_answer_length=100,max_question_limit=250,max_guild_problems=125,warnings_or_errors="errors")
 def get_main_cache():
