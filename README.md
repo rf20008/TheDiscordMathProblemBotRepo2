@@ -28,8 +28,9 @@ nextcord + discord devs for their libraries
 SQLDict: https://github.com/skylergrammer/sqldict
 
 
-# Help for self-hosting my bot (or )
+# Self-host my bot
 My code is open source, so you can! There are bugs, so you should probably help me instead. I won't stop you from self-hosting though.
+
 
 ## Steps
 (This assumes you already have knowledge of the command line and how to make a new discord application)
