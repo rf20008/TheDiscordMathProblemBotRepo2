@@ -73,8 +73,8 @@ class MathProblem:
         
         if cache is None:
             warnings.warn("_cache is None. This may cause errors", RuntimeWarning)
-        if not isinstance(cache,MathProblemCache) and cache is not None:
-            raise TypeError("_cache is not a MathProblemCache.")
+        #if not isinstance(cache,MathProblemCache) and cache is not None:
+        #    raise TypeError("_cache is not a MathProblemCache.")
         if len(question) > 250:
             raise TooLongQuestion(f"Your question is {len(question) - 250} characters too long. Questions may be up to 250 characters long.")
         self.question = question
@@ -253,7 +253,7 @@ class MathProblem:
 
 class QuizSubmissionAnswer:
     "A class that represents an answer for a singular problem"
-    def __init__(self, answer: str= "", problem_id= None,quiz_id = 0):
+    def __init__(self, answer: str= "", problem_id: int= None,quiz_id: str = "0"):
         self.answer = answer
         self.problem_id = problem_id
         self.grade = 0
@@ -267,7 +267,7 @@ class QuizSubmission:
         self.user_id = user.id
         self.quiz_id = quiz_id
         self.mutable = True
-        self.answers = [QuizSubmissionAnswer(problem=question) for question in self.get_my_quiz()]
+        self.answers = [QuizSubmissionAnswer(problem=question,quiz_id= quiz_id) for question in self.get_my_quiz()]
     def get_my_quiz(self) -> None:
         return get_main_cache().get_quiz(self.quiz_id)
     def set_answer(self,problem_id, Answer):
@@ -295,9 +295,8 @@ class QuizSubmission:
             c.answers.append(QuizSubmissionAnswer(answer["answer"], problem_id= answer["problem_id"]))
         c.mutable = Dict["mutable"]
         return c
-
-
-
+    def submit(self):
+        pass
 
 
 class QuizMathProblem(MathProblem):
@@ -341,9 +340,10 @@ class QuizMathProblem(MathProblem):
         
 class Quiz(list): 
     "Essentially a list, so it implements everything that a list does, but it has an additional attribute submissions which is a list of QuizSubmissions"
-    def __init__(self, id, *args, **kwargs):
-        super().__init__(**args, **kwargs)
-        self._submissions = []
+    def __init__(self, id: str, iter: List[QuizMathProblem]):
+        """Create a new quiz. id is the quiz id and iter is an iterable of QuizMathProblems"""
+        super().__init__(iter)
+        self.submissions = []
         self.id = id
     def add_submission(self,submission):
         assert isinstance(submission, QuizSubmission)
@@ -561,33 +561,36 @@ class MathProblemCache:
         return Problem
     def remove_duplicate_problems(self):
         "Deletes duplicate problems"
-        problemsDeleted = 0
-        c = deepcopy(self._dict)
-        d = deepcopy(c)
-        for g1 in self._dict.keys():
-            for p1 in self._dict[g1].keys():
-                for g2 in c.keys():
-                    for p3 in c[g2].keys():
-                        if self._dict[g1][p1] == c[g2][p3] and not (g1 == g2 and p1 != p3):
-                            try:
-                                del d[g1][p1]
-                            except KeyError:
-                                continue
-                            problemsDeleted += 1
-        self._dict = d
-        return problemsDeleted
+        problems_seen_before = []
+        for key in self._sql_dict.keys():
+            p = MathProblem.from_dict(_dict=json.loads(s=self._sql_dict[key]))
+            if p in problems_seen_before:
+                del self._sql_dict[key]
+        #problemsDeleted = 0
+        #c = deepcopy(self._dict)
+        #d = deepcopy(c)
+        #for g1 in self._dict.keys():
+        #    for p1 in self._dict[g1].keys():
+        #        for g2 in c.keys():
+        #            for p3 in c[g2].keys():
+        #                if self._dict[g1][p1] == c[g2][p3] and not (g1 == g2 and p1 != p3):
+        #                    try:
+        #                        del d[g1][p1]
+        #                    except KeyError:
+        #                        continue
+        #                    problemsDeleted += 1
     def get_guilds(self) -> List[int]:
         if self.update_cache_by_default_when_requesting:
             self.update_cache()
         return self.guild_ids
     def add_quiz(self,quiz: Quiz) -> Quiz:
         "Add a quiz"
-        self.quizzes_sql_dict[]
+        self.quizzes_sql_dict[f"Quiz:{quiz.id}"] = quiz.to_dict()
     def __str__(self):
         raise NotImplementedError
     def get_quiz(self, quiz_id: int) -> Optional[Quiz]:
         "Get the quiz with the id specified. Returns None if not found"
-        
+        return Quiz.from_dict(self.quizzes_sql_dict[f"Quiz:{quiz_id}"])
 
 main_cache = MathProblemCache(max_answer_length=100,max_question_limit=250,max_guild_problems=125,warnings_or_errors="errors")
 def get_main_cache():
