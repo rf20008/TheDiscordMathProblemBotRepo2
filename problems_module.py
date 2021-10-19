@@ -384,7 +384,8 @@ class MathProblemCache:
             cursor = conn.cursor()
             cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='';")
         make_sql_table([], db_name = sql_dict_db_name)
-        make_sql_table([], sql_dict_db_name, )
+        make_sql_table([], sql_dict_db_name)
+        make_sql_table([], db_name = "MathProblemCache1.db")
         self.sql_dict_db_name = sql_dict_db_name
         if warnings_or_errors not in ["warnings", "errors"]:
             raise ValueError(f"warnings_or_errors is {warnings_or_errors}, not 'warnings' or 'errors'")
@@ -393,7 +394,7 @@ class MathProblemCache:
         else:
             self.warnings = False
         
-        self.load_from_sql()
+        #self.load_from_sql()
         self._max_answer = max_answer_length
         self._max_question = max_question_limit
         self._guild_limit = max_guild_problems
@@ -449,6 +450,8 @@ class MathProblemCache:
         guild_problems = {}
         guild_ids = []
         global_problems = []
+        s = self._sql_dict
+      
         for key in self._sql_dict.keys():
             p = key.partition(":")
             if p[0] not in guild_ids: #Update guild ids: Check if here
@@ -582,7 +585,7 @@ class MathProblemCache:
         return self.guild_ids
     def add_quiz(self,quiz: Quiz) -> Quiz:
         "Add a quiz"
-        self.quizzes_sql_dict[]
+        self.quizzes_sql_dict[f"Quiz:{quiz.id}"] = str(quiz.to_dict())
     def __str__(self):
         raise NotImplementedError
     def get_quiz(self, quiz_id: int) -> Optional[Quiz]:
