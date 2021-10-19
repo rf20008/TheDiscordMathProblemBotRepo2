@@ -1,26 +1,30 @@
-from types import *
+from typing import *
 from sqlite3 import *
-import nextcord, json, warnings
+from typing import *
+import nextcord, json, warnings, dislash
 from copy import deepcopy
-from nextcord import guild
+from nextcord import *
 import pickle, sqlite3
 import sqldict #https://github.com/skylergrammer/sqldict/
-def make_sql_table(kv_list, db_name, key_format="String", value_format="BLOB", serializer=pickle):
+def make_sql_table(kv_list="kv_store", db_name=Exception, key_format="String", value_format="BLOB", serializer=pickle, table_name="kv_store",):
     #A simple fix from https://github.com/skylergrammer/sqldict/blob/master/sqldict/__init__.py
     #(I opened a pull request, but it has not been merged (the last commit was 5 years ago))
+    if db_name == Exception:
+        raise Exception
     with connect(db_name) as conn:
         cur = conn.cursor()
         try:
-            cur.execute('''CREATE TABLE kv_store (key {} PRIMARY KEY, val  {})'''.format(key_format, value_format))
+            cur.execute(f'''CREATE TABLE {table_name} IF NOT EXISTS (key {key_format} PRIMARY KEY, val  {value_format})''')
         except OperationalError:
             pass
         for k,v in kv_list:
             if serializer is None:
-                cur.execute('INSERT OR IGNORE INTO kv_store VALUES (?,?)', (k, v))
+                cur.execute('INSERT OR IGNORE INTO {table_name} VALUES (?,?)', (k, v))
             else:
-                cur.execute('INSERT OR IGNORE INTO kv_store VALUES (?,?)', (k, serializer.dumps(v)))
+                cur.execute('INSERT OR IGNORE INTO {table_name} VALUES (?,?)', (k, serializer.dumps(v)))
 
 # This is a module containing MathProblem and MathProblemCache objects. (And exceptions as well!) This may be useful outside of this discord bot so feel free to use it :) Just follow the MIT+GNU license
+#Exceptions
 class MathProblemsModuleException(Exception):
     "The base exception for problems_module."
 class TooLongArgument(MathProblemsModuleException):
@@ -44,9 +48,12 @@ class TooManyProblems(MathProblemsModuleException):
 class ProblemNotFound(MathProblemsModuleException):
     "Raised when a problem isn't found"
     pass
+class ProblemNotWrittenException(MathProblemsModuleException):
+    "Raised when trying to grade a written problem but the problem is not graded"
+    pass
 class MathProblem:
     "For readability purposes :)"
-    def __init__(self,question,answer,id,author,guild_id="null", voters=[],solvers=[], cache=None):
+    def __init__(self,question,answer,id,author,guild_id="null", voters=[],solvers=[], cache=None,answers=[]):
         if guild_id != "null" and not isinstance(guild_id, str):
             raise TypeError("guild_id is not an string")
         if not isinstance(id, int):
@@ -61,6 +68,9 @@ class MathProblem:
             raise TypeError("voters is not a list")
         if not isinstance(solvers, list):
             raise TypeError("solvers is not a list")
+        if not isinstance(answers, list):
+            raise TypeError("answers isn't a list")
+        
         if cache is None:
             warnings.warn("_cache is None. This may cause errors", RuntimeWarning)
         if not isinstance(cache,MathProblemCache) and cache is not None:
@@ -77,8 +87,9 @@ class MathProblem:
         self.solvers=solvers
         self.author=author
         self._cache = cache
-    def edit(self,question=None,answer=None,id=None,guild_id=None,voters=None,solvers=None,author=None):
-        """Edit a math problem."""
+        self.answers = answers
+    def edit(self,question=None,answer=None,id=None,guild_id=None,voters=None,solvers=None,author=None, answers = None) -> None:
+        """Edit a math problem. The edit is in place"""
         if guild_id not in [None,"null"] and not isinstance(guild_id, int):
             raise TypeError("guild_id is not an integer")
         if not isinstance(id, int) and id is not None:
@@ -93,6 +104,8 @@ class MathProblem:
             raise TypeError("voters is not a list")
         if not isinstance(solvers, list) and solvers is not None:
             raise TypeError("solvers is not a list")
+        if not isinstance(answers, list) and answers is not None:
+            raise TypeError("answers is not a list")
         if id is not None or guild_id is not None or voters is not None or solvers is not None or author is not None:
             warnings.warn("You are changing one of the attributes that you should not be changing.", category=RuntimeWarning)
         if question is not None:
@@ -107,6 +120,14 @@ class MathProblem:
                 raise TooLongAnswer(f"Your answer is {len(question) - self._cache.max_answer_length} characters too long. Answers may be up to {self._cache.max_answer_length} characters long.")
             else:
                 raise TooLongAnswer(f"Your answer is {len(question) - 100} characters too long. Answers may be up to 100 characters long.")
+        for answer in range(len(answers)):
+            if self._cache is not None:
+                if len(answers[answer]) > 100:
+                    raise TooLongAnswer(f"Answer #{answer} is {len(answers[answer])-100} characters too long. Answers can be up to a 100 characters long")
+            else:
+                if len(answers[answer]) > self._cache.max_answer_length:
+                    raise TooLongAnswer(f"Answer #{answer} is {len(answers[answer]) - self._cache.max_answer_length} characters too long. Answers can be up to {self._cache.max_answer_length} characters long.")
+        if answer is not None:
             self.answer = answer
         if id is not None:
             self.id = id
@@ -142,6 +163,7 @@ class MathProblem:
         """Convert self to a dictionary"""
 
         return {
+            "type": "MathProblem",
             "question": self.question,
             "answer": self.answer,
             "id": str(self.id),
@@ -163,8 +185,11 @@ class MathProblem:
         if not self.is_solver(solver):
             self.solvers.append(solver.id)
     def get_answer(self):
-        "Return my answer."
+        "Return my answer. This has been deprecated"
         return self.answer
+    def get_answers(self):
+        "Return my possible answers"
+        return [self.answer, *self.answers] 
     def get_question(self):
         "Return my question."
         return self.question
@@ -176,7 +201,8 @@ class MathProblem:
             self.add_solver(potentialSolver)
     def check_answer(self,answer):
         "Checks the answer. Returns True if it's correct and False otherwise."
-        return answer == self.get_answer()
+        return answer in self.get_answers()
+
     def my_id(self):
         "Returns id & guild_id in a list. id is first and guild_id is second."
         return [self.id, self.guild_id]
@@ -224,25 +250,155 @@ class MathProblem:
         answer = {self.answer}, id = {self.id}, guild_id={self.guild_id},
         voters={self.voters},solvers={self.solvers},author={self.author},cache={None})""" # If I stored the problems, then there would be an infinite loop
 
+
+class QuizSubmissionAnswer:
+    "A class that represents an answer for a singular problem"
+    def __init__(self, answer: str= "", problem_id= None,quiz_id = 0):
+        self.answer = answer
+        self.problem_id = problem_id
+        self.grade = 0
+        self.quiz_id = quiz_id
+    def set_grade(self,grade):
+        self.grade=grade
+
+class QuizSubmission:
+    "A class that represents someone's submission to a graded quiz"
+    def __init__(self,user: nextcord.User, quiz_id):
+        self.user_id = user.id
+        self.quiz_id = quiz_id
+        self.mutable = True
+        self.answers = [QuizSubmissionAnswer(problem=question) for question in self.get_my_quiz()]
+    def get_my_quiz(self) -> None:
+        return get_main_cache().get_quiz(self.quiz_id)
+    def set_answer(self,problem_id, Answer):
+        "Set the answer of a quiz problem"
+        if not self.mutable:
+            raise RuntimeError("This instance is not mutable")
+        for answer in self.answers:
+            if answer.problem.id == problem_id:
+                answer.answer = Answer
+    def to_dict(self):
+        t = {
+            "mutable": self.mutable,
+            "quiz_id": self.quiz_id,
+            "user_id": self.user_id,
+            "answer": []
+        }
+        for answer in self.answers:
+            t["answer"].append({"problem_id": answer.problem.id, "answer": answer.answer})
+        return t
+    @classmethod
+    def from_dict(cls, Dict):
+        "Convert a dictionary into a QuizSubmission"
+        c = cls(user_id=Dict["user_id"], quiz_id = "quiz_id")
+        for answer in Dict["answers"]:
+            c.answers.append(QuizSubmissionAnswer(answer["answer"], problem_id= answer["problem_id"]))
+        c.mutable = Dict["mutable"]
+        return c
+
+
+
+
+
+class QuizMathProblem(MathProblem):
+    "A class that represents a Quiz Math Problem"
+    def __init__(self,question,answer,id,author,guild_id="null", voters=[],solvers=[], cache=None,answers=[],is_written=False,quiz=  None, max_score=-1):
+        "A method that allows the creation of new QuizMathProblems"
+        if not isinstance(quiz. Quiz):
+            raise TypeError(f"quiz is of type {quiz.__class.__name}, not Quiz") # Here to help me debug
+        
+        super().__init__(question,answer,id,author,guild_id,voters,solvers,cache,answers) # 
+        self.is_written = False
+        self.quiz = quiz
+        self.max_score = max_score
+        self.min_score = 0
+    def edit(self,question=None,answer=None,id=None,guild_id=None,voters=None,solvers=None,author=None, answers = None,is_written=None, quiz = None, max_score: int = -1):
+        super().edit(question,answer,id,guild_id,voters,solvers,author,answers)
+        if not isinstance(quiz, Quiz):
+            raise TypeError(f"quiz is of type {quiz.__class.__name}, not Quiz") # Here to help me debug
+        self.quiz = Quiz
+        if not isinstance(is_written, bool):
+            raise TypeError("is_written is not of type bool")
+    def to_dict(self):
+        return {
+            "type": "QuizMathProblem",
+            "question": self.question,
+            "answer": self.answer,
+            "id": str(self.id),
+            "guild_id": str(self.guild_id),
+            "voters": self.voters,
+            "solvers": self.solvers,
+            "author": self.author,
+            "quiz_id": self.quiz.id,
+            "is_written": self.is_written,
+            "max_score": self.max_score
+        }
+    @classmethod
+    def from_dict(cls, Dict):
+        Dict.pop("type")
+        return cls(*Dict)
+    
+        
+class Quiz(list): 
+    "Essentially a list, so it implements everything that a list does, but it has an additional attribute submissions which is a list of QuizSubmissions"
+    def __init__(self, id, *args, **kwargs):
+        super().__init__(**args, **kwargs)
+        self._submissions = []
+        self.id = id
+    def add_submission(self,submission):
+        assert isinstance(submission, QuizSubmission)
+        submission.mutable = False
+        self.submissions.append(submission)
+    @property
+    def submissions(self):
+        return self.submissions
+    @classmethod
+    def from_dict(cls,Dict: dict):
+        problemsAsType = []
+        submissions = []
+        Problems = Dict["problems"]
+        for p in Problems:
+            problemsAsType.append(QuizMathProblem.from_dict(p))
+        problemsAsType.sort(key= lambda problem: problem.id)
+
+        for s in Dict["submissions"]:
+            submissions.append(QuizSubmission.from_dict(s))
+        c = cls([])
+        c.extend(problemsAsType)
+        c._submissions = submissions
+        c.id = Dict["id"]
+        return c
+    def to_dict(self):
+        "Convert this instance into a Dictionary to be stored in SQL"
+        Problems = [problem.to_dict() for problem in self]
+        Submissions = [submission.to_dict for submission in self.submissions]
+        return {"problems": Problems, "submissions": Submissions, "id": self.id}
+           
+
 class MathProblemCache:
     def __init__(self,max_answer_length=100,max_question_limit=250,
     max_guild_problems=125,warnings_or_errors = "warnings",
     sql_dict_db_name = "problems_module.db",name="1",
     update_cache_by_default_when_requesting=True):
-        sqldict.make_sql_table([], db_name = sql_dict_db_name)
-
+        with sqlite3.connect(sql_dict_db_name) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='';")
+        make_sql_table([], db_name = sql_dict_db_name)
+        make_sql_table([], sql_dict_db_name, )
+        self.sql_dict_db_name = sql_dict_db_name
         if warnings_or_errors not in ["warnings", "errors"]:
             raise ValueError(f"warnings_or_errors is {warnings_or_errors}, not 'warnings' or 'errors'")
         if warnings_or_errors == "warnings":
             self.warnings = True
         else:
             self.warnings = False
-
+        
         self.load_from_sql()
         self._max_answer = max_answer_length
         self._max_question = max_question_limit
         self._guild_limit = max_guild_problems
         self._sql_dict = sqldict.SqlDict(name=f"MathProblemCache{name}")
+        self.quizzes_sql_dict = sqldict.SqlDict(name = "TheQuizStorer", table_name = "quizzes_kv_store")
         self.update_cache_by_default_when_requesting=update_cache_by_default_when_requesting
     @property
     def max_answer_length(self):
@@ -420,12 +576,18 @@ class MathProblemCache:
                             problemsDeleted += 1
         self._dict = d
         return problemsDeleted
-    def get_guilds(self):
+    def get_guilds(self) -> List[int]:
         if self.update_cache_by_default_when_requesting:
             self.update_cache()
         return self.guild_ids
+    def add_quiz(self,quiz: Quiz) -> Quiz:
+        "Add a quiz"
+        self.quizzes_sql_dict[]
     def __str__(self):
         raise NotImplementedError
+    def get_quiz(self, quiz_id: int) -> Optional[Quiz]:
+        "Get the quiz with the id specified. Returns None if not found"
+        
 
 main_cache = MathProblemCache(max_answer_length=100,max_question_limit=250,max_guild_problems=125,warnings_or_errors="errors")
 def get_main_cache():
