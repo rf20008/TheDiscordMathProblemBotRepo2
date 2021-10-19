@@ -16,4 +16,5 @@ nextcord = "^2.0.0-alpha.1"
 python = "^3.8"
 typing-extensions = "^3.10.0"
 orjson = "^3.6.3"
+sqldict = {git = "https://github.com/skylergrammer/sqldict.git"}
 [tool.poetry.dev-dependencies]
