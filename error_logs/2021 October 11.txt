@@ -1,0 +1,24 @@
+Mon Oct 11 20:45:55 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1282, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 216, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 212, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 35, in _maybe_cog_call
+    return await self(cog, inter, **params)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/developer_commands.py", line 140, in debug
+    debug_dict["reached_max_problems?"] = "✅" if len(self.bot.main_cache.get_guild_problems(guild)) >= self.bot.main_cache.max_guild_problems else "❌"
+  File "/home/runner/TheDiscordMathProblemBot/problems_module.py", line 327, in get_guild_problems
+    self.update_cache()
+  File "/home/runner/TheDiscordMathProblemBot/problems_module.py", line 294, in update_cache
+    for key in self._sql_dict.keys():
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/sqldict/__init__.py", line 82, in keys
+    cur.execute("SELECT {} FROM {}".format(self.__key_col, self.__tablename))
+sqlite3.OperationalError: no such table: kv_store
+
+
