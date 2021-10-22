@@ -1,11 +1,20 @@
 from typing import *
+from time import sleep
 from sqlite3 import *
 from typing import *
 import nextcord, json, warnings, dislash
 from copy import deepcopy
 from nextcord import *
 import pickle, sqlite3
+from threading import Thread
 import sqldict #https://github.com/skylergrammer/sqldict/
+
+def _commit(database_name, timeout_ms = 250):
+    _connection = connect(database_name)
+    while True:
+        sleep(timeout_ms/1000)
+        _connection.commit()
+    
 def make_sql_table(kv_list="kv_store", db_name=Exception, key_format="String", value_format="BLOB", serializer=pickle, table_name="kv_store",):
     #A simple fix from https://github.com/skylergrammer/sqldict/blob/master/sqldict/__init__.py
     #(I opened a pull request, but it has not been merged (the last commit was 5 years ago))
@@ -22,6 +31,7 @@ def make_sql_table(kv_list="kv_store", db_name=Exception, key_format="String", v
                 cur.execute('INSERT OR IGNORE INTO {table_name} VALUES (?,?)', (k, v))
             else:
                 cur.execute('INSERT OR IGNORE INTO {table_name} VALUES (?,?)', (k, serializer.dumps(v)))
+        conn.commit()
 
 # This is a module containing MathProblem and MathProblemCache objects. (And exceptions as well!) This may be useful outside of this discord bot so feel free to use it :) Just follow the MIT+GNU license
 #Exceptions
@@ -380,9 +390,6 @@ class MathProblemCache:
     max_guild_problems=125,warnings_or_errors = "warnings",
     sql_dict_db_name = "problems_module.db",name="1",
     update_cache_by_default_when_requesting=True):
-        with sqlite3.connect(sql_dict_db_name) as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='';")
         make_sql_table([], db_name = sql_dict_db_name)
         make_sql_table([], sql_dict_db_name)
         make_sql_table([], db_name = "MathProblemCache1.db")
@@ -394,13 +401,17 @@ class MathProblemCache:
         else:
             self.warnings = False
         
-        #self.load_from_sql()
+        
         self._max_answer = max_answer_length
         self._max_question = max_question_limit
         self._guild_limit = max_guild_problems
+       
+        self.update_cache_by_default_when_requesting=update_cache_by_default_when_requesting
+    def _initialize_sql_dict(self): 
         self._sql_dict = sqldict.SqlDict(name=f"MathProblemCache{name}")
         self.quizzes_sql_dict = sqldict.SqlDict(name = "TheQuizStorer", table_name = "quizzes_kv_store")
-        self.update_cache_by_default_when_requesting=update_cache_by_default_when_requesting
+        self._autocommiter = Thread(target=_commit, kwargs={"database_name": self._sql_dict.name, "timeout_ms": 100})
+        self._autocommiter.run()
     @property
     def max_answer_length(self):
         return self._max_answer
@@ -560,7 +571,8 @@ class MathProblemCache:
         Problem = self.get_problem(guild_id,problem_id)
         with sqlite3.connect(self.sql_dict.name) as connection: # The sqldict does not implement deletion, so I have to do sql magic
             connection.cursor.execute(f"DELETE FROM {self._sql_dict.__tablename__} WHERE key = \"{str(guild_id)}:{str(problem_id)}")
-        
+            connection.commit()
+
         return Problem
     def remove_duplicate_problems(self):
         "Deletes duplicate problems"
@@ -582,9 +594,29 @@ class MathProblemCache:
         #                    except KeyError:
         #                        continue
         #                    problemsDeleted += 1
-    def get_guilds(self) -> List[int]:
+    def get_guilds(self, bot: nextcord.ext.commands.Bot = None) -> List[Union[int, Optional[nextcord.Guild]]]:
+        "Get the guilds (due to using sql, it must return the guild id, bot is needed to return guilds. takes O(n) time"
+        try:
+            assert bot == None or isinstance(bot, nextcord.ext.commands.Bot)
+        except:
+            raise AssertionError("bot isn't a bot!")
+
         if self.update_cache_by_default_when_requesting:
             self.update_cache()
+        
+        if bot is not None:
+            self._guilds = []
+            for guild_id in self.guild_ids:
+                guild = bot.get_guild(guild_id)
+                if guild is None:
+                    if self.warnings:
+                        warnings.warn("guild is None")
+                    else:
+                        raise RuntimeError(f"Guild not found (id: {guild_id}) :-(")
+                else:
+                    self._guilds.append(guild)
+            return self._guilds
+
         return self.guild_ids
     def add_quiz(self,quiz: Quiz) -> Quiz:
         "Add a quiz"
