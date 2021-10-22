@@ -405,13 +405,13 @@ class MathProblemCache:
         self._max_answer = max_answer_length
         self._max_question = max_question_limit
         self._guild_limit = max_guild_problems
-       
+        self._initialize_sql_dict()
         self.update_cache_by_default_when_requesting=update_cache_by_default_when_requesting
     def _initialize_sql_dict(self): 
-        self._sql_dict = sqldict.SqlDict(name=f"MathProblemCache{name}")
+        self._sql_dict = sqldict.SqlDict(name=f"MathProblemCache1")
         self.quizzes_sql_dict = sqldict.SqlDict(name = "TheQuizStorer", table_name = "quizzes_kv_store")
-        self._autocommiter = Thread(target=_commit, kwargs={"database_name": self._sql_dict.name, "timeout_ms": 100})
-        self._autocommiter.run()
+        self._autocommiter = Thread(target=_commit, kwargs={"database_name": self._sql_dict.name, "timeout_ms": 1000})
+        self._autocommiter.start()
     @property
     def max_answer_length(self):
         return self._max_answer
