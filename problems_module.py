@@ -8,30 +8,10 @@ from nextcord import *
 import pickle, sqlite3
 from threading import Thread
 import sqldict #https://github.com/skylergrammer/sqldict/
+main_cache = None
 
-def _commit(database_name, timeout_ms = 250):
-    _connection = connect(database_name)
-    while True:
-        sleep(timeout_ms/1000)
-        _connection.commit()
     
-def make_sql_table(kv_list="kv_store", db_name=Exception, key_format="String", value_format="BLOB", serializer=pickle, table_name="kv_store",):
-    #A simple fix from https://github.com/skylergrammer/sqldict/blob/master/sqldict/__init__.py
-    #(I opened a pull request, but it has not been merged (the last commit was 5 years ago))
-    if db_name == Exception:
-        raise Exception
-    with connect(db_name) as conn:
-        cur = conn.cursor()
-        try:
-            cur.execute(f'''CREATE TABLE {table_name} IF NOT EXISTS (key {key_format} PRIMARY KEY, val  {value_format})''')
-        except OperationalError:
-            pass
-        for k,v in kv_list:
-            if serializer is None:
-                cur.execute('INSERT OR IGNORE INTO {table_name} VALUES (?,?)', (k, v))
-            else:
-                cur.execute('INSERT OR IGNORE INTO {table_name} VALUES (?,?)', (k, serializer.dumps(v)))
-        conn.commit()
+
 
 # This is a module containing MathProblem and MathProblemCache objects. (And exceptions as well!) This may be useful outside of this discord bot so feel free to use it :) Just follow the MIT+GNU license
 #Exceptions
@@ -390,9 +370,8 @@ class MathProblemCache:
     max_guild_problems=125,warnings_or_errors = "warnings",
     sql_dict_db_name = "problems_module.db",name="1",
     update_cache_by_default_when_requesting=True):
-        make_sql_table([], db_name = sql_dict_db_name)
-        make_sql_table([], sql_dict_db_name)
-        make_sql_table([], db_name = "MathProblemCache1.db")
+        #make_sql_table([], db_name = sql_dict_db_name)
+        #make_sql_table([], db_name = "MathProblemCache1.db", table_name="kv_store")
         self.sql_dict_db_name = sql_dict_db_name
         if warnings_or_errors not in ["warnings", "errors"]:
             raise ValueError(f"warnings_or_errors is {warnings_or_errors}, not 'warnings' or 'errors'")
@@ -407,11 +386,9 @@ class MathProblemCache:
         self._guild_limit = max_guild_problems
         self._initialize_sql_dict()
         self.update_cache_by_default_when_requesting=update_cache_by_default_when_requesting
-    def _initialize_sql_dict(self): 
-        self._sql_dict = sqldict.SqlDict(name=f"MathProblemCache1")
+    def _initialize_sql_dict(self):
+        self._sql_dict = sqldict.SqlDict(name=f"MathProblemCache1.db",table_name = "kv_store")
         self.quizzes_sql_dict = sqldict.SqlDict(name = "TheQuizStorer", table_name = "quizzes_kv_store")
-        self._autocommiter = Thread(target=_commit, kwargs={"database_name": self._sql_dict.name, "timeout_ms": 1000})
-        self._autocommiter.start()
     @property
     def max_answer_length(self):
         return self._max_answer
@@ -471,7 +448,10 @@ class MathProblemCache:
             #Check for guild problems
             #guaranteed to be a new problem :-)
             guild_problems[p[0]] = MathProblem.from_dict(self._sql_dict[key]) #Convert it to a math problem
-        global_problems = guild_problems["null"] #contention            
+        try:
+            global_problems = guild_problems["null"] #contention            
+        except KeyError: # No global problems yet
+            global_problems = []
         self.guild_problems = guild_problems
         self.guild_ids = guild_ids
         self.global_problems = global_problems

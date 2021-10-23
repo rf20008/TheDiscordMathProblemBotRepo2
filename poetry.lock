@@ -152,9 +152,9 @@ develop = false
 
 [package.source]
 type = "git"
-url = "https://github.com/skylergrammer/sqldict.git"
+url = "https://github.com/rf20008/sqldict.git"
 reference = "master"
-resolved_reference = "b4ec3dcf42a10fd81f372c79bcf498b1c7e3cd80"
+resolved_reference = "67ef9167f90b225495ed4aa556baf67a2d6a1452"
 
 [[package]]
 name = "typing-extensions"
@@ -179,7 +179,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "37ca2a13e7c0db2e2ba613428aa0e5e5ecd278fb4560cbd08d9f20eb57a260f6"
+content-hash = "7049912756e859b3dcce457c0aee913beb292af272024045f4349bad688851b6"
 
 [metadata.files]
 aiohttp = [

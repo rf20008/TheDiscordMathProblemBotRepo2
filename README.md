@@ -31,6 +31,8 @@ SQLDict: https://github.com/skylergrammer/sqldict
 # Self-host my bot
 My code is open source, so you can! There are bugs, so you should probably help me instead. I won't stop you from self-hosting though.
 
+(I'd prefer if you didn't, though)
+
 
 ## Steps
 (This assumes you already have knowledge of the command line and how to make a new discord application)
