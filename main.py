@@ -712,7 +712,14 @@ async def github_repo(ctx):
         "[Repo Link:](https://github.com/rf20008/TheDiscordMathProblemBotRepo) ",
                                        successTitle="Here is the Github Repository Link."))
 
-
+@slash.slash_command(name="submit_legal_request_for_problem_removal", description = "Submit a legal request for the removal of a QuizProblem that breaks copyright rules. The bot is going to tell me this in a channel in my private server that it has recieved a legal request", options = [
+  Option(name="offending_problem_guild_id", description = "The guild id of the problem you are trying to remove. The guild id of a global problem is null", type = OptionType.INTEGER),
+  Option(name = "offending_problem_id", description = "The problem id of the problem. Very important (so I know which problem to check)", type = OptionType.INTEGER),
+  Option(name = "extra_info", description = "A up to 4000 character description (about 2 pages) of the reason you want a takedown. Unfortunately, Discord doesn't support files.", type = OptionType.STRING),
+  Option(name = "copyrighted_thing", description = "The copyrighted thing that this problem is violating", type = OptionType.STRING)
+] )
+def submit_legal_request_for_problem_removal(ctx, offending_problem_guild_id, offending_problem_id, extra_info, copyrighted_thing):
+    pass
 
 print("The bot has finished setting up and will now run.")
 #slash.run(DISCORD_TOKEN)
