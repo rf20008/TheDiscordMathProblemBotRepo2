@@ -35,7 +35,7 @@ class ProblemNotFoundException(MathProblemsModuleException):
 class TooManyProblems(MathProblemsModuleException):
     "Raised when trying to add problems when there is already the maximum number of problems."
     pass
-class ProblemNotFound(MathProblemsModuleException):
+class ProblemNotFound(KeyError):
     "Raised when a problem isn't found"
     pass
 class ProblemNotWrittenException(MathProblemsModuleException):
@@ -239,8 +239,16 @@ class MathProblem:
         return f"""problems_module.MathProblem(question={self.question},
         answer = {self.answer}, id = {self.id}, guild_id={self.guild_id},
         voters={self.voters},solvers={self.solvers},author={self.author},cache={None})""" # If I stored the problems, then there would be an infinite loop
-
-
+    def __str__(self, include_answer = False):
+        "Implement str(self)"
+        _str = f"""Question: {self.question}, 
+        id: {self.id}, 
+        guild_id: {self.guild_id}, 
+        solvers: {[f'<@{id}>' for id in self.solvers]},
+        author: <@{self.author}>"""
+        if include_answer:
+            _str += f"\nAnswer: {self.answer}"
+        return str(_str)
 class QuizSubmissionAnswer:
     "A class that represents an answer for a singular problem"
     def __init__(self, answer: str= "", problem_id: int= None,quiz_id: str = "0"):
@@ -250,7 +258,8 @@ class QuizSubmissionAnswer:
         self.quiz_id = quiz_id
     def set_grade(self,grade):
         self.grade=grade
-
+    def __str__(self):
+        return str(self.answer)
 class QuizSubmission:
     "A class that represents someone's submission to a graded quiz"
     def __init__(self,user: nextcord.User, quiz_id):

@@ -52,7 +52,7 @@ def the_daemon_file_saver():
                              printSuccessMessagesByDefault=True)
     FileSaverDict = FileSaverObj.load_files(main_cache,True)
     (guildMathProblems,
-     trusted_users,
+     bot.trusted_users,
      vote_threshold) = (
         FileSaverDict["guildMathProblems"],
         FileSaverDict["trusted_users"],
@@ -60,7 +60,7 @@ def the_daemon_file_saver():
 
     while True: 
         sleep(45) 
-        FileSaverObj.save_files(main_cache,False,guildMathProblems,vote_threshold,mathProblems,trusted_users)
+        FileSaverObj.save_files(main_cache,False,guildMathProblems,vote_threshold,mathProblems,bot.trusted_users)
 
             
 t = threading.Thread(target=the_daemon_file_saver,name="The File Saver",daemon=True)
@@ -207,7 +207,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
         Problem__ = f"Question: {problem.get_question()}\nAuthor: {str(problem.get_author())}\nNumVoters/Vote Threshold: {problem.get_num_voters()}/{vote_threshold}\nNumSolvers: {len(problem.get_solvers())}"
         
         if show_all_data:
-            if not ((problem.is_author(ctx.author) or ctx.author.id not in trusted_users or (
+            if not ((problem.is_author(ctx.author) or ctx.author.id not in bot.trusted_users or (
                 is_guild_problem and ctx.author.guild_permissions.administrator == True))):
                 await ctx.reply(embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True)
                 return
@@ -257,7 +257,7 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
 
-    if ctx.author.id not in trusted_users:
+    if ctx.author.id not in bot.trusted_users:
         await ctx.reply(embed=ErrorEmbed("You aren't trusted!",ephemeral=True))
         return
     if num_new_problems_to_generate > 200:
@@ -333,7 +333,7 @@ async def list_trusted_users(ctx):
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     __trusted_users = ""
-    for item in trusted_users:
+    for item in bot.trusted_users:
         __trusted_users += "<@" + str(item) + ">"
         __trusted_users+= "\n"
     await ctx.reply(__trusted_users, ephemeral = True)
@@ -540,7 +540,7 @@ async def set_vote_threshold(ctx,threshold):
             "Invalid threshold argument! (threshold must be an integer)"),
                         ephemeral=True)
         return
-    if ctx.author.id not in trusted_users:
+    if ctx.author.id not in bot.trusted_users:
         await ctx.reply(embed=ErrorEmbed("You aren't allowed to do this!"), ephemeral=True)
         return
     if threshold <1:
@@ -628,7 +628,7 @@ async def delete_problem(ctx, problem_id,is_guild_problem=False):
         if problem_id not in main_cache.get_guild_problems(ctx.guild).keys():
             await ctx.reply(embed=ErrorEmbed("That problem doesn't exist."), ephemeral=True)
             return
-        if not (ctx.author.id in trusted_users or not (
+        if not (ctx.author.id in bot.trusted_users or not (
             main_cache.get_problem(str(guild_id),str(problem_id)).is_author()
             ) or (ctx.author.guild_permissions.administrator)):
             await ctx.reply(embed=ErrorEmbed("Insufficient permissions"), ephemeral=True)
@@ -644,7 +644,7 @@ async def delete_problem(ctx, problem_id,is_guild_problem=False):
     if problem_id not in main_cache.get_guild_problems(ctx.guild).keys():
         await ctx.reply(embed=ErrorEmbed("That problem doesn't exist."), ephemeral=True)
         return
-    if not (ctx.author.id in trusted_users or not
+    if not (ctx.author.id in bot.trusted_users or not
             (main_cache.get_problem(guild_id,problem_id).is_author())
             or ctx.author.guild_permissions.administrator):
         await ctx.reply(embed=ErrorEmbed("Insufficient permissions"), ephemeral=True)
@@ -658,14 +658,14 @@ async def delete_problem(ctx, problem_id,is_guild_problem=False):
 async def add_trusted_user(ctx,user):
     "Add a trusted user"
     await check_for_cooldown(ctx,"add_trusted_user",600)
-    if ctx.author.id not in trusted_users:
+    if ctx.author.id not in bot.trusted_users:
         await ctx.reply(embed=ErrorEmbed("You aren't a trusted user!"), ephemeral=True)
         return
-    if user.id in trusted_users:
+    if user.id in bot.trusted_users:
         await ctx.reply(embed=ErrorEmbed(f"{user.name} is already a trusted user!"),
                         ephemeral=True)
         return
-    trusted_users.append(user.id)
+    bot.trusted_users.append(user.id)
     await ctx.reply(embed=ErrorEmbed(f"Successfully made {user.nick} a trusted user!"), ephemeral=True) 
 
 @slash.slash_command(name="remove_trusted_user", description = "removes a trusted user",options=
@@ -676,13 +676,13 @@ async def add_trusted_user(ctx,user):
 async def remove_trusted_user(ctx,user):
     "Remove a trusted user"
     await check_for_cooldown(ctx,"remove_trusted_user",600)
-    if ctx.author.id not in trusted_users:
+    if ctx.author.id not in bot.trusted_users:
         await ctx.reply(embed=ErrorEmbed("You aren't a trusted user!"), ephemeral=True)
         return
-    if user.id not in trusted_users:
+    if user.id not in bot.trusted_users:
         await ctx.reply(embed=ErrorEmbed(f"{user.name} isn't a trusted user!", ephemeral=True))
         return
-    trusted_users.pop(trusted_users.index(user.id))
+    bot.trusted_users.pop(user.id)
     await ctx.reply(embed=ErrorEmbed(f"Successfully made {user.nick} no longer a trusted user!"), ephemeral=True) 
 
 
@@ -712,14 +712,23 @@ async def github_repo(ctx):
         "[Repo Link:](https://github.com/rf20008/TheDiscordMathProblemBotRepo) ",
                                        successTitle="Here is the Github Repository Link."))
 
-@slash.slash_command(name="submit_legal_request_for_problem_removal", description = "Submit a legal request for the removal of a QuizProblem that breaks copyright rules. The bot is going to tell me this in a channel in my private server that it has recieved a legal request", options = [
-  Option(name="offending_problem_guild_id", description = "The guild id of the problem you are trying to remove. The guild id of a global problem is null", type = OptionType.INTEGER),
-  Option(name = "offending_problem_id", description = "The problem id of the problem. Very important (so I know which problem to check)", type = OptionType.INTEGER),
-  Option(name = "extra_info", description = "A up to 4000 character description (about 2 pages) of the reason you want a takedown. Unfortunately, Discord doesn't support files.", type = OptionType.STRING),
-  Option(name = "copyrighted_thing", description = "The copyrighted thing that this problem is violating", type = OptionType.STRING)
-] )
-async def submit_legal_request_for_problem_removal(ctx, offending_problem_guild_id, offending_problem_id, extra_info, copyrighted_thing):
-    pass
+@slash.slash_command(name="submit_a_request", description = "Submit a request. I will know!", options = [
+  Option(name="offending_problem_guild_id", description = "The guild id of the problem you are trying to remove. The guild id of a global problem is null", type = OptionType.INTEGER, required = False),
+  Option(name = "offending_problem_id", description = "The problem id of the problem. Very important (so I know which problem to check)", type = OptionType.INTEGER, required = False),
+  Option(name = "extra_info", description = "A up to 5000 character description (about 2 pages) Use this wisely!", type = OptionType.STRING, required = True),
+  Option(name = "copyrighted_thing", description = "The copyrighted thing that this problem is violating", type = OptionType.STRING, required=False)
+, Option(name="is_legal", description = "Is this a legal request?")])
+async def submit_a_request(ctx, offending_problem_guild_id, offending_problem_id, extra_info, copyrighted_thing):
+    assert len(extra_info) <= 5000
+    channel = await bot.fetch_channel(id=901464948604039209)
+    try:
+        Problem = main_cache.get_problem(guild_id, problem_id)
+        problem_found = True
+    except KeyError:
+        #Problem not found
+        problem_found = False
+    
+
 
 print("The bot has finished setting up and will now run.")
 #slash.run(DISCORD_TOKEN)
