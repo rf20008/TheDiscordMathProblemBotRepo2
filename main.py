@@ -718,7 +718,7 @@ async def github_repo(ctx):
   Option(name = "extra_info", description = "A up to 4000 character description (about 2 pages) of the reason you want a takedown. Unfortunately, Discord doesn't support files.", type = OptionType.STRING),
   Option(name = "copyrighted_thing", description = "The copyrighted thing that this problem is violating", type = OptionType.STRING)
 ] )
-def submit_legal_request_for_problem_removal(ctx, offending_problem_guild_id, offending_problem_id, extra_info, copyrighted_thing):
+async def submit_legal_request_for_problem_removal(ctx, offending_problem_guild_id, offending_problem_id, extra_info, copyrighted_thing):
     pass
 
 print("The bot has finished setting up and will now run.")
