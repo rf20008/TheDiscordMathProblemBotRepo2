@@ -716,7 +716,7 @@ async def github_repo(ctx):
   Option(name = "extra_info", description = "A up to 5000 character description (about 2 pages) Use this wisely!", type = OptionType.STRING, required = False),
   Option(name = "copyrighted_thing", description = "The copyrighted thing that this problem is violating", type = OptionType.STRING, required=False)
 , Option(name="is_legal", description = "Is this a legal request?", required = False, type = OptionType.BOOLEAN)])
-async def submit_a_request(ctx, offending_problem_guild_id= None, offending_problem_id=None, extra_info=None, copyrighted_thing = None, is_legal = False):
+async def submit_a_request(inter, offending_problem_guild_id= None, offending_problem_id=None, extra_info=None, copyrighted_thing = None, is_legal = False):
     if(extra_info is None and is_legal is False and copyrighted_thing is not Exception and offending_problem_guild_id is  None and offending_problem_id is None):
         await inter.reply(embed=ErrorEmbed("You must specify some field."))
     if extra_info is None:
@@ -739,8 +739,10 @@ async def submit_a_request(ctx, offending_problem_guild_id= None, offending_prob
     embed.description += f"""Copyrighted thing: (if legal): {copyrighted_thing}
     Extra info: {extra_info}"""
     if problem_found:
-        embed.set_footer(Problem)
-    embed._footer += asctime()
+        embed.set_footer(text=str(Problem) + asctime())
+    else:
+        embed.set_footer(text=str(asctime()))
+    
     content = "A request has been submitted."
     for owner_id in bot.owner_ids:
         content += f"<@{owner_id}>"
