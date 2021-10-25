@@ -70,8 +70,9 @@ def generate_new_id():
     return random.randint(0, 10**14)
 Intents = return_intents.return_intents()
 bot = nextcord_commands.Bot(
-        " ",intents=Intents
-)
+        " ",intents=Intents,
+
+application_id = 845751152901750824)
 bot.main_cache = main_cache
 bot.trusted_users = trusted_users
 bot._transport_modules = {
@@ -730,9 +731,9 @@ async def submit_a_request(inter, offending_problem_guild_id= None, offending_pr
         #Problem not found
         problem_found = False
     content = bot.owner_id
-    embed = nextcord.Embed(title = f"A new request has been recieved from {ctx.author.name}#{ctx.author.discriminator}!", description = "")
+    embed = nextcord.Embed(title = f"A new request has been recieved from {inter.author.name}#{inter.author.discriminator}!", description = "")
     if is_legal:
-      embed = nextcord.Embed(title = f"A new legal request has been recieved from {ctx.author.name}#{ctx.author.discriminator}!", description = "")
+      embed = nextcord.Embed(title = f"A new legal request has been recieved from {inter.author.name}#{inter.author.discriminator}!", description = "")
 
     if problem_found:
         embed.description = f"Problem_info:{ str(Problem)}"
@@ -744,8 +745,9 @@ async def submit_a_request(inter, offending_problem_guild_id= None, offending_pr
         embed.set_footer(text=str(asctime()))
     
     content = "A request has been submitted."
-    for owner_id in bot.owner_ids:
+    for owner_id in bot.owner_ids: #Mentioning owners: may be removed (you can also remove it as well)
         content += f"<@{owner_id}>"
+    content += f"<@{bot.owner_id}>"
     await channel.send(embed=embed, content = content
     )
     await inter.reply("Your request has been submitted!")
