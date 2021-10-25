@@ -1,0 +1,81 @@
+Mon Oct 25 00:14:01 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/enums.py", line 139, in __call__
+    return cls._enum_value_map_[value]
+KeyError: <SlashInteraction id=901986925794172968 version=1 type=2 token='aW50ZXJhY3Rpb246OTAxOTg2OTI1Nzk0MTcyOTY4Okw3RU42ZER4WFNVS25CNURoOTNCOVhxcEh2MWdodkpQNE9PYkpBVUVRbzNJa3RFanRkdGlBWmdnMHVySGVmbmVEU2szM3JITE9QTFM3Y2VjT3dmcThGOVNlOXp0cjQyNU5EbWo5Ym5yaFk3QkNwRW5VdnpEV3RuRVhEZE9wSWx5' guild=The Discord math problem bot server channel=thisisatestchannel author=ay136416#2707 data=<SlashInteractionData id=901879020990386228 type=1 name='submit_a_request' options={'extra_info': <InteractionDataOption name='extra_info' value=testing 123 options={}>}>>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1282, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 216, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 210, in invoke
+    self._prepare_cooldowns(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 78, in _prepare_cooldowns
+    bucket = self._buckets.get_bucket(inter, current)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/discord/ext/commands/cooldowns.py", line 173, in get_bucket
+    key = self._bucket_key(message)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/discord/ext/commands/cooldowns.py", line 157, in _bucket_key
+    return self._cooldown.type(msg)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/enums.py", line 141, in __call__
+    raise ValueError(f"{value!r} is not a valid {cls.__name__}")
+ValueError: <SlashInteraction id=901986925794172968 version=1 type=2 token='aW50ZXJhY3Rpb246OTAxOTg2OTI1Nzk0MTcyOTY4Okw3RU42ZER4WFNVS25CNURoOTNCOVhxcEh2MWdodkpQNE9PYkpBVUVRbzNJa3RFanRkdGlBWmdnMHVySGVmbmVEU2szM3JITE9QTFM3Y2VjT3dmcThGOVNlOXp0cjQyNU5EbWo5Ym5yaFk3QkNwRW5VdnpEV3RuRVhEZE9wSWx5' guild=The Discord math problem bot server channel=thisisatestchannel author=ay136416#2707 data=<SlashInteractionData id=901879020990386228 type=1 name='submit_a_request' options={'extra_info': <InteractionDataOption name='extra_info' value=testing 123 options={}>}>> is not a valid BucketType
+
+
+Mon Oct 25 00:15:26 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/enums.py", line 139, in __call__
+    return cls._enum_value_map_[value]
+KeyError: <SlashInteraction id=901987281752186991 version=1 type=2 token='aW50ZXJhY3Rpb246OTAxOTg3MjgxNzUyMTg2OTkxOmNhdU5yNUZkV1N2bUlhcDJNN3k4TDZuTlREOVc2TjFLQkNmYVAxS0pXRkFDM3NtMEJUWDF3ZWRFbzg2UjVSMGRNV1U0UVJFNVJyVXJic3BYR1BFTTczZ3BYRG1JalJOeElSdnJONEt5c0lKeWlTV0laQUNFNmFMWUNrSE9lMTZt' guild=The Discord math problem bot server channel=thisisatestchannel author=ay136416#2707 data=<SlashInteractionData id=901879020990386228 type=1 name='submit_a_request' options={'extra_info': <InteractionDataOption name='extra_info' value=testing 1 2 3 options={}>}>>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1282, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 216, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 210, in invoke
+    self._prepare_cooldowns(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 78, in _prepare_cooldowns
+    bucket = self._buckets.get_bucket(inter, current)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/discord/ext/commands/cooldowns.py", line 173, in get_bucket
+    key = self._bucket_key(message)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/discord/ext/commands/cooldowns.py", line 157, in _bucket_key
+    return self._cooldown.type(msg)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/enums.py", line 141, in __call__
+    raise ValueError(f"{value!r} is not a valid {cls.__name__}")
+ValueError: <SlashInteraction id=901987281752186991 version=1 type=2 token='aW50ZXJhY3Rpb246OTAxOTg3MjgxNzUyMTg2OTkxOmNhdU5yNUZkV1N2bUlhcDJNN3k4TDZuTlREOVc2TjFLQkNmYVAxS0pXRkFDM3NtMEJUWDF3ZWRFbzg2UjVSMGRNV1U0UVJFNVJyVXJic3BYR1BFTTczZ3BYRG1JalJOeElSdnJONEt5c0lKeWlTV0laQUNFNmFMWUNrSE9lMTZt' guild=The Discord math problem bot server channel=thisisatestchannel author=ay136416#2707 data=<SlashInteractionData id=901879020990386228 type=1 name='submit_a_request' options={'extra_info': <InteractionDataOption name='extra_info' value=testing 1 2 3 options={}>}>> is not a valid BucketType
+
+
+Mon Oct 25 00:17:44 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/enums.py", line 139, in __call__
+    return cls._enum_value_map_[value]
+KeyError: <SlashInteraction id=901987863774773288 version=1 type=2 token='aW50ZXJhY3Rpb246OTAxOTg3ODYzNzc0NzczMjg4OnN4cEpNZXlqaXlGaTZ5Q2Vwd1ZCbVNLRU5DcjJTV25PV3N0YkdLNlhrbUNPZmlXdDF4T1MySFM3eENVVU5FSE8zVTBGMlJQc0pTSHlKUmp2RUxTTkhYdlByTFdvaHNvVTNoZk1iejQwZWlNVjF6OFNaaVZ0UEp2TktjZHdPOXVE' guild=The Discord math problem bot server channel=thisisatestchannel author=ay136416#2707 data=<SlashInteractionData id=901879020990386228 type=1 name='submit_a_request' options={'extra_info': <InteractionDataOption name='extra_info' value=testing 1 2 3 options={}>}>>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1282, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 216, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 210, in invoke
+    self._prepare_cooldowns(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 78, in _prepare_cooldowns
+    bucket = self._buckets.get_bucket(inter, current)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/discord/ext/commands/cooldowns.py", line 173, in get_bucket
+    key = self._bucket_key(message)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/discord/ext/commands/cooldowns.py", line 157, in _bucket_key
+    return self._cooldown.type(msg)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/enums.py", line 141, in __call__
+    raise ValueError(f"{value!r} is not a valid {cls.__name__}")
+ValueError: <SlashInteraction id=901987863774773288 version=1 type=2 token='aW50ZXJhY3Rpb246OTAxOTg3ODYzNzc0NzczMjg4OnN4cEpNZXlqaXlGaTZ5Q2Vwd1ZCbVNLRU5DcjJTV25PV3N0YkdLNlhrbUNPZmlXdDF4T1MySFM3eENVVU5FSE8zVTBGMlJQc0pTSHlKUmp2RUxTTkhYdlByTFdvaHNvVTNoZk1iejQwZWlNVjF6OFNaaVZ0UEp2TktjZHdPOXVE' guild=The Discord math problem bot server channel=thisisatestchannel author=ay136416#2707 data=<SlashInteractionData id=901879020990386228 type=1 name='submit_a_request' options={'extra_info': <InteractionDataOption name='extra_info' value=testing 1 2 3 options={}>}>> is not a valid BucketType
+
+
