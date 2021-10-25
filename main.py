@@ -63,9 +63,8 @@ def the_daemon_file_saver():
         FileSaverObj.save_files(main_cache,False,guildMathProblems,vote_threshold,mathProblems,bot.trusted_users)
 
             
-t = threading.Thread(target=the_daemon_file_saver,name="The File Saver",daemon=True)
 
-t.start()
+
 
 def generate_new_id():
     return random.randint(0, 10**14)
@@ -81,7 +80,7 @@ bot._transport_modules = {
     "check_for_cooldown": check_for_cooldown, "custom_embeds": custom_embeds,
     "checks": checks}
 bot.blacklisted_users = []
-
+t = threading.Thread(target=the_daemon_file_saver,name="The File Saver",daemon=True)
 #bot.load_extension("jishaku")
 
 
@@ -718,12 +717,12 @@ async def github_repo(ctx):
   Option(name = "extra_info", description = "A up to 5000 character description (about 2 pages) Use this wisely!", type = OptionType.STRING, required = False),
   Option(name = "copyrighted_thing", description = "The copyrighted thing that this problem is violating", type = OptionType.STRING, required=False)
 , Option(name="is_legal", description = "Is this a legal request?", required = False)])
-@dislash.cooldown(1,5,1)
-async def submit_a_request(ctx, offending_problem_guild_id= None, offending_problem_id=None, extra_info=None, copyrighted_thing = Exception, is_legal = False):
+@dislash.cooldown(1,5,dislash.BucketType)
+async def submit_a_request(ctx, offending_problem_guild_id= None, offending_problem_id=None, extra_info=None, copyrighted_thing = None, is_legal = False):
     if(extra_info is None and is_legal is False and copyrighted_thing is not Exception and offending_problem_guild_id is  None and offending_problem_id is None):
-        await inter.reply(ErrorEmbed("You must specify some field."))
+        await inter.reply(embed=ErrorEmbed("You must specify some field."))
     if extra_info is None:
-        await inter.reply(ErrorEmbed("Please provide extra information!"))
+        await inter.reply(embed=ErrorEmbed("Please provide extra information!"))
     assert len(extra_info) <= 5000
     channel = await bot.fetch_channel(id=901464948604039209) # CHANGE THIS IF YOU HAVE A DIFFERENT REQUESTS CHANNEL! (the part after id)
     try:
@@ -739,7 +738,17 @@ async def submit_a_request(ctx, offending_problem_guild_id= None, offending_prob
 
     if problem_found:
         embed.description = f"Problem_info:{ str(Problem)}"
-    
+    embed.description += f"Copyrighted thing: (if legal): {copyrighted_thing}
+    Extra info: {extra_info}"
+    if problem_found:
+        embed.set_footer(Problem)
+    embed._footer += asctime()
+    content = "A request has been submitted."
+    for owner_id in bot.owner_ids:
+        content += f"<@{owner_id}>"
+    await channel.send(embed=embed, content = content
+    )
+    await inter.reply("Your request has been submitted!")
 
     
 

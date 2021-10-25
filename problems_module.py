@@ -486,7 +486,10 @@ class MathProblemCache:
         """Gets the guild problems! Guild must be a Guild object. If you are trying to get global problems, use get_global_problems."""
         if self.update_cache_by_default_when_requesting:
             self.update_cache()
-        return self.guild_problems[Guild.id]
+        try:
+            return self.guild_problems[Guild.id]
+        except KeyError:
+            return []
         
     def get_global_problems(self):
         "Returns global problems"
