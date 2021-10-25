@@ -79,3 +79,95 @@ Traceback (most recent call last):
 ValueError: <SlashInteraction id=901987863774773288 version=1 type=2 token='aW50ZXJhY3Rpb246OTAxOTg3ODYzNzc0NzczMjg4OnN4cEpNZXlqaXlGaTZ5Q2Vwd1ZCbVNLRU5DcjJTV25PV3N0YkdLNlhrbUNPZmlXdDF4T1MySFM3eENVVU5FSE8zVTBGMlJQc0pTSHlKUmp2RUxTTkhYdlByTFdvaHNvVTNoZk1iejQwZWlNVjF6OFNaaVZ0UEp2TktjZHdPOXVE' guild=The Discord math problem bot server channel=thisisatestchannel author=ay136416#2707 data=<SlashInteractionData id=901879020990386228 type=1 name='submit_a_request' options={'extra_info': <InteractionDataOption name='extra_info' value=testing 1 2 3 options={}>}>> is not a valid BucketType
 
 
+Mon Oct 25 00:18:57 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1282, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 216, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 212, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 37, in _maybe_cog_call
+    return await self(inter, **params)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "main.py", line 725, in submit_a_request
+    channel = await bot.fetch_channel(id=901464948604039209) # CHANGE THIS IF YOU HAVE A DIFFERENT REQUESTS CHANNEL! (the part after id)
+TypeError: fetch_channel() got an unexpected keyword argument 'id'
+
+
+Mon Oct 25 00:19:35 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1282, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 216, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 212, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 37, in _maybe_cog_call
+    return await self(inter, **params)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "main.py", line 727, in submit_a_request
+    Problem = main_cache.get_problem(guild_id, problem_id)
+NameError: name 'guild_id' is not defined
+
+
+Mon Oct 25 00:20:09 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1282, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 216, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 212, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 37, in _maybe_cog_call
+    return await self(inter, **params)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "main.py", line 727, in submit_a_request
+    Problem = main_cache.get_problem(offending_problem_guild_id, offending_problem_id)
+  File "/home/runner/TheDiscordMathProblemBot/problems_module.py", line 473, in get_problem
+    raise TypeError("guild_id is not a string")
+TypeError: guild_id is not a string
+
+
+Mon Oct 25 00:21:19 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1282, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 216, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 212, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 37, in _maybe_cog_call
+    return await self(inter, **params)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "main.py", line 739, in submit_a_request
+    embed.description += f"""Copyrighted thing: (if legal): {copyrighted_thing}
+TypeError: unsupported operand type(s) for +=: '_EmptyEmbed' and 'str'
+
+
+Mon Oct 25 00:21:52 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1282, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 216, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 212, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 37, in _maybe_cog_call
+    return await self(inter, **params)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "main.py", line 739, in submit_a_request
+    embed.description += f"""Copyrighted thing: (if legal): {copyrighted_thing}
+TypeError: unsupported operand type(s) for +=: '_EmptyEmbed' and 'str'
+
+

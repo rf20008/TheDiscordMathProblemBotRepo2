@@ -715,24 +715,24 @@ async def github_repo(ctx):
   Option(name = "offending_problem_id", description = "The problem id of the problem. Very important (so I know which problem to check)", type = OptionType.INTEGER, required = False),
   Option(name = "extra_info", description = "A up to 5000 character description (about 2 pages) Use this wisely!", type = OptionType.STRING, required = False),
   Option(name = "copyrighted_thing", description = "The copyrighted thing that this problem is violating", type = OptionType.STRING, required=False)
-, Option(name="is_legal", description = "Is this a legal request?", required = False)])
+, Option(name="is_legal", description = "Is this a legal request?", required = False, type = OptionType.BOOLEAN)])
 async def submit_a_request(ctx, offending_problem_guild_id= None, offending_problem_id=None, extra_info=None, copyrighted_thing = None, is_legal = False):
     if(extra_info is None and is_legal is False and copyrighted_thing is not Exception and offending_problem_guild_id is  None and offending_problem_id is None):
         await inter.reply(embed=ErrorEmbed("You must specify some field."))
     if extra_info is None:
         await inter.reply(embed=ErrorEmbed("Please provide extra information!"))
     assert len(extra_info) <= 5000
-    channel = await bot.fetch_channel(id=901464948604039209) # CHANGE THIS IF YOU HAVE A DIFFERENT REQUESTS CHANNEL! (the part after id)
+    channel = await bot.fetch_channel(901464948604039209) # CHANGE THIS IF YOU HAVE A DIFFERENT REQUESTS CHANNEL! (the part after id)
     try:
-        Problem = main_cache.get_problem(guild_id, problem_id)
+        Problem = main_cache.get_problem(offending_problem_guild_id, offending_problem_id)
         problem_found = True
-    except KeyError:
+    except (TypeError, KeyError):
         #Problem not found
         problem_found = False
     content = bot.owner_id
-    embed = nextcord.Embed(title = f"A new request has been recieved from {ctx.author.name}#{ctx.author.discriminator}!")
+    embed = nextcord.Embed(title = f"A new request has been recieved from {ctx.author.name}#{ctx.author.discriminator}!", description = "")
     if is_legal:
-      embed = nextcord.Embed(title = f"A new legal request has been recieved from {ctx.author.name}#{ctx.author.discriminator}!")
+      embed = nextcord.Embed(title = f"A new legal request has been recieved from {ctx.author.name}#{ctx.author.discriminator}!", description = "")
 
     if problem_found:
         embed.description = f"Problem_info:{ str(Problem)}"
