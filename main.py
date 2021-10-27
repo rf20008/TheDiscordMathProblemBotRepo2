@@ -379,7 +379,7 @@ async def submit_problem(ctx, answer, question, guild_question=False):
         while True:
 
             problem_id = generate_new_id()
-            if problem_id not in [problem.guild_id for problem in main_cache.get_guild_problems(ctx.guild)]:
+            if problem_id not in [problem.id for problem in main_cache.get_guild_problems(ctx.guild)]:
                 break
 
         if guild_question:
@@ -394,8 +394,8 @@ async def submit_problem(ctx, answer, question, guild_question=False):
           guild_id=guild_id,
           cache = main_cache
         )
-        main_cache.add_problem(guild_id=guild_id,
-                               problem_id=problem_id,
+        main_cache.add_problem(guild_id=str(guild_id),
+                               problem_id=str(problem_id),
                                Problem=problem)
         
 
@@ -406,7 +406,7 @@ async def submit_problem(ctx, answer, question, guild_question=False):
         return
     while True:
         problem_id = generate_new_id()
-        if problem_id not in [problem.id for problem in main_cache.get_global_problems()]:
+        if problem_id not in main_cache.get_global_problems().keys():
             break
     
 
@@ -416,8 +416,8 @@ async def submit_problem(ctx, answer, question, guild_question=False):
                                           guild_id="null",
                                           author=ctx.author.id,
                                           cache = main_cache)
-    main_cache.add_problem(problem_id=problem_id,
-                           guild_id=problem.guild_id,
+    main_cache.add_problem(problem_id=str(problem_id),
+                           guild_id=str(problem.guild_id),
                            Problem=problem)
     await ctx.reply(embed=SuccessEmbed("You have successfully made a math problem!"
                                        ), ephemeral = True)
@@ -718,6 +718,7 @@ async def github_repo(ctx):
   Option(name = "copyrighted_thing", description = "The copyrighted thing that this problem is violating", type = OptionType.STRING, required=False)
 , Option(name="is_legal", description = "Is this a legal request?", required = False, type = OptionType.BOOLEAN)])
 async def submit_a_request(inter, offending_problem_guild_id= None, offending_problem_id=None, extra_info=None, copyrighted_thing = None, is_legal = False):
+    __import__("cooldowns").check_for_cooldown("submit_a_request", 5) #5 seconds cooldown
     if(extra_info is None and is_legal is False and copyrighted_thing is not Exception and offending_problem_guild_id is  None and offending_problem_id is None):
         await inter.reply(embed=ErrorEmbed("You must specify some field."))
     if extra_info is None:

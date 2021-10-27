@@ -446,21 +446,25 @@ class MathProblemCache:
         "Method revamped! This method updates the cache of the guilds, the guild problems, and the cache of the global problems"
         guild_problems = {}
         guild_ids = []
-        global_problems = []
+        global_problems = {}
         s = self._sql_dict
       
         for key in self._sql_dict.keys():
-            p = key.partition(":")
+            p = key.partition(":") #P[0] is guild id, P[1] is the colon, and P[2] is the problem id
             if p[0] not in guild_ids: #Update guild ids: Check if here
                 guild_ids.append(p[0])
                 guild_problems[p[0]] = {} #Also do this so I don't need to worry about keyerrors because it will update too
             #Check for guild problems
             #guaranteed to be a new problem :-)
-            guild_problems[p[0]] = MathProblem.from_dict(self._sql_dict[key]) #Convert it to a math problem
+            problem = MathProblem.from_dict(self._sql_dict[key])
+            assert p[0] == problem.guild_id #here for debugging
+            guild_problems[p[0]][problem.id] = problem #Convert it to a math problem + add it
+            
+
         try:
             global_problems = guild_problems["null"] #contention            
-        except KeyError: # No global problems yet
-            global_problems = []
+        except KeyError as exc: # No global problems yet
+            global_problems = {}
         self.guild_problems = guild_problems
         self.guild_ids = guild_ids
         self.global_problems = global_problems
@@ -468,7 +472,7 @@ class MathProblemCache:
         "Gets the problem with this guild id and problem id"
         if not isinstance(guild_id, str):
             if self.warnings:
-                warnings.warn("guild_id is not a string", category=RuntimeWarning)
+                warnings.warn("guild_id is not a string!", category=RuntimeWarning)
             else:
                 raise TypeError("guild_id is not a string")
         if not isinstance(problem_id,str):
@@ -520,8 +524,13 @@ class MathProblemCache:
                 warnings.warn("problem_id is not a string.... this may cause an exception")
             else:
                 raise TypeError("problem_id is not a string.")
-        if len(self.guild_problems[guild_id]) > self.max_guild_problems:
-            raise TooManyProblems(f"There are already {self.max_guild_problems} problems!")
+        try:
+            if guild_id == "null":
+                pass
+            elif len(self.guild_problems[guild_id]) > self.max_guild_problems:
+                raise TooManyProblems(f"There are already {self.max_guild_problems} problems!")
+        except KeyError:
+            pass
         if not isinstance(Problem,(MathProblem, dict)):
             raise TypeError("Problem is not a valid MathProblem object.")
         if isinstance(Problem,MathProblem):
@@ -570,7 +579,7 @@ class MathProblemCache:
         "Deletes duplicate problems"
         problems_seen_before = []
         for key in self._sql_dict.keys():
-            p = MathProblem.from_dict(_dict=json.loads(s=self._sql_dict[key]))
+            p = MathProblem.from_dict(_dict=self._sql_dict[key])
             if p in problems_seen_before:
                 del self._sql_dict[key]
         #problemsDeleted = 0
