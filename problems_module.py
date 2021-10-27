@@ -443,7 +443,7 @@ class MathProblemCache:
         )
         return problem2
     def update_cache(self):
-        "Method revamped! This method updates the cache of the guilds, the guild problems, and the cache of the global problems"
+        "Method revamped! This method updates the cache of the guilds, the guild problems, and the cache of the global problems. Takes O(N) time"
         guild_problems = {}
         guild_ids = []
         global_problems = {}
@@ -457,9 +457,15 @@ class MathProblemCache:
             #Check for guild problems
             #guaranteed to be a new problem :-)
             problem = MathProblem.from_dict(self._sql_dict[key])
-            assert p[0] == problem.guild_id #here for debugging
+            try:
+                assert p[0] == problem.guild_id #here for debugging
+            except AssertionError:
+                raise RuntimeError("An error in the bot has occured: the guild id's don't agree...")
             guild_problems[p[0]][problem.id] = problem #Convert it to a math problem + add it
-            
+        #Conversion to math problem
+        for guild_id in guild_problems.keys():
+            for problem_id in guild_problems[guild_id]:
+                guild_problems[guild_id][problem_id] = self.get_problem(guild_id, problem_id)
 
         try:
             global_problems = guild_problems["null"] #contention            
