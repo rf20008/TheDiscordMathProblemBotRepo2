@@ -460,19 +460,19 @@ class MathProblemCache:
                 assert p[0] == problem.guild_id #here for debugging
             except AssertionError:
                 raise RuntimeError("An error in the bot has occured: the guild id's don't agree...")
-            guild_problems[p[0]][problem.id] = problem #Convert it to a math problem + add it
+            guild_problems[p[0]][problem.id] = deepcopy(problem) #Convert it to a math problem + add it. deepcopy() is necessary because of the 'curse' of shallow-copying (but also a blessing)
         #Conversion to math problem
 #        for guild_id in guild_problems.keys():
 #            for problem_id in guild_problems[guild_id]:
 #                guild_problems[guild_id][problem_id] = self.get_problem(str(guild_id), str(problem_id)))
         # Somewhere here it turns into an integer..... please help!
         try:
-            global_problems = guild_problems["null"] #contention            
+            global_problems = deepcopy(guild_problems["null"]) #contention #deepcopying more :-)           
         except KeyError as exc: # No global problems yet
             global_problems = {}
-        self.guild_problems = guild_problems
-        self.guild_ids = guild_ids
-        self.global_problems = global_problems
+        self.guild_problems = deepcopy(guild_problems) # More deep-copying (so it refers to a different object)
+        self.guild_ids = deepcopy(guild_ids)
+        self.global_problems = deepcopy(global_problems)
     def get_problem(self,guild_id,problem_id):
         "Gets the problem with this guild id and problem id"
         if not isinstance(guild_id, str):
@@ -631,7 +631,7 @@ class MathProblemCache:
         raise NotImplementedError
     def get_quiz(self, quiz_id: int) -> Optional[Quiz]:
         "Get the quiz with the id specified. Returns None if not found"
-        return Quiz.from_dict(self.quizzes_sql_dict[f"Quiz:{quiz_id}"])
+        return Quiz.from_dict(self.quizzes_sql_dict[f"Quiz:{quiz_id}"]) # Convert the result to a quiz (result is getting the Quiz dictionary from the quizzes_sql_dict)
 
 main_cache = MathProblemCache(max_answer_length=100,max_question_limit=250,max_guild_problems=125,warnings_or_errors="errors")
 def get_main_cache():

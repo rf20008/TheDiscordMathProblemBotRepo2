@@ -521,8 +521,13 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
             e += "The combined length of the questions is too long.... shortening it!"
             await ctx.reply(embed=SuccessEmbed(e[:1930]))
             return
+        if not isinstance(problem, problems_module.MathProblem):
+            print(problem)
+            raise RuntimeError("Uhhhhhhh..... the problem is not a MathProblem! Please help :-)") # For some reason..... the problem is an Integer, not a MathProblem...
+            #For now, I could get the problem.... (it looks like an ID, but I should find the root cause first)
         if not (showSolvedProblems) and problem.is_solver(ctx.author):
             continue
+        #Probably will be overhauled with str(problem)
         e += "\n"
         e += str(problem.id) + "\t"
         e += str(problem.get_question()) + "\t"
