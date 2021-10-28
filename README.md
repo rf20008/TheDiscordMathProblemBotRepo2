@@ -27,6 +27,11 @@ https://stackoverflow.com/a/21901260 for the get_git_revision_hash :-)
 nextcord + discord devs for their libraries
 SQLDict: https://github.com/skylergrammer/sqldict
 
+# DISCLAIMER
+
+My bot is just a platform for storing problems. If someone submits a copyrighted problem, I'm not responsible, but they are. You can look up who submitted a problem using /show_problem_info.
+(If you need to, you can submit a request using /submit_a_request)
+
 
 # Self-host my bot
 My code is open source, so you can! There are bugs, so you should probably help me instead. I won't stop you from self-hosting though.
