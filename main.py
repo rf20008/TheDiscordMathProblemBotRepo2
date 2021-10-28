@@ -1,3 +1,9 @@
+#Written by @rf20008
+# Licensed under the GNU license
+# Feel free to contribute! :-)
+
+#imports
+from typing import *
 import random, os, warnings, threading, copy, nextcord, subprocess
 from dislash.application_commands.core import check
 import dislash, traceback
@@ -18,12 +24,14 @@ from problems_module import get_main_cache
 
 
 
-warnings.simplefilter("default")
+warnings.simplefilter("default") #unnecessary, probably will be removed
 #constants
 
 trusted_users=[]
-DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
-
+try:
+    DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
+except KeyError:
+    raise RuntimeError("You haven't setup the .env file correctly! You need DISCORD_TOKEN=<your token>")
 main_cache = get_main_cache()
 vote_threshold = -1
 mathProblems={}

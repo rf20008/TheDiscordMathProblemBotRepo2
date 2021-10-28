@@ -36,6 +36,8 @@ My code is open source, so you can! There are bugs, so you should probably help 
 
 ## Steps
 (This assumes you already have knowledge of the command line and how to make a new discord application)
+If you don't, you can either help me with my code (if you want to modify the code and help everyone out) or invite my bot.
+No privileged intents are required (the bot has been designed to not require privileged intents, but this is causing some non-essential features to be not-so-great)
 1. Create a new Discord application with a bot user. Save the token (you will need it later)
 2. Update Python to 3.9/3.10
 3. Create a venv (execute ``python3.10 -m venv /path/to/new/virtual/environment``)

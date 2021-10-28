@@ -304,3 +304,45 @@ Traceback (most recent call last):
 AttributeError: 'int' object has no attribute 'is_solver'
 
 
+Wed Oct 27 00:41:35 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1282, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 216, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 212, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 37, in _maybe_cog_call
+    return await self(inter, **params)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "main.py", line 474, in list_all_problems
+    if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
+  File "/home/runner/TheDiscordMathProblemBot/problems_module.py", line 611, in get_guilds
+    self.update_cache()
+  File "/home/runner/TheDiscordMathProblemBot/problems_module.py", line 467, in update_cache
+    guild_problems[guild_id][problem_id] = self.get_problem(guild_id, problem_id)
+  File "/home/runner/TheDiscordMathProblemBot/problems_module.py", line 487, in get_problem
+    raise TypeError("problem_id is not a string")
+TypeError: problem_id is not a string
+
+
+Wed Oct 27 00:42:00 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1282, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 216, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 212, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 37, in _maybe_cog_call
+    return await self(inter, **params)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "main.py", line 516, in list_all_problems
+    if not (showSolvedProblems) and problem.is_solver(ctx.author):
+AttributeError: 'int' object has no attribute 'is_solver'
+
+

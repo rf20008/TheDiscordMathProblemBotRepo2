@@ -447,7 +447,6 @@ class MathProblemCache:
         guild_problems = {}
         guild_ids = []
         global_problems = {}
-        s = self._sql_dict
       
         for key in self._sql_dict.keys():
             p = key.partition(":") #P[0] is guild id, P[1] is the colon, and P[2] is the problem id
@@ -463,10 +462,10 @@ class MathProblemCache:
                 raise RuntimeError("An error in the bot has occured: the guild id's don't agree...")
             guild_problems[p[0]][problem.id] = problem #Convert it to a math problem + add it
         #Conversion to math problem
-        for guild_id in guild_problems.keys():
-            for problem_id in guild_problems[guild_id]:
-                guild_problems[guild_id][problem_id] = self.get_problem(guild_id, problem_id)
-
+#        for guild_id in guild_problems.keys():
+#            for problem_id in guild_problems[guild_id]:
+#                guild_problems[guild_id][problem_id] = self.get_problem(str(guild_id), str(problem_id)))
+        # Somewhere here it turns into an integer..... please help!
         try:
             global_problems = guild_problems["null"] #contention            
         except KeyError as exc: # No global problems yet
