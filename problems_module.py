@@ -138,7 +138,7 @@ class MathProblem:
             guild_id = "null"
         else:
             guild_id = int(guild_id)
-        problem2 = MathProblem(
+        problem2 = _class(
             question=problem["question"],
             answer=problem["answer"],
             id = int(problem["id"]),
@@ -148,7 +148,9 @@ class MathProblem:
             author=problem["author"]
         )
         return problem2
-
+    def to_dict(self):
+        "An alias for convert_to_dict"
+        return self.convert_to_dict()
     def convert_to_dict(self):
         """Convert self to a dictionary"""
 
