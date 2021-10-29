@@ -271,9 +271,9 @@ class QuizSubmission:
         self.mutable = True
         self.answers = [QuizSubmissionAnswer(problem=question,quiz_id= quiz_id) for question in self.get_my_quiz()]
     @property
-    def quiz(self) -> Quiz:
+    def quiz(self):
         return self.get_my_quiz()
-    def get_my_quiz(self) -> Quiz:
+    def get_my_quiz(self):
         return get_main_cache().get_quiz(self.quiz_id)
     def set_answer(self,problem_id, Answer) -> None:
         "Set the answer of a quiz problem"
@@ -311,15 +311,17 @@ class QuizSubmission:
 
 class QuizMathProblem(MathProblem):
     "A class that represents a Quiz Math Problem"
-    def __init__(self,question,answer,id,author,guild_id="null", voters=[],solvers=[], cache=None,answers=[],is_written=False,quiz_id=  None, max_score=-1, quiz: Quiz=None):
+    def __init__(self,question,answer,id,author,guild_id="null", voters=[],solvers=[], cache=None,answers=[],is_written=False,quiz_id=  None, max_score=-1, quiz=None):
         "A method that allows the creation of new QuizMathProblems"
         if not isinstance(quiz. Quiz):
             raise TypeError(f"quiz is of type {quiz.__class.__name}, not Quiz") # Here to help me debug
         
         super().__init__(question,answer,id,author,guild_id,voters,solvers,cache,answers) # 
         self.is_written = False
-        if quiz is not None
-        self.quiz_id = quiz_id
+        if quiz is not None:
+          self.quiz_id = quiz.id
+        else:
+          self.quiz_id = quiz_id
         self.max_score = max_score
         self.min_score = 0
     def edit(self,question=None,answer=None,id=None,guild_id=None,voters=None,solvers=None,author=None, answers = None,is_written=None, quiz = None, max_score: int = -1):
@@ -477,7 +479,7 @@ class MathProblemCache:
         #Conversion to math problem
         # Somewhere here (between lines 476 and 479) the global problems turn into strings (its key)... and I don't know why.
         try:
-            print([[type(obj) for obj in guild_problems[key].values()] for key in guild_problems.keys()])
+            print([[type(obj) for obj in guild_problems[key].values()] for key in guild_problems.keys()]) # A debug statement to find the scope of the bug
             global_problems = deepcopy(guild_problems["null"]) #contention #deepcopying more :-)           
         except KeyError as exc: # No global problems yet
             traceback.print_exc()
