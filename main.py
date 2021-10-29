@@ -3,23 +3,19 @@
 # Feel free to contribute! :-)
 
 #imports
+from helpful_modules import _error_logging, checks, cooldowns, custom_embeds, problems_module, return_intents, save_files, the_documentation_file_loader, user_error
 from typing import *
 import random, os, warnings, threading, copy, nextcord, subprocess
 from dislash.application_commands.core import check
 import dislash, traceback
-import return_intents, checks, custom_embeds
 import nextcord.ext.commands as nextcord_commands
-import problems_module, custom_embeds, save_files, the_documentation_file_loader
 from cogs import developer_commands
-from cooldowns import check_for_cooldown, OnCooldown
-from _error_logging import log_error
+from helpful_modules.cooldowns import check_for_cooldown, OnCooldown
+from helpful_modules._error_logging import log_error
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 from time import sleep, time, asctime
-from custom_embeds import *
-from save_files import FileSaver
-from user_error import UserError
-from the_documentation_file_loader import *
-from problems_module import get_main_cache
+from helpful_modules.custom_embeds import *
+from helpful_modules.the_documentation_file_loader import *
 
 
 
@@ -32,7 +28,7 @@ try:
     DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
 except KeyError:
     raise RuntimeError("You haven't setup the .env file correctly! You need DISCORD_TOKEN=<your token>")
-main_cache = get_main_cache()
+main_cache = problems_module.get_main_cache()
 vote_threshold = -1
 mathProblems={}
 guildMathProblems = {}
@@ -78,9 +74,10 @@ def generate_new_id():
     return random.randint(0, 10**14)
 Intents = return_intents.return_intents()
 bot = nextcord_commands.Bot(
-        " ",intents=Intents,
-
-application_id = 845751152901750824)
+        command_prefix=" ",
+        intents=Intents,
+        application_id = 845751152901750824)
+  
 bot.main_cache = main_cache
 bot.trusted_users = trusted_users
 bot._transport_modules = {
@@ -443,7 +440,6 @@ async def submit_problem(ctx, answer, question, guild_question=False):
 async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
     "Check if you are right"
     await check_for_cooldown(ctx, "check_answer",5)
-    print(3)
 
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
@@ -522,6 +518,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
             await ctx.reply(embed=SuccessEmbed(e[:1930]))
             return
         if not isinstance(problem, problems_module.MathProblem):
+            print([item for item in global_problems])
             raise RuntimeError("Uhhhhhhh..... the problem is not a MathProblem! Please help :-)") # For some reason..... the problem is an Integer, not a MathProblem...
             #For now, I could get the problem.... (it looks like an ID, but I should find the root cause first)
         if not (showSolvedProblems) and problem.is_solver(ctx.author):

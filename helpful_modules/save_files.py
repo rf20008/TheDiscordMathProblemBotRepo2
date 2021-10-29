@@ -1,5 +1,6 @@
 
-import json, problems_module
+import json
+from . import problems_module
 numFileSavers=0
 class FileSaver:
   "A class that saves files"

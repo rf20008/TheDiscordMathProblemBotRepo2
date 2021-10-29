@@ -1,6 +1,7 @@
 #
 import random, os, warnings, threading, copy, nextcord, subprocess
 import dislash, traceback
+
 import nextcord.ext.commands as nextcord_commands
 from dislash import *
 from time import sleep, time, asctime
@@ -127,11 +128,11 @@ class DeveloperCommands(HelperCog):
     ])
     async def debug(self,ctx,raw=False,send_ephermally=True):
         "Provides helpful debug information :-)"
-        guild = ctx.guild
+        guild = ctx.guild #saving me typing trouble!
         if ctx.guild is None:
             await ctx.reply("This command can only be ran in servers!")
             return
-        me = guild.me
+        me = guild.me 
         my_permissions = me.guild_permissions
         debug_dict = {}
         debug_dict["guild_id"] = ctx.guild.id

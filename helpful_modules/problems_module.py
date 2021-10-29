@@ -5,7 +5,7 @@ from typing import *
 import nextcord, json, warnings, dislash
 from copy import deepcopy
 from nextcord import *
-import pickle, sqlite3
+import pickle, sqlite3, traceback
 from threading import Thread
 import sqldict #https://github.com/skylergrammer/sqldict/
 main_cache = None
@@ -40,6 +40,10 @@ class ProblemNotFound(KeyError):
     pass
 class ProblemNotWrittenException(MathProblemsModuleException):
     "Raised when trying to grade a written problem but the problem is not graded"
+    pass
+
+class QuizAleadySubmitted(MathProblemsModuleException):
+    "Raised when trying to submit a quiz that has already been submitted"
     pass
 class MathProblem:
     "For readability purposes :)"
@@ -130,7 +134,7 @@ class MathProblem:
         if author is not None:
             self.author = author
     @classmethod
-    def from_dict(_class,_dict):
+    def from_dict(cls,_dict):
         assert isinstance(_dict, dict)
         problem = _dict
         guild_id = problem["guild_id"]
@@ -138,7 +142,7 @@ class MathProblem:
             guild_id = "null"
         else:
             guild_id = int(guild_id)
-        problem2 = _class(
+        problem2 = cls(
             question=problem["question"],
             answer=problem["answer"],
             id = int(problem["id"]),
@@ -217,9 +221,6 @@ class MathProblem:
         if not isinstance(User,nextcord.User) and not isinstance(User,nextcord.Member):
             raise TypeError("User is not actually a User")
         return User.id in self.get_solvers()
-    def __str__(self):
-        "Return str(self) by converting it to a dictionary and converting the dictionary to a string"
-        return str(self.convert_to_dict())
     def get_author(self):
         "Returns self.author"
         return self.author
@@ -269,9 +270,12 @@ class QuizSubmission:
         self.quiz_id = quiz_id
         self.mutable = True
         self.answers = [QuizSubmissionAnswer(problem=question,quiz_id= quiz_id) for question in self.get_my_quiz()]
-    def get_my_quiz(self) -> None:
+    @property
+    def quiz(self) -> Quiz:
+        return self.get_my_quiz()
+    def get_my_quiz(self) -> Quiz:
         return get_main_cache().get_quiz(self.quiz_id)
-    def set_answer(self,problem_id, Answer):
+    def set_answer(self,problem_id, Answer) -> None:
         "Set the answer of a quiz problem"
         if not self.mutable:
             raise RuntimeError("This instance is not mutable")
@@ -289,27 +293,33 @@ class QuizSubmission:
             t["answer"].append({"problem_id": answer.problem.id, "answer": answer.answer})
         return t
     @classmethod
-    def from_dict(cls, Dict):
+    def from_dict(cls, dict_):
         "Convert a dictionary into a QuizSubmission"
-        c = cls(user_id=Dict["user_id"], quiz_id = "quiz_id")
-        for answer in Dict["answers"]:
+        c = cls(user_id=dict_["user_id"], quiz_id = "quiz_id")
+        for answer in dict_["answers"]:
             c.answers.append(QuizSubmissionAnswer(answer["answer"], problem_id= answer["problem_id"]))
-        c.mutable = Dict["mutable"]
+        c.mutable = dict_["mutable"]
         return c
-    def submit(self):
-        pass
+    def submit(self) -> True:
+        self.mutable = False
+        if submission in self.quiz.submissions:
+            raise QuizAlreadySubmitted
+        self.quiz.submissions.append(self)
+        return True
+
 
 
 class QuizMathProblem(MathProblem):
     "A class that represents a Quiz Math Problem"
-    def __init__(self,question,answer,id,author,guild_id="null", voters=[],solvers=[], cache=None,answers=[],is_written=False,quiz=  None, max_score=-1):
+    def __init__(self,question,answer,id,author,guild_id="null", voters=[],solvers=[], cache=None,answers=[],is_written=False,quiz_id=  None, max_score=-1, quiz: Quiz=None):
         "A method that allows the creation of new QuizMathProblems"
         if not isinstance(quiz. Quiz):
             raise TypeError(f"quiz is of type {quiz.__class.__name}, not Quiz") # Here to help me debug
         
         super().__init__(question,answer,id,author,guild_id,voters,solvers,cache,answers) # 
         self.is_written = False
-        self.quiz = quiz
+        if quiz is not None
+        self.quiz_id = quiz_id
         self.max_score = max_score
         self.min_score = 0
     def edit(self,question=None,answer=None,id=None,guild_id=None,voters=None,solvers=None,author=None, answers = None,is_written=None, quiz = None, max_score: int = -1):
@@ -329,7 +339,7 @@ class QuizMathProblem(MathProblem):
             "voters": self.voters,
             "solvers": self.solvers,
             "author": self.author,
-            "quiz_id": self.quiz.id,
+            "quiz_id": self.quiz_id,
             "is_written": self.is_written,
             "max_score": self.max_score
         }
@@ -415,16 +425,17 @@ class MathProblemCache:
 
 
     def convert_to_dict(self):
+        "A method that converts self to a dictionary (not used, will probably be removed soon)"
         e = {}
         for guild_id in self._dict.keys():
             e[guild_id] = {}
             for problem_id in self._dict[guild_id].keys():
-                print(guild_id, problem_id)
                 e[guild_id][problem_id] = self.get_problem(guild_id,problem_id).convert_to_dict()
         return e
-  
     def convert_dict_to_math_problem(self,problem):
-        "Convert a dictionary into a math problem. It must be in the expected format."
+        "Convert a dictionary into a math problem. It must be in the expected format. (Overriden by from_dict, but still used)"
+        if __debug__:
+            return MathProblem.from_dict(problem)
         try:
             assert isinstance(problem,dict)
         except AssertionError:
@@ -434,7 +445,7 @@ class MathProblemCache:
             guild_id = "null"
         else:
             guild_id = int(guild_id)
-        problem2 = MathProblem(
+        problem2 = self(
             question=problem["question"],
             answer=problem["answer"],
             id = int(problem["id"]),
@@ -462,15 +473,14 @@ class MathProblemCache:
                 assert p[0] == problem.guild_id #here for debugging
             except AssertionError:
                 raise RuntimeError("An error in the bot has occured: the guild id's don't agree...")
-            guild_problems[p[0]][problem.id] = deepcopy(problem) #Convert it to a math problem + add it. deepcopy() is necessary because of the 'curse' of shallow-copying (but also a blessing)
+            guild_problems[p[0]][int(p[2])] = deepcopy(problem) #Convert it to a math problem + add it. deepcopy() is necessary because of the 'curse' of shallow-copying (but also a blessing)
         #Conversion to math problem
-#        for guild_id in guild_problems.keys():
-#            for problem_id in guild_problems[guild_id]:
-#                guild_problems[guild_id][problem_id] = self.get_problem(str(guild_id), str(problem_id)))
-        # Somewhere here it turns into an integer..... please help!
+        # Somewhere here (between lines 476 and 479) the global problems turn into strings (its key)... and I don't know why.
         try:
+            print([[type(obj) for obj in guild_problems[key].values()] for key in guild_problems.keys()])
             global_problems = deepcopy(guild_problems["null"]) #contention #deepcopying more :-)           
         except KeyError as exc: # No global problems yet
+            traceback.print_exc()
             global_problems = {}
         self.guild_problems = deepcopy(guild_problems) # More deep-copying (so it refers to a different object)
         self.guild_ids = deepcopy(guild_ids)
@@ -500,7 +510,7 @@ class MathProblemCache:
         try:
             return self.guild_problems[Guild.id]
         except KeyError:
-            return []
+            return {}
         
     def get_global_problems(self):
         "Returns global problems"
