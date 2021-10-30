@@ -475,11 +475,15 @@ async def check_answer(ctx,problem_id,answer, checking_guild_problem=False):
 async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=True,show_only_guild_problems=False):
     "List all MathProblems."
     await check_for_cooldown(ctx,"list_all_problems")
+    if ctx.guild is None and show_guild_problems:
+        await ctx.reply("You must be in a guild to see guild problems!")
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
-
     showSolvedProblems = show_solved_problems
-    guild_id = ctx.guild.id
+    if ctx.guild is not None:
+        guild_id = ctx.guild.id
+    else:
+        guild_id = "null"
     if guild_id not in guildMathProblems:
         guildMathProblems[guild_id]={}
     if mathProblems.keys() == []:

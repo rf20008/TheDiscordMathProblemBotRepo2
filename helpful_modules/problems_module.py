@@ -133,8 +133,15 @@ class MathProblem:
             self.solvers = solvers
         if author is not None:
             self.author = author
+
+        self.update_self()
+    def update_self(self):
+        "A helper method to update the cache with my version"
+        if self.cache is not None:
+            self.cache.update_problem(self.guild_id, self,id, self)
     @classmethod
-    def from_dict(cls,_dict):
+    def from_dict(cls,_dict, cache = None):
+        "Convert a dictionary to a math problem. cache must be a valid MathProblemCache"
         assert isinstance(_dict, dict)
         problem = _dict
         guild_id = problem["guild_id"]
@@ -149,7 +156,8 @@ class MathProblem:
             guild_id = guild_id,
             voters = problem["voters"],
             solvers=problem["solvers"],
-            author=problem["author"]
+            author=problem["author"],
+            cache = cache
         )
         return problem2
     def to_dict(self):
@@ -174,12 +182,14 @@ class MathProblem:
             raise TypeError("User is not a User object")
         if not self.is_voter(voter):
             self.voters.append(voter.id)
+        self.update_self()
     def add_solver(self,solver):
         """Adds a solver. Solver must be a nextcord.User object or nextcord.Member object."""
         if not isinstance(solver,nextcord.User) and not isinstance(solver,nextcord.Member):
             raise TypeError("Solver is not a User object")
         if not self.is_solver(solver):
             self.solvers.append(solver.id)
+        self.update_self()
     def get_answer(self):
         "Return my answer. This has been deprecated"
         return self.answer
@@ -198,7 +208,6 @@ class MathProblem:
     def check_answer(self,answer):
         "Checks the answer. Returns True if it's correct and False otherwise."
         return answer in self.get_answers()
-
     def my_id(self):
         "Returns id & guild_id in a list. id is first and guild_id is second."
         return [self.id, self.guild_id]
@@ -324,6 +333,12 @@ class QuizMathProblem(MathProblem):
           self.quiz_id = quiz_id
         self.max_score = max_score
         self.min_score = 0
+    @property
+    def quiz(self):
+        if self.cache is None:
+            return None
+        else:
+            return self.cache.get_quiz(self.quiz_id)
     def edit(self,question=None,answer=None,id=None,guild_id=None,voters=None,solvers=None,author=None, answers = None,is_written=None, quiz = None, max_score: int = -1):
         super().edit(question,answer,id,guild_id,voters,solvers,author,answers)
         if not isinstance(quiz, Quiz):
@@ -331,6 +346,7 @@ class QuizMathProblem(MathProblem):
         self.quiz = Quiz
         if not isinstance(is_written, bool):
             raise TypeError("is_written is not of type bool")
+        self.update_self()
     def to_dict(self):
         return {
             "type": "QuizMathProblem",
@@ -346,49 +362,57 @@ class QuizMathProblem(MathProblem):
             "max_score": self.max_score
         }
     @classmethod
-    def from_dict(cls, Dict):
+    def from_dict(cls, Dict, cache=None):
         Dict.pop("type")
-        return cls(*Dict)
+        return cls(*Dict, cache = cache)
+    def update_self(self):
+        "Update myself"
+        if self.cache is not None:
+            self.quiz.update_self()
     
         
 class Quiz(list): 
     "Essentially a list, so it implements everything that a list does, but it has an additional attribute submissions which is a list of QuizSubmissions"
-    def __init__(self, id: str, iter: List[QuizMathProblem]):
+    def __init__(self, id: str, iter: List[QuizMathProblem], cache = None):
         """Create a new quiz. id is the quiz id and iter is an iterable of QuizMathProblems"""
         super().__init__(iter)
-        self.submissions = []
-        self.id = id
+        self._cache = cache
+        self._submissions = []
+        self._id = id
     def add_submission(self,submission):
         assert isinstance(submission, QuizSubmission)
         submission.mutable = False
-        self.submissions.append(submission)
+        self._submissions.append(submission)
+        self.update_self()
     @property
     def submissions(self):
-        return self.submissions
+        return self._submissions
     @classmethod
-    def from_dict(cls,Dict: dict):
+    def from_dict(cls,_dict: dict):
         problemsAsType = []
         submissions = []
-        Problems = Dict["problems"]
+        Problems = _dict["problems"]
         for p in Problems:
             problemsAsType.append(QuizMathProblem.from_dict(p))
         problemsAsType.sort(key= lambda problem: problem.id)
 
-        for s in Dict["submissions"]:
+        for s in _dict["submissions"]:
             submissions.append(QuizSubmission.from_dict(s))
         c = cls([])
         c.extend(problemsAsType)
         c._submissions = submissions
-        c.id = Dict["id"]
+        c._id = _dict["id"]
         return c
     def to_dict(self):
         "Convert this instance into a Dictionary to be stored in SQL"
         Problems = [problem.to_dict() for problem in self]
         Submissions = [submission.to_dict for submission in self.submissions]
-        return {"problems": Problems, "submissions": Submissions, "id": self.id}
-           
-
+        return {"problems": Problems, "submissions": Submissions, "id": self._id}
+    def update_self(self):
+        "Update myself in the sqldict"
+        self._cache.update_quiz(self._id, self)
 class MathProblemCache:
+    "A class that stores math problems/quizzes :-)"
     def __init__(self,max_answer_length=100,max_question_limit=250,
     max_guild_problems=125,warnings_or_errors = "warnings",
     sql_dict_db_name = "problems_module.db",name="1",
@@ -437,7 +461,7 @@ class MathProblemCache:
     def convert_dict_to_math_problem(self,problem):
         "Convert a dictionary into a math problem. It must be in the expected format. (Overriden by from_dict, but still used)"
         if __debug__:
-            return MathProblem.from_dict(problem)
+            return MathProblem.from_dict(problem, cache=self)
         try:
             assert isinstance(problem,dict)
         except AssertionError:
@@ -470,7 +494,7 @@ class MathProblemCache:
                 guild_problems[p[0]] = {} #Also do this so I don't need to worry about keyerrors because it will update too
             #Check for guild problems
             #guaranteed to be a new problem :-)
-            problem = MathProblem.from_dict(self._sql_dict[key])
+            problem = MathProblem.from_dict(self._sql_dict[key], cache = self)
             try:
                 assert p[0] == problem.guild_id #here for debugging
             except AssertionError:
@@ -559,7 +583,7 @@ class MathProblemCache:
                 raise MathProblemsModuleException("Not a valid problem!")
         else:
             try: # make sure this is a valid problem
-                MathProblem.from_dict(Problem) # If this is invaid, then there will be a keyerror
+                MathProblem.from_dict(Problem, cache = self) # If this is invaid, then there will be a keyerror
             except KeyError:
                 raise MathProblemsModuleException("Problem is not a valid problem")
         try:
@@ -569,7 +593,7 @@ class MathProblemCache:
             if not isinstance(e,KeyError):
                 raise RuntimeError("Something bad happened... please report this! And maybe try to fix it?") from e
             
-        self._sql_dict[f"{guild_id}:{problem_id}"] = Problem
+        self._sql_dict[f"{guild_id}:{problem_id}"] = Problem.to_dict()
 #        if guild_id != 'null':
 #            try:
 #                if self._dict[guild_id] != {}:
@@ -645,8 +669,19 @@ class MathProblemCache:
         raise NotImplementedError
     def get_quiz(self, quiz_id: int) -> Optional[Quiz]:
         "Get the quiz with the id specified. Returns None if not found"
+        assert isinstance(quiz_id, int)
         return Quiz.from_dict(self.quizzes_sql_dict[f"Quiz:{quiz_id}"]) # Convert the result to a quiz (result is getting the Quiz dictionary from the quizzes_sql_dict)
-
+    def update_problem(self,guild_id, problem_id, new: MathProblem) -> None:
+        "Update the problem stored with the given guild id and problem id"
+        assert isinstance(guild_id, str)
+        assert isinstance(problem_id, str)
+        assert isinstance(new, MathProblem) and not isinstance(new, QuizMathProblem)
+        self._sqldict[f"{guild_id}:{problem_id}"] = new.to_dict()
+    def update_quiz(self, quiz_id, new) -> None:
+        "Update the quiz with the id given"
+        assert isinstance(quiz_id, str)
+        assert isinstance(new, Quiz)
+        self.quizzes_sql_dict[f"Quiz:{quiz_id}"] = new.to_dict()
 main_cache = MathProblemCache(max_answer_length=100,max_question_limit=250,max_guild_problems=125,warnings_or_errors="errors")
 def get_main_cache():
     "Returns the main cache."
