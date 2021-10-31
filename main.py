@@ -16,8 +16,11 @@ from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoic
 from time import sleep, time, asctime
 from helpful_modules.custom_embeds import *
 from helpful_modules.the_documentation_file_loader import *
-
-
+from dotenv import load_dotenv # https://pypi.org/project/python-dotenv/
+try:
+    load_dotenv()
+except Exception as e:
+    raise Exception("You don't have an .env file!") from e
 
 
 warnings.simplefilter("default") #unnecessary, probably will be removed
@@ -25,8 +28,9 @@ warnings.simplefilter("default") #unnecessary, probably will be removed
 
 trusted_users=[]
 try:
-    DISCORD_TOKEN = os.environ('DISCORD_TOKEN')
-except KeyError:
+    DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
+    assert DISCORD_TOKEN is not None
+except (KeyError, AssertionError):
     raise RuntimeError("You haven't setup the .env file correctly! You need DISCORD_TOKEN=<your token>")
 main_cache = problems_module.get_main_cache()
 vote_threshold = -1
@@ -51,7 +55,7 @@ def the_daemon_file_saver():
 
     global guildMathProblems, trusted_users,vote_threshold
     
-    FileSaverObj = FileSaver(name = "The Daemon File Saver",
+    FileSaverObj = save_files.FileSaver(name = "The Daemon File Saver",
                              enabled=True,
                              printSuccessMessagesByDefault=True)
     FileSaverDict = FileSaverObj.load_files(main_cache,True)
