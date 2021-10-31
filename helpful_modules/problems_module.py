@@ -3,7 +3,7 @@ from time import sleep
 from sqlite3 import *
 from typing import *
 import nextcord, json, warnings, dislash
-from copy import deepcopy
+from copy import deepcopy, copy
 from nextcord import *
 import pickle, sqlite3, traceback
 from threading import Thread
@@ -494,12 +494,16 @@ class MathProblemCache:
                 guild_problems[p[0]] = {} #Also do this so I don't need to worry about keyerrors because it will update too
             #Check for guild problems
             #guaranteed to be a new problem :-)
-            problem = MathProblem.from_dict(self._sql_dict[key], cache = self)
+            problem = MathProblem.from_dict(self._sql_dict[key], cache = copy(self))
             try:
                 assert p[0] == problem.guild_id #here for debugging
             except AssertionError:
                 raise RuntimeError("An error in the bot has occured: the guild id's don't agree...")
-            guild_problems[p[0]][int(p[2])] = deepcopy(problem) #Convert it to a math problem + add it. deepcopy() is necessary because of the 'curse' of shallow-copying (but also a blessing)
+            try:
+                guild_problems[p[0]][problem.id] = deepcopy(problem) #Convert it to a math problem + add it. deepcopy() is necessary because of the 'curse' of shallow-copying (but also a blessing)
+            except Exception as e:
+                print(problem,)
+                raise
         #Conversion to math problem
         # Somewhere here (between lines 476 and 479) the global problems turn into strings (its key)... and I don't know why.
         try:

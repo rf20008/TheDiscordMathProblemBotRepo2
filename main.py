@@ -477,6 +477,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
     await check_for_cooldown(ctx,"list_all_problems")
     if ctx.guild is None and show_guild_problems:
         await ctx.reply("You must be in a guild to see guild problems!")
+        return
     if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     showSolvedProblems = show_solved_problems
