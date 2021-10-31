@@ -25,7 +25,7 @@ warnings.simplefilter("default") #unnecessary, probably will be removed
 
 trusted_users=[]
 try:
-    DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
+    DISCORD_TOKEN = os.environ('DISCORD_TOKEN')
 except KeyError:
     raise RuntimeError("You haven't setup the .env file correctly! You need DISCORD_TOKEN=<your token>")
 main_cache = problems_module.get_main_cache()
