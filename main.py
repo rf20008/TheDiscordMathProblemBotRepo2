@@ -17,20 +17,12 @@ from time import sleep, time, asctime
 from helpful_modules.custom_embeds import *
 from helpful_modules.the_documentation_file_loader import *
 try:
-    from dotenv import load_dotenv # https://pypi.org/project/python-dotenv/
-except ModuleNotFoundError:
-    print("Dotenv could not be found")
-try:
-    load_dotenv()
-except Exception as e:
-    because_no_dotenv=False
-    try:
-        load_dotenv
-    except NameError:
-        print("dotenv is not installed")
-        because_no_dotenv = True
-    if because_no_dotenv:
-        raise Exception("You don't have an .env file!") from e
+    import dotenv # https://pypi.org/project/python-dotenv/
+    assert hasattr(dotenv, load_dotenv)
+except (ModuleNotFoundError, AssertionError):
+    print("Dotenv could not be found, therefore cannot load .env")
+load_dotenv()
+DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", ValueError("Cannot start bot"))
 
 
 warnings.simplefilter("default") #unnecessary, probably will be removed
@@ -781,7 +773,11 @@ async def submit_a_request(inter, offending_problem_guild_id= None, offending_pr
     )
     await inter.reply("Your request has been submitted!")
 
-    
+@bot.event
+async def on_guild_join(guild):
+    if guild.id == "_global":
+      
+        await guild.leave()
 
 if __name__ == "__main__":
     print("The bot has finished setting up and will now run.")

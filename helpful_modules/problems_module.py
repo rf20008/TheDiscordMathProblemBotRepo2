@@ -47,8 +47,8 @@ class QuizAleadySubmitted(MathProblemsModuleException):
     pass
 class MathProblem:
     "For readability purposes :)"
-    def __init__(self,question,answer,id,author,guild_id="null", voters=[],solvers=[], cache=None,answers=[]):
-        if guild_id != "null" and not isinstance(guild_id, str):
+    def __init__(self,question,answer,id,author,guild_id="_global", voters=[],solvers=[], cache=None,answers=[]):
+        if guild_id != "_global" and not isinstance(guild_id, str):
             raise TypeError("guild_id is not an string")
         if not isinstance(id, int):
             raise TypeError("id is not an integer")
@@ -84,7 +84,7 @@ class MathProblem:
         self.answers = answers
     def edit(self,question=None,answer=None,id=None,guild_id=None,voters=None,solvers=None,author=None, answers = None) -> None:
         """Edit a math problem. The edit is in place"""
-        if guild_id not in [None,"null"] and not isinstance(guild_id, int):
+        if guild_id not in [None,"_global"] and not isinstance(guild_id, int):
             raise TypeError("guild_id is not an integer")
         if not isinstance(id, int) and id is not None:
             raise TypeError("id is not an integer")
@@ -145,8 +145,8 @@ class MathProblem:
         assert isinstance(_dict, dict)
         problem = _dict
         guild_id = problem["guild_id"]
-        if guild_id == "null":
-            guild_id = "null"
+        if guild_id == "_global":
+            guild_id = "_global"
         else:
             guild_id = int(guild_id)
         problem2 = cls(
@@ -320,7 +320,7 @@ class QuizSubmission:
 
 class QuizMathProblem(MathProblem):
     "A class that represents a Quiz Math Problem"
-    def __init__(self,question,answer,id,author,guild_id="null", voters=[],solvers=[], cache=None,answers=[],is_written=False,quiz_id=  None, max_score=-1, quiz=None):
+    def __init__(self,question,answer,id,author,guild_id="_global", voters=[],solvers=[], cache=None,answers=[],is_written=False,quiz_id=  None, max_score=-1, quiz=None):
         "A method that allows the creation of new QuizMathProblems"
         if not isinstance(quiz. Quiz):
             raise TypeError(f"quiz is of type {quiz.__class.__name}, not Quiz") # Here to help me debug
@@ -467,8 +467,8 @@ class MathProblemCache:
         except AssertionError:
             raise TypeError("problem is not actually a Dictionary")
         guild_id = problem["guild_id"]
-        if guild_id == "null":
-            guild_id = "null"
+        if guild_id == "_global":
+            guild_id = "_global"
         else:
             guild_id = int(guild_id)
         problem2 = self(
@@ -500,15 +500,15 @@ class MathProblemCache:
             except AssertionError:
                 raise RuntimeError("An error in the bot has occured: the guild id's don't agree...")
             try:
-                guild_problems[p[0]][problem.id] = deepcopy(problem) #Convert it to a math problem + add it. deepcopy() is necessary because of the 'curse' of shallow-copying (but also a blessing)
+                guild_problems[p[0]][problem.id] = problem #Convert it to a math problem + add it. deepcopy() is necessary because of the 'curse' of shallow-copying (but also a blessing)
             except Exception as e:
-                print(problem,)
+                print(problem.__class__.__name__)
                 raise
         #Conversion to math problem
         # Somewhere here (between lines 476 and 479) the global problems turn into strings (its key)... and I don't know why.
         try:
             print([[type(obj) for obj in guild_problems[key].values()] for key in guild_problems.keys()]) # A debug statement to find the scope of the bug
-            global_problems = deepcopy(guild_problems["null"]) #contention #deepcopying more :-)           
+            global_problems = deepcopy(guild_problems["_global"]) #contention #deepcopying more :-)           
         except KeyError as exc: # No global problems yet
             traceback.print_exc()
             global_problems = {}
@@ -572,7 +572,7 @@ class MathProblemCache:
             else:
                 raise TypeError("problem_id is not a string.")
         try:
-            if guild_id == "null":
+            if guild_id == "_global":
                 pass
             elif len(self.guild_problems[guild_id]) > self.max_guild_problems:
                 raise TooManyProblems(f"There are already {self.max_guild_problems} problems!")

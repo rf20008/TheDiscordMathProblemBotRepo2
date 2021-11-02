@@ -17,5 +17,5 @@ python = "^3.8"
 typing-extensions = "^3.10.0"
 orjson = "^3.6.3"
 sqldict = {git = "https://github.com/rf20008/sqldict.git"}
-python-dotenv = {git = "https://github.com/theskumar/python-dotenv.git"}
+python-dotenv = "^0.19.1"
 [tool.poetry.dev-dependencies]
