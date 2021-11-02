@@ -52,7 +52,7 @@ No privileged intents are required (the bot has been designed to not require pri
 7. move to the new directory containing the repository you cloned (which should be this one. The folder name is the same name as the repository name)
 8. Create a .env file inside the repository folder. Inside it, you need to put 
 ``DISCORD_TOKEN = `<your discord token>` `` (Replace `<your discord token>`) with the discord bot token you got from the bot user you made.
-9. Run the main.py file (```python3.10 main.py```)
+9. Run the main.py file (```python3.10 main.py```) Don't use the -O / -OO option (assert statements are necessary to run the bot, and they only run if \_\_debug\_\_ is true, which is not the case if the -O option is selected)
 10. Invite the bot bot (use the invite link, but replace the client_id field with your bot's client id)
 ## Update the bot with my changes
 

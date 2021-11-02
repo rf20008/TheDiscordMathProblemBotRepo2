@@ -18,11 +18,14 @@ from helpful_modules.custom_embeds import *
 from helpful_modules.the_documentation_file_loader import *
 try:
     import dotenv # https://pypi.org/project/python-dotenv/
-    assert hasattr(dotenv, load_dotenv)
+    assert hasattr(dotenv, "load_dotenv")
 except (ModuleNotFoundError, AssertionError):
     print("Dotenv could not be found, therefore cannot load .env")
-load_dotenv()
-DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", ValueError("Cannot start bot"))
+dotenv.load_dotenv()
+DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
+if DISCORD_TOKEN is None:
+    raise ValueError("Cannot start bot; no discord_token environment variable")
+
 
 
 warnings.simplefilter("default") #unnecessary, probably will be removed
