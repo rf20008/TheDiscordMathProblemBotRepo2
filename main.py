@@ -1,20 +1,38 @@
+##__debug__ must be true for the bot to run!
+if not __debug__:
+    raise RuntimeError("__debug__ must be True for the bot to run!")
 
 #Written by @rf20008
 # Licensed under the GNU license
 # Feel free to contribute! :-)
 
-#imports
-from helpful_modules import _error_logging, checks, cooldowns, custom_embeds, problems_module, return_intents, save_files, the_documentation_file_loader, user_error
+#imports - standard library
+import copy
 from typing import *
-import random, os, warnings, threading, copy, nextcord, subprocess
-from dislash.application_commands.core import check
-import dislash, traceback
+import random
+import os
+import warnings
+from time import sleep, time, asctime
+import subprocess
+import traceback
+import threading
+from sys import stderr
+# Imports - 3rd party
+import dislash #https://github.com/EQUENOS/dislash.py
+from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
+import nextcord #https://github.com/nextcord/nextcord
 import nextcord.ext.commands as nextcord_commands
+from dislash.application_commands.core import check
+# Imports - My own files
+from helpful_modules import _error_logging, checks, cooldowns
+from helpful_modules import custom_embeds, problems_module
+from helpful_modules import return_intents, save_files, the_documentation_file_loader
+# might be replaced with from helpful_modules import * and using __all__
+
 from cogs import developer_commands
 from helpful_modules.cooldowns import check_for_cooldown, OnCooldown
 from helpful_modules._error_logging import log_error
-from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
-from time import sleep, time, asctime
+
 from helpful_modules.custom_embeds import *
 from helpful_modules.the_documentation_file_loader import *
 try:
@@ -37,7 +55,9 @@ try:
     DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
     assert DISCORD_TOKEN is not None
 except (KeyError, AssertionError):
-    raise RuntimeError("You haven't setup the .env file correctly! You need DISCORD_TOKEN=<your token>")
+    raise RuntimeError(
+        "You haven't setup the .env file correctly! You need DISCORD_TOKEN=<your token>"
+        )
 main_cache = problems_module.get_main_cache()
 vote_threshold = -1
 mathProblems={}
@@ -82,6 +102,8 @@ def the_daemon_file_saver():
 
 def generate_new_id():
     return random.randint(0, 10**14)
+
+#Bot creation
 Intents = return_intents.return_intents()
 bot = nextcord_commands.Bot(
         command_prefix=" ",
@@ -105,30 +127,42 @@ bot.slash = slash
 bot.add_cog(developer_commands.DeveloperCommands(bot))
 print("Bots successfully created.")
 
+#Events
 
 @bot.event
-async def on_ready():
+async def on_connect():
+    "Run when the bot connects"
     print("The bot has connected to Discord successfully.")
 
 @bot.event
-async def on_slash_command_error(ctx, error):
-    "Function called when a command errors"
+async def on_ready():
+    print("The bot is now ready!")
+
+@bot.event
+async def on_slash_command_error(ctx, error, print_stack_traceback=[True, stderr]):
+    "Function called when a slash command errors"
+    if print_stack_traceback[0]: 
+        #print the traceback to the file
+        print("\n".join(
+            traceback.format_exception(
+                etype=type(error),
+                value=error,
+                tb=error.__traceback__)),
+             file=print_stack_traceback[1])
+        
     if isinstance(error,OnCooldown):
         await ctx.reply(str(error))
         return
-    error_traceback = (traceback.format_exception(etype=type(error),value=error,tb=error.__traceback__))
+    error_traceback_as_obj = (traceback.format_exception(etype=type(error),value=error,tb=error.__traceback__))
     log_error(error) # Log the error
     if isinstance(error,NotOwner):
         await ctx.reply(embed=ErrorEmbed("You are not the owner of this bot."))
         return
     #Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
     
-    _error_traceback = ""
-    for item in error_traceback:
-      _error_traceback += item
-      _error_traceback += "\n"
+    error_traceback = "\n".join(error_traceback_as_obj)
     
-    await ctx.reply(embed=ErrorEmbed(nextcord.utils.escape_markdown(_error_traceback),
+    await ctx.reply(embed=ErrorEmbed(nextcord.utils.escape_markdown(error_traceback),
         custom_title="Oh, no! An exception occurred", 
         footer=f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} "))
 
