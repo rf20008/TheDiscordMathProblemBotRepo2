@@ -147,7 +147,6 @@ dmypy.json
 
 **/*.json # I don't want to push the problems :-)
 vote_threshold.txt # Use /what_is_vote_threshold to use. This may be outdated...
-!docs/documentation.json # The documentation needs to be not git-ignored
 trusted_users.txt # /list_trusted_users to list trusted users. This may be outdated
 **/.env # keep my token safe
 .env #keep my token safe :)
@@ -156,12 +155,21 @@ trusted_users.txt # /list_trusted_users to list trusted users. This may be outda
 pylint-1.rtf
 .DS_Store
 **/__pycache__/**
-!**/__init__.py
 
 .DS_Store
 **/__pycache__/**
-!**/__init__.py
 
 # SQL, I don't want to show my problems
 **/*.db
 **/*.sqlite3
+
+#Don't show pylint
+pylint/**
+pylint/*.txt]
+
+#Whitelists
+!**/*.py #never ignore any python file :)
+!**/.gitignore
+!.gitignore
+!docs/documentation.json # The documentation needs to be not git-ignored
+!**/__init__.py
