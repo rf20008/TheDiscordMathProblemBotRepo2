@@ -1,3 +1,4 @@
+##__debug__ must be true for the bot to run!
 if not __debug__:
     raise RuntimeError("__debug__ must be True for the bot to run!")
 
