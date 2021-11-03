@@ -11,21 +11,21 @@
     "main.py": [
       {
         "id": "fb990c77-3e9a-44d7-ad7c-a28ba407f806",
-        "line": 9,
-        "version": 65429,
-        "index": 348
+        "line": 10,
+        "version": 65645,
+        "index": 349
       },
       {
         "id": "143247e7-b731-4ee6-8038-ab2c78a58ed7",
-        "line": 9,
-        "version": 65429,
-        "index": 348
+        "line": 10,
+        "version": 65645,
+        "index": 349
       },
       {
         "id": "36ed38cc-d6b6-445b-bbec-f727e7e7c4a3",
-        "line": 95,
-        "version": 65429,
-        "index": 3538
+        "line": 99,
+        "version": 65645,
+        "index": 3629
       }
     ],
     "pylint-1.rtf": [
