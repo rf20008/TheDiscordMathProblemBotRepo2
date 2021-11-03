@@ -42,7 +42,7 @@ class ProblemNotWrittenException(MathProblemsModuleException):
     "Raised when trying to grade a written problem but the problem is not graded"
     pass
 
-class QuizAleadySubmitted(MathProblemsModuleException):
+class QuizAlreadySubmitted(MathProblemsModuleException):
     "Raised when trying to submit a quiz that has already been submitted"
     pass
 class MathProblem:
@@ -311,7 +311,7 @@ class QuizSubmission:
         return c
     def submit(self) -> True:
         self.mutable = False
-        if submission in self.quiz.submissions:
+        if self in self.quiz.submissions:
             raise QuizAlreadySubmitted
         self.quiz.submissions.append(self)
         return True

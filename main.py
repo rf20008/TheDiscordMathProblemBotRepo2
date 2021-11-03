@@ -1,4 +1,3 @@
-##__debug__ must be true for the bot to run!
 if not __debug__:
     raise RuntimeError("__debug__ must be True for the bot to run!")
 
@@ -537,49 +536,49 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
     #if not showSolvedProblems and False not in [ctx.author.id in mathProblems[id]["solvers"] for id in mathProblems.keys()] or (show_guild_problems and (show_only_guild_problems and (guildMathProblems[ctx.guild.id] == {}) or False not in [ctx.author.id in guildMathProblems[guild_id][id]["solvers"] for id in guildMathProblems[guild_id].keys()])) or show_guild_problems and not show_only_guild_problems and False not in [ctx.author.id in mathProblems[id]["solvers"] for id in mathProblems.keys()] and False not in [ctx.author.id in guildMathProblems[guild_id][id]["solvers"] for id in guildMathProblems[guild_id].keys()]:
         #await ctx.reply("You solved all the problems! You should add a new one.", ephemeral=True)
         #return
-    e = ""
-    e += "Problem Id \t Question \t numVotes \t numSolvers"
+    problem_info_as_str = ""
+    problem_info_as_str += "Problem Id \t Question \t numVotes \t numSolvers"
     if show_guild_problems:
         for problem in main_cache.get_guild_problems(ctx.guild):
-            if len(e) >= 1930:
-                e += "The combined length of the questions is too long.... shortening it!"
-                await ctx.reply(embed=SuccessEmbed(e[:1930]))
+            if len(problem_info_as_str) >= 1930:
+                problem_info_as_str += "The combined length of the questions is too long.... shortening it!" #May be removed
+                await ctx.reply(embed=SuccessEmbed(problem_info_as_str[:1930]))
                 return
             if not (showSolvedProblems) and problem.is_solver(ctx.author):
                 continue
-            e += "\n"
-            e += str(problem.id) + "\t"
-            e += str(problem.get_question()) + "\t"
-            e += "(" 
-            e+= str(problem.get_num_voters()) + "/" + str(vote_threshold) + ")" + "\t"
-            e += str(len(problem.get_solvers())) + "\t"
-            e += "(guild)"
-    if len(e) > 1930:
-        await ctx.reply(embed=SuccessEmbed(e[:1930]))
+            problem_info_as_str += "\n"
+            problem_info_as_str += str(problem.id) + "\t"
+            problem_info_as_str += str(problem.get_question()) + "\t"
+            problem_info_as_str += "(" 
+            problem_info_as_str+= str(problem.get_num_voters()) + "/" + str(vote_threshold) + ")" + "\t"
+            problem_info_as_str += str(len(problem.get_solvers())) + "\t"
+            problem_info_as_str += "(guild)"
+    if len(problem_info_as_str) > 1930:
+        await ctx.reply(embed=SuccessEmbed(problem_info_as_str[:1930]))
         return
     if show_only_guild_problems:
-        await ctx.reply(e[:1930])
+        await ctx.reply(problem_info_as_str[:1930])
         return
     global_problems = main_cache.get_global_problems()
     for problem in global_problems: 
-        if len(e) >= 1930:
-            e += "The combined length of the questions is too long.... shortening it!"
-            await ctx.reply(embed=SuccessEmbed(e[:1930]))
+        if len(problem) >= 1930:
+            problem_info_as_str += "The combined length of the questions is too long.... shortening it!"
+            await ctx.reply(embed=SuccessEmbed(problem_info_as_str[:1930]))
             return
         if not isinstance(problem, problems_module.MathProblem):
-            print([item for item in global_problems])
+            print(list(global_problems))
             raise RuntimeError("Uhhhhhhh..... the problem is not a MathProblem! Please help :-)") # For some reason..... the problem is an Integer, not a MathProblem...
             #For now, I could get the problem.... (it looks like an ID, but I should find the root cause first)
         if not (showSolvedProblems) and problem.is_solver(ctx.author):
             continue
         #Probably will be overhauled with str(problem)
-        e += "\n"
-        e += str(problem.id) + "\t"
-        e += str(problem.get_question()) + "\t"
-        e += "(" 
-        e+= str(problem.get_num_voters()) + "/" + str(vote_threshold) + ")" + "\t"
-        e += str(len(problem.get_solvers())) + "\t"
-    await ctx.reply(embed=SuccessEmbed(e[:1930]))
+        problem_info_as_str += "\n"
+        problem_info_as_str += str(problem.id) + "\t"
+        problem_info_as_str += str(problem.get_question()) + "\t"
+        problem_info_as_str += "(" 
+        problem_info_as_str+= str(problem.get_num_voters()) + "/" + str(vote_threshold) + ")" + "\t"
+        problem_info_as_str += str(len(problem.get_solvers())) + "\t"
+    await ctx.reply(embed=SuccessEmbed(problem_info_as_str[:1930]))
 
 @slash.slash_command(name = "set_vote_threshold", description = "Sets the vote threshold", options=[
     Option(name="threshold", description="the threshold you want to change it to",
@@ -587,7 +586,7 @@ async def list_all_problems(ctx, show_solved_problems=False,show_guild_problems=
 async def set_vote_threshold(ctx,threshold):
     "Set the vote threshold"
     await check_for_cooldown(ctx,"")
-    if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
+    if ctx.guild is not None and ctx.guild.id not in main_cache.get_guilds():
         main_cache.add_empty_guild(ctx.guild)
     global vote_threshold
     try:
@@ -632,14 +631,11 @@ async def vote(ctx, problem_id,is_guild_problem=False):
         await ctx.reply(embed=ErrorEmbed("This problem doesn't exist!"), ephemeral=True)
         return
     problem.add_voter(ctx.author)
-    e = "You successfully voted for the problem's deletion! As long as this problem is not deleted, you can always un-vote. There are "
-    e += str(problem.get_num_voters())
-    e += "/"
-    e+= str(vote_threshold)
-    e += " votes on this problem!"
-    await ctx.reply(embed=SuccessEmbed(e), ephemeral=True)
+    string_to_print = "You successfully voted for the problem's deletion! As long as this problem is not deleted, you can always un-vote. There are "
+    string_to_print += f"{problem.get_num_voters()}/{vote_threshold} votes on this problem!"
+    await ctx.reply(embed=SuccessEmbed(string_to_print, title = "YouSuccessfully voted"), ephemeral=True)
     if problem.get_num_voters() >= vote_threshold:
-        del mathProblems[problem_id]
+        main_cache.delete_problem(guild_id=problem.guild_id, problem_id = problem.id)
         await ctx.reply(embed=SimpleEmbed("This problem has surpassed the threshold and has been deleted!"), ephemeral=True)
 @slash.slash_command(name="unvote", description = "Vote for the deletion of a problem", options=[
     Option(name="problem_id", description="problem id of the problem you are attempting to delete",
@@ -677,7 +673,7 @@ async def delete_problem(ctx, problem_id,is_guild_problem=False):
     await check_for_cooldown(ctx,"unvote",0.5)
     guild_id = ctx.guild.id
     if is_guild_problem:
-        if guild_id == None:
+        if guild_id is None:
             await ctx.reply(embed=ErrorEmbed(
                 "Run this command in the discord server which has the problem you are trying to delete, or switch is_guild_problem to False."
                 ))
@@ -694,7 +690,7 @@ async def delete_problem(ctx, problem_id,is_guild_problem=False):
         await ctx.reply(
             embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!"),
             ephemeral=True)
-    if guild_id == None:
+    if guild_id is None:
         await ctx.reply(embed=ErrorEmbed(
             "Run this command in the discord server which has the problem, or switch is_guild_problem to False."))
         return
@@ -703,8 +699,8 @@ async def delete_problem(ctx, problem_id,is_guild_problem=False):
         return
     if not (ctx.author.id in bot.trusted_users or not
             (main_cache.get_problem(guild_id,problem_id).is_author())
-            or ctx.author.guild_permissions.administrator):
-        await ctx.reply(embed=ErrorEmbed("Insufficient permissions"), ephemeral=True)
+            or ctx.author.guild_permissions.administrator): #Not
+        await ctx.reply(embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True)
         return
     main_cache.remove_problem("null", problem_id)
     await ctx.reply(embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!"), ephemeral=True)
