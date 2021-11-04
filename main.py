@@ -709,7 +709,9 @@ async def delete_problem(ctx, problem_id,is_guild_problem=False):
            type=OptionType.USER,
            required=True)])
 async def add_trusted_user(ctx,user):
-    "Add a trusted user"
+    """The slash command that adds a trusted user. See the documentation for details.
+You must be a trusted user to add a trusted user, and the user you are trying to make a trusted user must not be a trusted user. 
+You must also share a server with the new trusted user."""
     await check_for_cooldown(ctx,"add_trusted_user",600)
     if ctx.author.id not in bot.trusted_users:
         await ctx.reply(embed=ErrorEmbed("You aren't a trusted user!"), ephemeral=True)
@@ -772,6 +774,7 @@ async def github_repo(ctx):
   Option(name = "copyrighted_thing", description = "The copyrighted thing that this problem is violating", type = OptionType.STRING, required=False)
 , Option(name="is_legal", description = "Is this a legal request?", required = False, type = OptionType.BOOLEAN)])
 async def submit_a_request(inter, offending_problem_guild_id= None, offending_problem_id=None, extra_info=None, copyrighted_thing = None, is_legal = False):
+    "Submit a request! I will know! It uses a channel in my discord server and posts an embed"
     __import__("cooldowns").check_for_cooldown("submit_a_request", 5) #5 seconds cooldown
     if(extra_info is None and is_legal is False and copyrighted_thing is not Exception and offending_problem_guild_id is  None and offending_problem_id is None):
         await inter.reply(embed=ErrorEmbed("You must specify some field."))
@@ -809,7 +812,8 @@ async def submit_a_request(inter, offending_problem_guild_id= None, offending_pr
 
 @bot.event
 async def on_guild_join(guild):
-    if guild.id == "_global":
+    
+    if guild.id == "_global": #Should never happen
       
         await guild.leave()
 
