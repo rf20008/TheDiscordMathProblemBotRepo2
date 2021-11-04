@@ -1,13 +1,14 @@
-if not __debug__:
-    raise RuntimeError("__debug__ must be True for the bot to run!")
 
 #Written by @rf20008
 # Licensed under the GNU license
 # Feel free to contribute! :-)
+#Python 3.8+ is required. 
+
+if not __debug__: #__debug__ must be true for the bot to run (because assert statements)
+    raise RuntimeError("__debug__ must be True for the bot to run!")
 
 #imports - standard library
 import copy
-from typing import *
 import random
 import os
 import warnings
@@ -69,8 +70,8 @@ def loading_documentation_thread():
     d = DocumentationFileLoader()
     d.load_documentation_into_readable_files()
     del d
-t = threading.Thread(target=loading_documentation_thread)
-t.start()
+loader = threading.Thread(target=loading_documentation_thread)
+loader.start()
 
 def get_git_revision_hash() -> str:
     "A method that gets the git revision hash. Credit to https://stackoverflow.com/a/21901260 for the code :-)"
@@ -135,6 +136,7 @@ async def on_connect():
 
 @bot.event
 async def on_ready():
+    "Ran when the nextcord library detects that the bot is ready"
     print("The bot is now ready!")
 
 @bot.event
@@ -243,7 +245,7 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
     problem = main_cache.get_problem(real_guild_id, str(problem_id))
 
     if True:  
-        if is_guild_problem and guild_id == None:
+        if is_guild_problem and guild_id is None:
             embed1= ErrorEmbed( description = "Run this command in the discord server which has this problem, not a DM!")
             ctx.reply(embed=embed1)
             return
@@ -276,7 +278,7 @@ async def list_all_problem_ids(ctx,show_only_guild_problems=False):
         main_cache.add_empty_guild(ctx.guild)
     if show_only_guild_problems:
         guild_id = ctx.guild.id
-        if guild_id == None:
+        if guild_id is None:
             await ctx.reply(
                 "Run this command in a Discord server or set show_only_guild_problems to False!",
                             ephemeral=True)
@@ -408,12 +410,12 @@ async def submit_problem(ctx, answer, question, guild_question=False):
             description="Your answer is longer than 100 characters. Therefore, it is too long and cannot be added.",
                                          custom_title="Your answer is too long"),
                         ephemeral=True)
-        t2=threading.Thread(target=main_cache.remove_duplicate_problems)
-        t2.start()
+        remover=threading.Thread(target=main_cache.remove_duplicate_problems)
+        remover.start()
         return
     if guild_question:
         guild_id = ctx.guild.id
-        if guild_id == None:
+        if guild_id is None:
             await ctx.reply(embed=ErrorEmbed("You need to be in the guild to make a guild question!"))
             return
 
@@ -635,7 +637,7 @@ async def vote(ctx, problem_id,is_guild_problem=False):
     string_to_print += f"{problem.get_num_voters()}/{vote_threshold} votes on this problem!"
     await ctx.reply(embed=SuccessEmbed(string_to_print, title = "YouSuccessfully voted"), ephemeral=True)
     if problem.get_num_voters() >= vote_threshold:
-        main_cache.delete_problem(guild_id=problem.guild_id, problem_id = problem.id)
+        main_cache.remove_problem(guild_id=problem.guild_id, problem_id = problem.id)
         await ctx.reply(embed=SimpleEmbed("This problem has surpassed the threshold and has been deleted!"), ephemeral=True)
 @slash.slash_command(name="unvote", description = "Vote for the deletion of a problem", options=[
     Option(name="problem_id", description="problem id of the problem you are attempting to delete",
