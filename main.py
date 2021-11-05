@@ -141,7 +141,7 @@ async def on_ready():
 
 @bot.event
 async def on_slash_command_error(ctx, error, print_stack_traceback=[True, stderr]):
-    "Function called when a slash command errors"
+    "Function called when a slash command errors, which will inevitably happen"
     if print_stack_traceback[0]: 
         #print the traceback to the file
         print("\n".join(
@@ -162,10 +162,10 @@ async def on_slash_command_error(ctx, error, print_stack_traceback=[True, stderr
     #Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
     
     error_traceback = "\n".join(error_traceback_as_obj)
-    
+
     await ctx.reply(embed=ErrorEmbed(nextcord.utils.escape_markdown(error_traceback),
-        custom_title="Oh, no! An exception occurred", 
-        footer=f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} "))
+        custom_title="Oh, no! An error occurred!", 
+        footer=f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"))
 
 
 
@@ -808,8 +808,7 @@ async def submit_a_request(inter, offending_problem_guild_id= None, offending_pr
     for owner_id in bot.owner_ids: #Mentioning owners: may be removed (you can also remove it as well)
         content += f"<@{owner_id}>"
     content += f"<@{bot.owner_id}>"
-    await channel.send(embed=embed, content = content
-    )
+    await channel.send(embed=embed, content = content)
     await inter.reply("Your request has been submitted!")
 
 @bot.event
@@ -818,7 +817,7 @@ async def on_guild_join(guild):
     if guild.id == "_global": #Should never happen
       
         await guild.leave()
-
+        print("Oh no")
 if __name__ == "__main__":
     print("The bot has finished setting up and will now run.")
     #slash.run(DISCORD_TOKEN)
