@@ -141,7 +141,7 @@ async def on_ready():
 
 @bot.event
 async def on_slash_command_error(ctx, error, print_stack_traceback=[True, stderr]):
-    "Function called when a slash command errors"
+    "Function called when a slash command errors, which will inevitably happen"
     if print_stack_traceback[0]: 
         #print the traceback to the file
         print("\n".join(
@@ -162,10 +162,10 @@ async def on_slash_command_error(ctx, error, print_stack_traceback=[True, stderr
     #Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
     
     error_traceback = "\n".join(error_traceback_as_obj)
-    
+
     await ctx.reply(embed=ErrorEmbed(nextcord.utils.escape_markdown(error_traceback),
-        custom_title="Oh, no! An exception occurred", 
-        footer=f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} "))
+        custom_title="Oh, no! An error occurred!", 
+        footer=f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"))
 
 
 
