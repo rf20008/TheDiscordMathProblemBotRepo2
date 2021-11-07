@@ -252,7 +252,7 @@ class MathProblem:
             return False
     def __repr__(self):
         "A method that when called, returns a string, that when executed, returns an object that is equal to this one. Also implements repr(self)"
-        )
+        
         return f"""problems_module.MathProblem(question={self.question},
         answer = {self.answer}, id = {self.id}, guild_id={self.guild_id},
         voters={self.voters},solvers={self.solvers},author={self.author},cache={None})""" # If I stored the problems, then there would be an infinite loop
