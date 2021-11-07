@@ -149,14 +149,15 @@ class MathProblem:
         if guild_id == "_global":
             guild_id = "_global"
         elif guild_id == "null": #Remove the guild_id null (used for global problems), which is not used anymore because of conflicts with SQL
-            self._cache.remove_problem("null", _dict[problem.id])
+            problem = self._cache.remove_problem("null", _dict[problem.id])
+            self._cache.add_problem("_global", _dict[problem.id])
         else:
-            guild_id = int(guild_id)
+          pass
         problem2 = cls(
             question=problem["question"],
             answer=problem["answer"],
             id = int(problem["id"]),
-            guild_id = guild_id,
+            guild_id = int(guild_id),
             voters = problem["voters"],
             solvers=problem["solvers"],
             author=problem["author"],
