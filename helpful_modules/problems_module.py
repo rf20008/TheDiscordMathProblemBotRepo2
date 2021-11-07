@@ -7,6 +7,7 @@ from copy import deepcopy, copy
 from nextcord import *
 import pickle, sqlite3, traceback
 from threading import Thread
+import warnings
 import sqldict #https://github.com/skylergrammer/sqldict/
 main_cache = None
 
@@ -137,8 +138,8 @@ class MathProblem:
         self.update_self()
     def update_self(self):
         "A helper method to update the cache with my version"
-        if self.cache is not None:
-            self.cache.update_problem(self.guild_id, self,id, self)
+        if self._cache is not None:
+            self._cache.update_problem(self.guild_id, self,id, self)
     @classmethod
     def from_dict(cls,_dict, cache = None):
         "Convert a dictionary to a math problem. cache must be a valid MathProblemCache"
@@ -147,6 +148,8 @@ class MathProblem:
         guild_id = problem["guild_id"]
         if guild_id == "_global":
             guild_id = "_global"
+        elif guild_id == "null": #Remove the guild_id null (used for global problems), which is not used anymore because of conflicts with SQL
+            self._cache.remove_problem("null", _dict[problem.id])
         else:
             guild_id = int(guild_id)
         problem2 = cls(
@@ -165,7 +168,7 @@ class MathProblem:
         return self.convert_to_dict()
     def convert_to_dict(self):
         """Convert self to a dictionary"""
-
+        warnings.warn("This method has been deprecated. Use from_dict for continued support!", DeprecationWarning)
         return {
             "type": "MathProblem",
             "question": self.question,
@@ -248,6 +251,7 @@ class MathProblem:
             return False
     def __repr__(self):
         "A method that when called, returns a string, that when executed, returns an object that is equal to this one. Also implements repr(self)"
+        )
         return f"""problems_module.MathProblem(question={self.question},
         answer = {self.answer}, id = {self.id}, guild_id={self.guild_id},
         voters={self.voters},solvers={self.solvers},author={self.author},cache={None})""" # If I stored the problems, then there would be an infinite loop
@@ -281,8 +285,10 @@ class QuizSubmission:
         self.answers = [QuizSubmissionAnswer(problem=question,quiz_id= quiz_id) for question in self.get_my_quiz()]
     @property
     def quiz(self):
+        "Return my quiz!"
         return self.get_my_quiz()
     def get_my_quiz(self):
+        "Return my Quiz!"
         return get_main_cache().get_quiz(self.quiz_id)
     def set_answer(self,problem_id, Answer) -> None:
         "Set the answer of a quiz problem"
