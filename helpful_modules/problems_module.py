@@ -10,7 +10,8 @@ from threading import Thread
 import warnings
 import sqldict #https://github.com/skylergrammer/sqldict/
 main_cache = None
-
+def get_main_cache():
+    return main_cache
     
 
 
@@ -149,7 +150,22 @@ class MathProblem:
         if guild_id == "_global":
             guild_id = "_global"
         elif guild_id == "null": #Remove the guild_id null (used for global problems), which is not used anymore because of conflicts with SQL
-            self._cache.remove_problem("null", _dict[problem.id])
+        
+            Problem = cls(
+            question=problem["question"],
+            answer=problem["answer"],
+            id = int(problem["id"]),
+            guild_id = "_global",
+            voters = problem["voters"],
+            solvers=problem["solvers"],
+            author=problem["author"],
+            cache = cache
+        ) # Problem-ify the problem, but set the guild_id to _global
+            #Then remove the problem from SQL, because it says the guild_id is null
+            cache.remove_problem_without_returning(Problem.guild_id, Problem.id) #There will be a recursion error if I normally delete a problem
+            #Add the problem again
+            cache.add_problem(Problem.guild_id, Problem.id, Problem)   
+            return Problem
         else:
             guild_id = int(guild_id)
         problem2 = cls(
@@ -251,7 +267,6 @@ class MathProblem:
             return False
     def __repr__(self):
         "A method that when called, returns a string, that when executed, returns an object that is equal to this one. Also implements repr(self)"
-        )
         return f"""problems_module.MathProblem(question={self.question},
         answer = {self.answer}, id = {self.id}, guild_id={self.guild_id},
         voters={self.voters},solvers={self.solvers},author={self.author},cache={None})""" # If I stored the problems, then there would be an infinite loop
@@ -341,11 +356,13 @@ class QuizMathProblem(MathProblem):
         self.min_score = 0
     @property
     def quiz(self):
+        "Return my quiz"
         if self.cache is None:
-            return None
+            return None # I don't have a cache to get my quiz from!
         else:
             return self.cache.get_quiz(self.quiz_id)
     def edit(self,question=None,answer=None,id=None,guild_id=None,voters=None,solvers=None,author=None, answers = None,is_written=None, quiz = None, max_score: int = -1):
+        "Edit a problem!"
         super().edit(question,answer,id,guild_id,voters,solvers,author,answers)
         if not isinstance(quiz, Quiz):
             raise TypeError(f"quiz is of type {quiz.__class.__name}, not Quiz") # Here to help me debug
@@ -624,10 +641,17 @@ class MathProblemCache:
 
         Problem = self.get_problem(guild_id,problem_id)
         with sqlite3.connect(self.sql_dict.name) as connection: # The sqldict does not implement deletion, so I have to do sql magic
-            connection.cursor.execute(f"DELETE FROM {self._sql_dict.__tablename__} WHERE key = \"{str(guild_id)}:{str(problem_id)}")
+            connection.cursor().execute(f"DELETE FROM {self._sql_dict.__tablename__} WHERE key = \"{str(guild_id)}:{str(problem_id)}")
             connection.commit()
 
         return Problem
+    def remove_problem_without_returning(self, guild_id, problem_id):
+        "Remove a problem without returning"
+        key = f"{guild_id}:{problem_id}"
+        with sqlite3.connect(self._sql_dict.name) as connection:
+            connection.cursor().execute("DELETE FROM kv_store WHERE Key = (?)", (self._sqldict.name))
+            connection.commit()
+            
     def remove_duplicate_problems(self):
         "Deletes duplicate problems"
         problems_seen_before = []
