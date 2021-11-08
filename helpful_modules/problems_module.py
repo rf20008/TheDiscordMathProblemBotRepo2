@@ -6,9 +6,10 @@ import nextcord, json, warnings, dislash
 from copy import deepcopy, copy
 from nextcord import *
 import pickle, sqlite3, traceback
+import aiosqlite
 from threading import Thread
 import warnings
-import sqldict #https://github.com/skylergrammer/sqldict/
+import sqldict #https://github.com/rf20008/sqldict/ (original credit to skylergrammar)
 main_cache = None
 def get_main_cache():
     return main_cache

@@ -1,0 +1,19 @@
+Using version ^0.17.0 for aiosqlite
+
+Updating dependencies
+Resolving dependencies...
+
+  CalledProcessError
+
+  Command '['git', '--git-dir', '/tmp/pypoetry-git-sqldicq_mgppk3/.git', '--work-tree', '/tmp/pypoetry-git-sqldicq_mgppk3', 'checkout', 'master']' returned non-zero exit status 1.
+
+  at /opt/virtualenvs/python3/lib/python3.8/site-packages/poetry/utils/_compat.py:217 in run
+      213│                 process.wait()
+      214│                 raise
+      215│             retcode = process.poll()
+      216│             if check and retcode:
+    → 217│                 raise CalledProcessError(
+      218│                     retcode, process.args, output=stdout, stderr=stderr
+      219│                 )
+      220│         finally:
+      221│             # None because our context manager __exit__ does not use them.

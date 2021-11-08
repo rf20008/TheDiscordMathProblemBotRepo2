@@ -18,4 +18,5 @@ typing-extensions = "^3.10.0"
 orjson = "^3.6.3"
 sqldict = {git = "https://github.com/rf20008/sqldict.git"}
 python-dotenv = "^0.19.1"
+aiosqlite = "^0.17.0"
 [tool.poetry.dev-dependencies]
