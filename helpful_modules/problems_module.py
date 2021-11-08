@@ -647,7 +647,7 @@ class MathProblemCache:
         "Remove a problem without returning"
         key = f"{guild_id}:{problem_id}"
         with sqlite3.connect(self._sql_dict.name) as connection:
-            connection.cursor().execute("DELETE FROM kv_store WHERE Key = (?)", (self._sqldict.name))
+            connection.cursor().execute("DELETE FROM kv_store WHERE Key = ?", (key,)) # Very weird syntax, but otherwise SQLite sees it as a list of characters instead of a string
             connection.commit()
             
     def remove_duplicate_problems(self):
