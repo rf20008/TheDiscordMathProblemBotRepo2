@@ -1,8 +1,15 @@
-The following packages are already present in the pyproject.toml and will be skipped:
 
-  • dislash.py
+  ValueError
 
-If you want to update it to the latest compatible version, you can use `poetry update package`.
-If you prefer to upgrade it to the latest available version, you can use `poetry add package@latest`.
+  Could not find a matching version of package dislash
 
-Nothing to add.
+  at /opt/virtualenvs/python3/lib/python3.8/site-packages/poetry/console/commands/init.py:367 in _find_best_version_for_package
+      363│         )
+      364│ 
+      365│         if not package:
+      366│             # TODO: find similar
+    → 367│             raise ValueError(
+      368│                 "Could not find a matching version of package {}".format(name)
+      369│             )
+      370│ 
+      371│         return package.pretty_name, selector.find_recommended_require_version(package)

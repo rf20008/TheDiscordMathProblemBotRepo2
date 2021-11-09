@@ -1,18 +1,20 @@
 [![Powered by Nextcord](https://custom-icon-badges.herokuapp.com/badge/-Powered%20by%20Nextcord-0d1620?logo=nextcord)](https://github.com/nextcord/nextcord "Powered by Nextcord Python API Wrapper")
 
-# License
-
-
-This discord bot and all of its code is licensed under the combined terms of the GNU license and the MIT license. (due to nextcord being licensed under the MIT license)
-
-
 # If you run into issues
 If you run into any issues create an issue or DM me (ay136416#2707)). 
-
 
 # Contribute :-)
 
 If you open a PR/Issue, I'll look at it and maybe merge it! 
+A few guidelines:
+1) Use the main branch, not master
+2) If you are pull requesting to my bot directly into the main branch, please make sure your code works!
+3) If you are pull requesting to my bot via the beta branch, please make sure your code works, but it is okay if it doesn't (for now), but later, not so much
+4) This bot is coded using OOP and abstraction, so if you want to add a new feature or change an existing one, please keep this in mind.
+5) main.py is used to run the bot! helpful_modules include essential elements of the bot, but are not exposed to the user. cogs is the cogs!
+6) No syntax errors, please!
+7) You should lint your code.
+8) Follow common sense
 
 # Invite my bot!
 
