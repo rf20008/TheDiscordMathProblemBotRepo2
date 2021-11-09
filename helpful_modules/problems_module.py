@@ -167,6 +167,11 @@ class MathProblem:
             #Add the problem again
             cache.add_problem(Problem.guild_id, Problem.id, Problem)   
             return Problem
+<<<<<<< HEAD
+=======
+        else:
+            guild_id = int(guild_id)
+>>>>>>> 681e05088e7add1237ede92dfa59de76b941037f
         problem2 = cls(
             question=problem["question"],
             answer=problem["answer"],

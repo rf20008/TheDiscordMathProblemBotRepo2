@@ -11,14 +11,13 @@ version = "0.0.2a1"
 [tool.poetry.dependencies]
 discord = "^1.7.3"
 discord-py-slash-command = "^3.0.1"
-"dislash.py" = "^1.4.9"
+"dislash.py" = {git = "https://github.com/EQUENOS/dislash.py.git", rev = "main"}
 nextcord = {git = "https://github.com/nextcord/nextcord.git"}
 python = "^3.8"
-dislash = {git = "https://github.com/EQUENOS/dislash.py"}
+#dislash = {git = "https://github.com/EQUENOS/dislash.py.git#main"}
 typing-extensions = "^3.10.0"
 orjson = "^3.6.3"
-sqldict = {git = "https://github.com/rf20008/sqldict.git"}
+#sqldict = {git = "https://github.com/rf20008/sqldict.git"}
 python-dotenv = "^0.19.1"
-aiosqlite = {git = "https://github.com/omnilib/aiosqlite.git"}
-
+sqldict = {git = "https://github.com/rf20008/sqldict.git", rev = "main"}
 [tool.poetry.dev-dependencies]
