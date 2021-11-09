@@ -6,7 +6,7 @@ import nextcord, json, warnings, dislash
 from copy import deepcopy, copy
 from nextcord import *
 import pickle, sqlite3, traceback
-import aiosqlite
+#import aiosqlite
 from threading import Thread
 import warnings
 import sqldict #https://github.com/rf20008/sqldict/ (original credit to skylergrammar)
