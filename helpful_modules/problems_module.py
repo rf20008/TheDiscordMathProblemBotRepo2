@@ -168,7 +168,10 @@ class MathProblem:
             cache.add_problem(Problem.guild_id, Problem.id, Problem)   
             return Problem
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 681e05088e7add1237ede92dfa59de76b941037f
         else:
             guild_id = int(guild_id)
 >>>>>>> 681e05088e7add1237ede92dfa59de76b941037f
