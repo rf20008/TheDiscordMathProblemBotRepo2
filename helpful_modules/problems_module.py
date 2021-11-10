@@ -9,7 +9,10 @@ import pickle, sqlite3, traceback
 #import aiosqlite
 from threading import Thread
 import warnings
-import sqldict #https://github.com/rf20008/sqldict/ (original credit to skylergrammar)
+from sqldict import sync_sql_dict#https://github.com/rf20008/sqldict/ (original credit to skylergrammar)
+
+import aiosqlite # necessary
+
 main_cache = None
 def get_main_cache():
     return main_cache
@@ -167,14 +170,6 @@ class MathProblem:
             #Add the problem again
             cache.add_problem(Problem.guild_id, Problem.id, Problem)   
             return Problem
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 681e05088e7add1237ede92dfa59de76b941037f
-        else:
-            guild_id = int(guild_id)
->>>>>>> 681e05088e7add1237ede92dfa59de76b941037f
         problem2 = cls(
             question=problem["question"],
             answer=problem["answer"],
@@ -464,8 +459,8 @@ class MathProblemCache:
         self._initialize_sql_dict()
         self.update_cache_by_default_when_requesting=update_cache_by_default_when_requesting
     def _initialize_sql_dict(self):
-        self._sql_dict = sqldict.SqlDict(name=f"MathProblemCache1.db",table_name = "kv_store")
-        self.quizzes_sql_dict = sqldict.SqlDict(name = "TheQuizStorer", table_name = "quizzes_kv_store")
+        self._sql_dict = sync_sql_dict.SqlDict(name=f"MathProblemCache1.db",table_name = "kv_store")
+        self.quizzes_sql_dict = sync_sql_dict.SqlDict(name = "TheQuizStorer", table_name = "quizzes_kv_store")
     @property
     def max_answer_length(self):
         return self._max_answer
