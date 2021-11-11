@@ -20,5 +20,5 @@ orjson = "^3.6.3"
 #sqldict = {git = "https://github.com/rf20008/sqldict.git"}
 python-dotenv = "^0.19.1"
 sqldict = {git = "https://github.com/rf20008/sqldict.git", rev = "main"}
-aiosqlite = "^0.17.0"
+aiosqlite = {git = "https://github.com/omnilib/aiosqlite", rev = "main"}
 [tool.poetry.dev-dependencies]

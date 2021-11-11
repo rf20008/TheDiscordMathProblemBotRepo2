@@ -15,7 +15,6 @@ from .dict_factory import dict_factory #Attribution to stackoverflow
 
 """The core of my bot (very necessary)"""
 
-
 main_cache = None
 def get_main_cache():
     return main_cache
@@ -196,13 +195,11 @@ class MathProblem:
             #Add the problem again
             cache.add_problem(Problem.guild_id, Problem.id, Problem)   
             return Problem
-        else:
-            guild_id = int(guild_id)
         problem2 = cls(
             question=problem["question"],
             answer=problem["answer"],
             id = int(problem["id"]),
-            guild_id = guild_id,
+            guild_id = int(guild_id),
             voters = problem["voters"],
             solvers=problem["solvers"],
             author=problem["author"],
@@ -541,6 +538,7 @@ class MathProblemCache:
             #Used to store submissions!
             
             await conn.commit() #Otherwise, when this closes, the database just reverted!
+
     @property
     def max_answer_length(self):
         return self._max_answer
@@ -550,9 +548,7 @@ class MathProblemCache:
     @property
     def max_guild_problems(self):
         return self._guild_limit
-    #def load_from_sql(self):
-    #    for item in self._sql_dict.keys():
-    #        MathProblem.from_dict(self._sql_dict[item])
+
 
 
     def convert_to_dict(self):
@@ -771,7 +767,7 @@ class MathProblemCache:
         "Remove a problem without returning"
         key = f"{guild_id}:{problem_id}"
         with sqlite3.connect(self._sql_dict.name) as connection:
-            connection.cursor().execute("DELETE FROM kv_store WHERE Key = (?)", (self._sqldict.name))
+            connection.cursor().execute("DELETE FROM kv_store WHERE Key = ?", (key,)) # Very weird syntax, but otherwise SQLite sees it as a list of characters instead of a string
             connection.commit()
             
     def remove_duplicate_problems(self):
