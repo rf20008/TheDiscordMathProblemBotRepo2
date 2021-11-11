@@ -468,7 +468,7 @@ class MathProblemCache:
         self._max_answer = max_answer_length
         self._max_question = max_question_limit
         self._guild_limit = max_guild_problems
-        self.initalize_sql_table()
+        asyncio.run(self.initalize_sql_table())
         self.update_cache_by_default_when_requesting=update_cache_by_default_when_requesting
     def _initialize_sql_dict(self):
         self._sql_dict = sqldict.SqlDict(name=f"MathProblemCache1.db",table_name = "kv_store")
@@ -483,10 +483,24 @@ class MathProblemCache:
                     answers BLOB NOT NULL, 
                     author INT NOT NULL,
                     voters BLOB NOT NULL,
-                    solvers BLOB NOT NULL,
+                    solvers BLOB NOT NULL
 
                     )""") #Blob types will be compliled with pickle.loads() and pickle.dumps() (they are lists)
                     #author: int = user_id
+            await cursor.execute("""CREATE TABLE IF NOT EXISTS quizzes (
+                guild_id INT,
+                quiz_id INT NOT NULL,
+                problem_id INT NOT NULL,
+                question TEXT(500) NOT NULL,
+                answer BLOB NOT NULL,
+                voters BLOB NOT NULL,
+                author INT NOT NULL,
+                solvers INT NOT NULL
+            )""") # answer: Blob (a list)
+            #voters: Blob (a list)
+            #solvers: Blob (a list)
+            #submissions: Blob (a dictionary)
+            await conn.commit()
     @property
     def max_answer_length(self):
         return self._max_answer
@@ -504,13 +518,15 @@ class MathProblemCache:
     def convert_to_dict(self):
         "A method that converts self to a dictionary (not used, will probably be removed soon)"
         e = {}
-        for guild_id in self._dict.keys():
+        self.update_cache()
+
+        for guild_id in self.guild_ids:
             e[guild_id] = {}
-            for problem_id in self._dict[guild_id].keys():
-                e[guild_id][problem_id] = self.get_problem(guild_id,problem_id).convert_to_dict()
+            for Problem in self.guild_problems[guild_id]:
+                e[guild_id][Problem.id] = Problem.to_dict()
         return e
     def convert_dict_to_math_problem(self,problem):
-        "Convert a dictionary into a math problem. It must be in the expected format. (Overriden by from_dict, but still used)"
+        "Convert a dictionary into a math problem. It must be in the expected format. (Overriden by from_dict, but still used) Possibly not used due to SQL"
         if __debug__:
             return MathProblem.from_dict(problem, cache=self)
         try:
@@ -744,6 +760,12 @@ class MathProblemCache:
         assert isinstance(quiz_id, str)
         assert isinstance(new, Quiz)
         self.quizzes_sql_dict[f"Quiz:{quiz_id}"] = new.to_dict()
+    async def delete_quiz(self, quiz_id, guild_id):
+        "Delete a quiz!"
+        async with aiosqlite.connect(self._sql_dict_db_name) as conn:
+            cursor = conn.cursor()
+            await cursor.execute("DELETE FROM quizzes WHERE quiz_id = ? AND guild_id = ?", (quiz_id, guild_id,))
+            await conn.commit()
 main_cache = MathProblemCache(max_answer_length=100,max_question_limit=250,max_guild_problems=125,warnings_or_errors="errors")
 def get_main_cache():
     "Returns the main cache."
