@@ -318,7 +318,7 @@ class MathProblem:
         return str(_str)
 class QuizSubmissionAnswer:
     "A class that represents an answer for a singular problem"
-    def __init__(self, answer: str= "", problem_id: int= None,quiz_id: int = int(complex=10)):
+    def __init__(self, answer: str= "", problem_id: int= None,quiz_id: int = 10):
         self.answer = answer
         self.problem_id = problem_id
         self.grade = 0
@@ -506,17 +506,17 @@ class MathProblemCache:
         self._max_answer = max_answer_length
         self._max_question = max_question_limit
         self._guild_limit = max_guild_problems
-        asyncio.run(self.initalize_sql_table())
+        asyncio.run(self.initialize_sql_table())
         self.update_cache_by_default_when_requesting=update_cache_by_default_when_requesting
     def _initialize_sql_dict(self):
         self._sql_dict = sqldict.SqlDict(name=f"MathProblemCache1.db",table_name = "kv_store")
         self.quizzes_sql_dict = sqldict.SqlDict(name = "TheQuizStorer", table_name = "quizzes_kv_store")
     async def initialize_sql_table(self):
         async with aiosqlite.connect(self.db_name) as conn:
-            cursor = conn.cursor()
+            cursor = await conn.cursor()
             await cursor.execute("""CREATE TABLE IF NOT EXISTS Problems (
-                    guild_id INT PRIMARY KEY,
-                    problem_id INT PRIMARY KEY NOT NULL ,
+                    guild_id INT,
+                    problem_id INT,
                     question TEXT(2000) NOT NULL,
                     answers BLOB NOT NULL, 
                     author INT NOT NULL,
