@@ -153,10 +153,21 @@ class MathProblem:
     def from_row(cls, row, cache = None):
 
         try:
-            return cls.from_dict(Row, cache=cache) #
+            answers = pickle.loads(row["answers"]) # Load answers from bytes to a list (which should contain only pickleable objects)!
+            voters = pickle.loads(row["voters"]) #Do the same for voters and solvers
+            solvers = pickle.loads(row["voters"])
+            _Row = {
+                "guild_id": row["guild_id"], # Could be None
+                "problem_id": row["guild_id"],
+                "answer": Exception, # Placeholder,
+                "answers": answers,
+                "voters": voters,
+                "solvers": solvers
+            }
+            return cls.from_dict(_Row, cache=cache) #
         except BaseException as e:
-            traceback.print_exception(type(e), e, e.__traceback__, file = sys.stderr)
-            raise
+            traceback.print_exception(type(e), e, e.__traceback__, file = sys.stderr) # Log to stderr
+            raise SQLException("Uh oh...") from e #Re-raise the exception to the user (so that they can help me debug (error_logs/** is gitignored))
 
     @classmethod
     def from_dict(cls,_dict, cache = None):
@@ -403,8 +414,21 @@ class QuizMathProblem(MathProblem):
         }
     @classmethod
     def from_dict(cls, Dict, cache=None):
+        "Convert a dictionary to a QuizProblem. Even though the bot uses SQL, this is used in the from_row method"
         Dict.pop("type")
         return cls(*Dict, cache = cache)
+    @classmethod
+    def from_row(cls, row, cache=None):
+        try:
+            voters = pickle.loads(row["voters"])
+            _dict = {
+                "quiz_id": row["quiz_id"],
+                "guild_id": row["guild_id"]
+            }
+            return cls.from_dict(_dict, cache = cache)
+        except BaseException as e:
+            traceback.print_exception(type(e), e, e.__traceback, file = sys.stderr) # Log to stderr
+            raise MathProblemsModuleException("Oh no... conversion from row failed") from e # Re-raise (which wil log)
     def update_self(self):
         "Update myself"
         if self.cache is not None:
