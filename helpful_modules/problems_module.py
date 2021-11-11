@@ -151,7 +151,6 @@ class MathProblem:
 
     @classmethod
     def from_row(cls, row, cache = None):
-
         try:
             answers = pickle.loads(row["answers"]) # Load answers from bytes to a list (which should contain only pickleable objects)!
             voters = pickle.loads(row["voters"]) #Do the same for voters and solvers
@@ -164,11 +163,10 @@ class MathProblem:
                 "voters": voters,
                 "solvers": solvers
             }
-            return cls.from_dict(_Row, cache=cache) #
+            return cls.from_dict(_Row, cache=cache) 
         except BaseException as e:
             traceback.print_exception(type(e), e, e.__traceback__, file = sys.stderr) # Log to stderr
             raise SQLException("Uh oh...") from e #Re-raise the exception to the user (so that they can help me debug (error_logs/** is gitignored))
-
     @classmethod
     def from_dict(cls,_dict, cache = None):
         "Convert a dictionary to a math problem. cache must be a valid MathProblemCache"
@@ -423,7 +421,8 @@ class QuizMathProblem(MathProblem):
             voters = pickle.loads(row["voters"])
             _dict = {
                 "quiz_id": row["quiz_id"],
-                "guild_id": row["guild_id"]
+                "guild_id": row["guild_id"],
+                "voters": row[voters]
             }
             return cls.from_dict(_dict, cache = cache)
         except BaseException as e:
