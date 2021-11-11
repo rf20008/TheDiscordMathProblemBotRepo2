@@ -9,6 +9,10 @@ import pickle, sqlite3, traceback
 from threading import Thread
 import warnings
 import sqldict #https://github.com/skylergrammer/sqldict/
+import asyncio, aiosqlite
+import sys
+
+
 main_cache = None
 def get_main_cache():
     return main_cache
@@ -141,10 +145,20 @@ class MathProblem:
         "A helper method to update the cache with my version"
         if self._cache is not None:
             self._cache.update_problem(self.guild_id, self,id, self)
+
+    @classmethod
+    def from_row(cls, row, cache = None):
+
+        try:
+            return cls.from_dict(Row, cache=cache) #
+        except BaseException as e:
+            traceback.print_exception(type(e), e, e.__traceback__, file = sys.stderr)
+            raise
+
     @classmethod
     def from_dict(cls,_dict, cache = None):
         "Convert a dictionary to a math problem. cache must be a valid MathProblemCache"
-        assert isinstance(_dict, dict)
+        assert isinstance(_dict, (dict, sqlite3.Row))
         problem = _dict
         guild_id = problem["guild_id"]
         if guild_id == "_global":
@@ -454,11 +468,25 @@ class MathProblemCache:
         self._max_answer = max_answer_length
         self._max_question = max_question_limit
         self._guild_limit = max_guild_problems
-        self._initialize_sql_dict()
+        self.initalize_sql_table()
         self.update_cache_by_default_when_requesting=update_cache_by_default_when_requesting
     def _initialize_sql_dict(self):
         self._sql_dict = sqldict.SqlDict(name=f"MathProblemCache1.db",table_name = "kv_store")
         self.quizzes_sql_dict = sqldict.SqlDict(name = "TheQuizStorer", table_name = "quizzes_kv_store")
+    async def initialize_sql_table(self):
+        async with aiosqlite.connect(self.sql_dict_db_name) as conn:
+            cursor = conn.cursor()
+            await cursor.execute("""CREATE TABLE IF NOT EXISTS Problems (
+                    guild_id INT PRIMARY KEY,
+                    problem_id INT PRIMARY KEY NOT NULL ,
+                    question TEXT(2000) NOT NULL,
+                    answers BLOB NOT NULL, 
+                    author INT NOT NULL,
+                    voters BLOB NOT NULL,
+                    solvers BLOB NOT NULL,
+
+                    )""") #Blob types will be compliled with pickle.loads() and pickle.dumps() (they are lists)
+                    #author: int = user_id
     @property
     def max_answer_length(self):
         return self._max_answer
