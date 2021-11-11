@@ -6,12 +6,14 @@ import nextcord, json, warnings, dislash
 from copy import deepcopy, copy
 from nextcord import *
 import pickle, sqlite3, traceback
-#import aiosqlite
 from threading import Thread
 import warnings
-from sqldict import sync_sql_dict#https://github.com/rf20008/sqldict/ (original credit to skylergrammar)
+import sqldict #https://github.com/skylergrammer/sqldict/
+import asyncio, aiosqlite
+import sys
+from .dict_factory import dict_factory #Attribution to stackoverflow
 
-import aiosqlite # necessary
+"""The core of my bot (very necessary)"""
 
 main_cache = None
 def get_main_cache():
@@ -51,6 +53,9 @@ class ProblemNotWrittenException(MathProblemsModuleException):
 class QuizAlreadySubmitted(MathProblemsModuleException):
     "Raised when trying to submit a quiz that has already been submitted"
     pass
+
+class SQLException(MathProblemsModuleException):
+    "Raised when an error happens relating to SQL!"
 class MathProblem:
     "For readability purposes :)"
     def __init__(self,question,answer,id,author,guild_id="_global", voters=[],solvers=[], cache=None,answers=[]):
@@ -145,10 +150,30 @@ class MathProblem:
         "A helper method to update the cache with my version"
         if self._cache is not None:
             self._cache.update_problem(self.guild_id, self,id, self)
+
+    @classmethod
+    def from_row(cls, row, cache = None):
+        try:
+            answers = pickle.loads(row["answers"]) # Load answers from bytes to a list (which should contain only pickleable objects)!
+            voters = pickle.loads(row["voters"]) #Do the same for voters and solvers
+            solvers = pickle.loads(row["voters"])
+            _Row = {
+                "guild_id": row["guild_id"], # Could be None
+                "problem_id": row["guild_id"],
+                "answer": Exception, # Placeholder,
+                "answers": answers,
+                "voters": voters,
+                "solvers": solvers,
+                "author": row["author"]
+            }
+            return cls.from_dict(_Row, cache=cache) 
+        except BaseException as e:
+            traceback.print_exception(type(e), e, e.__traceback__, file = sys.stderr) # Log to stderr
+            raise SQLException("Uh oh...") from e #Re-raise the exception to the user (so that they can help me debug (error_logs/** is gitignored))
     @classmethod
     def from_dict(cls,_dict, cache = None):
         "Convert a dictionary to a math problem. cache must be a valid MathProblemCache"
-        assert isinstance(_dict, dict)
+        assert isinstance(_dict, (dict, sqlite3.Row))
         problem = _dict
         guild_id = problem["guild_id"]
         if guild_id == "_global":
@@ -284,7 +309,7 @@ class MathProblem:
         return str(_str)
 class QuizSubmissionAnswer:
     "A class that represents an answer for a singular problem"
-    def __init__(self, answer: str= "", problem_id: int= None,quiz_id: str = "0"):
+    def __init__(self, answer: str= "", problem_id: int= None,quiz_id: int = int(complex=10)):
         self.answer = answer
         self.problem_id = problem_id
         self.grade = 0
@@ -388,8 +413,22 @@ class QuizMathProblem(MathProblem):
         }
     @classmethod
     def from_dict(cls, Dict, cache=None):
+        "Convert a dictionary to a QuizProblem. Even though the bot uses SQL, this is used in the from_row method"
         Dict.pop("type")
         return cls(*Dict, cache = cache)
+    @classmethod
+    def from_row(cls, row, cache=None):
+        try:
+            voters = pickle.loads(row["voters"])
+            _dict = {
+                "quiz_id": row["quiz_id"],
+                "guild_id": row["guild_id"],
+                "voters": row["voters"]
+            }
+            return cls.from_dict(_dict, cache = cache)
+        except BaseException as e:
+            traceback.print_exception(type(e), e, e.__traceback, file = sys.stderr) # Log to stderr
+            raise MathProblemsModuleException("Oh no... conversion from row failed") from e # Re-raise (which wil log)
     def update_self(self):
         "Update myself"
         if self.cache is not None:
@@ -400,6 +439,9 @@ class Quiz(list):
     "Essentially a list, so it implements everything that a list does, but it has an additional attribute submissions which is a list of QuizSubmissions"
     def __init__(self, id: str, iter: List[QuizMathProblem], cache = None):
         """Create a new quiz. id is the quiz id and iter is an iterable of QuizMathProblems"""
+
+
+        #Later, I will need to use 
         super().__init__(iter)
         self._cache = cache
         self._submissions = []
@@ -440,27 +482,63 @@ class MathProblemCache:
     "A class that stores math problems/quizzes :-)"
     def __init__(self,max_answer_length=100,max_question_limit=250,
     max_guild_problems=125,warnings_or_errors = "warnings",
-    sql_dict_db_name = "problems_module.db",name="1",
-    update_cache_by_default_when_requesting=True):
+    db_name: str = "problems_module.db",name="1",
+    update_cache_by_default_when_requesting=True,
+    use_cached_problems: bool = False):
+        "Create a new MathProblemCache. the arguments should be self-explanatory"
         #make_sql_table([], db_name = sql_dict_db_name)
         #make_sql_table([], db_name = "MathProblemCache1.db", table_name="kv_store")
-        self.sql_dict_db_name = sql_dict_db_name
+        self.db_name = db_name
         if warnings_or_errors not in ["warnings", "errors"]:
             raise ValueError(f"warnings_or_errors is {warnings_or_errors}, not 'warnings' or 'errors'")
-        if warnings_or_errors == "warnings":
-            self.warnings = True
-        else:
-            self.warnings = False
-        
-        
+        self.warnings = (warnings_or_errors == "warnings")
+        self.use_cached_problems = use_cached_problems
         self._max_answer = max_answer_length
         self._max_question = max_question_limit
         self._guild_limit = max_guild_problems
-        self._initialize_sql_dict()
+        asyncio.run(self.initalize_sql_table())
         self.update_cache_by_default_when_requesting=update_cache_by_default_when_requesting
     def _initialize_sql_dict(self):
-        self._sql_dict = sync_sql_dict.SqlDict(name=f"MathProblemCache1.db",table_name = "kv_store")
-        self.quizzes_sql_dict = sync_sql_dict.SqlDict(name = "TheQuizStorer", table_name = "quizzes_kv_store")
+        self._sql_dict = sqldict.SqlDict(name=f"MathProblemCache1.db",table_name = "kv_store")
+        self.quizzes_sql_dict = sqldict.SqlDict(name = "TheQuizStorer", table_name = "quizzes_kv_store")
+    async def initialize_sql_table(self):
+        async with aiosqlite.connect(self.db_name) as conn:
+            cursor = conn.cursor()
+            await cursor.execute("""CREATE TABLE IF NOT EXISTS Problems (
+                    guild_id INT PRIMARY KEY,
+                    problem_id INT PRIMARY KEY NOT NULL ,
+                    question TEXT(2000) NOT NULL,
+                    answers BLOB NOT NULL, 
+                    author INT NOT NULL,
+                    voters BLOB NOT NULL,
+                    solvers BLOB NOT NULL
+                    )""") #Blob types will be compliled with pickle.loads() and pickle.dumps() (they are lists)
+                    #author: int = user_id
+
+            await cursor.execute("""CREATE TABLE IF NOT EXISTS quizzes (
+                guild_id INT,
+                quiz_id INT NOT NULL,
+                problem_id INT NOT NULL,
+                question TEXT(500) NOT NULL,
+                answer BLOB NOT NULL,
+                voters BLOB NOT NULL,
+                author INT NOT NULL,
+                solvers INT NOT NULL
+            )""")
+            #Used for quizzes
+             # answer: Blob (a list)
+            #voters: Blob (a list)
+            #solvers: Blob (a list)
+            #submissions: Blob (a dictionary)
+            await cursor.execute("""CREATE TABLE IF NOT EXISTS quiz_submissions (
+                guild_id INT,
+                quiz_id INT NOT NULL,
+                submissions BLOB NOT NULL
+                )""") #as dictionary
+            #Used to store submissions!
+            
+            await conn.commit() #Otherwise, when this closes, the database just reverted!
+
     @property
     def max_answer_length(self):
         return self._max_answer
@@ -470,21 +548,21 @@ class MathProblemCache:
     @property
     def max_guild_problems(self):
         return self._guild_limit
-    #def load_from_sql(self):
-    #    for item in self._sql_dict.keys():
-    #        MathProblem.from_dict(self._sql_dict[item])
+
 
 
     def convert_to_dict(self):
         "A method that converts self to a dictionary (not used, will probably be removed soon)"
         e = {}
-        for guild_id in self._dict.keys():
+        self.update_cache()
+
+        for guild_id in self.guild_ids:
             e[guild_id] = {}
-            for problem_id in self._dict[guild_id].keys():
-                e[guild_id][problem_id] = self.get_problem(guild_id,problem_id).convert_to_dict()
+            for Problem in self.guild_problems[guild_id]:
+                e[guild_id][Problem.id] = Problem.to_dict()
         return e
     def convert_dict_to_math_problem(self,problem):
-        "Convert a dictionary into a math problem. It must be in the expected format. (Overriden by from_dict, but still used)"
+        "Convert a dictionary into a math problem. It must be in the expected format. (Overriden by from_dict, but still used) Possibly not used due to SQL"
         if __debug__:
             return MathProblem.from_dict(problem, cache=self)
         try:
@@ -506,62 +584,73 @@ class MathProblemCache:
             author=problem["author"]
         )
         return problem2
-    def update_cache(self):
+    async def update_cache(self):
         "Method revamped! This method updates the cache of the guilds, the guild problems, and the cache of the global problems. Takes O(N) time"
         guild_problems = {}
         guild_ids = []
         global_problems = {}
-      
-        for key in self._sql_dict.keys():
-            p = key.partition(":") #P[0] is guild id, P[1] is the colon, and P[2] is the problem id
-            if p[0] not in guild_ids: #Update guild ids: Check if here
-                guild_ids.append(p[0])
-                guild_problems[p[0]] = {} #Also do this so I don't need to worry about keyerrors because it will update too
-            #Check for guild problems
-            #guaranteed to be a new problem :-)
-            problem = MathProblem.from_dict(self._sql_dict[key], cache = copy(self))
-            try:
-                assert p[0] == problem.guild_id #here for debugging
-            except AssertionError:
-                raise RuntimeError("An error in the bot has occured: the guild id's don't agree...")
-            try:
-                guild_problems[p[0]][problem.id] = problem #Convert it to a math problem + add it. deepcopy() is necessary because of the 'curse' of shallow-copying (but also a blessing)
-            except Exception as e:
-                print(problem.__class__.__name__)
-                raise
-        #Conversion to math problem
-        # Somewhere here (between lines 476 and 479) the global problems turn into strings (its key)... and I don't know why.
+
+        async with aiosqlite.connect(self.db_name) as conn:
+            conn.row_factory = dict_factory
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM problems")
+
+            for row in cursor:
+                Problem = MathProblem.from_row(row, cache=copy(self))
+                if Problem.guild_id not in guild_ids: # Similar logic: Make sure it's there!   
+                    guild_ids.append(Problem.guild_id)
+                    guild_problems[Problem.guild_id] = {} #For quick, cached access?
+                try:
+                    guild_problems[Problem.guild_id][Problem.id] = Problem
+                except BaseException as e:
+                    raise SQLException("Uh oh..... oh no..... uh..... please help! For some reason, the cache couldn't be updated") from e
+                    
+
+
         try:
-            print([[type(obj) for obj in guild_problems[key].values()] for key in guild_problems.keys()]) # A debug statement to find the scope of the bug
-            global_problems = deepcopy(guild_problems["_global"]) #contention #deepcopying more :-)           
+            global_problems = deepcopy(guild_problems["_global"]) #contention deepcopying more :-)           
         except KeyError as exc: # No global problems yet
-            traceback.print_exc()
             global_problems = {}
         self.guild_problems = deepcopy(guild_problems) # More deep-copying (so it refers to a different object)
         self.guild_ids = deepcopy(guild_ids)
         self.global_problems = deepcopy(global_problems)
-    def get_problem(self,guild_id,problem_id):
+    async def get_problem(self,guild_id: int, problem_id: int):
         "Gets the problem with this guild id and problem id"
-        if not isinstance(guild_id, str):
-            if self.warnings:
-                warnings.warn("guild_id is not a string!", category=RuntimeWarning)
-            else:
-                raise TypeError("guild_id is not a string")
-        if not isinstance(problem_id,str):
-            if self.warnings:
-                warnings.warn("problem_id is not a string",category=RuntimeWarning)
-            else:
-                raise TypeError("problem_id is not a string")
-        #Iterate through all problems! This takes O(N^2) time. However, nested SQLDicts don't exist. Any ideas? Please help :-)
-        try:
-            return self._sql_dict[f"{guild_id}:{problem_id}"]
-        except:
-            raise ProblemNotFound(f"*** No problem found with guild_id {guild_id} and problem_id {problem_id}!***")
 
-    def get_guild_problems(self,Guild):
+        
+        if not isinstance(guild_id, int):
+            if self.warnings:
+                warnings.warn("guild_id is not a integer!", category=RuntimeWarning)
+            else:
+                raise TypeError("guild_id isn't an integer and this will cause issues in SQL!")
+        if not isinstance(problem_id,int):
+            if self.warnings:
+                warnings.warn("problem_id is not a integer",category=RuntimeWarning)
+            else:
+                raise TypeError("problem_id is not a integer")
+        if self.use_cached_problems:
+            if self.update_cache_by_default_when_requesting:
+                await self.update_cache()
+            return self.guild_problems[guild_id][problem_id]
+        else:
+            #Otherwise, use SQL to get the problem!
+            async with aiosqlite.connect(self.db_name) as conn:
+                conn.row_factory = dict_factory
+                cursor = conn.cursor()
+                await cursor.execute("SELECT * from problems WHERE guild_id = ? AND problem_id = ?", (guild_id, problem_id))
+                row = await cursor.fetchone()
+                await conn.commit()
+                return MathProblem.from_row(row, cache=copy(self))
+            
+            
+
+                
+
+
+    async def get_guild_problems(self,Guild):
         """Gets the guild problems! Guild must be a Guild object. If you are trying to get global problems, use get_global_problems."""
         if self.update_cache_by_default_when_requesting:
-            self.update_cache()
+            await self.update_cache()
         try:
             return self.guild_problems[Guild.id]
         except KeyError:
@@ -718,6 +807,12 @@ class MathProblemCache:
         assert isinstance(quiz_id, str)
         assert isinstance(new, Quiz)
         self.quizzes_sql_dict[f"Quiz:{quiz_id}"] = new.to_dict()
+    async def delete_quiz(self, quiz_id, guild_id):
+        "Delete a quiz!"
+        async with aiosqlite.connect(self._sql_dict_db_name) as conn:
+            cursor = conn.cursor()
+            await cursor.execute("DELETE FROM quizzes WHERE quiz_id = ? AND guild_id = ?", (quiz_id, guild_id,))
+            await conn.commit()
 main_cache = MathProblemCache(max_answer_length=100,max_question_limit=250,max_guild_problems=125,warnings_or_errors="errors")
 def get_main_cache():
     "Returns the main cache."

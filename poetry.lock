@@ -194,7 +194,8 @@ develop = false
 type = "git"
 url = "https://github.com/rf20008/sqldict.git"
 reference = "main"
-resolved_reference = "cef973f23804d8367146306e3b7f72707486258c"
+resolved_reference = "80963165fe10fe933053685f75740eb0fd65a72d"
+
 
 [[package]]
 name = "typing-extensions"

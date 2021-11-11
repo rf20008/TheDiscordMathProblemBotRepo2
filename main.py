@@ -5,7 +5,7 @@
 #Python 3.8+ is required. 
 
 if not __debug__: #__debug__ must be true for the bot to run (because assert statements)
-    raise RuntimeError("__debug__ must be True for the bot to run!")
+    raise RuntimeError("__debug__ must be True for the bot to run! (Don't run with -o or -OO)")
 
 #imports - standard library
 import copy
@@ -819,6 +819,7 @@ async def on_guild_join(guild):
         await guild.leave()
         print("Oh no")
         raise RuntimeError("Oh no..... there is a guild with id _global... this will mess up the bot!") # Make sure that a guild with id _global doesn't mess up stuff
+
 if __name__ == "__main__":
     print("The bot has finished setting up and will now run.")
     #slash.run(DISCORD_TOKEN)
