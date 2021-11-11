@@ -5,7 +5,7 @@
 #Python 3.8+ is required. 
 
 if not __debug__: #__debug__ must be true for the bot to run (because assert statements)
-    raise RuntimeError("__debug__ must be True for the bot to run!")
+    raise RuntimeError("__debug__ must be True for the bot to run! (Don't run with -o or -OO)")
 
 #imports - standard library
 import copy
