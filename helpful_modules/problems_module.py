@@ -699,6 +699,7 @@ class MathProblemCache:
         #self._dict[Guild.id] = {}
     async def add_problem(self,guild_id: int,problem_id: int,Problem: MathProblem):
         "Adds a problem and returns the added MathProblem"
+        #Preliminary checks -otherwise SQL bugs
         if not isinstance(guild_id,int):
             if self.warnings:
                 warnings.warn("guild_id is not an integer.... this may cause an exception")
@@ -709,6 +710,8 @@ class MathProblemCache:
                 warnings.warn("problem_id is not a integer.... this may cause an exception")
             else:
                 raise TypeError("problem_id is not a integer.")
+
+        #Make sure the problem does not exist!
         try:
             if self.get_problem(guild_id,problem_id) is not None:
                 raise MathProblemsModuleException("Problem already exists! Use update_problem instead")
@@ -743,25 +746,47 @@ class MathProblemCache:
             cursor = conn.cursor()
             #We will raise if the problem already exists!
             await cursor.execute("""INSERT INTO problems (guild_id, problem_id, question, answer, voters, solvers, author)
-            VALUES (?,?,?,?,?,?,?)""", (Problem.guild_id, Problem.id, Problem.get_question(), 
+            VALUES (?,?,?,?,?,?,?)""", (int(Problem.guild_id), int(Problem.id), Problem.get_question(), 
             pickle.dumps(Problem.get_answers()), pickle.dumps(Problem.get_voters()), pickle.dumps(Problem.get_solvers()),
             int(Problem.author)))
 
             await conn.commit()
         return Problem
-    def remove_problem(self,guild_id,problem_id):
+    async def remove_problem(self,guild_id,problem_id):
         "Removes a problem. Returns the deleted problem"
-        if not isinstance(guild_id, str):
+        if not isinstance(guild_id, int):
             if self.warnings:
-                warnings.warn("guild_id is not a string. There might be an error...", Warning)
+                warnings.warn("guild_id is not a integer. There might be an error...", Warning)
             else:
-                raise TypeError("guild_id is not a string")
-
+                raise TypeError("guild_id is not a integer")
+        if not isinstance(problem_id, int):
+            if self.warnings:
+                warnings.warn("problem_id isn't an integer")
+            else:
+                raise TypeError("problem_id isn't an integer!")
         Problem = self.get_problem(guild_id,problem_id)
-        with sqlite3.connect(self.sql_dict.name) as connection: # The sqldict does not implement deletion, so I have to do sql magic
-            connection.cursor().execute(f"DELETE FROM {self._sql_dict.__tablename__} WHERE key = \"{str(guild_id)}:{str(problem_id)}")
-            connection.commit()
+        async with aiosqlite.connect(self.db_name) as conn:
+            try:
+                conn.row_factory = dict_factory #Make sure the row_factory can be set to dict_factory
+            except BaseException as exc:
+                #Not writeable?
+                try:
+                    dict_factory #Check for nameerror
+                except NameError as exc2:
+                    raise MathProblemsModuleException("dict_factory could not be found") from exc2 
+                if isinstance(exc, AttributeError): # Can't set attribute
+                    pass
+                else:
+                    raise # Re-raise the exception
+            cursor = conn.cursor()
+            await cursor.execute("DELETE FROM problems WHERE guild_id = ? and problem_id = ?", (guild_id, problem_id)) #The actual deletion
+            try:
+                del self.guild_problems[guild_id][problem_id]
+            except KeyError:
+                #It's already deleted!
+                pass
 
+            await conn.commit()
         return Problem
     def remove_problem_without_returning(self, guild_id, problem_id):
         "Remove a problem without returning"
