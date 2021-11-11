@@ -808,8 +808,7 @@ async def submit_a_request(inter, offending_problem_guild_id= None, offending_pr
     for owner_id in bot.owner_ids: #Mentioning owners: may be removed (you can also remove it as well)
         content += f"<@{owner_id}>"
     content += f"<@{bot.owner_id}>"
-    await channel.send(embed=embed, content = content
-    )
+    await channel.send(embed=embed, content = content)
     await inter.reply("Your request has been submitted!")
 
 @bot.event
@@ -818,7 +817,7 @@ async def on_guild_join(guild):
     if guild.id == "_global": #Should never happen
       
         await guild.leave()
-
+        print("Oh no")
 if __name__ == "__main__":
     print("The bot has finished setting up and will now run.")
     #slash.run(DISCORD_TOKEN)
