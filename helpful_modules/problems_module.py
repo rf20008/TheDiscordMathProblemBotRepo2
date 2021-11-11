@@ -318,7 +318,7 @@ class MathProblem:
         return str(_str)
 class QuizSubmissionAnswer:
     "A class that represents an answer for a singular problem"
-    def __init__(self, answer: str= "", problem_id: int= None,quiz_id: int = int(complex=10)):
+    def __init__(self, answer: str= "", problem_id: int= None,quiz_id: int = 0):
         self.answer = answer
         self.problem_id = problem_id
         self.grade = 0
