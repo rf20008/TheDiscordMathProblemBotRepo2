@@ -24,9 +24,13 @@ description = "asyncio bridge to the standard sqlite3 module"
 category = "main"
 optional = false
 python-versions = ">=3.6"
+develop = false
 
-[package.dependencies]
-typing_extensions = ">=3.7.2"
+[package.source]
+type = "git"
+url = "https://github.com/omnilib/aiosqlite"
+reference = "main"
+resolved_reference = "7e7622381916a8dd6f836ffbdab9e1e86b621ee9"
 
 [[package]]
 name = "async-timeout"
@@ -192,6 +196,7 @@ url = "https://github.com/rf20008/sqldict.git"
 reference = "main"
 resolved_reference = "80963165fe10fe933053685f75740eb0fd65a72d"
 
+
 [[package]]
 name = "typing-extensions"
 version = "3.10.0.2"
@@ -215,7 +220,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "396977e534d71d150c4a6496d524792a5c4955fb421fa3242e82546ce8ed89d0"
+content-hash = "7a618abeabd96ef4e2232e58efd30eebfb3892c712ce13b4c53c41e3aff829d6"
 
 [metadata.files]
 aiohttp = [
@@ -257,10 +262,7 @@ aiohttp = [
     {file = "aiohttp-3.7.4.post0-cp39-cp39-win_amd64.whl", hash = "sha256:02f46fc0e3c5ac58b80d4d56eb0a7c7d97fcef69ace9326289fb9f1955e65cfe"},
     {file = "aiohttp-3.7.4.post0.tar.gz", hash = "sha256:493d3299ebe5f5a7c66b9819eacdcfbbaaf1a8e84911ddffcdc48888497afecf"},
 ]
-aiosqlite = [
-    {file = "aiosqlite-0.17.0-py3-none-any.whl", hash = "sha256:6c49dc6d3405929b1d08eeccc72306d3677503cc5e5e43771efc1e00232e8231"},
-    {file = "aiosqlite-0.17.0.tar.gz", hash = "sha256:f0e6acc24bc4864149267ac82fb46dfb3be4455f99fe21df82609cc6e6baee51"},
-]
+aiosqlite = []
 async-timeout = [
     {file = "async-timeout-3.0.1.tar.gz", hash = "sha256:0c3c816a028d47f659d6ff5c745cb2acf1f966da1fe5c19c77a70282b25f4c5f"},
     {file = "async_timeout-3.0.1-py3-none-any.whl", hash = "sha256:4291ca197d287d274d0b6cb5d6f8f8f82d434ed288f962539ff18cc9012f9ea3"},
