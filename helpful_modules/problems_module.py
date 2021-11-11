@@ -51,6 +51,9 @@ class ProblemNotWrittenException(MathProblemsModuleException):
 class QuizAlreadySubmitted(MathProblemsModuleException):
     "Raised when trying to submit a quiz that has already been submitted"
     pass
+
+class SQLException(MathProblemsModuleException):
+    "Raised when an error happens relating to SQL!"
 class MathProblem:
     "For readability purposes :)"
     def __init__(self,question,answer,id,author,guild_id="_global", voters=[],solvers=[], cache=None,answers=[]):
@@ -484,7 +487,6 @@ class MathProblemCache:
                     author INT NOT NULL,
                     voters BLOB NOT NULL,
                     solvers BLOB NOT NULL
-
                     )""") #Blob types will be compliled with pickle.loads() and pickle.dumps() (they are lists)
                     #author: int = user_id
             await cursor.execute("""CREATE TABLE IF NOT EXISTS quizzes (
@@ -548,36 +550,31 @@ class MathProblemCache:
             author=problem["author"]
         )
         return problem2
-    def update_cache(self):
+    async def update_cache(self):
         "Method revamped! This method updates the cache of the guilds, the guild problems, and the cache of the global problems. Takes O(N) time"
         guild_problems = {}
         guild_ids = []
         global_problems = {}
-      
-        for key in self._sql_dict.keys():
-            p = key.partition(":") #P[0] is guild id, P[1] is the colon, and P[2] is the problem id
-            if p[0] not in guild_ids: #Update guild ids: Check if here
-                guild_ids.append(p[0])
-                guild_problems[p[0]] = {} #Also do this so I don't need to worry about keyerrors because it will update too
-            #Check for guild problems
-            #guaranteed to be a new problem :-)
-            problem = MathProblem.from_dict(self._sql_dict[key], cache = copy(self))
-            try:
-                assert p[0] == problem.guild_id #here for debugging
-            except AssertionError:
-                raise RuntimeError("An error in the bot has occured: the guild id's don't agree...")
-            try:
-                guild_problems[p[0]][problem.id] = problem #Convert it to a math problem + add it. deepcopy() is necessary because of the 'curse' of shallow-copying (but also a blessing)
-            except Exception as e:
-                print(problem.__class__.__name__)
-                raise
-        #Conversion to math problem
-        # Somewhere here (between lines 476 and 479) the global problems turn into strings (its key)... and I don't know why.
+
+        async with aiosqlite.connect(self.sql_dict_db_name) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM problems")
+
+            for row in cursor:
+                Problem = MathProblem.from_row(row, cache=copy(self))
+                if Problem.guild_id not in guild_ids: # Similar logic: Make sure it's there!   
+                    guild_ids.append(Problem.guild_id)
+                    guild_problems[Problem.guild_id] = {} #For quick, cached access?
+                try:
+                    guild_problems[Problem.guild_id][Problem.id] = Problem
+                except BaseException as e:
+                    raise SQLException("Uh oh..... oh no..... uh..... please help! For some reason, the cache couldn't be updated") from e
+                    
+
+
         try:
-            print([[type(obj) for obj in guild_problems[key].values()] for key in guild_problems.keys()]) # A debug statement to find the scope of the bug
-            global_problems = deepcopy(guild_problems["_global"]) #contention #deepcopying more :-)           
+            global_problems = deepcopy(guild_problems["_global"]) #contention deepcopying more :-)           
         except KeyError as exc: # No global problems yet
-            traceback.print_exc()
             global_problems = {}
         self.guild_problems = deepcopy(guild_problems) # More deep-copying (so it refers to a different object)
         self.guild_ids = deepcopy(guild_ids)
