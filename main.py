@@ -8,6 +8,7 @@ if not __debug__: #__debug__ must be true for the bot to run (because assert sta
     raise RuntimeError("__debug__ must be True for the bot to run! (Don't run with -o or -OO)")
 
 #imports - standard library
+import asyncio
 import copy
 import random
 import os
@@ -44,7 +45,7 @@ dotenv.load_dotenv()
 DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
 if DISCORD_TOKEN is None:
     raise ValueError("Cannot start bot; no discord_token environment variable")
-
+asyncio.set_event_loop(asyncio.new_event_loop())
 
 
 warnings.simplefilter("default") #unnecessary, probably will be removed
