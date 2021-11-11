@@ -11,6 +11,9 @@ import warnings
 import sqldict #https://github.com/skylergrammer/sqldict/
 import asyncio, aiosqlite
 import sys
+from .dict_factory import dict_factory #Attribution to stackoverflow
+
+"""The core of my bot (very necessary)"""
 
 
 main_cache = None
@@ -161,7 +164,8 @@ class MathProblem:
                 "answer": Exception, # Placeholder,
                 "answers": answers,
                 "voters": voters,
-                "solvers": solvers
+                "solvers": solvers,
+                "author": row["author"]
             }
             return cls.from_dict(_Row, cache=cache) 
         except BaseException as e:
@@ -308,7 +312,7 @@ class MathProblem:
         return str(_str)
 class QuizSubmissionAnswer:
     "A class that represents an answer for a singular problem"
-    def __init__(self, answer: str= "", problem_id: int= None,quiz_id: str = "0"):
+    def __init__(self, answer: str= "", problem_id: int= None,quiz_id: int = int(complex=10)):
         self.answer = answer
         self.problem_id = problem_id
         self.grade = 0
@@ -422,7 +426,7 @@ class QuizMathProblem(MathProblem):
             _dict = {
                 "quiz_id": row["quiz_id"],
                 "guild_id": row["guild_id"],
-                "voters": row[voters]
+                "voters": row["voters"]
             }
             return cls.from_dict(_dict, cache = cache)
         except BaseException as e:
@@ -438,6 +442,9 @@ class Quiz(list):
     "Essentially a list, so it implements everything that a list does, but it has an additional attribute submissions which is a list of QuizSubmissions"
     def __init__(self, id: str, iter: List[QuizMathProblem], cache = None):
         """Create a new quiz. id is the quiz id and iter is an iterable of QuizMathProblems"""
+
+
+        #Later, I will need to use 
         super().__init__(iter)
         self._cache = cache
         self._submissions = []
@@ -478,19 +485,17 @@ class MathProblemCache:
     "A class that stores math problems/quizzes :-)"
     def __init__(self,max_answer_length=100,max_question_limit=250,
     max_guild_problems=125,warnings_or_errors = "warnings",
-    sql_dict_db_name = "problems_module.db",name="1",
-    update_cache_by_default_when_requesting=True):
+    db_name: str = "problems_module.db",name="1",
+    update_cache_by_default_when_requesting=True,
+    use_cached_problems: bool = False):
+        "Create a new MathProblemCache. the arguments should be self-explanatory"
         #make_sql_table([], db_name = sql_dict_db_name)
         #make_sql_table([], db_name = "MathProblemCache1.db", table_name="kv_store")
-        self.sql_dict_db_name = sql_dict_db_name
+        self.db_name = db_name
         if warnings_or_errors not in ["warnings", "errors"]:
             raise ValueError(f"warnings_or_errors is {warnings_or_errors}, not 'warnings' or 'errors'")
-        if warnings_or_errors == "warnings":
-            self.warnings = True
-        else:
-            self.warnings = False
-        
-        
+        self.warnings = (warnings_or_errors == "warnings")
+        self.use_cached_problems = use_cached_problems
         self._max_answer = max_answer_length
         self._max_question = max_question_limit
         self._guild_limit = max_guild_problems
@@ -500,7 +505,7 @@ class MathProblemCache:
         self._sql_dict = sqldict.SqlDict(name=f"MathProblemCache1.db",table_name = "kv_store")
         self.quizzes_sql_dict = sqldict.SqlDict(name = "TheQuizStorer", table_name = "quizzes_kv_store")
     async def initialize_sql_table(self):
-        async with aiosqlite.connect(self.sql_dict_db_name) as conn:
+        async with aiosqlite.connect(self.db_name) as conn:
             cursor = conn.cursor()
             await cursor.execute("""CREATE TABLE IF NOT EXISTS Problems (
                     guild_id INT PRIMARY KEY,
@@ -512,6 +517,7 @@ class MathProblemCache:
                     solvers BLOB NOT NULL
                     )""") #Blob types will be compliled with pickle.loads() and pickle.dumps() (they are lists)
                     #author: int = user_id
+
             await cursor.execute("""CREATE TABLE IF NOT EXISTS quizzes (
                 guild_id INT,
                 quiz_id INT NOT NULL,
@@ -521,11 +527,20 @@ class MathProblemCache:
                 voters BLOB NOT NULL,
                 author INT NOT NULL,
                 solvers INT NOT NULL
-            )""") # answer: Blob (a list)
+            )""")
+            #Used for quizzes
+             # answer: Blob (a list)
             #voters: Blob (a list)
             #solvers: Blob (a list)
             #submissions: Blob (a dictionary)
-            await conn.commit()
+            await cursor.execute("""CREATE TABLE IF NOT EXISTS quiz_submissions (
+                guild_id INT,
+                quiz_id INT NOT NULL,
+                submissions BLOB NOT NULL
+                )""") #as dictionary
+            #Used to store submissions!
+            
+            await conn.commit() #Otherwise, when this closes, the database just reverted!
     @property
     def max_answer_length(self):
         return self._max_answer
@@ -579,7 +594,8 @@ class MathProblemCache:
         guild_ids = []
         global_problems = {}
 
-        async with aiosqlite.connect(self.sql_dict_db_name) as conn:
+        async with aiosqlite.connect(self.db_name) as conn:
+            conn.row_factory = dict_factory
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM problems")
 
@@ -602,28 +618,43 @@ class MathProblemCache:
         self.guild_problems = deepcopy(guild_problems) # More deep-copying (so it refers to a different object)
         self.guild_ids = deepcopy(guild_ids)
         self.global_problems = deepcopy(global_problems)
-    def get_problem(self,guild_id,problem_id):
+    async def get_problem(self,guild_id: int, problem_id: int):
         "Gets the problem with this guild id and problem id"
-        if not isinstance(guild_id, str):
-            if self.warnings:
-                warnings.warn("guild_id is not a string!", category=RuntimeWarning)
-            else:
-                raise TypeError("guild_id is not a string")
-        if not isinstance(problem_id,str):
-            if self.warnings:
-                warnings.warn("problem_id is not a string",category=RuntimeWarning)
-            else:
-                raise TypeError("problem_id is not a string")
-        #Iterate through all problems! This takes O(N^2) time. However, nested SQLDicts don't exist. Any ideas? Please help :-)
-        try:
-            return self._sql_dict[f"{guild_id}:{problem_id}"]
-        except:
-            raise ProblemNotFound(f"*** No problem found with guild_id {guild_id} and problem_id {problem_id}!***")
 
-    def get_guild_problems(self,Guild):
+        
+        if not isinstance(guild_id, int):
+            if self.warnings:
+                warnings.warn("guild_id is not a integer!", category=RuntimeWarning)
+            else:
+                raise TypeError("guild_id isn't an integer and this will cause issues in SQL!")
+        if not isinstance(problem_id,int):
+            if self.warnings:
+                warnings.warn("problem_id is not a integer",category=RuntimeWarning)
+            else:
+                raise TypeError("problem_id is not a integer")
+        if self.use_cached_problems:
+            if self.update_cache_by_default_when_requesting:
+                await self.update_cache()
+            return self.guild_problems[guild_id][problem_id]
+        else:
+            #Otherwise, use SQL to get the problem!
+            async with aiosqlite.connect(self.db_name) as conn:
+                conn.row_factory = dict_factory
+                cursor = conn.cursor()
+                await cursor.execute("SELECT * from problems WHERE guild_id = ? AND problem_id = ?", (guild_id, problem_id))
+                row = await cursor.fetchone()
+                await conn.commit()
+                return MathProblem.from_row(row, cache=copy(self))
+            
+            
+
+                
+
+
+    async def get_guild_problems(self,Guild):
         """Gets the guild problems! Guild must be a Guild object. If you are trying to get global problems, use get_global_problems."""
         if self.update_cache_by_default_when_requesting:
-            self.update_cache()
+            await self.update_cache()
         try:
             return self.guild_problems[Guild.id]
         except KeyError:
