@@ -185,10 +185,8 @@ async def on_slash_command_error(ctx, error, print_stack_traceback=[True, stderr
 async def edit_problem(ctx,problem_id,new_question=None,new_answer=None,guild_id="null"):
     "Allows you to edit a math problem."
     await check_for_cooldown(ctx, "edit_problem",0.5)
-    if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
-        main_cache.add_empty_guild(ctx.guild)
     try:
-        problem = main_cache.get_problem(str(guild_id),str(problem_id))
+        problem = await main_cache.get_problem(int(guild_id),int(problem_id))
         if not problem.is_author(ctx.author):
             await ctx.reply(embed=ErrorEmbed(
                 "You are not the author of this problem and therefore can't edit it!"
@@ -200,14 +198,14 @@ async def edit_problem(ctx,problem_id,new_question=None,new_answer=None,guild_id
     e = "Successfully"
     if new_question != None:
         if new_answer != None:
-            problem.edit(question=new_question,answer=new_answer)
+            await problem.edit(question=new_question,answer=new_answer)
             e += f"changed the answer to {new_answer} and question to {new_question}!"
         else:
-            problem.edit(question=new_question)
+            await problem.edit(question=new_question)
             e += f"changed the question to {new_question}!"
     else:
         if new_answer != None:
-            problem.edit(answer=new_answer)
+            await problem.edit(answer=new_answer)
             e += f"changed the answer to {new_answer}"
         else:
             raise Exception("*** No new answer or new question provided. Aborting command...***")
@@ -231,8 +229,6 @@ async def edit_problem(ctx,problem_id,new_question=None,new_answer=None,guild_id
 async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_guild_problem=False):
     "Show the info of a problem."
     await check_for_cooldown(ctx, "edit_problem",0.5)
-    if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
-        main_cache.add_empty_guild(ctx.guild)
     problem_id = int(problem_id)
     try:
         guild_id = ctx.guild.id
@@ -243,23 +239,21 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
 
 
     real_guild_id = str(ctx.guild.id) if is_guild_problem else "null"
-    problem = main_cache.get_problem(real_guild_id, str(problem_id))
+    problem = await main_cache.get_problem(real_guild_id, str(problem_id))
 
     if True:  
         if is_guild_problem and guild_id is None:
             embed1= ErrorEmbed( description = "Run this command in the discord server which has this problem, not a DM!")
             ctx.reply(embed=embed1)
             return
-        if guild_id not in main_cache.get_guilds():
-            main_cache.add_empty_guild(guild_id)
-        problem = main_cache.get_problem(str(ctx.guild.id) if is_guild_problem else "null",
+        problem = await main_cache.get_problem(str(ctx.guild.id) if is_guild_problem else "null",
                                          str(problem_id))
         Problem__ = f"Question: {problem.get_question()}\nAuthor: {str(problem.get_author())}\nNumVoters/Vote Threshold: {problem.get_num_voters()}/{vote_threshold}\nNumSolvers: {len(problem.get_solvers())}"
         
         if show_all_data:
             if not ((problem.is_author(ctx.author) or ctx.author.id not in bot.trusted_users or (
-                is_guild_problem and ctx.author.guild_permissions.administrator == True))):
-                await ctx.reply(embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True)
+                is_guild_problem and ctx.author.guild_permissions.administrator == True))): #Check for sufficient permissions
+                await ctx.reply(embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True) 
                 return
             Problem__+= f"\nAnswer: {problem.get_answer}"
         
@@ -275,8 +269,6 @@ async def show_problem_info(ctx, problem_id, show_all_data=False, raw=False,is_g
 async def list_all_problem_ids(ctx,show_only_guild_problems=False):
     "Lists all problem ids."
     await check_for_cooldown(ctx, "list_all_problem_ids",2.5)
-    if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
-        main_cache.add_empty_guild(ctx.guild)
     if show_only_guild_problems:
         guild_id = ctx.guild.id
         if guild_id is None:
@@ -285,9 +277,9 @@ async def list_all_problem_ids(ctx,show_only_guild_problems=False):
                             ephemeral=True)
             return
         if show_only_guild_problems:
-            guild_problems = main_cache.get_guild_problems(ctx.guild)
+            guild_problems = await main_cache.get_guild_problems(ctx.guild)
         else:
-            guild_problems = main_cache.get_global_problems()
+            guild_problems = await main_cache.get_global_problems()
         thing_to_write = [str(problem) for problem in guild_problems]
         await ctx.reply(embed=SuccessEmbed(
             "\n".join(thing_to_write)[:1950],successTitle="Problem IDs:"
@@ -304,8 +296,7 @@ async def list_all_problem_ids(ctx,show_only_guild_problems=False):
 async def generate_new_problems(ctx, num_new_problems_to_generate):
     "Generate new Problems"
     await check_for_cooldown(ctx, "generate_new_problems",0.5)
-    if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
-        main_cache.add_empty_guild(ctx.guild)
+
 
     if ctx.author.id not in bot.trusted_users:
         await ctx.reply(embed=ErrorEmbed("You aren't trusted!",ephemeral=True))
@@ -314,7 +305,7 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
         await ctx.reply("You are trying to create too many problems. Try something smaller than or equal to 200.",ephemeral=True)
 
     for i in range(num_new_problems_to_generate): # basic problems for now.... :(
-        operation = random.choice(["+", "-", "*", "/", "^"])
+        operation = random.choice(["+", "-", "*", "/", "^"]) 
         if operation == "^":
             num1 = random.randint(1, 20)
             num2 = random.randint(1, 20)
@@ -337,7 +328,7 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
         #elif op
         while True:
             problem_id = generate_new_id()
-            if problem_id not in [problem.id for problem in main_cache.get_global_problems()]:
+            if problem_id not in [problem.id for problem in await main_cache.get_global_problems()]:
                 break
         q = "What is " + str(num1) + " " + {
         "*": "times",
@@ -354,7 +345,7 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
           id = problem_id,
           cache=main_cache
         )
-        main_cache.add_problem("null",problem_id,Problem)
+        await main_cache.add_problem("null",problem_id,Problem)
     await ctx.reply(embed=SuccessEmbed(
         f"Successfully created {str(num_new_problems_to_generate)} new problems!"
         ), ephemeral=True)
@@ -367,8 +358,7 @@ async def generate_new_problems(ctx, num_new_problems_to_generate):
 async def delallbotproblems(ctx):
     await check_for_cooldown(ctx, "delallbotproblems",10)
     "Delete all automatically generated problems"
-    if ctx.guild != None and ctx.guild.id not in main_cache.get_guilds():
-        main_cache.add_empty_guild(ctx.guild)
+
     await ctx.reply(embed=SimpleEmbed("",description="Attempting to delete bot problems"),ephemeral=True) #may get rid of later? :)
     numDeletedProblems = 0
     problems_to_delete = [problem for problem in main_cache.get_global_problems() if

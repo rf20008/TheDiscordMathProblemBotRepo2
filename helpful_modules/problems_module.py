@@ -63,8 +63,8 @@ class QuizNotFound(MathProblemsModuleException):
 
 class MathProblem:
     "For readability purposes :)"
-    def __init__(self,question,answer,id,author,guild_id="_global", voters=[],solvers=[], cache=None,answers=[]):
-        if guild_id != "_global" and not isinstance(guild_id, str):
+    def __init__(self,question,answer,id,author,guild_id=None, voters=[],solvers=[], cache=None,answers=[]):
+        if guild_id != None and not isinstance(guild_id, str):
             raise TypeError("guild_id is not an string")
         if not isinstance(id, int):
             raise TypeError("id is not an integer")
@@ -98,9 +98,9 @@ class MathProblem:
         self.author=author
         self._cache = cache
         self.answers = answers
-    def edit(self,question=None,answer=None,id=None,guild_id=None,voters=None,solvers=None,author=None, answers = None) -> None:
+    async def edit(self,question=None,answer=None,id=None,guild_id=None,voters=None,solvers=None,author=None, answers = None) -> None:
         """Edit a math problem. The edit is in place"""
-        if guild_id not in [None,"_global"] and not isinstance(guild_id, int):
+        if guild_id not in [None,None] and not isinstance(guild_id, int):
             raise TypeError("guild_id is not an integer")
         if not isinstance(id, int) and id is not None:
             raise TypeError("id is not an integer")
@@ -150,11 +150,11 @@ class MathProblem:
         if author is not None:
             self.author = author
 
-        self.update_self()
-    def update_self(self):
+        await self.update_self()
+    async def update_self(self):
         "A helper method to update the cache with my version"
         if self._cache is not None:
-            self._cache.update_problem(self.guild_id, self,id, self)
+            await self._cache.update_problem(self.guild_id, self,id, self)
 
     @classmethod
     def from_row(cls, row, cache = None):
@@ -185,15 +185,15 @@ class MathProblem:
         assert isinstance(_dict, (dict, sqlite3.Row))
         problem = _dict
         guild_id = problem["guild_id"]
-        if guild_id == "_global":
-            guild_id = "_global"
+        if guild_id == None:
+            guild_id = None
         elif guild_id == "null": #Remove the guild_id null (used for global problems), which is not used anymore because of conflicts with SQL
         
             Problem = cls(
             question=problem["question"],
             answer=problem["answer"],
             id = int(problem["id"]),
-            guild_id = "_global",
+            guild_id = None,
             voters = problem["voters"],
             solvers=problem["solvers"],
             author=problem["author"],
@@ -377,7 +377,7 @@ class QuizSubmission:
 
 class QuizMathProblem(MathProblem):
     "A class that represents a Quiz Math Problem"
-    def __init__(self,question,answer,id,author,guild_id="_global", voters=[],solvers=[], cache=None,answers=[],is_written=False,quiz_id=  None, max_score=-1, quiz=None):
+    def __init__(self,question,answer,id,author,guild_id=None, voters=[],solvers=[], cache=None,answers=[],is_written=False,quiz_id=  None, max_score=-1, quiz=None):
         "A method that allows the creation of new QuizMathProblems"
         if not isinstance(quiz. Quiz):
             raise TypeError(f"quiz is of type {quiz.__class.__name}, not Quiz") # Here to help me debug
@@ -448,13 +448,13 @@ class QuizMathProblem(MathProblem):
         
 class Quiz(list): 
     "Essentially a list, so it implements everything that a list does, but it has an additional attribute submissions which is a list of QuizSubmissions"
-    def __init__(self, id: str, iter: List[QuizMathProblem], cache = None):
+    def __init__(self, id: int, iter: List[QuizMathProblem], submissions: List[QuizSubmission] = [], cache = None):
         """Create a new quiz. id is the quiz id and iter is an iterable of QuizMathProblems"""
         super().__init__(iter)
         self.sort(key= lambda problem: problem.id)
 
         self._cache = cache
-        self._submissions = []
+        self._submissions = submissions
         self._id = id
     async def add_submission(self,submission):
         assert isinstance(submission, QuizSubmission)
@@ -527,7 +527,7 @@ class MathProblemCache:
 
             await cursor.execute("""CREATE TABLE IF NOT EXISTS quizzes (
                 guild_id INT,
-                quiz_id INT NOT NULL,
+                quiz_id INT NOT NULL PRIMARY KEY,
                 problem_id INT NOT NULL,
                 question TEXT(500) NOT NULL,
                 answer BLOB NOT NULL,
@@ -543,6 +543,7 @@ class MathProblemCache:
             await cursor.execute("""CREATE TABLE IF NOT EXISTS quiz_submissions (
                 guild_id INT,
                 quiz_id INT NOT NULL,
+                USER_ID INT NOT NULL,
                 submissions BLOB NOT NULL
                 )""") #as dictionary
             #Used to store submissions!
@@ -580,8 +581,8 @@ class MathProblemCache:
         except AssertionError:
             raise TypeError("problem is not actually a Dictionary")
         guild_id = problem["guild_id"]
-        if guild_id == "_global":
-            guild_id = "_global"
+        if guild_id == None:
+            guild_id = None
         else:
             guild_id = int(guild_id)
         problem2 = self(
@@ -618,7 +619,7 @@ class MathProblemCache:
 
 
         try:
-            global_problems = deepcopy(guild_problems["_global"]) #contention deepcopying more :-)           
+            global_problems = deepcopy(guild_problems[None]) #contention deepcopying more :-)           
         except KeyError as exc: # No global problems yet
             global_problems = {}
         self.guild_problems = deepcopy(guild_problems) # More deep-copying (so it refers to a different object)
@@ -730,7 +731,7 @@ class MathProblemCache:
         if self.update_cache_by_default_when_requesting: # Used to determine whether it has reached the limit! Takes O(N) time
             self.update_cache()
         try:
-            if guild_id == "_global" or guild_id is None: # There is no limit for global problems (which could be exploited!)
+            if guild_id == None: # There is no limit for global problems (which could be exploited!)
                 pass
             elif len(self.guild_problems[guild_id]) >= self.max_guild_problems: #Make sure this doesn't go over the max guild problem limit (which is 150)
                 raise TooManyProblems(f"There are already {self.max_guild_problems} problems!")
@@ -863,14 +864,46 @@ class MathProblemCache:
             
             cursor = conn.cursor()
             for item in quiz:
-                await cursor.execute("INSE")
-            await cursor.execute()
+                await cursor.execute("""INSERT INTO quizzes (guild_id, quiz_id, problem_id, question, answer, voters, solvers, author)
+                VALUES (?,?,?,?,?,?,?,?)""",(item.guild_id, item.quiz_id, item.problem_id, item.question, pickle.dumps(item.answers), pickle.dumps(item.voters), pickle.dumps(item.solvers), item.author))
+            for item in quiz.submissions:
+                await cursor.execute("""INSERT INTO quiz_submissions (guild_id, quiz_id, user_id, submissions)
+                VALUES (?,?,?,?)""", (item.guild_id, item.quiz_id, item.user_id, pickle.dumps(item.to_dict())))
+
+            await conn.commit()
+
     def __str__(self):
         raise NotImplementedError
-    def get_quiz(self, quiz_id: int) -> Optional[Quiz]:
+    async def get_quiz(self, quiz_id: int) -> Optional[Quiz]:
         "Get the quiz with the id specified. Returns None if not found"
         assert isinstance(quiz_id, int)
-        return Quiz.from_dict(self.quizzes_sql_dict[f"Quiz:{quiz_id}"]) # Convert the result to a quiz (result is getting the Quiz dictionary from the quizzes_sql_dict)
+        async with aiosqlite.connect(self.db_name) as conn:
+            try:
+                conn.row_factory = dict_factory #Make sure the row_factory can be set to dict_factory
+            except BaseException as exc:
+                #Not writeable?
+                try:
+                    dict_factory #Check for nameerror
+                except NameError as exc2:
+                    raise MathProblemsModuleException("dict_factory could not be found") from exc2 
+                if isinstance(exc, AttributeError): # Can't set attribute
+                    pass
+                else:
+                    raise # Re-raise the exception
+            cursor = conn.cursor()
+            await cursor.execute("SELECT * FROM quizzes WHERE quiz_id=?", (quiz_id,))
+            problems = await cursor.fetchall()
+            if len(problems) == 0:
+                raise QuizNotFound(f"Quiz id {quiz_id} not found")
+            
+            await cursor.execute("SELECT * FROM quiz_submissions WHERE quiz_id = ?")
+            submissions = await cursor.fetchall()
+            submissions = [QuizSubmission.from_dict(pickle.loads(item)) for item in submissions]
+            problems = [QuizMathProblem.from_row(dict_factory(cursor, row)) for row in problems]
+        
+            #Actual Quiz generation time
+            quiz = Quiz(quiz_id, problems, submissions, cache=copy(self))
+            return quiz
     async def update_problem(self,guild_id, problem_id, new: MathProblem) -> None:
         "Update the problem stored with the given guild id and problem id"
         assert isinstance(guild_id, str)
@@ -896,17 +929,22 @@ class MathProblemCache:
             WHERE guild_id = ? AND problem_id = ?;""", (int(new.guild_id), int(new.id), new.get_question(), 
             pickle.dumps(new.get_answers()), pickle.dumps(new.get_voters()), pickle.dumps(new.get_solvers()),
             int(new.author), int(new.guild_id), int(new.id)))
-    def update_quiz(self, quiz_id, new) -> None:
+    async def update_quiz(self, quiz_id, new) -> None:
         "Update the quiz with the id given"
         assert isinstance(quiz_id, str)
         assert isinstance(new, Quiz)
-        self.quizzes_sql_dict[f"Quiz:{quiz_id}"] = new.to_dict()
-    async def delete_quiz(self, quiz_id, guild_id):
+        assert new.id == quiz_id
+        await self.delete_quiz(quiz_id)
+        
+        await self.add_quiz(Quiz)
+    async def delete_quiz(self, quiz_id):
         "Delete a quiz!"
         async with aiosqlite.connect(self._sql_dict_db_name) as conn:
             cursor = conn.cursor()
-            await cursor.execute("DELETE FROM quizzes WHERE quiz_id = ? AND guild_id = ?", (quiz_id, guild_id,))
-            await conn.commit()
+            await cursor.execute("DELETE FROM quizzes WHERE quiz_id = ?", (quiz_id,)) #Delete the quiz's problems
+            await cursor.execute("DELETE FROM quiz_submissions WHERE quiz_id=?", (quiz_id)) # Delete the submissions as well.
+            await conn.commit() #Commit
+
 main_cache = MathProblemCache(max_answer_length=100,max_question_limit=250,max_guild_problems=125,warnings_or_errors="errors")
 def get_main_cache():
     "Returns the main cache."
