@@ -1,30 +1,15 @@
-from typing import *
-from time import sleep
-from sqlite3 import *
-from typing import *
-import nextcord, json, warnings, dislash
+import asyncio
+import sqldict
+import aiosqlite
 from copy import deepcopy, copy
-from nextcord import *
-import pickle, sqlite3
+import sqlite3
 import warnings
-import sqldict  # https://github.com/skylergrammer/sqldict/
-import asyncio, aiosqlite
-from helpful_modules.dict_factory import dict_factory  # Attribution to stackoverflow
+import pickle
+from typing import *
 from .errors import *
+from helpful_modules.dict_factory import dict_factory
 from .base_problem import BaseProblem
-
-"""The core of my bot (very necessary)"""
 from .quizzes import *
-
-main_cache = None
-
-
-def get_main_cache():
-    return main_cache
-
-
-# This is a module containing MathProblem and MathProblemCache objects. (And exceptions as well!) This may be useful outside of this discord bot so feel free to use it :) Just follow the MIT+GNU license
-# Exceptions
 
 
 class MathProblemCache:
@@ -628,11 +613,3 @@ class MathProblemCache:
                 "DELETE FROM quiz_submissions WHERE quiz_id=?", (quiz_id)
             )  # Delete the submissions as well.
             await conn.commit()  # Commit
-
-
-main_cache = MathProblemCache(
-    max_answer_length=100,
-    max_question_limit=250,
-    max_guild_problems=125,
-    warnings_or_errors="errors",
-)
