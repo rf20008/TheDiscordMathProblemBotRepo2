@@ -126,14 +126,14 @@ class BaseProblem:
                 raise TooLongAnswer(
                     f"Your answer is {len(question) - 100} characters too long. Answers may be up to 100 characters long."
                 )
-        for answer in range(len(answers)):
+        for answer in answers:
             if self._cache is not None:
-                if len(answers[answer]) > 100:
+                if len(answer) > 100:
                     raise TooLongAnswer(
                         f"Answer #{answer} is {len(answers[answer])-100} characters too long. Answers can be up to a 100 characters long"
                     )
             else:
-                if len(answers[answer]) > self._cache.max_answer_length:
+                if len(answer) > self._cache.max_answer_length:
                     raise TooLongAnswer(
                         f"Answer #{answer} is {len(answers[answer]) - self._cache.max_answer_length} characters too long. Answers can be up to {self._cache.max_answer_length} characters long."
                     )

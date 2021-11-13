@@ -13,7 +13,7 @@ A few guidelines:
 4) This bot is coded using OOP and abstraction, so if you want to add a new feature or change an existing one, please keep this in mind.
 5) main.py is used to run the bot! helpful_modules include essential elements of the bot, but are not exposed to the user. cogs is the cogs!
 6) No syntax errors, please!
-7) You should lint your code.
+7) You should lint your code. (this uses [python-black](https://pypi.org/project/black/))
 8) Follow common sense
 
 # Invite my bot!
