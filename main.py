@@ -67,7 +67,15 @@ except (KeyError, AssertionError):
     raise RuntimeError(
         "You haven't setup the .env file correctly! You need DISCORD_TOKEN=<your token>"
     )
-main_cache = problems_module.get_main_cache()
+main_cache = problems_module.MathProblemCache(
+    max_answer_length=2000,
+    max_question_limit=250,
+    max_guild_problems=125,
+    warnings_or_errors="errors",
+    db_name="MathProblemCache1.db",
+    update_cache_by_default_when_requesting=True,
+    use_cached_problems=False,
+)  # Generate a new cache for the bot!
 vote_threshold = -1
 mathProblems = {}
 guildMathProblems = {}
