@@ -539,13 +539,17 @@ class MathProblemCache:
             if len(problems) == 0:
                 raise QuizNotFound(f"Quiz id {quiz_id} not found")
 
-            await cursor.execute("SELECT submissions FROM quiz_submissions WHERE quiz_id = ?")
+            await cursor.execute(
+                "SELECT submissions FROM quiz_submissions WHERE quiz_id = ?"
+            )
             submissions = await cursor.fetchall()
             submissions = [
-                QuizSubmission.from_dict(pickle.loads(item), cache=copy(self)) for item in submissions
+                QuizSubmission.from_dict(pickle.loads(item), cache=copy(self))
+                for item in submissions
             ]
             problems = [
-                QuizProblem.from_row(dict_factory(cursor, row), cache=copy(self)) for row in problems
+                QuizProblem.from_row(dict_factory(cursor, row), cache=copy(self))
+                for row in problems
             ]
 
             # Actual Quiz generation time
@@ -613,25 +617,47 @@ class MathProblemCache:
                 "DELETE FROM quiz_submissions WHERE quiz_id=?", (quiz_id)
             )  # Delete the submissions as well.
             await conn.commit()  # Commit
+
     async def get_all_by_author_id(self, author_id: int) -> dict:
         "Return a dictionary containing everything that was created by the author"
-        assert isinstance(author_id, int) #Make sure it is of type integer
+        assert isinstance(author_id, int)  # Make sure it is of type integer
         async with aiosqlite.connect(self.db_name) as conn:
-            cursor = conn.cursor() #Create a cursor
+            cursor = conn.cursor()  # Create a cursor
 
-            #Get all quiz problems they made
-            await cursor.execute("SELECT * FROM quizzes WHERE user_id = ?", (author_id)) #Get all problems made by the author
-            quiz_problems_raw = [dict_factory(cursor, row) for row in await cursor.fetchall()] #Get the results and convert it to a dictionary
-            quiz_problems = [QuizProblem.from_row(item, cache = copy(self)) for item in quiz_problems_raw] # Convert the rows into QuizProblems, because these will be easier to use than rows will (and it will also be more readable)
+            # Get all quiz problems they made
+            await cursor.execute(
+                "SELECT * FROM quizzes WHERE user_id = ?", (author_id)
+            )  # Get all problems made by the author
+            quiz_problems_raw = [
+                dict_factory(cursor, row) for row in await cursor.fetchall()
+            ]  # Get the results and convert it to a dictionary
+            quiz_problems = [
+                QuizProblem.from_row(item, cache=copy(self))
+                for item in quiz_problems_raw
+            ]  # Convert the rows into QuizProblems, because these will be easier to use than rows will (and it will also be more readable)
 
-            #Get the submissions now
-            await cursor.execute("SELECT submissions FROM quiz_submissions WHERE user_id = ?", (author_id)) # Get the submissions
-            #Convert them to QuizSubmissions!
-            quiz_submissions = [QuizSubmission.from_dict(pickle.loads(item)) for item in await cursor.fetchall()] #For each item: load it from bytes into a dictionary and convert the dictionary into a QuizSubmission! However, I should just pickle it directly.
-            
+            # Get the submissions now
+            await cursor.execute(
+                "SELECT submissions FROM quiz_submissions WHERE user_id = ?",
+                (author_id),
+            )  # Get the submissions
+            # Convert them to QuizSubmissions!
+            quiz_submissions = [
+                QuizSubmission.from_dict(pickle.loads(item))
+                for item in await cursor.fetchall()
+            ]  # For each item: load it from bytes into a dictionary and convert the dictionary into a QuizSubmission! However, I should just pickle it directly.
 
-            #Get the problems the author made that are not attached to a quiz
-            await cursor.execute("SELECT * FROM problems WHERE user_id = ?", (author_id))
-            problems = [BaseProblem.from_row(dict_factory())]
-    
+            # Get the problems the author made that are not attached to a quiz
+            await cursor.execute(
+                "SELECT * FROM problems WHERE user_id = ?", (author_id)
+            )
+            problems = [
+                BaseProblem.from_row(dict_factory(cursor, row))
+                for row in await cursor.fetchall()
+            ]
 
+            return {
+                "quiz_problems": quiz_problems,
+                "quiz_submissions": quiz_submissions,
+                "problems": problems,
+            }

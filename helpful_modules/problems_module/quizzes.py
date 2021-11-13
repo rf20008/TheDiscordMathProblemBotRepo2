@@ -29,8 +29,8 @@ class QuizSubmissionAnswer:
 class QuizSubmission:
     "A class that represents someone's submission to a graded quiz"
 
-    def __init__(self, user: nextcord.User, quiz_id, cache):
-        self.user_id = user.id
+    def __init__(self, user_id, quiz_id, cache):
+        self.user_id = user_id
         self.quiz_id = quiz_id
         self.mutable = True
         self.answers = [
@@ -70,9 +70,9 @@ class QuizSubmission:
         return t
 
     @classmethod
-    def from_dict(cls, dict_):
+    def from_dict(cls, dict_, cache) -> "Quiz":
         "Convert a dictionary into a QuizSubmission"
-        c = cls(user_id=dict_["user_id"], quiz_id="quiz_id")
+        c = cls(user_id=dict_["user_id"], quiz_id="quiz_id", cache=cache)
         for answer in dict_["answers"]:
             c.answers.append(
                 QuizSubmissionAnswer(answer["answer"], problem_id=answer["problem_id"])
