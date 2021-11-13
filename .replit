@@ -1,2 +1,7 @@
+<<<<<<< HEAD
 language = "python3"
 run = "poetry install; python3 main.py"
+=======
+run = "poetry install; python3 main.py"
+language = "python3"
+>>>>>>> main
