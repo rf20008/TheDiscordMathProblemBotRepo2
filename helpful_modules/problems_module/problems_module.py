@@ -11,7 +11,7 @@ import warnings
 import sqldict #https://github.com/skylergrammer/sqldict/
 import asyncio, aiosqlite
 import sys
-from .dict_factory import dict_factory #Attribution to stackoverflow
+from helpful_modules.dict_factory import dict_factory #Attribution to stackoverflow
 
 """The core of my bot (very necessary)"""
 
@@ -61,8 +61,8 @@ class QuizNotFound(MathProblemsModuleException):
     "Raised when a quiz isn't found"
     pass
 
-class MathProblem:
-    "For readability purposes :)"
+class BaseProblem:
+    "For readability purposes :) This also isn't an ABC."
     def __init__(self,question,answer,id,author,guild_id=None, voters=[],solvers=[], cache=None,answers=[]):
         if guild_id != None and not isinstance(guild_id, str):
             raise TypeError("guild_id is not an string")
@@ -375,7 +375,7 @@ class QuizSubmission:
 
 
 
-class QuizMathProblem(MathProblem):
+class QuizProblem(BaseProblem):
     "A class that represents a Quiz Math Problem"
     def __init__(self,question,answer,id,author,guild_id=None, voters=[],solvers=[], cache=None,answers=[],is_written=False,quiz_id=  None, max_score=-1, quiz=None):
         "A method that allows the creation of new QuizMathProblems"
@@ -448,7 +448,7 @@ class QuizMathProblem(MathProblem):
         
 class Quiz(list): 
     "Essentially a list, so it implements everything that a list does, but it has an additional attribute submissions which is a list of QuizSubmissions"
-    def __init__(self, id: int, iter: List[QuizMathProblem], submissions: List[QuizSubmission] = [], cache = None):
+    def __init__(self, id: int, iter: List[QuizProblem], submissions: List[QuizSubmission] = [], cache = None) -> "Quiz":
         """Create a new quiz. id is the quiz id and iter is an iterable of QuizMathProblems"""
         super().__init__(iter)
         self.sort(key= lambda problem: problem.id)
@@ -470,7 +470,7 @@ class Quiz(list):
         submissions = []
         Problems = _dict["problems"]
         for p in Problems:
-            problemsAsType.append(QuizMathProblem.from_dict(p))
+            problemsAsType.append(QuizProblem.from_dict(p))
         problemsAsType.sort(key= lambda problem: problem.id)
 
         for s in _dict["submissions"]:
@@ -572,10 +572,10 @@ class MathProblemCache:
             for Problem in self.guild_problems[guild_id]:
                 e[guild_id][Problem.id] = Problem.to_dict()
         return e
-    def convert_dict_to_math_problem(self,problem):
+    def convert_dict_to_math_problem(self,problem, use_from_dict = True):
         "Convert a dictionary into a math problem. It must be in the expected format. (Overriden by from_dict, but still used) Possibly not used due to SQL"
-        if __debug__:
-            return MathProblem.from_dict(problem, cache=self)
+        if use_from_dict:
+            return BaseProblem.from_dict(problem, cache=self)
         try:
             assert isinstance(problem,dict)
         except AssertionError:
@@ -607,7 +607,7 @@ class MathProblemCache:
             cursor.execute("SELECT * FROM problems")
 
             for row in cursor:
-                Problem = MathProblem.from_row(row, cache=copy(self))
+                Problem = BaseProblem.from_row(row, cache=copy(self))
                 if Problem.guild_id not in guild_ids: # Similar logic: Make sure it's there!   
                     guild_ids.append(Problem.guild_id)
                     guild_problems[Problem.guild_id] = {} #For quick, cached access?
@@ -674,7 +674,7 @@ class MathProblemCache:
                     row = dict_factory(cursor, rows[0]) # 
                 else:
                     row = rows[0]
-                return MathProblem.from_row(rows[0], cache=copy(self))
+                return BaseProblem.from_row(rows[0], cache=copy(self))
             
             
 
@@ -708,7 +708,7 @@ class MathProblemCache:
         #    self._dict[str(Guild.id)] = {}
         #    
         #self._dict[Guild.id] = {}
-    async def add_problem(self,guild_id: int,problem_id: int,Problem: MathProblem):
+    async def add_problem(self,guild_id: int,problem_id: int,Problem: BaseProblem):
         "Adds a problem and returns the added MathProblem"
         #Preliminary checks -otherwise SQL bugs
         if not isinstance(guild_id,int):
@@ -737,7 +737,7 @@ class MathProblemCache:
                 raise TooManyProblems(f"There are already {self.max_guild_problems} problems!")
         except KeyError:
             pass
-        if not isinstance(Problem,(MathProblem)):
+        if not isinstance(Problem,(BaseProblem)): #Make sure it's actually a Problem and not something else
             raise TypeError("Problem is not a valid MathProblem object.")
         # All the checks passed, hooray! Now let's add the problem.
         async with aiosqlite.connect(self.db_name) as conn:
@@ -763,7 +763,7 @@ class MathProblemCache:
 
             await conn.commit()
         return Problem
-    async def remove_problem(self,guild_id,problem_id) -> MathProblem:
+    async def remove_problem(self,guild_id: int,problem_id: int) -> BaseProblem:
         "Removes a problem. Returns the deleted problem"
         Problem = self.get_problem(guild_id,problem_id)
         await self.remove_problem_without_returning(guild_id, problem_id)
@@ -807,7 +807,7 @@ class MathProblemCache:
         async with aiosqlite.connect(self.db_name) as conn:
             cursor = conn.cursor()
             await cursor.execute("SELECT * FROM problems")
-            all_problems = [MathProblem.from_row(dict_factory(cursor, row)) for row in deepcopy(await cursor.fetchall())]
+            all_problems = [BaseProblem.from_row(dict_factory(cursor, row)) for row in deepcopy(await cursor.fetchall())]
             await conn.commit()
         for problemA in range(len(all_problems)):
             for problemB in range(len(all_problems)):
@@ -899,16 +899,16 @@ class MathProblemCache:
             await cursor.execute("SELECT * FROM quiz_submissions WHERE quiz_id = ?")
             submissions = await cursor.fetchall()
             submissions = [QuizSubmission.from_dict(pickle.loads(item)) for item in submissions]
-            problems = [QuizMathProblem.from_row(dict_factory(cursor, row)) for row in problems]
+            problems = [QuizProblem.from_row(dict_factory(cursor, row)) for row in problems]
         
             #Actual Quiz generation time
             quiz = Quiz(quiz_id, problems, submissions, cache=copy(self))
             return quiz
-    async def update_problem(self,guild_id, problem_id, new: MathProblem) -> None:
+    async def update_problem(self,guild_id, problem_id, new: BaseProblem) -> None:
         "Update the problem stored with the given guild id and problem id"
         assert isinstance(guild_id, str)
         assert isinstance(problem_id, str)
-        assert isinstance(new, MathProblem) and not isinstance(new, QuizMathProblem)
+        assert isinstance(new, BaseProblem) and not isinstance(new, QuizProblem)
         async with aiosqlite.connect(self.db_name) as conn:
             try:
                 conn.row_factory = dict_factory #Make sure the row_factory can be set to dict_factory
@@ -946,6 +946,3 @@ class MathProblemCache:
             await conn.commit() #Commit
 
 main_cache = MathProblemCache(max_answer_length=100,max_question_limit=250,max_guild_problems=125,warnings_or_errors="errors")
-def get_main_cache():
-    "Returns the main cache."
-    return main_cache
