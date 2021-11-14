@@ -4,11 +4,14 @@ from helpful_modules.custom_embeds import *
 import dislash, nextcord
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 from helpful_modules import checks, cooldowns
+
+
 class ProblemsCog(HelperCog):
     def __init__(self, bot):
-        "Helpful __init__, the entire reason I decided to make this so I could transfer modules"        
+        "Helpful __init__, the entire reason I decided to make this so I could transfer modules"
         self.bot = bot
         super().__init__(bot)
+
     @checks.is_not_blacklisted
     @slash_command(
         name="edit_problem",
@@ -20,7 +23,9 @@ class ProblemsCog(HelperCog):
                 type=OptionType.INTEGER,
                 required=True,
             ),
-            Option(name="guild_id", description="the guild id", type=OptionType.INTEGER),
+            Option(
+                name="guild_id", description="the guild id", type=OptionType.INTEGER
+            ),
             Option(
                 name="new_question",
                 description="the new question",
@@ -70,6 +75,7 @@ class ProblemsCog(HelperCog):
                 )
 
         await inter.reply(embed=SuccessEmbed(e), ephemeral=True)
+
     @slash_command(
         name="show_problem_info",
         description="Show problem info",
@@ -151,6 +157,7 @@ class ProblemsCog(HelperCog):
                 )
                 return
             await inter.reply(embed=SuccessEmbed(Problem__), ephemeral=True)
+
     @slash_command(
         name="list_all_problem_ids",
         description="List all problem ids",
@@ -163,7 +170,7 @@ class ProblemsCog(HelperCog):
             )
         ],
     )
-    async def list_all_problem_ids(self,inter, show_only_guild_problems=False):
+    async def list_all_problem_ids(self, inter, show_only_guild_problems=False):
         "Lists all problem ids."
         await cooldowns.check_for_cooldown(inter, "list_all_problem_ids", 2.5)
         if show_only_guild_problems:
@@ -189,6 +196,7 @@ class ProblemsCog(HelperCog):
         global_problems = self.cache.get_global_problems()
         thing_to_write = "\n".join([str(problem.id) for problem in global_problems])
         await inter.send(embed=SuccessEmbed(thing_to_write))
+
 
 def setup(bot):
     bot.add_cog(ProblemsCog(bot))

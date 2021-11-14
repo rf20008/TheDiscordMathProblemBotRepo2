@@ -74,7 +74,10 @@ class DeveloperCommands(HelperCog):
     )
     async def force_save_files(self, inter):
         "Forcefully saves files."
-        if inter.guild != None and inter.guild.id not in self.bot.main_cache.get_guilds():
+        if (
+            inter.guild != None
+            and inter.guild.id not in self.bot.main_cache.get_guilds()
+        ):
             self.bot.main_cache.add_empty_guild(inter.guild)
         if inter.author.id not in self.bot.trusted_users:
             await inter.reply(

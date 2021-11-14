@@ -28,6 +28,7 @@ from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoic
 import nextcord  # https://github.com/nextcord/nextcord
 import nextcord.ext.commands as nextcord_commands
 from dislash.application_commands.core import check
+import aiosqlite
 
 # Imports - My own files
 from helpful_modules import _error_logging, checks, cooldowns
@@ -213,8 +214,6 @@ async def on_slash_command_error(inter, error, print_stack_traceback=[True, stde
     )
 
 
-
-
 @slash.slash_command(
     name="generate_new_problems",
     description="Generates new problems",
@@ -284,7 +283,7 @@ async def generate_new_problems(inter, num_new_problems_to_generate):
             + str(num2)
             + "?"
         )
-        Problem = problems_module.MathProblem(
+        Problem = problems_module.BaseProblem(
             question=q,
             answer=str(answer),
             author=845751152901750824,
@@ -318,14 +317,12 @@ async def delallbotproblems(inter):
         ephemeral=True,
     )  # may get rid of later? :)
     numDeletedProblems = 0
-    problems_to_delete = [
-        problem
-        for problem in main_cache.get_global_problems()
-        if problem.get_author() == bot.user.id
-    ]
-    for problem in problems_to_delete:
-        main_cache.remove_problem(str(problem.guild_id), str(problem.id))
-        numDeletedProblems += 1
+    async with aiosqlite.connect(bot.cache.db_name) as conn:
+        cursor = conn.cursor()
+        await cursor.execute(
+            "DELETE FROM problems WHERE user_id = ?", (bot.user.id)
+        )  # Delete every problem made by the bot!
+        await conn.commit()
     await inter.reply(embed=SuccessEmbed(f"Successfully deleted {numDeletedProblems}!"))
 
 
@@ -425,7 +422,7 @@ async def submit_problem(inter, answer, question, guild_question=False):
             guild_id = str(inter.guild.id)
         else:
             guild_id = "null"
-        problem = problems_module.MathProblem(
+        problem = problems_module.BaseProblem(
             question=question,
             answer=answer,
             id=problem_id,
