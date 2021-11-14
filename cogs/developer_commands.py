@@ -36,11 +36,11 @@ class DeveloperCommands(HelperCog):
         name="force_load_files",
         description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!",
     )
-    async def force_load_files(self, ctx):
+    async def force_load_files(self, inter):
         "Forcefully load files"
 
-        if ctx.author.id not in self.bot.trusted_users:
-            await ctx.reply(
+        if inter.author.id not in self.bot.trusted_users:
+            await inter.reply(
                 self.custom_embeds.ErrorEmbed(
                     "You aren't trusted and therefore don't have permission to forceload files."
                 )
@@ -55,14 +55,14 @@ class DeveloperCommands(HelperCog):
                 FileSaverDict["vote_threshold"],
             )
             FileSaver3.goodbye()
-            await ctx.reply(
+            await inter.reply(
                 embed=self.custom_embeds.SuccessEmbed(
                     "Successfully forcefully loaded files!"
                 )
             )
             return
         except RuntimeError:
-            await ctx.reply(
+            await inter.reply(
                 embed=self.custom_embeds.ErrorEmbed("Something went wrong...")
             )
             return
@@ -72,12 +72,12 @@ class DeveloperCommands(HelperCog):
         name="force_save_files",
         description="Forcefully saves files (can only be used by trusted users).",
     )
-    async def force_save_files(self, ctx):
+    async def force_save_files(self, inter):
         "Forcefully saves files."
-        if ctx.guild != None and ctx.guild.id not in self.bot.main_cache.get_guilds():
-            self.bot.main_cache.add_empty_guild(ctx.guild)
-        if ctx.author.id not in self.bot.trusted_users:
-            await ctx.reply(
+        if inter.guild != None and inter.guild.id not in self.bot.main_cache.get_guilds():
+            self.bot.main_cache.add_empty_guild(inter.guild)
+        if inter.author.id not in self.bot.trusted_users:
+            await inter.reply(
                 embed=self.custom_embeds.ErrorEmbed(
                     "You aren't trusted and therefore don't have permission to forcesave files."
                 )
@@ -94,11 +94,11 @@ class DeveloperCommands(HelperCog):
                 self.bot.trusted_users,
             )
             FileSaver2.goodbye()
-            await ctx.reply(
+            await inter.reply(
                 embed=self.custom_embeds.SuccessEmbed("Successfully saved 4 files!")
             )
         except RuntimeError as exc:
-            await ctx.reply(
+            await inter.reply(
                 embed=self.custom_embeds.ErrorEmbed("Something went wrong...")
             )
             raise exc
@@ -122,23 +122,23 @@ class DeveloperCommands(HelperCog):
             ),
         ],
     )
-    async def raise_error(self, ctx, error_type, error_description=None):
+    async def raise_error(self, inter, error_type, error_description=None):
         "Intentionally raise an Error. Useful for debugging... :-)"
-        if ctx.author.id not in self.bot.trusted_users:
-            await ctx.send(
+        if inter.author.id not in self.bot.trusted_users:
+            await inter.send(
                 embed=self.custom_embeds.ErrorEmbed(
-                    f"⚠ {ctx.author.mention}, you do not have permission to intentionally raise errors for debugging purposes.",
+                    f"⚠ {inter.author.mention}, you do not have permission to intentionally raise errors for debugging purposes.",
                     custom_title="Insufficient permission to raise errors.",
                 )
             )
             return
         if error_description == None:
-            error_description = f"Manually raised error by {ctx.author.mention}"
+            error_description = f"Manually raised error by {inter.author.mention}"
         if error_type == "Exception":
             error = Exception(error_description)
         else:
             raise RuntimeError(f"Unknown error: {error_type}")
-        await ctx.send(
+        await inter.send(
             embed=self.custom_embeds.SuccessEmbed(
                 f"Successfully created error: {str(error)}. Will now raise the error.",
                 successTitle="Successfully raised error.",
@@ -169,13 +169,13 @@ class DeveloperCommands(HelperCog):
             ),
         ],
     )
-    async def documentation(self, ctx, documentation_type, help_obj):
+    async def documentation(self, inter, documentation_type, help_obj):
         "Prints documentation :-)"
-        await check_for_cooldown(ctx, "documentation", 0.1)
+        await check_for_cooldown(inter, "documentation", 0.1)
         if documentation_type == "documentation_link":
-            await ctx.reply(
+            await inter.reply(
                 embed=self.custom_embeds.SuccessEmbed(
-                    f"""<@{ctx.author.id}> [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
+                    f"""<@{inter.author.id}> [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
         """
                 ),
                 ephemeral=True,
@@ -192,15 +192,15 @@ class DeveloperCommands(HelperCog):
             )
         except the_documentation_file_loader.DocumentationNotFound as e:
             if isinstance(e, the_documentation_file_loader.DocumentationFileNotFound):
-                await ctx.reply(
+                await inter.reply(
                     embed=self.custom_embeds.ErrorEmbed(
                         "Documentation file was not found. Please report this error!"
                     )
                 )
                 return
-            await ctx.reply(embed=self.custom_embeds.ErrorEmbed(str(e)))
+            await inter.reply(embed=self.custom_embeds.ErrorEmbed(str(e)))
             return
-        await ctx.reply(_documentation)
+        await inter.reply(_documentation)
 
     @dislash.cooldown(1, 0.1)
     @slash_command(
@@ -221,17 +221,17 @@ class DeveloperCommands(HelperCog):
             ),
         ],
     )
-    async def debug(self, ctx, raw=False, send_ephermally=True):
+    async def debug(self, inter, raw=False, send_ephermally=True):
         "Provides helpful debug information :-)"
-        guild = ctx.guild  # saving me typing trouble!
-        if ctx.guild is None:
-            await ctx.reply("This command can only be ran in servers!")
+        guild = inter.guild  # saving me typing trouble!
+        if inter.guild is None:
+            await inter.reply("This command can only be ran in servers!")
             return
         me = guild.me
         my_permissions = me.guild_permissions
         debug_dict = {}
-        debug_dict["guild_id"] = ctx.guild.id
-        debug_dict["author_id"] = ctx.author.id
+        debug_dict["guild_id"] = inter.guild.id
+        debug_dict["author_id"] = inter.author.id
         debug_dict[
             "problem_limit"
         ] = self.bot.main_cache.max_guild_problems  # the problem limit
@@ -242,7 +242,7 @@ class DeveloperCommands(HelperCog):
             else "❌"
         )
         debug_dict["num_guild_problems"] = len(
-            self.bot.main_cache.get_guild_problems(ctx.guild)
+            self.bot.main_cache.get_guild_problems(inter.guild)
         )
         correct_permissions = {
             "read_message_history": "✅" if my_permissions.read_messages else "❌",
@@ -261,7 +261,7 @@ class DeveloperCommands(HelperCog):
         }
         debug_dict["correct_permissions"] = correct_permissions
         if raw:
-            await ctx.reply(str(debug_dict), ephemeral=send_ephermally)
+            await inter.reply(str(debug_dict), ephemeral=send_ephermally)
             return
         else:
             text = ""
@@ -275,7 +275,7 @@ class DeveloperCommands(HelperCog):
                         else:
                             raise RecursionError from Exception("***Nested too much***")
 
-        await ctx.reply(text, ephemeral=send_ephermally)
+        await inter.reply(text, ephemeral=send_ephermally)
 
 
 def setup(bot):
