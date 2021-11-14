@@ -104,7 +104,7 @@ class ProblemsCog(HelperCog):
         self, inter, problem_id, show_all_data=False, raw=False, is_guild_problem=False
     ):
         "Show the info of a problem."
-        await cooldowns.check_for_cooldown(inter, "show_problem_info", 0.5)
+        await cooldowns.check_for_cooldown(inter, "edit_problem", 0.5)
         problem_id = int(problem_id)
         try:
             guild_id = inter.guild.id
@@ -114,7 +114,7 @@ class ProblemsCog(HelperCog):
             ) from exc
 
         real_guild_id = str(inter.guild.id) if is_guild_problem else "null"
-        problem = await self.bot.cache.get_problem(real_guild_id, str(problem_id))
+        problem = await self.cache.get_problem(real_guild_id, str(problem_id))
 
         if True:
             if is_guild_problem and guild_id is None:
@@ -123,7 +123,7 @@ class ProblemsCog(HelperCog):
                 )
                 inter.reply(embed=embed1)
                 return
-            problem = await self.bot.cache.get_problem(
+            problem = await self.cache.get_problem(
                 str(inter.guild.id) if is_guild_problem else "null", str(problem_id)
             )
             Problem__ = f"Question: {problem.get_question()}\nAuthor: {str(problem.get_author())}\nNumVoters/Vote Threshold: {problem.get_num_voters()}/{self.bot.vote_threshold}\nNumSolvers: {len(problem.get_solvers())}"
@@ -151,6 +151,44 @@ class ProblemsCog(HelperCog):
                 )
                 return
             await inter.reply(embed=SuccessEmbed(Problem__), ephemeral=True)
+    @slash_command(
+        name="list_all_problem_ids",
+        description="List all problem ids",
+        options=[
+            Option(
+                name="show_only_guild_problems",
+                description="Whether to show guild problem ids",
+                required=False,
+                type=OptionType.BOOLEAN,
+            )
+        ],
+    )
+    async def list_all_problem_ids(self,inter, show_only_guild_problems=False):
+        "Lists all problem ids."
+        await cooldowns.check_for_cooldown(inter, "list_all_problem_ids", 2.5)
+        if show_only_guild_problems:
+            guild_id = inter.guild.id
+            if guild_id is None:
+                await inter.reply(
+                    "Run this command in a Discord server or set show_only_guild_problems to False!",
+                    ephemeral=True,
+                )
+                return
+            if show_only_guild_problems:
+                guild_problems = await self.cache.get_guild_problems(inter.guild)
+            else:
+                guild_problems = await self.cache.get_global_problems()
+            thing_to_write = [str(problem) for problem in guild_problems]
+            await inter.reply(
+                embed=SuccessEmbed(
+                    "\n".join(thing_to_write)[:1950], successTitle="Problem IDs:"
+                )
+            )
+            return
+
+        global_problems = self.cache.get_global_problems()
+        thing_to_write = "\n".join([str(problem.id) for problem in global_problems])
+        await inter.send(embed=SuccessEmbed(thing_to_write))
 
 def setup(bot):
     bot.add_cog(ProblemsCog(bot))

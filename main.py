@@ -141,7 +141,7 @@ bot = nextcord_commands.Bot(
     command_prefix=" ", intents=Intents, application_id=845751152901750824
 )
 
-bot.main_cache = main_cache
+bot.cache = main_cache
 bot.trusted_users = trusted_users
 bot._transport_modules = {
     "problems_module": problems_module,
@@ -213,49 +213,6 @@ async def on_slash_command_error(inter, error, print_stack_traceback=[True, stde
     )
 
 
-
-
-
-
-
-@slash.slash_command(
-    name="list_all_problem_ids",
-    description="List all problem ids",
-    options=[
-        Option(
-            name="show_only_guild_problems",
-            description="Whether to show guild problem ids",
-            required=False,
-            type=OptionType.BOOLEAN,
-        )
-    ],
-)
-async def list_all_problem_ids(inter, show_only_guild_problems=False):
-    "Lists all problem ids."
-    await check_for_cooldown(inter, "list_all_problem_ids", 2.5)
-    if show_only_guild_problems:
-        guild_id = inter.guild.id
-        if guild_id is None:
-            await inter.reply(
-                "Run this command in a Discord server or set show_only_guild_problems to False!",
-                ephemeral=True,
-            )
-            return
-        if show_only_guild_problems:
-            guild_problems = await main_cache.get_guild_problems(inter.guild)
-        else:
-            guild_problems = await main_cache.get_global_problems()
-        thing_to_write = [str(problem) for problem in guild_problems]
-        await inter.reply(
-            embed=SuccessEmbed(
-                "\n".join(thing_to_write)[:1950], successTitle="Problem IDs:"
-            )
-        )
-        return
-
-    global_problems = main_cache.get_global_problems()
-    thing_to_write = "\n".join([str(problem.id) for problem in global_problems])
-    await inter.send(embed=SuccessEmbed(thing_to_write))
 
 
 @slash.slash_command(

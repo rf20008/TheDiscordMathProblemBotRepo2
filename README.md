@@ -27,7 +27,9 @@ https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs
 # Attribution
 https://stackoverflow.com/a/21901260 for the get_git_revision_hash :-)
 nextcord + discord devs for their libraries
-SQLDict: https://github.com/skylergrammer/sqldict
+SQLDict: https://github.com/rf20008/sqldict
+Bot avatar: https://thumbs.dreamstime.com/z/creative-division-sign-circular-cold-gradient-spectrum-original-152718833.jpg
+And the many un-listed people who contributed ideas/code!
 
 # DISCLAIMER
 
