@@ -38,7 +38,7 @@ def custom_check(
     return dislash.check(predicate)
 
 
-def trusted_user_only():
+def trusted_users_only():
     def predicate(inter):
         if inter.author.id in bot.trusted_users:
             return True
@@ -65,7 +65,7 @@ def administrator_or_trusted_users_only():
     return dislash.check(predicate)
 
 
-def test():
+def always_failing_check():
     "This check will never pass"
 
     def predicate(inter):

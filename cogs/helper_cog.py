@@ -21,6 +21,7 @@ class HelperCog(nextcord.ext.commands.Cog):
             self.b["custom_embeds"].ErrorEmbed,
             self.b["the_documentation_file_loader"],
         )
+        self.cache = bot.main_cache
         self.slash = bot.slash
         self.bot = bot
         self.check_for_cooldown = self.bot._transport_modules["check_for_cooldown"]
