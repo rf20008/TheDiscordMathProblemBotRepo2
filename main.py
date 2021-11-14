@@ -10,11 +10,7 @@ if (
         "__debug__ must be True for the bot to run! (Don't run with -o or -OO)"
     )
 
-<<<<<<< HEAD
-#imports - standard library
-=======
 # imports - standard library
->>>>>>> origin/beta
 import asyncio
 import copy
 import random
@@ -59,10 +55,6 @@ DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
 if DISCORD_TOKEN is None:
     raise ValueError("Cannot start bot; no discord_token environment variable")
 asyncio.set_event_loop(asyncio.new_event_loop())
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/beta
 
 warnings.simplefilter("default")  # unnecessary, probably will be removed
 # constants
