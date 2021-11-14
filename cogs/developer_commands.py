@@ -106,7 +106,7 @@ class DeveloperCommands(HelperCog):
             )
             raise exc
 
-    @dislash.cooldown(1, 5)
+    @dislash.cooldown(1, 5, type=BucketType.user)
     @slash_command(
         name="raise_error",
         description="⚠ This command will raise an error. Useful for testing on_slash_command_error",
