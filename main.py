@@ -305,25 +305,7 @@ async def generate_new_problems(inter, num_new_problems_to_generate):
 ##adds the user's id to the trusted users list
 ##(can only be used by trusted users)""",
 ##brief = "Adds a trusted user")
-@slash.slash_command(
-    name="delallbotproblems", description="delete all automatically generated problems"
-)
-async def delallbotproblems(inter):
-    await check_for_cooldown(inter, "delallbotproblems", 10)
-    "Delete all automatically generated problems"
 
-    await inter.reply(
-        embed=SimpleEmbed("", description="Attempting to delete bot problems"),
-        ephemeral=True,
-    )  # may get rid of later? :)
-    numDeletedProblems = 0
-    async with aiosqlite.connect(bot.cache.db_name) as conn:
-        cursor = conn.cursor()
-        await cursor.execute(
-            "DELETE FROM problems WHERE user_id = ?", (bot.user.id)
-        )  # Delete every problem made by the bot!
-        await conn.commit()
-    await inter.reply(embed=SuccessEmbed(f"Successfully deleted {numDeletedProblems}!"))
 
 
 @slash.slash_command(name="list_trusted_users", description="list all trusted users")
@@ -535,7 +517,6 @@ async def check_answer(inter, problem_id, answer, checking_guild_problem=False):
         )
         problem.add_solver(inter.author)
         return
-
 
 
 @slash.slash_command(

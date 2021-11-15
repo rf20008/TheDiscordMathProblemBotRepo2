@@ -4,6 +4,7 @@ from helpful_modules.custom_embeds import *
 import dislash, nextcord
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 from helpful_modules import checks, cooldowns
+import aiosqlite
 class ProblemsCog(HelperCog):
     def __init__(self, bot):
         "Helpful __init__, the entire reason I decided to make this so I could transfer modules"        
@@ -101,10 +102,10 @@ class ProblemsCog(HelperCog):
         ],
     )
     async def show_problem_info(
-        inter, problem_id, show_all_data=False, raw=False, is_guild_problem=False
+        self, inter, problem_id, show_all_data=False, raw=False, is_guild_problem=False
     ):
         "Show the info of a problem."
-        await check_for_cooldown(inter, "edit_problem", 0.5)
+        await cooldowns.check_for_cooldown(inter, "edit_problem", 0.5)
         problem_id = int(problem_id)
         try:
             guild_id = inter.guild.id
@@ -114,7 +115,7 @@ class ProblemsCog(HelperCog):
             ) from exc
 
         real_guild_id = str(inter.guild.id) if is_guild_problem else "null"
-        problem = await main_cache.get_problem(real_guild_id, str(problem_id))
+        problem = await self.cache.get_problem(real_guild_id, str(problem_id))
 
         if True:
             if is_guild_problem and guild_id is None:
@@ -123,16 +124,16 @@ class ProblemsCog(HelperCog):
                 )
                 inter.reply(embed=embed1)
                 return
-            problem = await main_cache.get_problem(
+            problem = await self.cache.get_problem(
                 str(inter.guild.id) if is_guild_problem else "null", str(problem_id)
             )
-            Problem__ = f"Question: {problem.get_question()}\nAuthor: {str(problem.get_author())}\nNumVoters/Vote Threshold: {problem.get_num_voters()}/{vote_threshold}\nNumSolvers: {len(problem.get_solvers())}"
+            Problem__ = f"Question: {problem.get_question()}\nAuthor: {str(problem.get_author())}\nNumVoters/Vote Threshold: {problem.get_num_voters()}/{self.bot.vote_threshold}\nNumSolvers: {len(problem.get_solvers())}"
 
             if show_all_data:
                 if not (
                     (
                         problem.is_author(inter.author)
-                        or inter.author.id not in bot.trusted_users
+                        or inter.author.id not in self.bot.trusted_users
                         or (
                             is_guild_problem
                             and inter.author.guild_permissions.administrator == True
@@ -151,7 +152,7 @@ class ProblemsCog(HelperCog):
                 )
                 return
             await inter.reply(embed=SuccessEmbed(Problem__), ephemeral=True)
-    @slash.slash_command(
+    @slash_command(
         name="list_all_problem_ids",
         description="List all problem ids",
         options=[
@@ -163,9 +164,9 @@ class ProblemsCog(HelperCog):
             )
         ],
     )
-    async def list_all_problem_ids(inter, show_only_guild_problems=False):
+    async def list_all_problem_ids(self,inter, show_only_guild_problems=False):
         "Lists all problem ids."
-        await check_for_cooldown(inter, "list_all_problem_ids", 2.5)
+        await cooldowns.check_for_cooldown(inter, "list_all_problem_ids", 2.5)
         if show_only_guild_problems:
             guild_id = inter.guild.id
             if guild_id is None:
@@ -175,9 +176,9 @@ class ProblemsCog(HelperCog):
                 )
                 return
             if show_only_guild_problems:
-                guild_problems = await main_cache.get_guild_problems(inter.guild)
+                guild_problems = await self.bot.cache.get_guild_problems(inter.guild)
             else:
-                guild_problems = await main_cache.get_global_problems()
+                guild_problems = await self.bot.cache.get_global_problems()
             thing_to_write = [str(problem) for problem in guild_problems]
             await inter.reply(
                 embed=SuccessEmbed(
@@ -186,11 +187,11 @@ class ProblemsCog(HelperCog):
             )
             return
 
-        global_problems = main_cache.get_global_problems()
+        global_problems = self.bot.cache.get_global_problems()
         thing_to_write = "\n".join([str(problem.id) for problem in global_problems])
         await inter.send(embed=SuccessEmbed(thing_to_write))
         
-    @slash.slash_command(
+    @slash_command(
         name="list_all_problems",
         description="List all problems stored with the bot",
         options=[
@@ -214,14 +215,16 @@ class ProblemsCog(HelperCog):
             ),
         ],
     )
+    @checks.is_not_blacklisted
     async def list_all_problems(
+        self,
         inter,
         show_solved_problems=False,
         show_guild_problems=True,
         show_only_guild_problems=False,
     ):
         "List all MathProblems."
-        await check_for_cooldown(inter, "list_all_problems")
+        await cooldowns.check_for_cooldown(inter, "list_all_problems")
         if inter.guild is None and show_guild_problems:
             await inter.reply("You must be in a guild to see guild problems!")
             return
@@ -232,13 +235,9 @@ class ProblemsCog(HelperCog):
             guild_id = inter.guild.id
         else:
             guild_id = "null"
-        if guild_id not in guildMathProblems:
-            guildMathProblems[guild_id] = {}
-        if mathProblems.keys() == []:
-            await inter.reply(
-                embed=ErrorEmbed("There aren't any problems! You should add one!"),
-                ephemeral=True,
-            )
+        #Check for no problems
+        if self.bot.cache.guild_problems[guild_id] = {}:
+            await inter.reply("No problems currently exist.")
             return
         # if not showSolvedProblems and False not in [inter.author.id in mathProblems[id]["solvers"] for id in mathProblems.keys()] or (show_guild_problems and (show_only_guild_problems and (guildMathProblems[inter.guild.id] == {}) or False not in [inter.author.id in guildMathProblems[guild_id][id]["solvers"] for id in guildMathProblems[guild_id].keys()])) or show_guild_problems and not show_only_guild_problems and False not in [inter.author.id in mathProblems[id]["solvers"] for id in mathProblems.keys()] and False not in [inter.author.id in guildMathProblems[guild_id][id]["solvers"] for id in guildMathProblems[guild_id].keys()]:
         # await inter.reply("You solved all the problems! You should add a new one.", ephemeral=True)
@@ -294,6 +293,26 @@ class ProblemsCog(HelperCog):
             )
             problem_info_as_str += str(len(problem.get_solvers())) + "\t"
         await inter.reply(embed=SuccessEmbed(problem_info_as_str[:1930]))
+    @slash.slash_command(
+    name="delallbotproblems", description="delete all automatically generated problems"
+    )
+    @checks.trusted_users_only
+    async def delallbotproblems(inter):
+        await check_for_cooldown(inter, "delallbotproblems", 10)
+        "Delete all automatically generated problems"
+
+        await inter.reply(
+            embed=SimpleEmbed("", description="Attempting to delete bot problems"),
+            ephemeral=True,
+        )  # may get rid of later? :)
+        numDeletedProblems = 0
+        async with aiosqlite.connect(bot.cache.db_name) as conn:
+            cursor = conn.cursor()
+            await cursor.execute(
+                "DELETE FROM problems WHERE user_id = ?", (bot.user.id)
+            )  # Delete every problem made by the bot!
+            await conn.commit()
+        await inter.reply(embed=SuccessEmbed(f"Successfully deleted {numDeletedProblems}!"))
 
 
 def setup(bot):
