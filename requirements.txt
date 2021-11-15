@@ -1,0 +1,10 @@
+discord >= 1.7.3
+git+git://github.com/nextcord/nextcord.git@master
+git+git://github.com/EQUENOS/dislash.py.git@main
+orjson >= 3.6.3
+git+git://https://github.com/omnilib/aiosqlite@main
+python-dotenv>=0.19.1
+git+git://github.com/rf20008/sqldict.git@main
+
+
+
