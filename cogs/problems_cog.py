@@ -3,8 +3,9 @@ from helpful_modules.problems_module import *
 from helpful_modules.custom_embeds import *
 import dislash, nextcord
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
-from helpful_modules import checks, cooldowns
+from helpful_modules import checks, cooldowns, problems_module
 import aiosqlite
+from dislash import *
 class ProblemsCog(HelperCog):
     def __init__(self, bot):
         "Helpful __init__, the entire reason I decided to make this so I could transfer modules"        
@@ -257,7 +258,7 @@ class ProblemsCog(HelperCog):
                 problem_info_as_str += str(problem.get_question()) + "\t"
                 problem_info_as_str += "("
                 problem_info_as_str += (
-                    str(problem.get_num_voters()) + "/" + str(vote_threshold) + ")" + "\t"
+                    str(problem.get_num_voters()) + "/" + str(self.bot.vote_threshold) + ")" + "\t"
                 )
                 problem_info_as_str += str(len(problem.get_solvers())) + "\t"
                 problem_info_as_str += "(guild)"
@@ -289,16 +290,16 @@ class ProblemsCog(HelperCog):
             problem_info_as_str += str(problem.get_question()) + "\t"
             problem_info_as_str += "("
             problem_info_as_str += (
-                str(problem.get_num_voters()) + "/" + str(vote_threshold) + ")" + "\t"
+                str(problem.get_num_voters()) + "/" + str(self.bot.vote_threshold) + ")" + "\t"
             )
             problem_info_as_str += str(len(problem.get_solvers())) + "\t"
         await inter.reply(embed=SuccessEmbed(problem_info_as_str[:1930]))
-    @slash.slash_command(
+    @slash_command(
     name="delallbotproblems", description="delete all automatically generated problems"
     )
     @checks.trusted_users_only
-    async def delallbotproblems(inter):
-        await check_for_cooldown(inter, "delallbotproblems", 10)
+    async def delallbotproblems(self,inter):
+        await cooldowns.check_for_cooldown(inter, "delallbotproblems", 10)
         "Delete all automatically generated problems"
 
         await inter.reply(
@@ -306,10 +307,10 @@ class ProblemsCog(HelperCog):
             ephemeral=True,
         )  # may get rid of later? :)
         numDeletedProblems = 0
-        async with aiosqlite.connect(bot.cache.db_name) as conn:
+        async with aiosqlite.connect(self.bot.cache.db_name) as conn:
             cursor = conn.cursor()
             await cursor.execute(
-                "DELETE FROM problems WHERE user_id = ?", (bot.user.id)
+                "DELETE FROM problems WHERE user_id = ?", (self.bot.user.id)
             )  # Delete every problem made by the bot!
             await conn.commit()
         await inter.reply(embed=SuccessEmbed(f"Successfully deleted {numDeletedProblems}!"))
