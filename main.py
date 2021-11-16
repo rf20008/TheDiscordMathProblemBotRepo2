@@ -29,7 +29,7 @@ import nextcord  # https://github.com/nextcord/nextcord
 import nextcord.ext.commands as nextcord_commands
 from dislash.application_commands.core import check
 import aiosqlite
-
+from copy import copy
 # Imports - My own files
 from helpful_modules import _error_logging, checks, cooldowns
 from helpful_modules import custom_embeds, problems_module
@@ -41,8 +41,8 @@ import cogs
 from cogs import *
 from helpful_modules.cooldowns import check_for_cooldown, OnCooldown
 from helpful_modules._error_logging import log_error
-
 from helpful_modules.custom_embeds import *
+from helpful_modules.checks import is_not_blacklisted
 from helpful_modules.the_documentation_file_loader import *
 
 try:
@@ -139,11 +139,13 @@ def generate_new_id():
 # Bot creation
 Intents = return_intents.return_intents()
 bot = nextcord_commands.Bot(
-    command_prefix=" ", intents=Intents, application_id=845751152901750824
-)
+    command_prefix=" ", intents=Intents, application_id=845751152901750824, 
+    status = nextcord.Status.idle,
+    activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂")
 
+)
 bot.cache = main_cache
-bot.trusted_users = trusted_users
+bot.trusted_users = copy(trusted_users)
 bot._transport_modules = {
     "problems_module": problems_module,
     "save_files": save_files,
@@ -152,6 +154,8 @@ bot._transport_modules = {
     "custom_embeds": custom_embeds,
     "checks": checks,
 }
+bot.add_check(is_not_blacklisted)
+bot.vote_threshold = copy(vote_threshold)
 bot.blacklisted_users = []
 t = threading.Thread(target=the_daemon_file_saver, name="The File Saver", daemon=True)
 # bot.load_extension("jishaku")
@@ -160,6 +164,9 @@ t = threading.Thread(target=the_daemon_file_saver, name="The File Saver", daemon
 slash = InteractionClient(client=bot, sync_commands=True)
 bot.slash = slash
 bot.add_cog(DeveloperCommands(bot))
+bot.add_cog(ProblemsCog(bot))
+bot.add_cog(QuizCog(bot))
+bot.add_check()
 print("Bots successfully created.")
 
 # Events

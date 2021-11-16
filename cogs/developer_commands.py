@@ -7,10 +7,8 @@ from dislash import *
 from time import sleep, time, asctime
 
 from .helper_cog import HelperCog
-
-
-from nextcord.ext.commands.converter import is_generic_type
-
+from helpful_modules import checks
+from helpful_modules.save_files import FileSaver
 
 from . import *
 
@@ -29,6 +27,7 @@ class DeveloperCommands(HelperCog):
         global checks
         super().__init__(bot)
         self.bot = bot
+        self.slash = bot.slash
         checks = self.checks
 
     @dislash.cooldown(1, 5)
@@ -36,6 +35,7 @@ class DeveloperCommands(HelperCog):
         name="force_load_files",
         description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!",
     )
+    @checks.is_trusted_user
     async def force_load_files(self, inter):
         "Forcefully load files"
 
@@ -72,6 +72,7 @@ class DeveloperCommands(HelperCog):
         name="force_save_files",
         description="Forcefully saves files (can only be used by trusted users).",
     )
+    @checks.is_trusted_user
     async def force_save_files(self, inter):
         "Forcefully saves files."
         if (
@@ -105,7 +106,7 @@ class DeveloperCommands(HelperCog):
                 embed=self.custom_embeds.ErrorEmbed("Something went wrong...")
             )
             raise exc
-
+    @dislash.is_owner()
     @dislash.cooldown(1, 5, type=BucketType.user)
     @slash_command(
         name="raise_error",
