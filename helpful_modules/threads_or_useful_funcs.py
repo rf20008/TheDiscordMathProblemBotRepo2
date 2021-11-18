@@ -1,5 +1,6 @@
 from . import save_files
-from .the_documentation_file_loader import *
+from time import sleep
+from .the_documentation_file_loader import DocumentationFileLoader
 
 def the_daemon_file_saver(bot):
     "Auto-save files!"
@@ -8,7 +9,7 @@ def the_daemon_file_saver(bot):
     FileSaverObj = save_files.FileSaver(
         name="The Daemon File Saver", enabled=True, printSuccessMessagesByDefault=True
     )
-    FileSaverDict = FileSaverObj.load_files(main_cache, True)
+    FileSaverDict = FileSaverObj.load_files(bot.cache, True)
     (guildMathProblems, bot.trusted_users, vote_threshold) = (
         FileSaverDict["guildMathProblems"],
         FileSaverDict["trusted_users"],
@@ -18,11 +19,10 @@ def the_daemon_file_saver(bot):
     while True:
         sleep(45)
         FileSaverObj.save_files(
-            main_cache,
+            bot.cache,
             False,
             guildMathProblems,
             vote_threshold,
-            mathProblems,
             bot.trusted_users,
         )
 
