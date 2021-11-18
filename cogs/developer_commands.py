@@ -278,7 +278,6 @@ class DeveloperCommands(HelperCog):
 
         await inter.reply(text, ephemeral=send_ephermally)
 
-
 def setup(bot):
     global problems_module, SuccessEmbed, ErrorEmbed, the_documentation_file_loader, slash
 
