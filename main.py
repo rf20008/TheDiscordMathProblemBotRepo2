@@ -55,7 +55,7 @@ dotenv.load_dotenv()
 DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
 if DISCORD_TOKEN is None:
     raise ValueError("Cannot start bot; no discord_token environment variable")
-asyncio.set_event_loop(asyncio.new_event_loop())
+
 
 warnings.simplefilter("default")  # unnecessary, probably will be removed
 # constants
@@ -137,6 +137,8 @@ def generate_new_id():
 
 
 # Bot creation
+
+asyncio.set_event_loop(asyncio.new_event_loop())
 Intents = return_intents.return_intents()
 bot = nextcord_commands.Bot(
     command_prefix=" ", intents=Intents, application_id=845751152901750824, 
@@ -167,7 +169,6 @@ bot.slash = slash
 bot.add_cog(DeveloperCommands(bot))
 bot.add_cog(ProblemsCog(bot))
 bot.add_cog(QuizCog(bot))
-bot.add_check()
 print("Bots successfully created.")
 
 # Events
