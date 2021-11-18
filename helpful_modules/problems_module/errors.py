@@ -1,3 +1,5 @@
+"Licensed under CC-BY-SA 4.0"
+
 class MathProblemsModuleException(Exception):
     "The base exception for problems_module."
     pass

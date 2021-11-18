@@ -80,7 +80,6 @@ main_cache = problems_module.MathProblemCache(
 vote_threshold = -1
 mathProblems = {}
 guildMathProblems = {}
-cooldowns = {}
 guild_maximum_problem_limit = 125
 erroredInMainCode = False
 
@@ -436,7 +435,7 @@ async def submit_problem(inter, answer, question, guild_question=False):
         return
     while True:
         problem_id = generate_new_id()
-        if problem_id not in main_cache.get_global_problems().keys():
+        if problem_id not in await main_cache.get_global_problems().keys():
             break
 
     problem = problems_module.MathProblem(
@@ -447,13 +446,13 @@ async def submit_problem(inter, answer, question, guild_question=False):
         author=inter.author.id,
         cache=main_cache,
     )
-    main_cache.add_problem(
+    await main_cache.add_problem(
         problem_id=str(problem_id), guild_id=str(problem.guild_id), Problem=problem
     )
     await inter.reply(
         embed=SuccessEmbed("You have successfully made a math problem!"), ephemeral=True
     )
-    t = threading.Thread(target=main_cache.remove_duplicate_problems)
+    t = threading.Thread(target=asyncio.run, args = (main_cache.remove_duplicate_problems))
     t.start()
 
 
@@ -481,11 +480,13 @@ async def submit_problem(inter, answer, question, guild_question=False):
         ),
     ],
 )
+@checks.is_not_blacklisted()
 async def check_answer(inter, problem_id, answer, checking_guild_problem=False):
-    "Check if you are right"
+    """/check_answer {problem_id} {answer_id} [checking_guild_problem = False]
+    Check your answer to the problem with the given id. If the problem is """
     await check_for_cooldown(inter, "check_answer", 5)
 
-    if inter.guild != None and inter.guild.id not in main_cache.get_guilds():
+    if inter.guild != None and inter.guild.id not in await main_cache.get_guilds():
         main_cache.add_empty_guild(inter.guild)
     try:
         problem = main_cache.get_problem(
@@ -540,25 +541,21 @@ async def check_answer(inter, problem_id, answer, checking_guild_problem=False):
         )
     ],
 )
+@checks.trusted_users_only()
 async def set_vote_threshold(inter, threshold):
     "Set the vote threshold"
     await check_for_cooldown(inter, "")
-    if inter.guild is not None and inter.guild.id not in main_cache.get_guilds():
+    if inter.guild is not None and inter.guild.id not in await main_cache.get_guilds():
         main_cache.add_empty_guild(inter.guild)
     global vote_threshold
     try:
         threshold = int(threshold)
-    except TypeError:
+    except TypeError: #Conversion failed!
         await inter.reply(
             embed=ErrorEmbed(
                 "Invalid threshold argument! (threshold must be an integer)"
             ),
             ephemeral=True,
-        )
-        return
-    if inter.author.id not in bot.trusted_users:
-        await inter.reply(
-            embed=ErrorEmbed("You aren't allowed to do this!"), ephemeral=True
         )
         return
     if threshold < 1:
@@ -923,7 +920,7 @@ async def submit_a_request(
     is_legal=False,
 ):
     "Submit a request! I will know! It uses a channel in my discord server and posts an embed"
-    __import__("cooldowns").check_for_cooldown(
+    helpful_modules.cooldowns.check_for_cooldown(
         "submit_a_request", 5
     )  # 5 seconds cooldown
     if (
