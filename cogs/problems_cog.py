@@ -10,7 +10,8 @@ class ProblemsCog(HelperCog):
     def __init__(self, bot):
         self.bot = bot
         super().__init__(bot)
-    @checks.is_not_blacklisted
+        checks.setup(bot)
+    @checks.is_not_blacklisted()
     @slash_command(
         name="edit_problem",
         description="edit a problem",
@@ -216,7 +217,7 @@ class ProblemsCog(HelperCog):
             ),
         ],
     )
-    @checks.is_not_blacklisted
+    @checks.is_not_blacklisted()
     async def list_all_problems(
         self,
         inter,
@@ -297,7 +298,7 @@ class ProblemsCog(HelperCog):
     @slash_command(
     name="delallbotproblems", description="delete all automatically generated problems"
     )
-    @checks.trusted_users_only
+    @checks.trusted_users_only()
     async def delallbotproblems(self,inter):
         await cooldowns.check_for_cooldown(inter, "delallbotproblems", 10)
         "Delete all automatically generated problems"
