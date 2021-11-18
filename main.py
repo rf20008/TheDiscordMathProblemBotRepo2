@@ -108,8 +108,7 @@ bot = nextcord_commands.Bot(
     activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂")
 
 )
-daemon_file_saver = threading.Thread(target=the_daemon_file_saver, args = (bot))
-daemon_file_saver.start()
+
 setup(bot)
 bot.cache = main_cache
 bot.trusted_users = copy(trusted_users)
@@ -134,7 +133,8 @@ bot.add_cog(DeveloperCommands(bot))
 bot.add_cog(ProblemsCog(bot))
 bot.add_cog(QuizCog(bot))
 print("Bots successfully created.")
-
+daemon_file_saver = threading.Thread(target=the_daemon_file_saver, args = (bot,))
+daemon_file_saver.start()
 # Events
 
 
