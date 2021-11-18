@@ -42,7 +42,7 @@ from cogs import *
 from helpful_modules.cooldowns import check_for_cooldown, OnCooldown
 from helpful_modules._error_logging import log_error
 from helpful_modules.custom_embeds import *
-from helpful_modules.checks import is_not_blacklisted
+from helpful_modules.checks import is_not_blacklisted, setup
 from helpful_modules.the_documentation_file_loader import *
 
 try:
@@ -144,6 +144,7 @@ bot = nextcord_commands.Bot(
     activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂")
 
 )
+setup(bot)
 bot.cache = main_cache
 bot.trusted_users = copy(trusted_users)
 bot._transport_modules = {

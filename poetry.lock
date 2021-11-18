@@ -160,7 +160,7 @@ voice = ["PyNaCl (>=1.3.0,<1.5)"]
 type = "git"
 url = "https://github.com/nextcord/nextcord.git"
 reference = "master"
-resolved_reference = "806494d64c820369349749dd634f84491acc9ef1"
+resolved_reference = "c82d74e803a1009bb2e436adcae90df4097e00aa"
 
 [[package]]
 name = "orjson"

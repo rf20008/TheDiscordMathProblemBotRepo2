@@ -1,6 +1,2 @@
 language = "python3"
-<<<<<<< HEAD
 run = "poetry install; python3 main.py"
-=======
-run = "poetry install; python3 main.py"
->>>>>>> origin/beta
