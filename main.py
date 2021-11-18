@@ -90,8 +90,7 @@ erroredInMainCode = False
 
 loader = threading.Thread(target=loading_documentation_thread)
 loader.start()
-daemon_file_saver = threading.Thread(target=the_daemon_file_saver, args = (bot))
-daemon_file_saver.start()
+
 
 
 
@@ -110,6 +109,8 @@ bot = nextcord_commands.Bot(
     activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂")
 
 )
+daemon_file_saver = threading.Thread(target=the_daemon_file_saver, args = (bot))
+daemon_file_saver.start()
 setup(bot)
 bot.cache = main_cache
 bot.trusted_users = copy(trusted_users)
