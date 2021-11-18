@@ -8,34 +8,31 @@ from time import sleep, time, asctime
 
 from .helper_cog import HelperCog
 from helpful_modules import checks
+from helpful_modules.custom_embeds import *
+
 from helpful_modules.save_files import FileSaver
 
 from . import *
 
-problems_module = None
-FileSaver = None
-successEmbed = None
-errorEmbed = None
-the_documentation_file_loader = None
 slash = None
-check_for_cooldown = None
-checks = None
 
 
 class DeveloperCommands(HelperCog):
     def __init__(self, bot):
         global checks
+        
         super().__init__(bot)
         self.bot = bot
         self.slash = bot.slash
         checks = self.checks
+        checks.setup(bot)
 
     @dislash.cooldown(1, 5)
     @slash_command(
         name="force_load_files",
         description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!",
     )
-    @checks.is_trusted_user
+    @checks.trusted_users_only()
     async def force_load_files(self, inter):
         "Forcefully load files"
 
@@ -72,9 +69,9 @@ class DeveloperCommands(HelperCog):
         name="force_save_files",
         description="Forcefully saves files (can only be used by trusted users).",
     )
-    @checks.is_trusted_user
+    @checks.trusted_users_only()
     async def force_save_files(self, inter):
-        "Forcefully saves files."
+        "Forcefully saves files. Takes no arguments. Mostly for debugging purposes"
         if (
             inter.guild != None
             and inter.guild.id not in self.bot.main_cache.get_guilds()
@@ -209,7 +206,7 @@ class DeveloperCommands(HelperCog):
     @dislash.cooldown(1, 0.1)
     @slash_command(
         name="debug",
-        description="Help for debugging :-)",
+        description="Helpful for debugging :-)",
         options=[
             Option(
                 name="raw",
