@@ -132,6 +132,7 @@ bot.slash = slash
 bot.add_cog(DeveloperCommands(bot))
 bot.add_cog(ProblemsCog(bot))
 bot.add_cog(QuizCog(bot))
+bot.add_cog(MiscCommandsCog(bot))
 print("Bots successfully created.")
 daemon_file_saver = threading.Thread(target=the_daemon_file_saver, args = (bot,))
 daemon_file_saver.start()
