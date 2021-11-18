@@ -8,7 +8,6 @@ import aiosqlite
 from dislash import *
 class ProblemsCog(HelperCog):
     def __init__(self, bot):
-        "Helpful __init__, the entire reason I decided to make this so I could transfer modules"        
         self.bot = bot
         super().__init__(bot)
     @checks.is_not_blacklisted
@@ -40,7 +39,8 @@ class ProblemsCog(HelperCog):
     async def edit_problem(
         self, inter, problem_id, new_question=None, new_answer=None, guild_id="null"
     ):
-        "Allows you to edit a math problem."
+        """/edit_problem problem_id:
+        Allows you to edit a math problem."""
         await cooldowns.check_for_cooldown(inter, "edit_problem", 0.5)
         try:
             problem = await self.cache.get_problem(int(guild_id), int(problem_id))
