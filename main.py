@@ -33,6 +33,7 @@ from copy import copy
 from helpful_modules import _error_logging, checks, cooldowns
 from helpful_modules import custom_embeds, problems_module
 from helpful_modules import return_intents, save_files, the_documentation_file_loader
+from helpful_modules.threads_or_useful_funcs import *
 
 # might be replaced with from helpful_modules import * and using __all__
 
@@ -83,55 +84,18 @@ guild_maximum_problem_limit = 125
 erroredInMainCode = False
 
 
-def loading_documentation_thread():
-    "This thread reloads the documentation."
-    d = DocumentationFileLoader()
-    d.load_documentation_into_readable_files()
-    del d
+
 
 
 loader = threading.Thread(target=loading_documentation_thread)
 loader.start()
 
 
-def get_git_revision_hash() -> str:
-    "A method that gets the git revision hash. Credit to https://stackoverflow.com/a/21901260 for the code :-)"
-    return (
-        subprocess.check_output(["git", "rev-parse", "HEAD"])
-        .decode("ascii")
-        .strip()[:7]
-    )  # [7:] is here because of the commit hash, the rest of this function is from stack overflow
 
 
-def the_daemon_file_saver():
-    "Auto-save files!"
-    global guildMathProblems, trusted_users, vote_threshold
-
-    FileSaverObj = save_files.FileSaver(
-        name="The Daemon File Saver", enabled=True, printSuccessMessagesByDefault=True
-    )
-    FileSaverDict = FileSaverObj.load_files(main_cache, True)
-    (guildMathProblems, bot.trusted_users, vote_threshold) = (
-        FileSaverDict["guildMathProblems"],
-        FileSaverDict["trusted_users"],
-        FileSaverDict["vote_threshold"],
-    )
-
-    while True:
-        sleep(45)
-        FileSaverObj.save_files(
-            main_cache,
-            False,
-            guildMathProblems,
-            vote_threshold,
-            mathProblems,
-            bot.trusted_users,
-        )
 
 
-def generate_new_id():
-    "Generate a random number from 0 to 10^14"
-    return random.randint(0, 10 ** 14)
+
 
 
 # Bot creation
@@ -144,6 +108,8 @@ bot = nextcord_commands.Bot(
     activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂")
 
 )
+daemon_file_saver = threading.Thread(target=the_daemon_file_saver, args = (bot))
+daemon_file_saver.start()
 setup(bot)
 bot.cache = main_cache
 bot.trusted_users = copy(trusted_users)
@@ -903,11 +869,18 @@ async def github_repo(inter):
             required=False,
         ),
         Option(
-            name="is_legal",
-            description="Is this a legal request?",
-            required=False,
-            type=OptionType.BOOLEAN,
-        ),
+          name = "request_type",
+          description = "Request type!",
+          type = OptionType.STRING,
+          required = False,
+          choices = [
+            OptionChoice(name = "general", value = "general"),
+            OptionChoice(name = "legal", value = "legal"),
+            OptionChoice(name = "bug_report", value = "bug_report"),
+            OptionChoice(name = "feature_request", value = "Feature Request!")
+          ]
+          
+        )
     ],
 )
 async def submit_a_request(
@@ -915,24 +888,24 @@ async def submit_a_request(
     offending_problem_guild_id=None,
     offending_problem_id=None,
     extra_info=None,
-    copyrighted_thing=None,
-    is_legal=False,
+    copyrighted_thing=Exception,
+    request_type=False,
 ):
     "Submit a request! I will know! It uses a channel in my discord server and posts an embed"
-    helpful_modules.cooldowns.check_for_cooldown(
+    cooldowns.check_for_cooldown(
         "submit_a_request", 5
     )  # 5 seconds cooldown
     if (
         extra_info is None
-        and is_legal is False
-        and copyrighted_thing is not Exception
+        and request_type == "general"
+        and copyrighted_thing is Exception
         and offending_problem_guild_id is None
         and offending_problem_id is None
-    ):
+    ): #No parameters given.
         await inter.reply(embed=ErrorEmbed("You must specify some field."))
     if extra_info is None:
         await inter.reply(embed=ErrorEmbed("Please provide extra information!"))
-    assert len(extra_info) <= 5000
+    assert len(extra_info) <= 3500
     channel = await bot.fetch_channel(
         901464948604039209
     )  # CHANGE THIS IF YOU HAVE A DIFFERENT REQUESTS CHANNEL! (the part after id)
@@ -941,7 +914,7 @@ async def submit_a_request(
             offending_problem_guild_id, offending_problem_id
         )
         problem_found = True
-    except (TypeError, KeyError):
+    except problems_module.errors.ProblemNotFound:
         # Problem not found
         problem_found = False
     content = bot.owner_id
@@ -972,6 +945,10 @@ async def submit_a_request(
     ):  # Mentioning owners: may be removed (you can also remove it as well)
         content += f"<@{owner_id}>"
     content += f"<@{bot.owner_id}>"
+    embed.add_field("Type", value = request_type, inline = False)
+    embed.add_field()
+
+
     await channel.send(embed=embed, content=content)
     await inter.reply("Your request has been submitted!")
 
