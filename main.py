@@ -27,7 +27,6 @@ import dislash  # https://github.com/EQUENOS/dislash.py
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 import nextcord  # https://github.com/nextcord/nextcord
 import nextcord.ext.commands as nextcord_commands
-from dislash.application_commands.core import check
 import aiosqlite
 from copy import copy
 # Imports - My own files
@@ -166,7 +165,6 @@ bot.slash = slash
 bot.add_cog(DeveloperCommands(bot))
 bot.add_cog(ProblemsCog(bot))
 bot.add_cog(QuizCog(bot))
-bot.add_check()
 print("Bots successfully created.")
 
 # Events
