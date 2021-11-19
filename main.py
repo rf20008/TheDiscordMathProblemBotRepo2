@@ -402,10 +402,10 @@ async def submit_problem(inter, answer, question, guild_question=False):
         return
     while True:
         problem_id = generate_new_id()
-        if problem_id not in await main_cache.get_global_problems().keys():
+        if problem_id not in (await main_cache.get_global_problems()).keys():
             break
 
-    problem = problems_module.MathProblem(
+    problem = problems_module.BaseProblem(
         question=question,
         answer=answer,
         id=problem_id,

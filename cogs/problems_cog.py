@@ -189,7 +189,7 @@ class ProblemsCog(HelperCog):
             )
             return
 
-        global_problems = self.bot.cache.get_global_problems()
+        global_problems = await self.bot.cache.get_global_problems()
         thing_to_write = "\n".join([str(problem.id) for problem in global_problems])
         await inter.send(embed=SuccessEmbed(thing_to_write))
         
