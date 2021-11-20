@@ -28,12 +28,13 @@ from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoic
 import nextcord  # https://github.com/nextcord/nextcord
 import nextcord.ext.commands as nextcord_commands
 import aiosqlite
+from asyncio import sleep as asyncio_sleep
 from copy import copy
 # Imports - My own files
 from helpful_modules import _error_logging, checks, cooldowns
 from helpful_modules import custom_embeds, problems_module
 from helpful_modules import return_intents, save_files, the_documentation_file_loader
-
+from helpful_modules.threads_or_useful_funcs import *
 # might be replaced with from helpful_modules import * and using __all__
 
 import cogs
@@ -103,40 +104,15 @@ def get_git_revision_hash() -> str:
     )  # [7:] is here because of the commit hash, the rest of this function is from stack overflow
 
 
-def the_daemon_file_saver():
-    "Auto-save files!"
-    global guildMathProblems, trusted_users, vote_threshold
-
-    FileSaverObj = save_files.FileSaver(
-        name="The Daemon File Saver", enabled=True, printSuccessMessagesByDefault=True
-    )
-    FileSaverDict = FileSaverObj.load_files(main_cache, True)
-    (guildMathProblems, bot.trusted_users, vote_threshold) = (
-        FileSaverDict["guildMathProblems"],
-        FileSaverDict["trusted_users"],
-        FileSaverDict["vote_threshold"],
-    )
-
-    while True:
-        sleep(45)
-        FileSaverObj.save_files(
-            main_cache,
-            False,
-            guildMathProblems,
-            vote_threshold,
-            mathProblems,
-            bot.trusted_users,
-        )
 
 
-def generate_new_id():
-    "Generate a random number from 0 to 10^14"
-    return random.randint(0, 10 ** 14)
+
+
 
 
 # Bot creation
 
-asyncio.set_event_loop(asyncio.new_event_loop())
+asyncio.set_event_loop(asyncio.new_event_loop()) #Otherwise, weird errors will happen
 Intents = return_intents.return_intents()
 bot = nextcord_commands.Bot(
     command_prefix=" ", intents=Intents, application_id=845751152901750824, 
@@ -258,14 +234,7 @@ async def on_slash_command_error(inter, error, print_stack_traceback=[True, stde
 
 
 
-@slash.slash_command(name="list_trusted_users", description="list all trusted users")
-async def list_trusted_users(inter):
-    "List all trusted users."
-    __trusted_users = ""
-    for item in bot.trusted_users:
-        __trusted_users += "<@" + str(item) + ">"
-        __trusted_users += "\n"
-    await inter.reply(__trusted_users, ephemeral=True)
+
 
 
 @slash.slash_command(
