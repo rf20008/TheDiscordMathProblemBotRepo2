@@ -134,7 +134,7 @@ bot._transport_modules = {
 bot.add_check(is_not_blacklisted)
 bot.vote_threshold = copy(vote_threshold)
 bot.blacklisted_users = []
-_the_daemon_file_saver = threading.Thread(target=the_daemon_file_saver, name="The File Saver", daemon=True)
+_the_daemon_file_saver = threading.Thread(target=the_daemon_file_saver, name="The File Saver", daemon=True, args = (bot,))
 _the_daemon_file_saver.start()
 # bot.load_extension("jishaku")
 
@@ -155,7 +155,8 @@ print("Bots successfully created.")
 async def on_connect():
     "Run when the bot connects"
     print("The bot has connected to Discord successfully.")
-    await bot.change_presence(activity=nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂"))
+    await asyncio_sleep(0.5)
+    await bot.change_presence(activity=nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂"), status = nextcord.Status.idle)
 
 @bot.event
 async def on_ready():
