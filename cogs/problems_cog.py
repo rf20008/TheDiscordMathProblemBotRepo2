@@ -296,7 +296,8 @@ class ProblemsCog(HelperCog):
             problem_info_as_str += str(len(problem.get_solvers())) + "\t"
         await inter.reply(embed=SuccessEmbed(problem_info_as_str[:1930]))
     @slash_command(
-    name="delallbotproblems", description="delete all automatically generated problems"
+        name="delallbotproblems", 
+        description="delete all automatically generated problems"
     )
     @checks.trusted_users_only()
     async def delallbotproblems(self,inter):
