@@ -276,7 +276,7 @@ class DeveloperCommands(HelperCog):
                             raise RecursionError from Exception("***Nested too much***")
 
         await inter.reply(text, ephemeral=send_ephermally)
-    @slash.slash_command(
+    @slash_command(
     name="generate_new_problems",
     description="Generates new problems",
     options=[
