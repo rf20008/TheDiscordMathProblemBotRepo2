@@ -20,7 +20,7 @@ from time import sleep, time, asctime
 import subprocess
 import traceback
 import threading
-from sys import stderr
+from sys import stderr, exc_info, stdout
 
 # Imports - 3rd party
 import dislash  # https://github.com/EQUENOS/dislash.py
@@ -141,7 +141,7 @@ Intents = return_intents.return_intents()
 bot = nextcord_commands.Bot(
     command_prefix=" ", intents=Intents, application_id=845751152901750824, 
     status = nextcord.Status.idle,
-    activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂")
+    #activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂") # This didn't work anyway, will set the activity in on_connect
 
 )
 setup(bot)
@@ -179,12 +179,37 @@ print("Bots successfully created.")
 async def on_connect():
     "Run when the bot connects"
     print("The bot has connected to Discord successfully.")
-
+    await bot.change_presence(activity=nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂"))
 
 @bot.event
 async def on_ready():
     "Ran when the nextcord library detects that the bot is ready"
     print("The bot is now ready!")
+
+
+@bot.event
+async def on_error(event, *args, **kwargs):
+    error = exc_info()
+    if True:
+        # print the traceback to the file
+        print(
+            "\n".join(
+                traceback.format_exception(
+                    etype=type(error), value=error, tb=error.__traceback__
+                )
+            ),
+            file=stderr,
+        )
+
+    error_traceback_as_obj = "\n".join(traceback.format_exception(
+        etype=type(error),value = error, tb = error.__traceback__
+    ))
+    #Log the error?
+    log_error(error)
+    #We don't have an interaction/context, so I can't tell the user that an error happened
+    print("Oh no! An exception occured!", flush =True, file = stdout)
+
+    print(error_traceback_as_obj, flush = True, file =stdout)
 
 
 @bot.event
@@ -223,91 +248,6 @@ async def on_slash_command_error(inter, error, print_stack_traceback=[True, stde
         )
     )
 
-
-@slash.slash_command(
-    name="generate_new_problems",
-    description="Generates new problems",
-    options=[
-        Option(
-            name="num_new_problems_to_generate",
-            description="the number of problems that should be generated",
-            type=OptionType.INTEGER,
-            required=True,
-        )
-    ],
-)
-async def generate_new_problems(inter, num_new_problems_to_generate):
-    "Generate new Problems"
-    await check_for_cooldown(inter, "generate_new_problems", 30)  # 30 second cooldown!
-    await inter.create_response(type=5)
-
-    if inter.author.id not in bot.trusted_users:
-        await inter.reply(embed=ErrorEmbed("You aren't trusted!", ephemeral=True))
-        return
-    if num_new_problems_to_generate > 200:
-        await inter.reply(
-            "You are trying to create too many problems. Try something smaller than or equal to 200.",
-            ephemeral=True,
-        )
-
-    for i in range(num_new_problems_to_generate):  # basic problems for now.... :(
-        operation = random.choice(["+", "-", "*", "/", "^"])
-        if operation == "^":
-            num1 = random.randint(1, 20)
-            num2 = random.randint(1, 20)
-        else:
-            num1 = random.randint(-1000, 1000)
-            num2 = random.randint(-1000, 1000)
-            while num2 == 0 and operation == "/":
-                num2 = random.randint(-1000, 1000)
-
-        if operation == "^":
-            answer = num1 ** num2
-        elif operation == "+":
-            answer = num1 + num2
-        elif operation == "-":
-            answer = num1 - num2
-        elif operation == "*":
-            answer = num1 * num2
-        elif operation == "/":
-            answer = round(num1 * 100 / num2) / 100
-        # elif op
-        while True:
-            problem_id = generate_new_id()
-            if problem_id not in [
-                problem.id for problem in await main_cache.get_global_problems()
-            ]:
-                break
-        q = (
-            "What is "
-            + str(num1)
-            + " "
-            + {
-                "*": "times",
-                "+": "times",
-                "-": "minus",
-                "/": "divided by",
-                "^": "to the power of",
-            }[operation]
-            + " "
-            + str(num2)
-            + "?"
-        )
-        Problem = problems_module.BaseProblem(
-            question=q,
-            answer=str(answer),
-            author=845751152901750824,
-            guild_id="null",
-            id=problem_id,
-            cache=main_cache,
-        )
-        await main_cache.add_problem("null", problem_id, Problem)
-    await inter.reply(
-        embed=SuccessEmbed(
-            f"Successfully created {str(num_new_problems_to_generate)} new problems!"
-        ),
-        ephemeral=True,
-    )
 
 
 ##@bot.command(help = """Adds a trusted user!
