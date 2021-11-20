@@ -7,7 +7,7 @@ from dislash import *
 from time import sleep, time, asctime
 
 from .helper_cog import HelperCog
-from helpful_modules import checks
+from helpful_modules import checks, cooldowns, the_documentation_file_loader
 from helpful_modules.custom_embeds import *
 
 from helpful_modules.save_files import FileSaver
@@ -172,7 +172,7 @@ class DeveloperCommands(HelperCog):
     )
     async def documentation(self, inter, documentation_type, help_obj):
         "Prints documentation :-)"
-        await check_for_cooldown(inter, "documentation", 0.1)
+        await cooldowns.check_for_cooldown(inter, "documentation", 0.1)
         if documentation_type == "documentation_link":
             await inter.reply(
                 embed=self.custom_embeds.SuccessEmbed(

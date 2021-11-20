@@ -2,7 +2,7 @@ from dislash.interactions.interaction import BaseInteraction
 import nextcord, dislash
 from copy import deepcopy
 from warnings import warn
-
+from helpful_modules import checks
 
 class HelperCog(nextcord.ext.commands.Cog):
     "A helper cog :-) However, by itself, it does not implement any commands."
@@ -10,6 +10,7 @@ class HelperCog(nextcord.ext.commands.Cog):
     def __init__(self, bot):
         "Helpful __init__, the entire reason I decided to make this so I could transfer modules"
         self.b = bot._transport_modules
+        checks.setup(bot)
         (
             self.problems_module,
             self.SuccessEmbed,
@@ -21,7 +22,7 @@ class HelperCog(nextcord.ext.commands.Cog):
             self.b["custom_embeds"].ErrorEmbed,
             self.b["the_documentation_file_loader"],
         )
-        self.cache = bot.cache
+        self.cache = bot.main_cache
         self.slash = bot.slash
         self.bot = bot
         self.check_for_cooldown = self.bot._transport_modules["check_for_cooldown"]

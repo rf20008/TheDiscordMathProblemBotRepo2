@@ -165,7 +165,9 @@ pylint-1.rtf
 
 #Don't show pylint
 pylint/**
-pylint/*.txt]
+pylint/*.txt
+**/.DS_Store
+
 
 #Whitelists
 !**/*.py #never ignore any python file :)

@@ -217,7 +217,7 @@ async def on_slash_command_error(inter, error, print_stack_traceback=[True, stde
 
     await inter.reply(
         embed=ErrorEmbed(
-            nextcord.utils.escape_markdown(error_traceback),
+            description = nextcord.utils.escape_markdown(error_traceback),
             custom_title="Oh, no! An error occurred!",
             footer=f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)",
         )
