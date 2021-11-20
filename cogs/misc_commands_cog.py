@@ -15,7 +15,7 @@ class MiscCommandsCog(HelperCog):
       Option(name = "include_extra_info", description = "Whether to include extra, technical info", required = False, type = OptionType.BOOLEAN)
     ])
     async def info(self,inter, include_extra_info = False):
-        embed = custom_embeds.SimpleEmbed(title = "Bot info")
+        embed = custom_embeds.SimpleEmbed(title = "Bot info", description="")
         embed = embed.add_field(name = "Original Bot Developer", value = "ay136416#2707", inline = False) #Could be sufficient for attribution (except for stating changes).
         embed = embed.add_field(name = "Latest Git Version", value = str(get_git_revision_hash()), inline = False) 
         embed = embed.add_field(name = "Current Latency to Discord", value = self.bot.latency, inline = False)
@@ -33,8 +33,7 @@ class MiscCommandsCog(HelperCog):
             current_usage = resource.getrusage(resource.RUSAGE_SELF)
 
             embed = embed.add_field(name = "Memory Usage", value = 
-            f"{round((current_usage.ixrss/memory_limit)*1000)/100}%")
-            embed = embed.add_field(name = "", value = "", inline = False)
+            f"{round((current_usage[3]/memory_limit)*1000)/100}%")
 
 
         await inter.reply(embed=embed)

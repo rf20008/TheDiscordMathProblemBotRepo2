@@ -1,0 +1,80 @@
+Fri Nov 19 00:08:51 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 114, in _maybe_cog_call
+    return await self(inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "main.py", line 405, in submit_problem
+    if problem_id not in await main_cache.get_global_problems().keys():
+AttributeError: 'coroutine' object has no attribute 'keys'
+
+
+Fri Nov 19 00:09:45 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 114, in _maybe_cog_call
+    return await self(inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "main.py", line 910, in submit_a_request
+    assert len(extra_info) <= 3500
+TypeError: object of type 'NoneType' has no len()
+
+
+Fri Nov 19 00:30:16 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 114, in _maybe_cog_call
+    return await self(inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "main.py", line 405, in submit_problem
+    if problem_id not in (await main_cache.get_global_problems()).keys():
+  File "/home/runner/TheDiscordMathProblemBot/helpful_modules/problems_module/cache.py", line 257, in get_global_problems
+    await self.update_cache()
+  File "/home/runner/TheDiscordMathProblemBot/helpful_modules/problems_module/cache.py", line 156, in update_cache
+    cursor.execute("SELECT * FROM problems")
+AttributeError: 'Result' object has no attribute 'execute'
+
+
+Fri Nov 19 00:31:17 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 114, in _maybe_cog_call
+    return await self(inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "main.py", line 405, in submit_problem
+    if problem_id not in (await main_cache.get_global_problems()).keys():
+  File "/home/runner/TheDiscordMathProblemBot/helpful_modules/problems_module/cache.py", line 257, in get_global_problems
+    await self.update_cache()
+  File "/home/runner/TheDiscordMathProblemBot/helpful_modules/problems_module/cache.py", line 156, in update_cache
+    await cursor.execute("SELECT * FROM problems")
+AttributeError: 'Result' object has no attribute 'execute'
+
+
