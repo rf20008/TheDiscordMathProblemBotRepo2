@@ -145,8 +145,7 @@ dmypy.json
 
 ## me
 
-**/*.json # I don't want to push the problems :-)
-vote_threshold.txt # Use /what_is_vote_threshold to use. This may be outdated...
+vote_threshold.txt # Use /what_is_vote_threshold to use. This may be outdated... (Also to help self-hosting the bot)
 trusted_users.txt # /list_trusted_users to list trusted users. This may be outdated
 **/.env # keep my token safe
 .env #keep my token safe :)
@@ -165,11 +164,14 @@ pylint-1.rtf
 
 #Don't show pylint
 pylint/**
-pylint/*.txt]
+pylint/*.txt
+**/.DS_Store
+**/config.json
+.env
 
 #Whitelists
 !**/*.py #never ignore any python file :)
 !**/.gitignore
 !.gitignore
-!docs/documentation.json # The documentation needs to be not git-ignored
+!docs/** # The documentation needs to be not git-ignored
 !**/__init__.py

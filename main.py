@@ -1,5 +1,5 @@
 # Written by @rf20008
-# Licensed under the GNU license
+# Licensed under CC-BY-SA 4.0/GPL v3.0
 # Feel free to contribute! :-)
 # Python 3.8+ is required.
 
@@ -20,21 +20,19 @@ from time import sleep, time, asctime
 import subprocess
 import traceback
 import threading
-from sys import stderr
+from sys import stderr, exc_info, stdout
 
 # Imports - 3rd party
 import dislash  # https://github.com/EQUENOS/dislash.py
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 import nextcord  # https://github.com/nextcord/nextcord
 import nextcord.ext.commands as nextcord_commands
-from dislash.application_commands.core import check
 import aiosqlite
 from copy import copy
 # Imports - My own files
 from helpful_modules import _error_logging, checks, cooldowns
 from helpful_modules import custom_embeds, problems_module
 from helpful_modules import return_intents, save_files, the_documentation_file_loader
-from helpful_modules.threads_or_useful_funcs import *
 
 # might be replaced with from helpful_modules import * and using __all__
 
@@ -85,18 +83,55 @@ guild_maximum_problem_limit = 125
 erroredInMainCode = False
 
 
-
+def loading_documentation_thread():
+    "This thread reloads the documentation."
+    d = DocumentationFileLoader()
+    d.load_documentation_into_readable_files()
+    del d
 
 
 loader = threading.Thread(target=loading_documentation_thread)
 loader.start()
 
 
+def get_git_revision_hash() -> str:
+    "A method that gets the git revision hash. Credit to https://stackoverflow.com/a/21901260 for the code :-)"
+    return (
+        subprocess.check_output(["git", "rev-parse", "HEAD"])
+        .decode("ascii")
+        .strip()[:7]
+    )  # [7:] is here because of the commit hash, the rest of this function is from stack overflow
 
 
+def the_daemon_file_saver():
+    "Auto-save files!"
+    global guildMathProblems, trusted_users, vote_threshold
+
+    FileSaverObj = save_files.FileSaver(
+        name="The Daemon File Saver", enabled=True, printSuccessMessagesByDefault=True
+    )
+    FileSaverDict = FileSaverObj.load_files(main_cache, True)
+    (guildMathProblems, bot.trusted_users, vote_threshold) = (
+        FileSaverDict["guildMathProblems"],
+        FileSaverDict["trusted_users"],
+        FileSaverDict["vote_threshold"],
+    )
+
+    while True:
+        sleep(45)
+        FileSaverObj.save_files(
+            main_cache,
+            False,
+            guildMathProblems,
+            vote_threshold,
+            mathProblems,
+            bot.trusted_users,
+        )
 
 
-
+def generate_new_id():
+    "Generate a random number from 0 to 10^14"
+    return random.randint(0, 10 ** 14)
 
 
 # Bot creation
@@ -106,10 +141,9 @@ Intents = return_intents.return_intents()
 bot = nextcord_commands.Bot(
     command_prefix=" ", intents=Intents, application_id=845751152901750824, 
     status = nextcord.Status.idle,
-    activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂")
+    #activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂") # This didn't work anyway, will set the activity in on_connect
 
 )
-
 setup(bot)
 bot.cache = main_cache
 bot.trusted_users = copy(trusted_users)
@@ -124,7 +158,8 @@ bot._transport_modules = {
 bot.add_check(is_not_blacklisted)
 bot.vote_threshold = copy(vote_threshold)
 bot.blacklisted_users = []
-t = threading.Thread(target=the_daemon_file_saver, name="The File Saver", daemon=True)
+_the_daemon_file_saver = threading.Thread(target=the_daemon_file_saver, name="The File Saver", daemon=True)
+_the_daemon_file_saver.start()
 # bot.load_extension("jishaku")
 
 
@@ -134,9 +169,9 @@ bot.add_cog(DeveloperCommands(bot))
 bot.add_cog(ProblemsCog(bot))
 bot.add_cog(QuizCog(bot))
 bot.add_cog(MiscCommandsCog(bot))
+
 print("Bots successfully created.")
-daemon_file_saver = threading.Thread(target=the_daemon_file_saver, args = (bot,))
-daemon_file_saver.start()
+
 # Events
 
 
@@ -144,12 +179,37 @@ daemon_file_saver.start()
 async def on_connect():
     "Run when the bot connects"
     print("The bot has connected to Discord successfully.")
-
+    await bot.change_presence(activity=nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂"))
 
 @bot.event
 async def on_ready():
     "Ran when the nextcord library detects that the bot is ready"
     print("The bot is now ready!")
+
+
+@bot.event
+async def on_error(event, *args, **kwargs):
+    error = exc_info()
+    if True:
+        # print the traceback to the file
+        print(
+            "\n".join(
+                traceback.format_exception(
+                    etype=type(error), value=error, tb=error.__traceback__
+                )
+            ),
+            file=stderr,
+        )
+
+    error_traceback_as_obj = "\n".join(traceback.format_exception(
+        etype=type(error),value = error, tb = error.__traceback__
+    ))
+    #Log the error?
+    log_error(error)
+    #We don't have an interaction/context, so I can't tell the user that an error happened
+    print("Oh no! An exception occured!", flush =True, file = stdout)
+
+    print(error_traceback_as_obj, flush = True, file =stdout)
 
 
 @bot.event
@@ -182,97 +242,12 @@ async def on_slash_command_error(inter, error, print_stack_traceback=[True, stde
 
     await inter.reply(
         embed=ErrorEmbed(
-            nextcord.utils.escape_markdown(error_traceback),
+            description = nextcord.utils.escape_markdown(error_traceback),
             custom_title="Oh, no! An error occurred!",
             footer=f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)",
         )
     )
 
-
-@slash.slash_command(
-    name="generate_new_problems",
-    description="Generates new problems",
-    options=[
-        Option(
-            name="num_new_problems_to_generate",
-            description="the number of problems that should be generated",
-            type=OptionType.INTEGER,
-            required=True,
-        )
-    ],
-)
-async def generate_new_problems(inter, num_new_problems_to_generate):
-    "Generate new Problems"
-    await check_for_cooldown(inter, "generate_new_problems", 30)  # 30 second cooldown!
-    await inter.create_response(type=5)
-
-    if inter.author.id not in bot.trusted_users:
-        await inter.reply(embed=ErrorEmbed("You aren't trusted!", ephemeral=True))
-        return
-    if num_new_problems_to_generate > 200:
-        await inter.reply(
-            "You are trying to create too many problems. Try something smaller than or equal to 200.",
-            ephemeral=True,
-        )
-
-    for i in range(num_new_problems_to_generate):  # basic problems for now.... :(
-        operation = random.choice(["+", "-", "*", "/", "^"])
-        if operation == "^":
-            num1 = random.randint(1, 20)
-            num2 = random.randint(1, 20)
-        else:
-            num1 = random.randint(-1000, 1000)
-            num2 = random.randint(-1000, 1000)
-            while num2 == 0 and operation == "/":
-                num2 = random.randint(-1000, 1000)
-
-        if operation == "^":
-            answer = num1 ** num2
-        elif operation == "+":
-            answer = num1 + num2
-        elif operation == "-":
-            answer = num1 - num2
-        elif operation == "*":
-            answer = num1 * num2
-        elif operation == "/":
-            answer = round(num1 * 100 / num2) / 100
-        # elif op
-        while True:
-            problem_id = generate_new_id()
-            if problem_id not in [
-                problem.id for problem in await main_cache.get_global_problems()
-            ]:
-                break
-        q = (
-            "What is "
-            + str(num1)
-            + " "
-            + {
-                "*": "times",
-                "+": "times",
-                "-": "minus",
-                "/": "divided by",
-                "^": "to the power of",
-            }[operation]
-            + " "
-            + str(num2)
-            + "?"
-        )
-        Problem = problems_module.BaseProblem(
-            question=q,
-            answer=str(answer),
-            author=845751152901750824,
-            guild_id="null",
-            id=problem_id,
-            cache=main_cache,
-        )
-        await main_cache.add_problem("null", problem_id, Problem)
-    await inter.reply(
-        embed=SuccessEmbed(
-            f"Successfully created {str(num_new_problems_to_generate)} new problems!"
-        ),
-        ephemeral=True,
-    )
 
 
 ##@bot.command(help = """Adds a trusted user!
@@ -564,10 +539,8 @@ async def set_vote_threshold(inter, threshold):
 async def vote(inter, problem_id, is_guild_problem=False):
     "Vote for the deletion of a problem"
     await check_for_cooldown(5, "vote")
-    if inter.guild != None and inter.guild.id not in main_cache.get_guilds():
-        main_cache.add_empty_guild(inter.guild)
     try:
-        problem = main_cache.get_problem(
+        problem = await main_cache.get_problem(
             inter.guild.id if is_guild_problem else "null", problem_id=str(problem_id)
         )
         if problem.is_voter(inter.author):
@@ -695,7 +668,7 @@ async def delete_problem(inter, problem_id, is_guild_problem=False):
                 embed=ErrorEmbed("Insufficient permissions"), ephemeral=True
             )
             return
-        main_cache.remove_problem(str(guild_id), problem_id)
+        await main_cache.remove_problem(guild_id, problem_id)
         await inter.reply(
             embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!"),
             ephemeral=True,
@@ -871,18 +844,11 @@ async def github_repo(inter):
             required=False,
         ),
         Option(
-          name = "request_type",
-          description = "Request type!",
-          type = OptionType.STRING,
-          required = False,
-          choices = [
-            OptionChoice(name = "general", value = "general"),
-            OptionChoice(name = "legal", value = "legal"),
-            OptionChoice(name = "bug_report", value = "bug_report"),
-            OptionChoice(name = "feature_request", value = "Feature Request!")
-          ]
-          
-        )
+            name="is_legal",
+            description="Is this a legal request?",
+            required=False,
+            type=OptionType.BOOLEAN,
+        ),
     ],
 )
 async def submit_a_request(
@@ -890,8 +856,8 @@ async def submit_a_request(
     offending_problem_guild_id=None,
     offending_problem_id=None,
     extra_info=None,
-    copyrighted_thing=Exception,
-    request_type=False,
+    copyrighted_thing=None,
+    is_legal=False,
 ):
     "Submit a request! I will know! It uses a channel in my discord server and posts an embed"
     cooldowns.check_for_cooldown(
@@ -899,15 +865,15 @@ async def submit_a_request(
     )  # 5 seconds cooldown
     if (
         extra_info is None
-        and request_type == "general"
-        and copyrighted_thing is Exception
+        and is_legal is False
+        and copyrighted_thing is not Exception
         and offending_problem_guild_id is None
         and offending_problem_id is None
-    ): #No parameters given.
+    ):
         await inter.reply(embed=ErrorEmbed("You must specify some field."))
     if extra_info is None:
         await inter.reply(embed=ErrorEmbed("Please provide extra information!"))
-    assert len(extra_info) <= 3500
+    assert len(extra_info) <= 5000
     channel = await bot.fetch_channel(
         901464948604039209
     )  # CHANGE THIS IF YOU HAVE A DIFFERENT REQUESTS CHANNEL! (the part after id)
@@ -916,7 +882,7 @@ async def submit_a_request(
             offending_problem_guild_id, offending_problem_id
         )
         problem_found = True
-    except problems_module.errors.ProblemNotFound:
+    except (TypeError, KeyError):
         # Problem not found
         problem_found = False
     content = bot.owner_id
@@ -947,10 +913,6 @@ async def submit_a_request(
     ):  # Mentioning owners: may be removed (you can also remove it as well)
         content += f"<@{owner_id}>"
     content += f"<@{bot.owner_id}>"
-    embed.add_field("Type", value = request_type, inline = False)
-    embed.add_field()
-
-
     await channel.send(embed=embed, content=content)
     await inter.reply("Your request has been submitted!")
 

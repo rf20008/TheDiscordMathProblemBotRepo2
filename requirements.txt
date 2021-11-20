@@ -5,6 +5,4 @@ orjson >= 3.6.3
 git+git://https://github.com/omnilib/aiosqlite@main
 python-dotenv>=0.19.1
 git+git://github.com/rf20008/sqldict.git@main
-
-
-
+mysql-connector-python>=8.0.27
