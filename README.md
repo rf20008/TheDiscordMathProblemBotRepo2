@@ -1,21 +1,21 @@
-[![Powered by Nextcord](https://custom-icon-badges.herokuapp.com/badge/-Powered%20by%20Nextcord-0d1620?logo=nextcord)](https://github.com/nextcord/nextcord "Powered by Nextcord Python API Wrapper")
+<![![Powered by Nextcord](https://custom-icon-badges.herokuapp.com/badge/-Powered%20by%20Nextcord-0d1620?logo=nextcord)](https://github.com/nextcord/nextcord "Powered by Nextcord Python API Wrapper")>
 
 # If you run into issues
 If you run into any issues create an issue or DM me (ay136416#2707)). 
 
 # Contribute :-)
 
-If you open a PR/Issue, I'll look at it and maybe merge it! 
+If you open a PR/Issue, I'll look at it and maybe merge it! <br>
 A few guidelines:
-1) Use the main branch, not master
-2) If you are pull requesting to my bot directly into the main branch, please make sure your code works!
-3) If you are pull requesting to my bot via the beta branch, please make sure your code works, but it is okay if it doesn't (for now), but later, not so much
-4) This bot is coded using OOP and abstraction, so if you want to add a new feature or change an existing one, please keep this in mind.
-5) main.py is used to run the bot! helpful_modules include essential elements of the bot, but are not exposed to the user. cogs is the cogs!
-6) No syntax errors, please!
-7) You should lint your code. (this uses [python-black](https://pypi.org/project/black/))
-8) Follow common sense
-
+1) Use the main branch, not master <br>
+2) If you are pull requesting to my bot directly into the main branch, please make sure your code works! <br>
+3) If you are pull requesting to my bot via the beta branch, please make sure your code works, but it is okay if it doesn't (for now), but later, not so much <br>
+4) This bot is coded using OOP and abstraction, so if you want to add a new feature or change an existing one, please keep this in mind. <br>
+5) main.py is used to run the bot! helpful_modules include essential elements of the bot, but are not exposed to the user (basically utils). cogs is the cogs!<br>
+6) No syntax errors, please! <br>
+7) You should lint your code. (this uses [python-black](https://pypi.org/project/black/)) <br>
+8) Follow common sense <br>
+9) Make sure to follow CC-BY-SA 4.0 or GPL v3!
 # Invite my bot!
 
 Recommended invite: https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147568640&scope=bot%20applications.commands
