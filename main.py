@@ -1,5 +1,5 @@
 # Written by @rf20008
-# Licensed under the GNU license
+# Licensed under CC-BY-SA 4.0/GPL v3.0
 # Feel free to contribute! :-)
 # Python 3.8+ is required.
 
