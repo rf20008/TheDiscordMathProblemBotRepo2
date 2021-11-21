@@ -17,7 +17,7 @@ class MiscCommandsCog(HelperCog):
     async def info(self,inter, include_extra_info = False):
         embed = custom_embeds.SimpleEmbed(title = "Bot info", description="")
         embed = embed.add_field(name = "Original Bot Developer", value = "ay136416#2707", inline = False) #Could be sufficient for attribution (except for stating changes).
-        embed = embed.add_field(name = "Latest Git Commit hash", value = str(get_git_revision_hash()), inline = False) 
+        embed = embed.add_field(name = "Latest Git Commit Hash", value = str(get_git_revision_hash()), inline = False) 
         embed = embed.add_field(name = "Current Latency to Discord", value = f"{round(self.bot.latency*10000)/10}ms", inline = False)
         current_version_info = version_info
         python_version_as_str = f"Python {current_version_info.major}.{current_version_info.minor}.{current_version_info.micro}{current_version_info.releaselevel}"
