@@ -54,7 +54,6 @@ class FileSaver:
         with open("math_problems.json", "r") as file:
             mathProblems = json.load(fp=file)
 
-
         with open("trusted_users.txt", "r") as file2:
             for line in file2:
                 trusted_users.append(int(line))

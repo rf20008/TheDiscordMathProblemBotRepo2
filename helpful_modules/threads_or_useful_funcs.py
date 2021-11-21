@@ -3,6 +3,7 @@ from time import sleep
 import subprocess, random
 from .the_documentation_file_loader import DocumentationFileLoader
 
+
 def the_daemon_file_saver(bot):
     "Auto-save files!"
     global guildMathProblems, trusted_users, vote_threshold
@@ -32,6 +33,7 @@ def generate_new_id():
     "Generate a random number from 0 to 10^14"
     return random.randint(0, 10 ** 14)
 
+
 def get_git_revision_hash() -> str:
     "A method that gets the git revision hash. Credit to https://stackoverflow.com/a/21901260 for the code :-)"
     return (
@@ -39,6 +41,7 @@ def get_git_revision_hash() -> str:
         .decode("ascii")
         .strip()[:7]
     )  # [7:] is here because of the commit hash, the rest of this function is from stack overflow
+
 
 def loading_documentation_thread():
     "This thread reloads the documentation."

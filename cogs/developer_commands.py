@@ -19,7 +19,7 @@ slash = None
 class DeveloperCommands(HelperCog):
     def __init__(self, bot):
         global checks
-        
+
         super().__init__(bot)
         self.bot = bot
         self.slash = bot.slash
@@ -102,6 +102,7 @@ class DeveloperCommands(HelperCog):
                 embed=self.custom_embeds.ErrorEmbed("Something went wrong...")
             )
             raise exc
+
     @dislash.is_owner()
     @dislash.cooldown(1, 5, type=BucketType.user)
     @slash_command(
@@ -276,21 +277,24 @@ class DeveloperCommands(HelperCog):
                             raise RecursionError from Exception("***Nested too much***")
 
         await inter.reply(text, ephemeral=send_ephermally)
+
     @slash_command(
-    name="generate_new_problems",
-    description="Generates new problems",
-    options=[
-        Option(
-            name="num_new_problems_to_generate",
-            description="the number of problems that should be generated",
-            type=OptionType.INTEGER,
-            required=True,
-        )
-    ],
-)
+        name="generate_new_problems",
+        description="Generates new problems",
+        options=[
+            Option(
+                name="num_new_problems_to_generate",
+                description="the number of problems that should be generated",
+                type=OptionType.INTEGER,
+                required=True,
+            )
+        ],
+    )
     async def generate_new_problems(self, inter, num_new_problems_to_generate):
         "Generate new Problems"
-        await cooldowns.check_for_cooldown(inter, "generate_new_problems", 30)  # 30 second cooldown!
+        await cooldowns.check_for_cooldown(
+            inter, "generate_new_problems", 30
+        )  # 30 second cooldown!
         await inter.create_response(type=5)
 
         if inter.author.id not in self.bot.trusted_users:
@@ -299,7 +303,7 @@ class DeveloperCommands(HelperCog):
         if num_new_problems_to_generate > 200:
             await inter.reply(
                 "You are trying to create too many problems. Try something smaller than or equal to 200.",
-                ephemeral=True
+                ephemeral=True,
             )
 
         for i in range(num_new_problems_to_generate):  # basic problems for now.... :(
@@ -310,7 +314,7 @@ class DeveloperCommands(HelperCog):
             else:
                 num1 = random.randint(-1000, 1000)
                 num2 = random.randint(-1000, 1000)
-                while num2 == 0 and operation == "/": # Prevent ZeroDivisionError
+                while num2 == 0 and operation == "/":  # Prevent ZeroDivisionError
                     num2 = random.randint(-1000, 1000)
 
             if operation == "^":
@@ -331,7 +335,7 @@ class DeveloperCommands(HelperCog):
             problem_id = generate_new_id()
             if problem_id not in [
                 problem.id for problem in await self.cache.get_global_problems()
-            ]: #All problem_ids
+            ]:  # All problem_ids
                 break
         question = (
             f"What is {num1} "
@@ -359,7 +363,6 @@ class DeveloperCommands(HelperCog):
             ),
             ephemeral=True,
         )
-
 
 
 def setup(bot):

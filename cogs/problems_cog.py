@@ -6,11 +6,14 @@ from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoic
 from helpful_modules import checks, cooldowns, problems_module
 import aiosqlite
 from dislash import *
+
+
 class ProblemsCog(HelperCog):
     def __init__(self, bot):
         self.bot = bot
         super().__init__(bot)
         checks.setup(bot)
+
     @checks.is_not_blacklisted()
     @slash_command(
         name="edit_problem",
@@ -22,7 +25,9 @@ class ProblemsCog(HelperCog):
                 type=OptionType.INTEGER,
                 required=True,
             ),
-            Option(name="guild_id", description="the guild id", type=OptionType.INTEGER),
+            Option(
+                name="guild_id", description="the guild id", type=OptionType.INTEGER
+            ),
             Option(
                 name="new_question",
                 description="the new question",
@@ -73,6 +78,7 @@ class ProblemsCog(HelperCog):
                 )
 
         await inter.reply(embed=SuccessEmbed(e), ephemeral=True)
+
     @slash_command(
         name="show_problem_info",
         description="Show problem info",
@@ -154,6 +160,7 @@ class ProblemsCog(HelperCog):
                 )
                 return
             await inter.reply(embed=SuccessEmbed(Problem__), ephemeral=True)
+
     @slash_command(
         name="list_all_problem_ids",
         description="List all problem ids",
@@ -166,7 +173,7 @@ class ProblemsCog(HelperCog):
             )
         ],
     )
-    async def list_all_problem_ids(self,inter, show_only_guild_problems=False):
+    async def list_all_problem_ids(self, inter, show_only_guild_problems=False):
         "Lists all problem ids."
         await cooldowns.check_for_cooldown(inter, "list_all_problem_ids", 2.5)
         if show_only_guild_problems:
@@ -192,7 +199,7 @@ class ProblemsCog(HelperCog):
         global_problems = await self.bot.cache.get_global_problems()
         thing_to_write = "\n".join([str(problem.id) for problem in global_problems])
         await inter.send(embed=SuccessEmbed(thing_to_write))
-        
+
     @slash_command(
         name="list_all_problems",
         description="List all problems stored with the bot",
@@ -237,7 +244,7 @@ class ProblemsCog(HelperCog):
             guild_id = inter.guild.id
         else:
             guild_id = "null"
-        #Check for no problems
+        # Check for no problems
         if self.bot.cache.guild_problems[guild_id] == {}:
             await inter.reply("No problems currently exist.")
             return
@@ -259,7 +266,11 @@ class ProblemsCog(HelperCog):
                 problem_info_as_str += str(problem.get_question()) + "\t"
                 problem_info_as_str += "("
                 problem_info_as_str += (
-                    str(problem.get_num_voters()) + "/" + str(self.bot.vote_threshold) + ")" + "\t"
+                    str(problem.get_num_voters())
+                    + "/"
+                    + str(self.bot.vote_threshold)
+                    + ")"
+                    + "\t"
                 )
                 problem_info_as_str += str(len(problem.get_solvers())) + "\t"
                 problem_info_as_str += "(guild)"
@@ -272,9 +283,7 @@ class ProblemsCog(HelperCog):
         global_problems = await self.bot.get_global_problems()
         for problem in global_problems:
             if len(problem) >= 1930:
-                problem_info_as_str += (
-                    "The combined length of the questions is too long.... shortening it!"
-                )
+                problem_info_as_str += "The combined length of the questions is too long.... shortening it!"
                 await inter.reply(embed=SuccessEmbed(problem_info_as_str[:1930]))
                 return
             if not isinstance(problem, problems_module.MathProblem):
@@ -291,16 +300,21 @@ class ProblemsCog(HelperCog):
             problem_info_as_str += str(problem.get_question()) + "\t"
             problem_info_as_str += "("
             problem_info_as_str += (
-                str(problem.get_num_voters()) + "/" + str(self.bot.vote_threshold) + ")" + "\t"
+                str(problem.get_num_voters())
+                + "/"
+                + str(self.bot.vote_threshold)
+                + ")"
+                + "\t"
             )
             problem_info_as_str += str(len(problem.get_solvers())) + "\t"
         await inter.reply(embed=SuccessEmbed(problem_info_as_str[:1930]))
+
     @slash_command(
-        name="delallbotproblems", 
-        description="delete all automatically generated problems"
+        name="delallbotproblems",
+        description="delete all automatically generated problems",
     )
     @checks.trusted_users_only()
-    async def delallbotproblems(self,inter):
+    async def delallbotproblems(self, inter):
         await cooldowns.check_for_cooldown(inter, "delallbotproblems", 10)
         "Delete all automatically generated problems"
 
@@ -315,7 +329,9 @@ class ProblemsCog(HelperCog):
                 "DELETE FROM problems WHERE user_id = ?", (self.bot.user.id)
             )  # Delete every problem made by the bot!
             await conn.commit()
-        await inter.reply(embed=SuccessEmbed(f"Successfully deleted {numDeletedProblems}!"))
+        await inter.reply(
+            embed=SuccessEmbed(f"Successfully deleted {numDeletedProblems}!")
+        )
 
 
 def setup(bot):

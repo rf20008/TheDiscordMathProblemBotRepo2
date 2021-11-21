@@ -31,11 +31,13 @@ import nextcord.ext.commands as nextcord_commands
 import aiosqlite
 from asyncio import sleep as asyncio_sleep
 from copy import copy
+
 # Imports - My own files
 from helpful_modules import _error_logging, checks, cooldowns
 from helpful_modules import custom_embeds, problems_module
 from helpful_modules import return_intents, save_files, the_documentation_file_loader
 from helpful_modules.threads_or_useful_funcs import *
+
 # might be replaced with from helpful_modules import * and using __all__
 
 import cogs
@@ -105,21 +107,16 @@ def get_git_revision_hash() -> str:
     )  # [7:] is here because of the commit hash, the rest of this function is from stack overflow
 
 
-
-
-
-
-
-
 # Bot creation
 
-asyncio.set_event_loop(asyncio.new_event_loop()) #Otherwise, weird errors will happen
+asyncio.set_event_loop(asyncio.new_event_loop())  # Otherwise, weird errors will happen
 Intents = return_intents.return_intents()
 bot = nextcord_commands.Bot(
-    command_prefix=" ", intents=Intents, application_id=845751152901750824, 
-    status = nextcord.Status.idle,
-    #activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂") # This didn't work anyway, will set the activity in on_connect
-
+    command_prefix=" ",
+    intents=Intents,
+    application_id=845751152901750824,
+    status=nextcord.Status.idle,
+    # activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂") # This didn't work anyway, will set the activity in on_connect
 )
 setup(bot)
 bot.cache = main_cache
@@ -135,7 +132,9 @@ bot._transport_modules = {
 bot.add_check(is_not_blacklisted)
 bot.vote_threshold = copy(vote_threshold)
 bot.blacklisted_users = []
-_the_daemon_file_saver = threading.Thread(target=the_daemon_file_saver, name="The File Saver", daemon=True, args = (bot,))
+_the_daemon_file_saver = threading.Thread(
+    target=the_daemon_file_saver, name="The File Saver", daemon=True, args=(bot,)
+)
 _the_daemon_file_saver.start()
 # bot.load_extension("jishaku")
 
@@ -157,7 +156,13 @@ async def on_connect():
     "Run when the bot connects"
     print("The bot has connected to Discord successfully.")
     await asyncio_sleep(0.5)
-    await bot.change_presence(activity=nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂"), status = nextcord.Status.idle)
+    await bot.change_presence(
+        activity=nextcord.CustomActivity(
+            name="Making sure that the bot works!", emoji="🙂"
+        ),
+        status=nextcord.Status.idle,
+    )
+
 
 @bot.event
 async def on_ready():
@@ -179,15 +184,17 @@ async def on_error(event, *args, **kwargs):
             file=stderr,
         )
 
-    error_traceback_as_obj = "\n".join(traceback.format_exception(
-        etype=type(error),value = error, tb = error.__traceback__
-    ))
-    #Log the error?
+    error_traceback_as_obj = "\n".join(
+        traceback.format_exception(
+            etype=type(error), value=error, tb=error.__traceback__
+        )
+    )
+    # Log the error?
     log_error(error)
-    #We don't have an interaction/context, so I can't tell the user that an error happened
-    print("Oh no! An exception occured!", flush =True, file = stdout)
+    # We don't have an interaction/context, so I can't tell the user that an error happened
+    print("Oh no! An exception occured!", flush=True, file=stdout)
 
-    print(error_traceback_as_obj, flush = True, file =stdout)
+    print(error_traceback_as_obj, flush=True, file=stdout)
 
 
 @bot.event
@@ -220,12 +227,11 @@ async def on_slash_command_error(inter, error, print_stack_traceback=[True, stde
 
     await inter.reply(
         embed=ErrorEmbed(
-            description = nextcord.utils.escape_markdown(error_traceback),
+            description=nextcord.utils.escape_markdown(error_traceback),
             custom_title="Oh, no! An error occurred!",
             footer=f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)",
         )
     )
-
 
 
 ##@bot.command(help = """Adds a trusted user!
@@ -233,10 +239,6 @@ async def on_slash_command_error(inter, error, print_stack_traceback=[True, stde
 ##adds the user's id to the trusted users list
 ##(can only be used by trusted users)""",
 ##brief = "Adds a trusted user")
-
-
-
-
 
 
 @slash.slash_command(
@@ -365,7 +367,9 @@ async def submit_problem(inter, answer, question, guild_question=False):
     await inter.reply(
         embed=SuccessEmbed("You have successfully made a math problem!"), ephemeral=True
     )
-    t = threading.Thread(target=asyncio.run, args = (main_cache.remove_duplicate_problems))
+    t = threading.Thread(
+        target=asyncio.run, args=(main_cache.remove_duplicate_problems)
+    )
     t.start()
 
 
@@ -396,7 +400,7 @@ async def submit_problem(inter, answer, question, guild_question=False):
 @checks.is_not_blacklisted()
 async def check_answer(inter, problem_id, answer, checking_guild_problem=False):
     """/check_answer {problem_id} {answer_id} [checking_guild_problem = False]
-    Check your answer to the problem with the given id. If the problem is """
+    Check your answer to the problem with the given id. If the problem is"""
     await check_for_cooldown(inter, "check_answer", 5)
 
     if inter.guild != None and inter.guild.id not in await main_cache.get_guilds():
@@ -463,7 +467,7 @@ async def set_vote_threshold(inter, threshold):
     global vote_threshold
     try:
         threshold = int(threshold)
-    except TypeError: #Conversion failed!
+    except TypeError:  # Conversion failed!
         await inter.reply(
             embed=ErrorEmbed(
                 "Invalid threshold argument! (threshold must be an integer)"
@@ -831,9 +835,7 @@ async def submit_a_request(
     is_legal=False,
 ):
     "Submit a request! I will know! It uses a channel in my discord server and posts an embed"
-    cooldowns.check_for_cooldown(
-        "submit_a_request", 5
-    )  # 5 seconds cooldown
+    cooldowns.check_for_cooldown("submit_a_request", 5)  # 5 seconds cooldown
     if (
         extra_info is None
         and is_legal is False
