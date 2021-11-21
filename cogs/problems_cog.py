@@ -1,16 +1,20 @@
 from .helper_cog import HelperCog
 from helpful_modules.problems_module import *
+from helpful_modules import cooldowns
 from helpful_modules.custom_embeds import *
 import dislash, nextcord
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 from helpful_modules import checks, cooldowns, problems_module
 import aiosqlite
 from dislash import *
+import threading
+from helpful_modules.threads_or_useful_funcs import generate_new_id
 
 
 class ProblemsCog(HelperCog):
     def __init__(self, bot):
         self.bot = bot
+        self.cache = bot.cache
         super().__init__(bot)
         checks.setup(bot)
 
@@ -332,6 +336,139 @@ class ProblemsCog(HelperCog):
         await inter.reply(
             embed=SuccessEmbed(f"Successfully deleted {numDeletedProblems}!")
         )
+
+    @slash_command(
+        name="submit_problem",
+        description="Create a new problem",
+        options=[
+            Option(
+                name="answer",
+                description="The answer to this problem",
+                type=OptionType.STRING,
+                required=True,
+            ),
+            Option(
+                name="question",
+                description="your question",
+                type=OptionType.STRING,
+                required=True,
+            ),
+            Option(
+                name="guild_question",
+                description="Whether it should be a question for the guild",
+                type=OptionType.BOOLEAN,
+                required=False,
+            ),
+        ],
+    )
+    async def submit_problem(
+        self,
+        inter,
+        answer,
+        question,
+        guild_question=False,
+    ):
+        """/submit_problem {question:str}, {answer:str}, [guild_question:bool=false]
+        Create & submit a new problem with the given question and answer.
+        If the problem is a guild problem, it must not be executed in a DM context or the bot will not know which guild the problem is for"""
+
+        await cooldowns.check_for_cooldown(inter, "submit_problem", 5)
+
+        if inter.guild != None and inter.guild.id not in self.cache.get_guilds():
+            self.bot.cache.add_empty_guild(inter.guild)
+        if len(question) > 250:
+            await inter.reply(
+                embed=ErrorEmbed(
+                    "Your question is too long! Therefore, it cannot be added. The maximum question length is 250 characters.",
+                    custom_title="Your question is too long.",
+                ),
+                ephemeral=True,
+            )
+            return
+        if len(answer) > 100:
+            await inter.reply(
+                embed=ErrorEmbed(
+                    description="Your answer is longer than 100 characters. Therefore, it is too long and cannot be added.",
+                    custom_title="Your answer is too long",
+                ),
+                ephemeral=True,
+            )
+            remover = threading.Thread(target=self.cache.remove_duplicate_problems)
+            remover.start()
+            return
+        if guild_question:
+            guild_id = inter.guild.id
+            if guild_id is None:
+                await inter.reply(
+                    embed=ErrorEmbed(
+                        "You need to be in the guild to make a guild question!"
+                    )
+                )
+            return
+        try:
+            assert not (
+                guild_question and inter.guild is None
+            ), "This command may not be used in DMs!"
+            guild_id = inter.guild.id
+        except AssertionError:
+            await inter.reply(
+                "In order to submit a problem for your guild, you must not be executing this command in a DM context!"
+            )
+        if (
+            inter.guild == None or not guild_question
+        ):  # There is no maximum global problem limit
+            pass
+        elif (
+            guild_question
+            and len(self.cache.get_guild_problems(inter.guild))
+            >= self.cache.max_guild_problems
+        ):  # Check to make sure the maximum guild problem limit is not reached
+
+            await inter.reply(
+                embed=ErrorEmbed(
+                    f"You have reached the guild math problem limit of {self.cache.max_guild_problems} and therefore cannot create new problems!"
+                    + (
+                        "This is to prevent spam. As of right now, there is no way to increase the guild problem limit (since there is no premium version)"
+                    )
+                )
+            )
+            return  # Exit the function
+
+        while True:
+
+            problem_id = generate_new_id()
+            if problem_id not in [
+                problem.id for problem in self.cache.get_guild_problems(inter.guild)
+            ]:  # Make sure this id isn't already used!
+                break  # Break the loop if the problem isn't already used
+
+        if (
+            guild_question
+        ):  # If this is a guild question, set the guild id to the guild id of the guild this command was ran in
+            guild_id = str(inter.guild.id)
+        else:  # But if it's global, make it global
+            guild_id = "_global"
+        problem = problems_module.BaseProblem(
+            question=question,
+            answer=answer,
+            id=problem_id,
+            author=inter.author.id,
+            guild_id=guild_id,
+            cache=self.cache,
+        )  # Create the problem!
+        await self.cache.add_problem(
+            guild_id=str(guild_id), problem_id=str(problem_id), Problem=problem
+        )  # Add the problem
+
+        await inter.reply(
+            embed=SuccessEmbed(
+                "You have successfully made a math problem!",
+                successTitle="Successfully made a new math problem.",
+            ),
+            ephemeral=True,
+        )  # Inform the user of success!
+
+        return
 
 
 def setup(bot):
