@@ -1,8 +1,9 @@
-discord >= 1.7.3
+discord.py >= 1.7.3
+git+git://github.com/Rapptz/discord.py
 git+git://github.com/nextcord/nextcord.git@master
 git+git://github.com/EQUENOS/dislash.py.git@main
 orjson >= 3.6.3
-git+git://https://github.com/omnilib/aiosqlite@main
+git+git://github.com/omnilib/aiosqlite
 python-dotenv>=0.19.1
 git+git://github.com/rf20008/sqldict.git@main
 mysql-connector-python>=8.0.27
