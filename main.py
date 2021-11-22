@@ -174,7 +174,6 @@ async def on_ready():
 @bot.event
 async def on_error(event, *args, **kwargs):
     error = exc_info()
-    print(error)
     if True:
         # print the traceback to the file
         print(
@@ -226,11 +225,19 @@ async def on_slash_command_error(inter, error, print_stack_traceback=[True, stde
     # Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
 
     error_traceback = "\n".join(error_traceback_as_obj)
-    embed = discord.Embed(color = nextcord.Color.red(),
-            description=nextcord.utils.escape_markdown(error_traceback),
-            title="Oh, no! An error occurred!"
-            )
-    assert isinstance(embed, nextcord.Embed)
+    try:
+        embed = discord.Embed(colour = discord.Colour.red(),
+              description=nextcord.utils.escape_markdown(error_traceback),
+              title="Oh, no! An error occurred!"
+              )
+    except TypeError:
+        #send as plain text
+        plain_text = "__**Oh no! An Exception occured! And it couldn't be sent as an embed!\n```"
+        plain_text += nextcord.utils.escape_markdown(error_traceback)
+        plain_text += f"```Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
+        await inter.reply(plain_text)
+        return
+    assert isinstance(embed, discord.Embed)
     footer = f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
     embed.set_footer(text=footer)
     try:
