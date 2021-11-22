@@ -24,6 +24,7 @@ import threading
 from sys import stderr, exc_info, stdout
 
 # Imports - 3rd party
+import discord
 import dislash  # https://github.com/EQUENOS/dislash.py
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 import nextcord  # https://github.com/nextcord/nextcord
@@ -140,7 +141,6 @@ _the_daemon_file_saver.start()
 
 
 slash = InteractionClient(client=bot, sync_commands=True)
-
 bot.slash = slash
 bot.add_cog(DeveloperCommands(bot))
 bot.add_cog(ProblemsCog(bot))
@@ -157,18 +157,18 @@ async def on_connect():
     "Run when the bot connects"
     print("The bot has connected to Discord successfully.")
     await asyncio_sleep(0.5)
-
-
-@bot.event
-async def on_ready():
-    "Ran when the nextcord library detects that the bot is ready"
-    print("The bot is now ready!")
     await bot.change_presence(
         activity=nextcord.CustomActivity(
             name="Making sure that the bot works!", emoji="🙂"
         ),
         status=nextcord.Status.idle,
     )
+
+
+@bot.event
+async def on_ready():
+    "Ran when the nextcord library detects that the bot is ready"
+    print("The bot is now ready!")
 
 
 @bot.event
@@ -179,7 +179,7 @@ async def on_error(event, *args, **kwargs):
         print(
             "\n".join(
                 traceback.format_exception(
-                    etype=type(error), value=error, tb=error.__traceback__
+                    *error
                 )
             ),
             file=stderr,
@@ -187,11 +187,11 @@ async def on_error(event, *args, **kwargs):
 
     error_traceback_as_obj = "\n".join(
         traceback.format_exception(
-            etype=type(error), value=error, tb=error.__traceback__
+            *error
         )
     )
     # Log the error?
-    log_error(error)
+    log_error(error[1])
     # We don't have an interaction/context, so I can't tell the user that an error happened
     print("Oh no! An exception occured!", flush=True, file=stdout)
 
@@ -225,14 +225,30 @@ async def on_slash_command_error(inter, error, print_stack_traceback=[True, stde
     # Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
 
     error_traceback = "\n".join(error_traceback_as_obj)
-
-    await inter.reply(
-        embed=ErrorEmbed(
-            description=nextcord.utils.escape_markdown(error_traceback),
-            custom_title="Oh, no! An error occurred!",
-            footer=f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)",
+    try:
+        embed = discord.Embed(colour = discord.Colour.red(),
+              description=nextcord.utils.escape_markdown(error_traceback),
+              title="Oh, no! An error occurred!"
+              )
+    except TypeError:
+        #send as plain text
+        plain_text = "__**Oh no! An Exception occured! And it couldn't be sent as an embed!\n```"
+        plain_text += nextcord.utils.escape_markdown(error_traceback)
+        plain_text += f"```Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
+        await inter.reply(plain_text)
+        return
+    assert isinstance(embed, discord.Embed)
+    footer = f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
+    embed.set_footer(text=footer)
+    try:
+        await inter.reply(
+            embed = embed
         )
-    )
+    except discord.errors.InvalidArgument: # not an embed
+        plain_text = "__**Oh no! An Exception occured! And it couldn't be sent as an embed!\n```"
+        plain_text += nextcord.utils.escape_markdown(error_traceback)
+        plain_text += f"```Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
+        await inter.reply(plain_text)
 
 
 ##@bot.command(help = """Adds a trusted user!
@@ -240,6 +256,79 @@ async def on_slash_command_error(inter, error, print_stack_traceback=[True, stde
 ##adds the user's id to the trusted users list
 ##(can only be used by trusted users)""",
 ##brief = "Adds a trusted user")
+
+
+@slash.slash_command(
+    name="check_answer",
+    description="Check if you are right",
+    options=[
+        Option(
+            name="problem_id",
+            description="the id of the problem you are trying to check the answer of",
+            type=OptionType.INTEGER,
+            required=True,
+        ),
+        Option(
+            name="answer",
+            description="your answer",
+            type=OptionType.STRING,
+            required=True,
+        ),
+        Option(
+            name="checking_guild_problem",
+            description="whether checking a guild problem",
+            type=OptionType.BOOLEAN,
+            required=False,
+        ),
+    ],
+)
+@checks.is_not_blacklisted()
+async def check_answer(inter, problem_id, answer, checking_guild_problem=False):
+    """/check_answer {problem_id} {answer_id} [checking_guild_problem = False]
+    Check your answer to the problem with the given id. If the problem is"""
+    await check_for_cooldown(inter, "check_answer", 5)
+
+    if inter.guild != None and inter.guild.id not in await main_cache.get_guilds():
+        main_cache.add_empty_guild(inter.guild)
+    try:
+        problem = main_cache.get_problem(
+            inter.guild.id if checking_guild_problem else "null", str(problem_id)
+        )
+        if problem.is_solver(inter.author):
+            await inter.reply(
+                embed=ErrorEmbed(
+                    "You have already solved this problem!",
+                    custom_title="Already solved.",
+                ),
+                ephemeral=True,
+            )
+            return
+    except KeyError:
+        await inter.reply(
+            embed=ErrorEmbed(
+                "This problem doesn't exist!", custom_title="Nonexistant problem."
+            ),
+            ephemeral=True,
+        )
+        return
+
+    if not problem.check_answer(answer):
+        await inter.reply(
+            embed=ErrorEmbed(
+                "Sorry..... but you got it wrong! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.",
+                custom_title="Sorry, your answer is wrong.",
+            ),
+            ephemeral=True,
+        )
+    else:
+        await inter.reply(
+            embed=SuccessEmbed(
+                "", successTitle="You answered this question correctly!"
+            ),
+            ephemeral=True,
+        )
+        problem.add_solver(inter.author)
+        return
 
 
 @slash.slash_command(
