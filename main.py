@@ -24,6 +24,7 @@ import threading
 from sys import stderr, exc_info, stdout
 
 # Imports - 3rd party
+import discord
 import dislash  # https://github.com/EQUENOS/dislash.py
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 import nextcord  # https://github.com/nextcord/nextcord
@@ -225,14 +226,22 @@ async def on_slash_command_error(inter, error, print_stack_traceback=[True, stde
     # Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
 
     error_traceback = "\n".join(error_traceback_as_obj)
-
-    await inter.reply(
-        embed=ErrorEmbed(
+    embed = discord.Embed(colour = nextcord.Color.red(),
             description=nextcord.utils.escape_markdown(error_traceback),
-            custom_title="Oh, no! An error occurred!",
-            footer=f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)",
+            title="Oh, no! An error occurred!"
+            )
+    assert isinstance(embed, nextcord.Embed)
+    footer = f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
+    embed.set_footer(text=footer)
+    try:
+        await inter.reply(
+            embed = embed
         )
-    )
+    except discord.errors.InvalidArgument: # not an embed
+        plain_text = "__**Oh no! An Exception occured! And it couldn't be sent as an embed!\n```"
+        plain_text += nextcord.utils.escape_markdown(error_traceback)
+        plain_text += f"```Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
+        await inter.reply(plain_text)
 
 
 ##@bot.command(help = """Adds a trusted user!

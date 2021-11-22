@@ -58,3 +58,315 @@ Traceback (most recent call last):
 TypeError: send() got an unexpected keyword argument 'components'
 
 
+Mon Nov 22 01:19:24 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/developer_commands.py", line 129, in raise_error
+    await inter.send(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 229, in reply
+    await self.create_response(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 313, in create_response
+    raise discord.InvalidArgument("embed parameter must be discord.Embed")
+discord.errors.InvalidArgument: embed parameter must be discord.Embed
+
+
+Mon Nov 22 01:19:24 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/client.py", line 351, in _run_event
+    await coro(*args, **kwargs)
+  File "main.py", line 229, in on_slash_command_error
+    await inter.reply(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 229, in reply
+    await self.create_response(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 313, in create_response
+    raise discord.InvalidArgument("embed parameter must be discord.Embed")
+discord.errors.InvalidArgument: embed parameter must be discord.Embed
+
+
+Mon Nov 22 01:24:49 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/developer_commands.py", line 129, in raise_error
+    await inter.send(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 229, in reply
+    await self.create_response(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 313, in create_response
+    raise discord.InvalidArgument("embed parameter must be discord.Embed")
+discord.errors.InvalidArgument: embed parameter must be discord.Embed
+
+
+Mon Nov 22 01:24:49 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/client.py", line 351, in _run_event
+    await coro(*args, **kwargs)
+  File "main.py", line 232, in on_slash_command_error
+    embed.set_footer(f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)")
+TypeError: set_footer() takes 1 positional argument but 2 were given
+
+
+Mon Nov 22 01:27:58 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/developer_commands.py", line 129, in raise_error
+    await inter.send(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 229, in reply
+    await self.create_response(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 313, in create_response
+    raise discord.InvalidArgument("embed parameter must be discord.Embed")
+discord.errors.InvalidArgument: embed parameter must be discord.Embed
+
+
+Mon Nov 22 01:27:58 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/client.py", line 351, in _run_event
+    await coro(*args, **kwargs)
+  File "main.py", line 233, in on_slash_command_error
+    embed.set_footer(footer)
+TypeError: set_footer() takes 1 positional argument but 2 were given
+
+
+Mon Nov 22 01:28:43 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/developer_commands.py", line 129, in raise_error
+    await inter.send(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 229, in reply
+    await self.create_response(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 313, in create_response
+    raise discord.InvalidArgument("embed parameter must be discord.Embed")
+discord.errors.InvalidArgument: embed parameter must be discord.Embed
+
+
+Mon Nov 22 01:28:43 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/client.py", line 351, in _run_event
+    await coro(*args, **kwargs)
+  File "main.py", line 234, in on_slash_command_error
+    await inter.reply(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 229, in reply
+    await self.create_response(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 313, in create_response
+    raise discord.InvalidArgument("embed parameter must be discord.Embed")
+discord.errors.InvalidArgument: embed parameter must be discord.Embed
+
+
+Mon Nov 22 01:31:07 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/developer_commands.py", line 129, in raise_error
+    await inter.send(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 229, in reply
+    await self.create_response(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 313, in create_response
+    raise discord.InvalidArgument("embed parameter must be discord.Embed")
+discord.errors.InvalidArgument: embed parameter must be discord.Embed
+
+
+Mon Nov 22 01:31:07 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/client.py", line 351, in _run_event
+    await coro(*args, **kwargs)
+  File "main.py", line 235, in on_slash_command_error
+    await inter.reply(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 229, in reply
+    await self.create_response(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 313, in create_response
+    raise discord.InvalidArgument("embed parameter must be discord.Embed")
+discord.errors.InvalidArgument: embed parameter must be discord.Embed
+
+
+Mon Nov 22 01:34:48 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/developer_commands.py", line 129, in raise_error
+    await inter.send(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 229, in reply
+    await self.create_response(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 313, in create_response
+    raise discord.InvalidArgument("embed parameter must be discord.Embed")
+discord.errors.InvalidArgument: embed parameter must be discord.Embed
+
+
+Mon Nov 22 01:34:48 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/client.py", line 351, in _run_event
+    await coro(*args, **kwargs)
+  File "main.py", line 236, in on_slash_command_error
+    await inter.reply(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 229, in reply
+    await self.create_response(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 313, in create_response
+    raise discord.InvalidArgument("embed parameter must be discord.Embed")
+discord.errors.InvalidArgument: embed parameter must be discord.Embed
+
+
+Mon Nov 22 01:37:07 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/developer_commands.py", line 129, in raise_error
+    await inter.send(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 229, in reply
+    await self.create_response(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 313, in create_response
+    raise discord.InvalidArgument("embed parameter must be discord.Embed")
+discord.errors.InvalidArgument: embed parameter must be discord.Embed
+
+
+Mon Nov 22 01:37:07 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/client.py", line 351, in _run_event
+    await coro(*args, **kwargs)
+  File "main.py", line 235, in on_slash_command_error
+    await inter.reply(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 229, in reply
+    await self.create_response(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 313, in create_response
+    raise discord.InvalidArgument("embed parameter must be discord.Embed")
+discord.errors.InvalidArgument: embed parameter must be discord.Embed
+
+
+Mon Nov 22 01:40:10 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/developer_commands.py", line 129, in raise_error
+    await inter.send(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 229, in reply
+    await self.create_response(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 313, in create_response
+    raise discord.InvalidArgument("embed parameter must be discord.Embed")
+discord.errors.InvalidArgument: embed parameter must be discord.Embed
+
+
+Mon Nov 22 01:40:10 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/client.py", line 351, in _run_event
+    await coro(*args, **kwargs)
+  File "main.py", line 233, in on_slash_command_error
+    assert isinstance(embed, discord.Embed)
+AssertionError
+
+
+Mon Nov 22 01:41:05 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/developer_commands.py", line 129, in raise_error
+    await inter.send(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 229, in reply
+    await self.create_response(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 313, in create_response
+    raise discord.InvalidArgument("embed parameter must be discord.Embed")
+discord.errors.InvalidArgument: embed parameter must be discord.Embed
+
+
+Mon Nov 22 01:41:06 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/client.py", line 351, in _run_event
+    await coro(*args, **kwargs)
+  File "main.py", line 236, in on_slash_command_error
+    await inter.reply(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 229, in reply
+    await self.create_response(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 313, in create_response
+    raise discord.InvalidArgument("embed parameter must be discord.Embed")
+discord.errors.InvalidArgument: embed parameter must be discord.Embed
+
+
