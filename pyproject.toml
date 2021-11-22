@@ -9,7 +9,7 @@ description = "An open source discord bot for quizzes!"
 name = "thediscordmathproblembot"
 version = "0.0.2a1"
 [tool.poetry.dependencies]
-discord = "^1.7.3"
+"discord.py" = {git = "https://github.com/Rapptz/discord.py.git"}
 discord-py-slash-command = "^3.0.1"
 "dislash.py" = {git = "https://github.com/EQUENOS/dislash.py.git", rev = "main"}
 nextcord = {git = "https://github.com/nextcord/nextcord.git"}

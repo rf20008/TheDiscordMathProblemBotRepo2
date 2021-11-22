@@ -1,4 +1,3 @@
-discord.py >= 1.7.3
 git+git://github.com/Rapptz/discord.py
 git+git://github.com/nextcord/nextcord.git@master
 git+git://github.com/EQUENOS/dislash.py.git@main

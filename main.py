@@ -241,9 +241,7 @@ async def on_slash_command_error(inter, error, print_stack_traceback=[True, stde
     footer = f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
     embed.set_footer(text=footer)
     try:
-        await inter.reply(
-            embed = embed
-        )
+        await inter.reply(embed = embed)
     except discord.errors.InvalidArgument: # not an embed
         plain_text = "__**Oh no! An Exception occured! And it couldn't be sent as an embed!\n```"
         plain_text += nextcord.utils.escape_markdown(error_traceback)

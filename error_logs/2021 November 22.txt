@@ -532,3 +532,67 @@ Traceback (most recent call last):
 discord.errors.InvalidArgument: embed parameter must be discord.Embed
 
 
+Mon Nov 22 01:56:04 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 85, in list_trusted_users
+    await inter.reply(__trusted_users, ephemeral=True)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 227, in reply
+    return await self.channel.send(**send_kwargs)  # type: ignore
+TypeError: send() got an unexpected keyword argument 'components'
+
+
+Mon Nov 22 01:56:04 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/client.py", line 351, in _run_event
+    await coro(*args, **kwargs)
+  File "main.py", line 244, in on_slash_command_error
+    await inter.reply(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 227, in reply
+    return await self.channel.send(**send_kwargs)  # type: ignore
+TypeError: send() got an unexpected keyword argument 'components'
+
+
+Mon Nov 22 01:59:46 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 85, in list_trusted_users
+    await inter.reply(__trusted_users, ephemeral=True)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 227, in reply
+    return await self.channel.send(**send_kwargs)  # type: ignore
+TypeError: send() got an unexpected keyword argument 'components'
+
+
+Mon Nov 22 01:59:46 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/client.py", line 351, in _run_event
+    await coro(*args, **kwargs)
+  File "main.py", line 244, in on_slash_command_error
+    await inter.reply(embed = embed)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 227, in reply
+    return await self.channel.send(**send_kwargs)  # type: ignore
+TypeError: send() got an unexpected keyword argument 'components'
+
+
