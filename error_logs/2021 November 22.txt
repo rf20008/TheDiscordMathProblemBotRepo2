@@ -1,0 +1,60 @@
+Mon Nov 22 01:13:24 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 85, in list_trusted_users
+    await inter.reply(__trusted_users, ephemeral=True)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 227, in reply
+    return await self.channel.send(**send_kwargs)  # type: ignore
+AttributeError: 'NoneType' object has no attribute 'send'
+
+
+Mon Nov 22 01:14:38 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 85, in list_trusted_users
+    await inter.reply(__trusted_users, ephemeral=True)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 227, in reply
+    return await self.channel.send(**send_kwargs)  # type: ignore
+TypeError: send() got an unexpected keyword argument 'components'
+
+
+Mon Nov 22 01:16:40 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 85, in list_trusted_users
+    await inter.reply(__trusted_users, ephemeral=True)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 227, in reply
+    return await self.channel.send(**send_kwargs)  # type: ignore
+TypeError: send() got an unexpected keyword argument 'components'
+
+
