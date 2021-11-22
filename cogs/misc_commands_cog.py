@@ -3,7 +3,7 @@ import nextcord
 from .helper_cog import HelperCog
 from sys import version_info, version
 from helpful_modules import checks, cooldowns
-from helper_cog.custom_embeds import *
+from helpful_modules.custom_embeds import *
 from helpful_modules.threads_or_useful_funcs import get_git_revision_hash
 from asyncio import sleep as asyncio_sleep
 import resource
@@ -94,41 +94,41 @@ class MiscCommandsCog(HelperCog):
         )
 
 
-@slash.slash_command(
-    name="what_is_vote_threshold",
-    description="Prints the vote threshold and takes no arguments",
-)
-async def what_is_vote_threshold(inter):
-    "Returns the vote threshold"
-    await check_for_cooldown(inter, "what_is_vote_threshold", 5)
-    await inter.reply(
-        embed=SuccessEmbed(f"The vote threshold is {vote_threshold}."), ephemeral=True
+    @slash_command(
+        name="what_is_vote_threshold",
+        description="Prints the vote threshold and takes no arguments",
     )
-
-
-@slash.slash_command(
-    name="generate_invite_link",
-    description="Generates a invite link for this bot! Takes no arguments",
-)
-async def generate_invite_link(inter):
-    "Generate an invite link for the bot."
-    await check_for_cooldown(inter, "generateInviteLink", 5)
-    await inter.reply(
-        embed=SuccessEmbed(
-            "https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147552256&scope=bot%20applications.commands"
-        ),
-        ephemeral=True,
-    )
-
-
-@slash.slash_command(
-    name="github_repo", description="Returns the link to the github repo"
-)
-async def github_repo(inter):
-    await check_for_cooldown(inter, "github_repo", 5)
-    await inter.reply(
-        embed=SuccessEmbed(
-            "[Repo Link:](https://github.com/rf20008/TheDiscordMathProblemBotRepo) ",
-            successTitle="Here is the Github Repository Link.",
+    async def what_is_vote_threshold(inter):
+        "Returns the vote threshold"
+        await check_for_cooldown(inter, "what_is_vote_threshold", 5)
+        await inter.reply(
+            embed=SuccessEmbed(f"The vote threshold is {vote_threshold}."), ephemeral=True
         )
+
+
+    @slash_command(
+        name="generate_invite_link",
+        description="Generates a invite link for this bot! Takes no arguments",
     )
+    async def generate_invite_link(inter):
+        "Generate an invite link for the bot."
+        await check_for_cooldown(inter, "generateInviteLink", 5)
+        await inter.reply(
+            embed=SuccessEmbed(
+                "https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147552256&scope=bot%20applications.commands"
+            ),
+            ephemeral=True,
+        )
+
+
+    @slash_command(
+        name="github_repo", description="Returns the link to the github repo"
+    )
+    async def github_repo(inter):
+        await check_for_cooldown(inter, "github_repo", 5)
+        await inter.reply(
+            embed=SuccessEmbed(
+                "[Repo Link:](https://github.com/rf20008/TheDiscordMathProblemBotRepo) ",
+                successTitle="Here is the Github Repository Link.",
+            )
+        )
