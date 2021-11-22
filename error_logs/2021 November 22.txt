@@ -370,3 +370,39 @@ Traceback (most recent call last):
 discord.errors.InvalidArgument: embed parameter must be discord.Embed
 
 
+Mon Nov 22 01:46:36 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/developer_commands.py", line 129, in raise_error
+    await inter.send(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 229, in reply
+    await self.create_response(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 313, in create_response
+    raise discord.InvalidArgument("embed parameter must be discord.Embed")
+discord.errors.InvalidArgument: embed parameter must be discord.Embed
+
+
+Mon Nov 22 01:46:36 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/client.py", line 351, in _run_event
+    await coro(*args, **kwargs)
+  File "main.py", line 229, in on_slash_command_error
+    embed = discord.Embed(colour = nextcord.Color.red(),
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/discord/embeds.py", line 189, in __init__
+    self.colour = colour if colour is not EmptyEmbed else color
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/discord/embeds.py", line 318, in colour
+    raise TypeError(f'Expected discord.Colour, int, or Embed.Empty but received {value.__class__.__name__} instead.')
+TypeError: Expected discord.Colour, int, or Embed.Empty but received Colour instead.
+
+

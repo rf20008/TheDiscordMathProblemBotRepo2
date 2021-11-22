@@ -226,7 +226,7 @@ async def on_slash_command_error(inter, error, print_stack_traceback=[True, stde
     # Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
 
     error_traceback = "\n".join(error_traceback_as_obj)
-    embed = discord.Embed(colour = nextcord.Color.red(),
+    embed = discord.Embed(color = nextcord.Color.red(),
             description=nextcord.utils.escape_markdown(error_traceback),
             title="Oh, no! An error occurred!"
             )
