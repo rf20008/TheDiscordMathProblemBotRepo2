@@ -74,7 +74,10 @@ class MiscCommandsCog(HelperCog):
         # We might not be able to respond in time because of the 100ms delay between user fetching
         # This is to respect the API rate limit.
         if len(self.bot.trusted_users) == 0:
+            await inter.reply("There are no trusted users.")
+            
             raise Exception("There are no trusted users!")
+            
         __trusted_users = ""
 
         for user_id in self.bot.trusted_users:
