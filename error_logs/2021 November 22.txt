@@ -680,3 +680,39 @@ Traceback (most recent call last):
 TypeError: send() got an unexpected keyword argument 'components'
 
 
+Mon Nov 22 08:51:40 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 357, in invoke
+    await self._run_checks(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 97, in _run_checks
+    if not await _check(inter):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 221, in wrapper
+    return predicate(ctx)
+  File "/home/runner/TheDiscordMathProblemBot/helpful_modules/checks.py", line 45, in predicate
+    raise NotTrustedUser(
+helpful_modules.checks.NotTrustedUser: You aren't a trusted user, <@834181432346804274>. Therefore, you do not have permission to run this command
+
+
+Mon Nov 22 19:02:06 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 357, in invoke
+    await self._run_checks(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 97, in _run_checks
+    if not await _check(inter):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 221, in wrapper
+    return predicate(ctx)
+  File "/home/runner/TheDiscordMathProblemBot/helpful_modules/checks.py", line 45, in predicate
+    raise NotTrustedUser(
+helpful_modules.checks.NotTrustedUser: You aren't a trusted user, <@701824288340180993>. Therefore, you do not have permission to run this command
+
+
