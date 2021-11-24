@@ -241,15 +241,13 @@ class ProblemsCog(HelperCog):
         if inter.guild is None and show_guild_problems:
             await inter.reply("You must be in a guild to see guild problems!")
             return
-        if inter.guild != None and inter.guild.id not in self.bot.cache.get_guilds():
-            self.cache.add_empty_guild(inter.guild)
         showSolvedProblems = show_solved_problems
         if inter.guild is not None:
             guild_id = inter.guild.id
         else:
             guild_id = "null"
         # Check for no problems
-        if self.bot.cache.guild_problems[guild_id] == {}:
+        if await self.bot.cache.get_guild_problems(inter.guild) == {}:
             await inter.reply("No problems currently exist.")
             return
         # if not showSolvedProblems and False not in [inter.author.id in mathProblems[id]["solvers"] for id in mathProblems.keys()] or (show_guild_problems and (show_only_guild_problems and (guildMathProblems[inter.guild.id] == {}) or False not in [inter.author.id in guildMathProblems[guild_id][id]["solvers"] for id in guildMathProblems[guild_id].keys()])) or show_guild_problems and not show_only_guild_problems and False not in [inter.author.id in mathProblems[id]["solvers"] for id in mathProblems.keys()] and False not in [inter.author.id in guildMathProblems[guild_id][id]["solvers"] for id in guildMathProblems[guild_id].keys()]:

@@ -2,3 +2,314 @@
 =:1:0: C0103: Module name "=" doesn't conform to snake_case naming style (invalid-name)
 ************* Module LICENSE
 LICENSE:1:12: E0001: invalid syntax. Perhaps you forgot a comma? (<unknown>, line 1) (syntax-error)
+helpful_modules/__init__.py:1:1: F403 'from . import *' used; unable to detect undefined names
+helpful_modules/__init__.py:1:1: F401 'from . import *' imported but unused
+helpful_modules/_error_logging.py:1:12: E401 multiple imports on one line
+helpful_modules/_error_logging.py:44:80: E501 line too long (109 > 79 characters)
+helpful_modules/checks.py:1:1: F401 'nextcord' imported but unused
+helpful_modules/checks.py:1:15: E401 multiple imports on one line
+helpful_modules/checks.py:13:80: E501 line too long (89 > 79 characters)
+helpful_modules/checks.py:18:80: E501 line too long (110 > 79 characters)
+helpful_modules/checks.py:23:80: E501 line too long (93 > 79 characters)
+helpful_modules/checks.py:46:80: E501 line too long (123 > 79 characters)
+helpful_modules/checks.py:62:80: E501 line too long (171 > 79 characters)
+helpful_modules/checks.py:83:80: E501 line too long (221 > 79 characters)
+helpful_modules/cooldowns.py:2:1: F401 'nextcord' imported but unused
+helpful_modules/cooldowns.py:13:80: E501 line too long (85 > 79 characters)
+helpful_modules/cooldowns.py:15:80: E501 line too long (205 > 79 characters)
+helpful_modules/cooldowns.py:26:80: E501 line too long (163 > 79 characters)
+helpful_modules/cooldowns.py:28:5: E722 do not use bare 'except'
+helpful_modules/cooldowns.py:36:80: E501 line too long (80 > 79 characters)
+helpful_modules/custom_embeds.py:25:80: E501 line too long (82 > 79 characters)
+helpful_modules/custom_embeds.py:37:80: E501 line too long (82 > 79 characters)
+helpful_modules/dict_factory.py:1:80: E501 line too long (140 > 79 characters)
+helpful_modules/dict_factory.py:3:1: F401 'sqlite3' imported but unused
+helpful_modules/problems_module/base_problem.py:2:1: F401 'dislash' imported but unused
+helpful_modules/problems_module/base_problem.py:2:16: E401 multiple imports on one line
+helpful_modules/problems_module/base_problem.py:4:1: F403 'from .errors import *' used; unable to detect undefined names
+helpful_modules/problems_module/base_problem.py:26:21: E711 comparison to None should be 'if cond is not None:'
+helpful_modules/problems_module/base_problem.py:44:80: E501 line too long (82 > 79 characters)
+helpful_modules/problems_module/base_problem.py:48:19: F405 'TooLongQuestion' may be undefined, or defined from star imports: .errors
+helpful_modules/problems_module/base_problem.py:49:80: E501 line too long (122 > 79 characters)
+helpful_modules/problems_module/base_problem.py:53:19: F405 'TooLongAnswer' may be undefined, or defined from star imports: .errors
+helpful_modules/problems_module/base_problem.py:54:80: E501 line too long (118 > 79 characters)
+helpful_modules/problems_module/base_problem.py:101:80: E501 line too long (90 > 79 characters)
+helpful_modules/problems_module/base_problem.py:110:27: F405 'TooLongQuestion' may be undefined, or defined from star imports: .errors
+helpful_modules/problems_module/base_problem.py:111:80: E501 line too long (188 > 79 characters)
+helpful_modules/problems_module/base_problem.py:114:27: F405 'TooLongQuestion' may be undefined, or defined from star imports: .errors
+helpful_modules/problems_module/base_problem.py:115:80: E501 line too long (130 > 79 characters)
+helpful_modules/problems_module/base_problem.py:119:80: E501 line too long (87 > 79 characters)
+helpful_modules/problems_module/base_problem.py:122:23: F405 'TooLongAnswer' may be undefined, or defined from star imports: .errors
+helpful_modules/problems_module/base_problem.py:123:80: E501 line too long (176 > 79 characters)
+helpful_modules/problems_module/base_problem.py:126:23: F405 'TooLongAnswer' may be undefined, or defined from star imports: .errors
+helpful_modules/problems_module/base_problem.py:127:80: E501 line too long (122 > 79 characters)
+helpful_modules/problems_module/base_problem.py:132:27: F405 'TooLongAnswer' may be undefined, or defined from star imports: .errors
+helpful_modules/problems_module/base_problem.py:133:80: E501 line too long (137 > 79 characters)
+helpful_modules/problems_module/base_problem.py:137:27: F405 'TooLongAnswer' may be undefined, or defined from star imports: .errors
+helpful_modules/problems_module/base_problem.py:138:80: E501 line too long (192 > 79 characters)
+helpful_modules/problems_module/base_problem.py:164:19: F405 'MathProblemsModuleException' may be undefined, or defined from star imports: .errors
+helpful_modules/problems_module/base_problem.py:171:80: E501 line too long (98 > 79 characters)
+helpful_modules/problems_module/base_problem.py:172:80: E501 line too long (86 > 79 characters)
+helpful_modules/problems_module/base_problem.py:188:19: F405 'SQLException' may be undefined, or defined from star imports: .errors
+helpful_modules/problems_module/base_problem.py:190:80: E501 line too long (121 > 79 characters)
+helpful_modules/problems_module/base_problem.py:194:80: E501 line too long (88 > 79 characters)
+helpful_modules/problems_module/base_problem.py:200:21: E711 comparison to None should be 'if cond is None:'
+helpful_modules/problems_module/base_problem.py:204:80: E501 line too long (122 > 79 characters)
+helpful_modules/problems_module/base_problem.py:216:80: E501 line too long (84 > 79 characters)
+helpful_modules/problems_module/base_problem.py:242:80: E501 line too long (84 > 79 characters)
+helpful_modules/problems_module/base_problem.py:257:80: E501 line too long (91 > 79 characters)
+helpful_modules/problems_module/base_problem.py:267:80: E501 line too long (93 > 79 characters)
+helpful_modules/problems_module/base_problem.py:289:80: E501 line too long (85 > 79 characters)
+helpful_modules/problems_module/base_problem.py:314:80: E501 line too long (115 > 79 characters)
+helpful_modules/problems_module/base_problem.py:326:80: E501 line too long (116 > 79 characters)
+helpful_modules/problems_module/base_problem.py:350:80: E501 line too long (82 > 79 characters)
+helpful_modules/problems_module/base_problem.py:355:80: E501 line too long (146 > 79 characters)
+helpful_modules/problems_module/base_problem.py:358:80: E501 line too long (155 > 79 characters)
+helpful_modules/problems_module/base_problem.py:362:31: W291 trailing whitespace
+helpful_modules/problems_module/base_problem.py:363:23: W291 trailing whitespace
+helpful_modules/problems_module/base_problem.py:364:35: W291 trailing whitespace
+helpful_modules/problems_module/quizzes.py:7:1: F401 'nextcord' imported but unused
+helpful_modules/problems_module/quizzes.py:9:1: F403 'from .errors import *' used; unable to detect undefined names
+helpful_modules/problems_module/quizzes.py:16:80: E501 line too long (84 > 79 characters)
+helpful_modules/problems_module/quizzes.py:78:80: E501 line too long (87 > 79 characters)
+helpful_modules/problems_module/quizzes.py:86:19: F405 'QuizAlreadySubmitted' may be undefined, or defined from star imports: .errors
+helpful_modules/problems_module/quizzes.py:117:80: E501 line too long (83 > 79 characters)
+helpful_modules/problems_module/quizzes.py:150:80: E501 line too long (86 > 79 characters)
+helpful_modules/problems_module/quizzes.py:177:80: E501 line too long (114 > 79 characters)
+helpful_modules/problems_module/quizzes.py:186:13: F841 local variable 'voters' is assigned to but never used
+helpful_modules/problems_module/quizzes.py:197:19: F405 'MathProblemsModuleException' may be undefined, or defined from star imports: .errors
+helpful_modules/problems_module/quizzes.py:208:80: E501 line too long (153 > 79 characters)
+helpful_modules/problems_module/quizzes.py:217:80: E501 line too long (94 > 79 characters)
+helpful_modules/problems_module/quizzes.py:256:80: E501 line too long (81 > 79 characters)
+helpful_modules/problems_module/cache.py:8:1: F403 'from typing import *' used; unable to detect undefined names
+helpful_modules/problems_module/cache.py:9:1: F403 'from .errors import *' used; unable to detect undefined names
+helpful_modules/problems_module/cache.py:12:1: F403 'from .quizzes import *' used; unable to detect undefined names
+helpful_modules/problems_module/cache.py:29:80: E501 line too long (81 > 79 characters)
+helpful_modules/problems_module/cache.py:31:80: E501 line too long (85 > 79 characters)
+helpful_modules/problems_module/cache.py:35:80: E501 line too long (89 > 79 characters)
+helpful_modules/problems_module/cache.py:49:18: F541 f-string is missing placeholders
+helpful_modules/problems_module/cache.py:63:43: W291 trailing whitespace
+helpful_modules/problems_module/cache.py:68:80: E501 line too long (101 > 79 characters)
+helpful_modules/problems_module/cache.py:98:80: E501 line too long (91 > 79 characters)
+helpful_modules/problems_module/cache.py:113:80: E501 line too long (95 > 79 characters)
+helpful_modules/problems_module/cache.py:124:80: E501 line too long (156 > 79 characters)
+helpful_modules/problems_module/cache.py:132:21: E711 comparison to None should be 'if cond is None:'
+helpful_modules/problems_module/cache.py:148:80: E501 line too long (145 > 79 characters)
+helpful_modules/problems_module/cache.py:164:80: E501 line too long (86 > 79 characters)
+helpful_modules/problems_module/cache.py:168:27: F405 'SQLException' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:169:80: E501 line too long (86 > 79 characters)
+helpful_modules/problems_module/cache.py:176:9: F841 local variable 'exc' is assigned to but never used
+helpful_modules/problems_module/cache.py:189:80: E501 line too long (84 > 79 characters)
+helpful_modules/problems_module/cache.py:192:80: E501 line too long (82 > 79 characters)
+helpful_modules/problems_module/cache.py:196:80: E501 line too long (85 > 79 characters)
+helpful_modules/problems_module/cache.py:205:23: F405 'ProblemNotFound' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:206:80: E501 line too long (101 > 79 characters)
+helpful_modules/problems_module/cache.py:213:80: E501 line too long (107 > 79 characters)
+helpful_modules/problems_module/cache.py:219:31: F405 'MathProblemsModuleException' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:228:80: E501 line too long (83 > 79 characters)
+helpful_modules/problems_module/cache.py:233:27: F405 'ProblemNotFound' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:235:27: F405 'TooManyProblems' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:236:80: E501 line too long (98 > 79 characters)
+helpful_modules/problems_module/cache.py:242:21: F841 local variable 'row' is assigned to but never used
+helpful_modules/problems_module/cache.py:246:80: E501 line too long (135 > 79 characters)
+helpful_modules/problems_module/cache.py:261:80: E501 line too long (95 > 79 characters)
+helpful_modules/problems_module/cache.py:274:80: E501 line too long (86 > 79 characters)
+helpful_modules/problems_module/cache.py:280:80: E501 line too long (80 > 79 characters)
+helpful_modules/problems_module/cache.py:287:80: E501 line too long (81 > 79 characters)
+helpful_modules/problems_module/cache.py:295:23: F405 'MathProblemsModuleException' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:298:16: F405 'ProblemNotFound' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:298:80: E501 line too long (87 > 79 characters)
+helpful_modules/problems_module/cache.py:302:80: E501 line too long (81 > 79 characters)
+helpful_modules/problems_module/cache.py:306:26: E711 comparison to None should be 'if cond is None:'
+helpful_modules/problems_module/cache.py:307:80: E501 line too long (83 > 79 characters)
+helpful_modules/problems_module/cache.py:311:80: E501 line too long (91 > 79 characters)
+helpful_modules/problems_module/cache.py:312:23: F405 'TooManyProblems' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:326:80: E501 line too long (88 > 79 characters)
+helpful_modules/problems_module/cache.py:333:27: F405 'MathProblemsModuleException' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:343:80: E501 line too long (89 > 79 characters)
+helpful_modules/problems_module/cache.py:359:80: E501 line too long (82 > 79 characters)
+helpful_modules/problems_module/cache.py:365:80: E501 line too long (83 > 79 characters)
+helpful_modules/problems_module/cache.py:370:80: E501 line too long (84 > 79 characters)
+helpful_modules/problems_module/cache.py:382:80: E501 line too long (88 > 79 characters)
+helpful_modules/problems_module/cache.py:389:27: F405 'MathProblemsModuleException' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:425:80: E501 line too long (82 > 79 characters)
+helpful_modules/problems_module/cache.py:429:20: F405 'nextcord' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:430:10: F405 'List' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:430:15: F405 'Union' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:430:26: F405 'Optional' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:430:35: F405 'nextcord' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:431:80: E501 line too long (120 > 79 characters)
+helpful_modules/problems_module/cache.py:433:24: E711 comparison to None should be 'if cond is None:'
+helpful_modules/problems_module/cache.py:433:51: F405 'nextcord' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:434:9: E722 do not use bare 'except'
+helpful_modules/problems_module/cache.py:448:80: E501 line too long (83 > 79 characters)
+helpful_modules/problems_module/cache.py:455:36: F405 'Quiz' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:455:45: F405 'Quiz' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:457:33: F405 'Quiz' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:460:19: F405 'MathProblemsModuleException' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:463:16: F405 'QuizNotFound' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:468:80: E501 line too long (88 > 79 characters)
+helpful_modules/problems_module/cache.py:475:27: F405 'MathProblemsModuleException' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:486:80: E501 line too long (97 > 79 characters)
+helpful_modules/problems_module/cache.py:516:47: F405 'Optional' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:516:56: F405 'Quiz' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:522:80: E501 line too long (88 > 79 characters)
+helpful_modules/problems_module/cache.py:529:27: F405 'MathProblemsModuleException' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:537:80: E501 line too long (85 > 79 characters)
+helpful_modules/problems_module/cache.py:540:23: F405 'QuizNotFound' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:547:17: F405 'QuizSubmission' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:551:17: F405 'QuizProblem' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:551:80: E501 line too long (81 > 79 characters)
+helpful_modules/problems_module/cache.py:556:20: F405 'Quiz' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:559:80: E501 line too long (83 > 79 characters)
+helpful_modules/problems_module/cache.py:563:69: F405 'QuizProblem' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:563:80: E501 line too long (80 > 79 characters)
+helpful_modules/problems_module/cache.py:567:80: E501 line too long (88 > 79 characters)
+helpful_modules/problems_module/cache.py:574:27: F405 'MathProblemsModuleException' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:584:19: W291 trailing whitespace
+helpful_modules/problems_module/cache.py:585:80: E501 line too long (107 > 79 characters)
+helpful_modules/problems_module/cache.py:603:32: F405 'Quiz' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:607:29: F405 'Quiz' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:622:80: E501 line too long (82 > 79 characters)
+helpful_modules/problems_module/cache.py:635:17: F405 'QuizProblem' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:637:80: E501 line too long (139 > 79 characters)
+helpful_modules/problems_module/cache.py:646:17: F405 'QuizSubmission' may be undefined, or defined from star imports: .errors, .quizzes, typing
+helpful_modules/problems_module/cache.py:648:80: E501 line too long (161 > 79 characters)
+helpful_modules/problems_module/__init__.py:5:1: F403 'from .errors import *' used; unable to detect undefined names
+helpful_modules/problems_module/__init__.py:5:1: F401 '.errors.*' imported but unused
+helpful_modules/problems_module/__init__.py:6:1: F401 '.base_problem.BaseProblem' imported but unused
+helpful_modules/problems_module/__init__.py:7:1: F403 'from .quizzes import *' used; unable to detect undefined names
+helpful_modules/problems_module/__init__.py:7:1: F401 '.quizzes.*' imported but unused
+helpful_modules/problems_module/__init__.py:8:1: F401 '.cache.MathProblemCache' imported but unused
+helpful_modules/problems_module/__init__.py:9:1: F403 'from . import *' used; unable to detect undefined names
+helpful_modules/problems_module/__init__.py:9:1: F401 'from . import *' imported but unused
+helpful_modules/problems_module/errors.py:28:80: E501 line too long (101 > 79 characters)
+helpful_modules/problems_module/errors.py:38:80: E501 line too long (94 > 79 characters)
+helpful_modules/problems_module/errors.py:48:80: E501 line too long (81 > 79 characters)
+helpful_modules/problems_module.py:1:1: F403 'from typing import *' used; unable to detect undefined names
+helpful_modules/problems_module.py:2:1: F401 'time.sleep' imported but unused
+helpful_modules/problems_module.py:3:1: F403 'from sqlite3 import *' used; unable to detect undefined names
+helpful_modules/problems_module.py:4:1: F403 'from typing import *' used; unable to detect undefined names
+helpful_modules/problems_module.py:4:1: F811 redefinition of unused 'typing.*' from line 1
+helpful_modules/problems_module.py:5:1: F401 'json' imported but unused
+helpful_modules/problems_module.py:5:1: F401 'dislash' imported but unused
+helpful_modules/problems_module.py:5:16: E401 multiple imports on one line
+helpful_modules/problems_module.py:7:1: F403 'from nextcord import *' used; unable to detect undefined names
+helpful_modules/problems_module.py:8:14: E401 multiple imports on one line
+helpful_modules/problems_module.py:9:1: F401 'threading.Thread' imported but unused
+helpful_modules/problems_module.py:10:1: F811 redefinition of unused 'warnings' from line 5
+helpful_modules/problems_module.py:12:15: E401 multiple imports on one line
+helpful_modules/problems_module.py:25:80: E501 line too long (202 > 79 characters)
+helpful_modules/problems_module.py:50:80: E501 line too long (101 > 79 characters)
+helpful_modules/problems_module.py:60:80: E501 line too long (94 > 79 characters)
+helpful_modules/problems_module.py:70:80: E501 line too long (81 > 79 characters)
+helpful_modules/problems_module.py:122:80: E501 line too long (82 > 79 characters)
+helpful_modules/problems_module.py:127:80: E501 line too long (122 > 79 characters)
+helpful_modules/problems_module.py:132:80: E501 line too long (118 > 79 characters)
+helpful_modules/problems_module.py:179:80: E501 line too long (90 > 79 characters)
+helpful_modules/problems_module.py:189:80: E501 line too long (188 > 79 characters)
+helpful_modules/problems_module.py:193:80: E501 line too long (130 > 79 characters)
+helpful_modules/problems_module.py:197:80: E501 line too long (87 > 79 characters)
+helpful_modules/problems_module.py:201:80: E501 line too long (176 > 79 characters)
+helpful_modules/problems_module.py:205:80: E501 line too long (122 > 79 characters)
+helpful_modules/problems_module.py:211:80: E501 line too long (137 > 79 characters)
+helpful_modules/problems_module.py:216:80: E501 line too long (192 > 79 characters)
+helpful_modules/problems_module.py:249:80: E501 line too long (98 > 79 characters)
+helpful_modules/problems_module.py:250:80: E501 line too long (86 > 79 characters)
+helpful_modules/problems_module.py:268:80: E501 line too long (121 > 79 characters)
+helpful_modules/problems_module.py:272:80: E501 line too long (88 > 79 characters)
+helpful_modules/problems_module.py:280:80: E501 line too long (122 > 79 characters)
+helpful_modules/problems_module.py:292:80: E501 line too long (84 > 79 characters)
+helpful_modules/problems_module.py:318:80: E501 line too long (84 > 79 characters)
+helpful_modules/problems_module.py:333:80: E501 line too long (91 > 79 characters)
+helpful_modules/problems_module.py:343:80: E501 line too long (93 > 79 characters)
+helpful_modules/problems_module.py:365:80: E501 line too long (85 > 79 characters)
+helpful_modules/problems_module.py:390:80: E501 line too long (115 > 79 characters)
+helpful_modules/problems_module.py:402:80: E501 line too long (116 > 79 characters)
+helpful_modules/problems_module.py:426:80: E501 line too long (82 > 79 characters)
+helpful_modules/problems_module.py:431:80: E501 line too long (146 > 79 characters)
+helpful_modules/problems_module.py:434:80: E501 line too long (155 > 79 characters)
+helpful_modules/problems_module.py:438:31: W291 trailing whitespace
+helpful_modules/problems_module.py:439:23: W291 trailing whitespace
+helpful_modules/problems_module.py:440:35: W291 trailing whitespace
+helpful_modules/problems_module.py:451:80: E501 line too long (84 > 79 characters)
+helpful_modules/problems_module.py:512:80: E501 line too long (87 > 79 characters)
+helpful_modules/problems_module.py:551:80: E501 line too long (83 > 79 characters)
+helpful_modules/problems_module.py:584:80: E501 line too long (86 > 79 characters)
+helpful_modules/problems_module.py:611:80: E501 line too long (114 > 79 characters)
+helpful_modules/problems_module.py:618:32: F405 'Cursor' may be undefined, or defined from star imports: nextcord, sqlite3, typing
+helpful_modules/problems_module.py:620:13: F841 local variable 'voters' is assigned to but never used
+helpful_modules/problems_module.py:642:80: E501 line too long (153 > 79 characters)
+helpful_modules/problems_module.py:644:39: F405 'List' may be undefined, or defined from star imports: nextcord, sqlite3, typing
+helpful_modules/problems_module.py:645:80: E501 line too long (94 > 79 characters)
+helpful_modules/problems_module.py:684:80: E501 line too long (81 > 79 characters)
+helpful_modules/problems_module.py:705:80: E501 line too long (81 > 79 characters)
+helpful_modules/problems_module.py:707:80: E501 line too long (85 > 79 characters)
+helpful_modules/problems_module.py:711:80: E501 line too long (89 > 79 characters)
+helpful_modules/problems_module.py:725:18: F541 f-string is missing placeholders
+helpful_modules/problems_module.py:739:43: W291 trailing whitespace
+helpful_modules/problems_module.py:744:80: E501 line too long (101 > 79 characters)
+helpful_modules/problems_module.py:773:80: E501 line too long (91 > 79 characters)
+helpful_modules/problems_module.py:788:80: E501 line too long (95 > 79 characters)
+helpful_modules/problems_module.py:799:80: E501 line too long (156 > 79 characters)
+helpful_modules/problems_module.py:823:80: E501 line too long (145 > 79 characters)
+helpful_modules/problems_module.py:839:80: E501 line too long (86 > 79 characters)
+helpful_modules/problems_module.py:844:80: E501 line too long (115 > 79 characters)
+helpful_modules/problems_module.py:851:9: F841 local variable 'exc' is assigned to but never used
+helpful_modules/problems_module.py:864:80: E501 line too long (84 > 79 characters)
+helpful_modules/problems_module.py:867:80: E501 line too long (82 > 79 characters)
+helpful_modules/problems_module.py:871:80: E501 line too long (85 > 79 characters)
+helpful_modules/problems_module.py:881:80: E501 line too long (101 > 79 characters)
+helpful_modules/problems_module.py:888:80: E501 line too long (107 > 79 characters)
+helpful_modules/problems_module.py:903:80: E501 line too long (83 > 79 characters)
+helpful_modules/problems_module.py:911:80: E501 line too long (98 > 79 characters)
+helpful_modules/problems_module.py:917:21: F841 local variable 'row' is assigned to but never used
+helpful_modules/problems_module.py:921:80: E501 line too long (135 > 79 characters)
+helpful_modules/problems_module.py:936:80: E501 line too long (95 > 79 characters)
+helpful_modules/problems_module.py:949:80: E501 line too long (86 > 79 characters)
+helpful_modules/problems_module.py:955:80: E501 line too long (80 > 79 characters)
+helpful_modules/problems_module.py:962:80: E501 line too long (81 > 79 characters)
+helpful_modules/problems_module.py:973:80: E501 line too long (87 > 79 characters)
+helpful_modules/problems_module.py:977:80: E501 line too long (81 > 79 characters)
+helpful_modules/problems_module.py:982:80: E501 line too long (83 > 79 characters)
+helpful_modules/problems_module.py:986:80: E501 line too long (91 > 79 characters)
+helpful_modules/problems_module.py:999:80: E501 line too long (88 > 79 characters)
+helpful_modules/problems_module.py:1016:80: E501 line too long (89 > 79 characters)
+helpful_modules/problems_module.py:1038:80: E501 line too long (83 > 79 characters)
+helpful_modules/problems_module.py:1043:80: E501 line too long (84 > 79 characters)
+helpful_modules/problems_module.py:1055:80: E501 line too long (88 > 79 characters)
+helpful_modules/problems_module.py:1098:80: E501 line too long (82 > 79 characters)
+helpful_modules/problems_module.py:1103:10: F405 'List' may be undefined, or defined from star imports: nextcord, sqlite3, typing
+helpful_modules/problems_module.py:1103:15: F405 'Union' may be undefined, or defined from star imports: nextcord, sqlite3, typing
+helpful_modules/problems_module.py:1103:26: F405 'Optional' may be undefined, or defined from star imports: nextcord, sqlite3, typing
+helpful_modules/problems_module.py:1104:80: E501 line too long (120 > 79 characters)
+helpful_modules/problems_module.py:1106:24: E711 comparison to None should be 'if cond is None:'
+helpful_modules/problems_module.py:1107:9: E722 do not use bare 'except'
+helpful_modules/problems_module.py:1121:80: E501 line too long (83 > 79 characters)
+helpful_modules/problems_module.py:1141:80: E501 line too long (88 > 79 characters)
+helpful_modules/problems_module.py:1164:41: F405 'Optional' may be undefined, or defined from star imports: nextcord, sqlite3, typing
+helpful_modules/problems_module.py:1169:80: E501 line too long (107 > 79 characters)
+helpful_modules/problems_module.py:1171:80: E501 line too long (83 > 79 characters)
+helpful_modules/problems_module.py:1175:80: E501 line too long (84 > 79 characters)
+helpful_modules/problems_module.py:1179:80: E501 line too long (88 > 79 characters)
+helpful_modules/problems_module.py:1196:19: W291 trailing whitespace
+helpful_modules/problems_module.py:1197:80: E501 line too long (107 > 79 characters)
+helpful_modules/problems_module.py:1240:1: F811 redefinition of unused 'get_main_cache' from line 21
+helpful_modules/save_files.py:20:17: E711 comparison to None should be 'if cond is None:'
+helpful_modules/save_files.py:47:37: E711 comparison to None should be 'if cond is None:'
+helpful_modules/save_files.py:52:80: E501 line too long (179 > 79 characters)
+helpful_modules/save_files.py:68:37: E711 comparison to None should be 'if cond is None:'
+helpful_modules/save_files.py:97:37: E711 comparison to None should be 'if cond is None:'
+helpful_modules/save_files.py:101:80: E501 line too long (146 > 79 characters)
+helpful_modules/save_files.py:118:37: E711 comparison to None should be 'if cond is None:'
+helpful_modules/the_documentation_file_loader.py:31:80: E501 line too long (148 > 79 characters)
+helpful_modules/the_documentation_file_loader.py:36:1: W293 blank line contains whitespace
+helpful_modules/the_documentation_file_loader.py:37:80: E501 line too long (135 > 79 characters)
+helpful_modules/the_documentation_file_loader.py:41:80: E501 line too long (142 > 79 characters)
+helpful_modules/the_documentation_file_loader.py:69:27: E711 comparison to None should be 'if cond is None:'
+helpful_modules/the_documentation_file_loader.py:77:80: E501 line too long (87 > 79 characters)
+helpful_modules/threads_or_useful_funcs.py:3:18: E401 multiple imports on one line
+helpful_modules/threads_or_useful_funcs.py:12:80: E501 line too long (86 > 79 characters)
+helpful_modules/threads_or_useful_funcs.py:38:80: E501 line too long (111 > 79 characters)
+helpful_modules/threads_or_useful_funcs.py:43:80: E501 line too long (98 > 79 characters)
+pylint/flake8/lint1.txt:0:1: E902 FileNotFoundError: [Errno 2] No such file or directory: 'pylint/flake8/lint1.txt'

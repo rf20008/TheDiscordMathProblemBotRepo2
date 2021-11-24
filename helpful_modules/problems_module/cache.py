@@ -34,7 +34,9 @@ class MathProblemCache:
             raise ValueError(
                 f"warnings_or_errors is {warnings_or_errors}, not 'warnings' or 'errors'"
             )
-        self.warnings = warnings_or_errors == "warnings"
+        self.warnings = (
+            warnings_or_errors == "warnings"
+        )  # Whether to raise TypeErrors or warn
         self.use_cached_problems = use_cached_problems
         self._max_answer = max_answer_length
         self._max_question = max_question_limit

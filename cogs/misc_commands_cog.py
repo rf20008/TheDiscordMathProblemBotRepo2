@@ -75,9 +75,9 @@ class MiscCommandsCog(HelperCog):
         # This is to respect the API rate limit.
         if len(self.bot.trusted_users) == 0:
             await inter.reply("There are no trusted users.")
-            
+
             raise Exception("There are no trusted users!")
-            
+
         __trusted_users = ""
 
         for user_id in self.bot.trusted_users:
@@ -89,42 +89,43 @@ class MiscCommandsCog(HelperCog):
             )  # 100 ms between fetching to respect the rate limit (and to prevent spam)
 
         await inter.reply(__trusted_users, ephemeral=True)
+
     @slash_command(name="ping", description="Prints latency and takes no arguments")
-    async def ping(self,inter):
+    async def ping(self, inter):
         "Ping the bot which returns its latency!"
         await cooldowns.check_for_cooldown(inter, "ping", 5)
         await inter.reply(
-            embed=SuccessEmbed(f"Pong! My latency is {round(bot.latency*1000)}ms."),
+            embed=SuccessEmbed(
+                f"Pong! My latency is {round(self.bot.latency*1000)}ms."
+            ),
             ephemeral=True,
         )
-
 
     @slash_command(
         name="what_is_vote_threshold",
         description="Prints the vote threshold and takes no arguments",
     )
-    async def what_is_vote_threshold(self,inter):
+    async def what_is_vote_threshold(self, inter):
         "Returns the vote threshold"
-        await check_for_cooldown(inter, "what_is_vote_threshold", 5)
+        await cooldowns.check_for_cooldown(inter, "what_is_vote_threshold", 5)
         await inter.reply(
-            embed=SuccessEmbed(f"The vote threshold is {self.bot.vote_threshold}."), ephemeral=True
+            embed=SuccessEmbed(f"The vote threshold is {self.bot.vote_threshold}."),
+            ephemeral=True,
         )
-
 
     @slash_command(
         name="generate_invite_link",
         description="Generates a invite link for this bot! Takes no arguments",
     )
-    async def generate_invite_link(self,inter):
+    async def generate_invite_link(self, inter):
         "Generate an invite link for the bot."
-        await check_for_cooldown(inter, "generateInviteLink", 5)
+        await cooldowns.check_for_cooldown(inter, "generateInviteLink", 5)
         await inter.reply(
             embed=SuccessEmbed(
                 "https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147552256&scope=bot%20applications.commands"
             ),
             ephemeral=True,
         )
-
 
     @slash_command(
         name="github_repo", description="Returns the link to the github repo"

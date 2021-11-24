@@ -177,19 +177,11 @@ async def on_error(event, *args, **kwargs):
     if True:
         # print the traceback to the file
         print(
-            "\n".join(
-                traceback.format_exception(
-                    *error
-                )
-            ),
+            "\n".join(traceback.format_exception(*error)),
             file=stderr,
         )
 
-    error_traceback_as_obj = "\n".join(
-        traceback.format_exception(
-            *error
-        )
-    )
+    error_traceback_as_obj = "\n".join(traceback.format_exception(*error))
     # Log the error?
     log_error(error[1])
     # We don't have an interaction/context, so I can't tell the user that an error happened
@@ -226,13 +218,16 @@ async def on_slash_command_error(inter, error, print_stack_traceback=[True, stde
 
     error_traceback = "\n".join(error_traceback_as_obj)
     try:
-        embed = discord.Embed(colour = discord.Colour.red(),
-              description=nextcord.utils.escape_markdown(error_traceback),
-              title="Oh, no! An error occurred!"
-              )
+        embed = discord.Embed(
+            colour=discord.Colour.red(),
+            description=nextcord.utils.escape_markdown(error_traceback),
+            title="Oh, no! An error occurred!",
+        )
     except TypeError:
-        #send as plain text
-        plain_text = "__**Oh no! An Exception occured! And it couldn't be sent as an embed!\n```"
+        # send as plain text
+        plain_text = (
+            "__**Oh no! An Exception occured! And it couldn't be sent as an embed!\n```"
+        )
         plain_text += nextcord.utils.escape_markdown(error_traceback)
         plain_text += f"```Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
         await inter.reply(plain_text)
@@ -241,9 +236,11 @@ async def on_slash_command_error(inter, error, print_stack_traceback=[True, stde
     footer = f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
     embed.set_footer(text=footer)
     try:
-        await inter.reply(embed = embed)
-    except discord.errors.InvalidArgument: # not an embed
-        plain_text = "__**Oh no! An Exception occured! And it couldn't be sent as an embed!\n```"
+        await inter.reply(embed=embed)
+    except discord.errors.InvalidArgument:  # not an embed
+        plain_text = (
+            "__**Oh no! An Exception occured! And it couldn't be sent as an embed!\n```"
+        )
         plain_text += nextcord.utils.escape_markdown(error_traceback)
         plain_text += f"```Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
         await inter.reply(plain_text)
@@ -287,9 +284,9 @@ async def check_answer(inter, problem_id, answer, checking_guild_problem=False):
     await check_for_cooldown(inter, "check_answer", 5)
 
     if inter.guild != None and inter.guild.id not in await main_cache.get_guilds():
-        main_cache.add_empty_guild(inter.guild)
+        await main_cache.add_empty_guild(inter.guild)
     try:
-        problem = main_cache.get_problem(
+        problem = await main_cache.get_problem(
             inter.guild.id if checking_guild_problem else "null", str(problem_id)
         )
         if problem.is_solver(inter.author):
@@ -325,7 +322,7 @@ async def check_answer(inter, problem_id, answer, checking_guild_problem=False):
             ),
             ephemeral=True,
         )
-        problem.add_solver(inter.author)
+        await problem.add_solver(inter.author)
         return
 
 
@@ -621,8 +618,6 @@ async def remove_trusted_user(inter, user):
         embed=ErrorEmbed(f"Successfully made {user.nick} no longer a trusted user!"),
         ephemeral=True,
     )
-
-
 
 
 @slash.slash_command(

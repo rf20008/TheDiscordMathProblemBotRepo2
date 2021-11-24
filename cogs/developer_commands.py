@@ -1,4 +1,4 @@
-#
+"Admin-related commands"
 import random, os, warnings, threading, copy, nextcord, subprocess
 import dislash, traceback
 
@@ -23,7 +23,7 @@ class DeveloperCommands(HelperCog):
         super().__init__(bot)
         self.bot = bot
         self.slash = bot.slash
-        checks = self.checks
+        # checks = self.checks
         checks.setup(bot)
 
     @dislash.cooldown(1, 5)
@@ -37,8 +37,8 @@ class DeveloperCommands(HelperCog):
 
         if inter.author.id not in self.bot.trusted_users:
             await inter.reply(
-                self.custom_embeds.ErrorEmbed(
-                    "You aren't trusted and therefore don't have permission to forceload files."
+                ErrorEmbed(
+                    "You aren't a trusted user! and therefore don't have permission to force-load files."
                 )
             )
             return
@@ -52,16 +52,13 @@ class DeveloperCommands(HelperCog):
             )
             FileSaver3.goodbye()
             await inter.reply(
-                embed=self.custom_embeds.SuccessEmbed(
-                    "Successfully forcefully loaded files!"
-                )
+                embed=SuccessEmbed("Successfully forcefully loaded files!")
             )
             return
         except RuntimeError:
-            await inter.reply(
-                embed=self.custom_embeds.ErrorEmbed("Something went wrong...")
-            )
-            return
+            await inter.reply(embed=ErrorEmbed("Something went wrong..."))
+            # return
+            raise  # I actually want to fix this bug!
 
     @dislash.cooldown(1, 5)
     @slash_command(
@@ -71,11 +68,7 @@ class DeveloperCommands(HelperCog):
     @checks.trusted_users_only()
     async def force_save_files(self, inter):
         "Forcefully saves files. Takes no arguments. Mostly for debugging purposes"
-        if (
-            inter.guild != None
-            and inter.guild.id not in self.bot.main_cache.get_guilds()
-        ):
-            self.bot.main_cache.add_empty_guild(inter.guild)
+
         if inter.author.id not in self.bot.trusted_users:
             await inter.reply(
                 embed=self.custom_embeds.ErrorEmbed(
@@ -140,7 +133,7 @@ class DeveloperCommands(HelperCog):
         else:
             raise RuntimeError(f"Unknown error: {error_type}")
         await inter.send(
-            embed=self.custom_embeds.SuccessEmbed(
+            embed=SuccessEmbed(
                 f"Successfully created error: {str(error)}. Will now raise the error.",
                 successTitle="Successfully raised error.",
             )
