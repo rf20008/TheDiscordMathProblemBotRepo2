@@ -27,7 +27,7 @@ class MiscCommandsCog(HelperCog):
         ],
     )
     async def info(self, inter, include_extra_info=False):
-        embed = custom_embeds.SimpleEmbed(title="Bot info", description="")
+        embed = SimpleEmbed(title="Bot info", description="")
         embed = embed.add_field(
             name="Original Bot Developer", value="ay136416#2707", inline=False
         )  # Could be sufficient for attribution (except for stating changes).
@@ -90,9 +90,9 @@ class MiscCommandsCog(HelperCog):
 
         await inter.reply(__trusted_users, ephemeral=True)
     @slash_command(name="ping", description="Prints latency and takes no arguments")
-    async def ping(inter):
+    async def ping(self,inter):
         "Ping the bot which returns its latency!"
-        await check_for_cooldown(inter, "ping", 5)
+        await cooldowns.check_for_cooldown(inter, "ping", 5)
         await inter.reply(
             embed=SuccessEmbed(f"Pong! My latency is {round(bot.latency*1000)}ms."),
             ephemeral=True,
@@ -103,11 +103,11 @@ class MiscCommandsCog(HelperCog):
         name="what_is_vote_threshold",
         description="Prints the vote threshold and takes no arguments",
     )
-    async def what_is_vote_threshold(inter):
+    async def what_is_vote_threshold(self,inter):
         "Returns the vote threshold"
         await check_for_cooldown(inter, "what_is_vote_threshold", 5)
         await inter.reply(
-            embed=SuccessEmbed(f"The vote threshold is {vote_threshold}."), ephemeral=True
+            embed=SuccessEmbed(f"The vote threshold is {self.bot.vote_threshold}."), ephemeral=True
         )
 
 
@@ -115,7 +115,7 @@ class MiscCommandsCog(HelperCog):
         name="generate_invite_link",
         description="Generates a invite link for this bot! Takes no arguments",
     )
-    async def generate_invite_link(inter):
+    async def generate_invite_link(self,inter):
         "Generate an invite link for the bot."
         await check_for_cooldown(inter, "generateInviteLink", 5)
         await inter.reply(
@@ -130,7 +130,7 @@ class MiscCommandsCog(HelperCog):
         name="github_repo", description="Returns the link to the github repo"
     )
     async def github_repo(inter):
-        await check_for_cooldown(inter, "github_repo", 5)
+        await cooldowns.check_for_cooldown(inter, "github_repo", 5)
         await inter.reply(
             embed=SuccessEmbed(
                 "[Repo Link:](https://github.com/rf20008/TheDiscordMathProblemBotRepo) ",
