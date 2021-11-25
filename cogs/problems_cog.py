@@ -1,14 +1,14 @@
 from .helper_cog import HelperCog
 from helpful_modules.problems_module import *
-from helpful_modules import cooldowns
 from helpful_modules.custom_embeds import SimpleEmbed, SuccessEmbed, ErrorEmbed
 import dislash, nextcord
 from asyncio import run
-from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
+from dislash import Option, OptionType, OptionChoice
 from helpful_modules import checks, cooldowns, problems_module
 import aiosqlite
 from dislash import *
 import threading
+import typing
 from helpful_modules.threads_or_useful_funcs import generate_new_id
 
 
@@ -31,7 +31,10 @@ class ProblemsCog(HelperCog):
                 required=True,
             ),
             Option(
-                name="guild_id", description="the guild id", type=OptionType.INTEGER
+                name="guild_id", 
+                description="the guild id", 
+                type=OptionType.INTEGER,
+                required=False
             ),
             Option(
                 name="new_question",
@@ -48,13 +51,20 @@ class ProblemsCog(HelperCog):
         ],
     )
     async def edit_problem(
-        self, inter, problem_id, new_question=None, new_answer=None, guild_id="null"
-    ):
+        self,
+        inter: dislash.SlashInteraction, 
+        problem_id: int, 
+        new_question: str =None, 
+        new_answer: str =None, 
+        guild_id: int ="null"
+    ) -> typing.Optional[nextcord.Message]:
         """/edit_problem problem_id:
         Allows you to edit a math problem."""
         await cooldowns.check_for_cooldown(inter, "edit_problem", 0.5)
         try:
-            problem = await self.cache.get_problem(int(guild_id), int(problem_id))
+            problem = await self.cache.get_problem(
+                int(guild_id), 
+                int(problem_id))
             if not problem.is_author(inter.author):
                 await inter.reply(
                     embed=ErrorEmbed(
@@ -62,12 +72,12 @@ class ProblemsCog(HelperCog):
                     )
                 )
                 return
-        except KeyError:
+        except ProblemNotFound:
             await inter.reply(embed=ErrorEmbed("This problem does not exist."))
             return
         e = "Successfully"
-        if new_question != None:
-            if new_answer != None:
+        if new_question is not None:
+            if new_answer is not None:
                 await problem.edit(question=new_question, answer=new_answer)
                 e += f"changed the answer to {new_answer} and question to {new_question}!"
             else:
@@ -78,9 +88,11 @@ class ProblemsCog(HelperCog):
                 await problem.edit(answer=new_answer)
                 e += f"changed the answer to {new_answer}"
             else:
-                raise Exception(
-                    "*** No new answer or new question provided. Aborting command...***"
-                )
+                #raise Exception(
+                #    "*** No new answer or new question provided. Aborting command...***"
+                #)
+                #Return error messages in favor of raising exceptions
+                return await inter.reply("You must provide a ")
 
         await inter.reply(embed=SuccessEmbed(e), ephemeral=True)
 
@@ -115,7 +127,12 @@ class ProblemsCog(HelperCog):
         ],
     )
     async def show_problem_info(
-        self, inter, problem_id, show_all_data=False, raw=False, is_guild_problem=False
+        self, 
+        inter: dislash.SlashInteraction, 
+        problem_id: int, 
+        show_all_data: bool =False, 
+        raw: bool =False, 
+        is_guild_problem: bool =False
     ):
         "Show the info of a problem."
         await cooldowns.check_for_cooldown(inter, "edit_problem", 0.5)
@@ -128,19 +145,28 @@ class ProblemsCog(HelperCog):
             ) from exc
 
         real_guild_id = str(inter.guild.id) if is_guild_problem else "null"
-        problem = await self.cache.get_problem(real_guild_id, str(problem_id))
+        try:
+            problem = await self.cache.get_problem(real_guild_id, str(problem_id))
+        except ProblemNotFound:
+            await inter.reply(
+                embed=ErrorEmbed("Problem not found.")
+                )
+            return
 
         if True:
             if is_guild_problem and guild_id is None:
                 embed1 = ErrorEmbed(
-                    description="Run this command in the discord server which has this problem, not a DM!"
+                    description="Run this command in the Discord server which has this problem, not a DM!"
                 )
                 inter.reply(embed=embed1)
                 return
             problem = await self.cache.get_problem(
-                str(inter.guild.id) if is_guild_problem else "null", str(problem_id)
+                int(inter.guild.id) if is_guild_problem else "_global", str(problem_id)
             )
-            Problem__ = f"Question: {problem.get_question()}\nAuthor: {str(problem.get_author())}\nNumVoters/Vote Threshold: {problem.get_num_voters()}/{self.bot.vote_threshold}\nNumSolvers: {len(problem.get_solvers())}"
+            Problem_as_str = f"""Question: {problem.get_question()}
+Author: {str(problem.get_author())}
+NumVoters/Vote Threshold: {problem.get_num_voters()}/{self.bot.vote_threshold}
+NumSolvers: {len(problem.get_solvers())}"""
 
             if show_all_data:
                 if not (
@@ -149,22 +175,26 @@ class ProblemsCog(HelperCog):
                         or inter.author.id not in self.bot.trusted_users
                         or (
                             is_guild_problem
-                            and inter.author.guild_permissions.administrator == True
+                            and inter.author.guild_permissions.administrator
                         )
                     )
                 ):  # Check for sufficient permissions
                     await inter.reply(
-                        embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True
+                        embed=ErrorEmbed(
+                            "Insufficient permissions!"
+                            ), ephemeral=True
                     )
                     return
-                Problem__ += f"\nAnswer: {problem.get_answer}"
+                Problem_as_str += f"\nAnswer: {problem.get_answer}"
 
             if raw:
                 await inter.reply(
-                    embed=SuccessEmbed(str(problem.convert_to_dict())), ephemeral=True
+                    embed=SuccessEmbed(str(
+                        problem.to_dict()
+                        )), ephemeral=True
                 )
                 return
-            await inter.reply(embed=SuccessEmbed(Problem__), ephemeral=True)
+            await inter.reply(embed=SuccessEmbed(Problem_as_str), ephemeral=True)
 
     @slash_command(
         name="list_all_problem_ids",
@@ -178,7 +208,9 @@ class ProblemsCog(HelperCog):
             )
         ],
     )
-    async def list_all_problem_ids(self, inter, show_only_guild_problems=False):
+    async def list_all_problem_ids(self, inter, 
+        show_only_guild_problems=False
+    ):
         "Lists all problem ids."
         await cooldowns.check_for_cooldown(inter, "list_all_problem_ids", 2.5)
         if show_only_guild_problems:
@@ -191,18 +223,22 @@ class ProblemsCog(HelperCog):
                 return
             if show_only_guild_problems:
                 guild_problems = await self.bot.cache.get_guild_problems(inter.guild)
+                    
             else:
                 guild_problems = await self.bot.cache.get_global_problems()
             thing_to_write = [str(problem) for problem in guild_problems]
             await inter.reply(
                 embed=SuccessEmbed(
-                    "\n".join(thing_to_write)[:1950], successTitle="Problem IDs:"
+                    "\n".join(thing_to_write)[:1950], 
+                    successTitle="Problem IDs:"
                 )
             )
             return
 
         global_problems = await self.bot.cache.get_global_problems()
-        thing_to_write = "\n".join([str(problem.id) for problem in global_problems])
+        thing_to_write = "\n".join(
+            [str(problem.id) for problem in global_problems]
+            )
         await inter.send(embed=SuccessEmbed(thing_to_write))
 
     @slash_command(
