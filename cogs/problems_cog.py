@@ -1,7 +1,7 @@
 from .helper_cog import HelperCog
 from helpful_modules.problems_module import *
 from helpful_modules import cooldowns
-from helpful_modules.custom_embeds import *
+from helpful_modules.custom_embeds import SimpleEmbed, SuccessEmbed, ErrorEmbed
 import dislash, nextcord
 from asyncio import run
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
@@ -257,12 +257,16 @@ class ProblemsCog(HelperCog):
         problem_info_as_str = ""
         problem_info_as_str += "Problem Id \t Question \t numVotes \t numSolvers"
         if show_guild_problems:
-            for problem in await self.cache.get_guild_problems(inter.guild):
+            for problem in await self.cache.get_guild_problems(guild_id):
                 if len(problem_info_as_str) >= 1930:
-                    problem_info_as_str += "The combined length of the questions is too long.... shortening it!"  # May be removed
-                    await inter.reply(embed=SuccessEmbed(problem_info_as_str[:1930]))
+                    problem_info_as_str += (
+                        "The combined length of the questions is too long.... shortening it!"
+                        )  # May be removed
+                    await inter.reply(embed=SuccessEmbed(
+                        problem_info_as_str[:1930])
+                    )
                     return
-                if not (showSolvedProblems) and problem.is_solver(inter.author):
+                if not (showSolvedProblems) and problem.is_solver(inter.author): #If the user solved the problem, don't show the problem
                     continue
                 problem_info_as_str += "\n"
                 problem_info_as_str += str(problem.id) + "\t"
@@ -286,15 +290,20 @@ class ProblemsCog(HelperCog):
         global_problems = await self.bot.get_global_problems()
         for problem in global_problems:
             if len(problem) >= 1930:
-                problem_info_as_str += "The combined length of the questions is too long.... shortening it!"
-                await inter.reply(embed=SuccessEmbed(problem_info_as_str[:1930]))
+                problem_info_as_str += (
+                    "The combined length of the questions is too long.... shortening it!"
+                )
+                await inter.reply(embed=SuccessEmbed(
+                    problem_info_as_str[:1930]
+                    ))
                 return
-            if not isinstance(problem, problems_module.MathProblem):
+            if not isinstance(problem, problems_module.BaseProblem):
                 print(list(global_problems))
                 raise RuntimeError(
                     "Uhhhhhhh..... the problem is not a MathProblem! Please help :-)"
                 )  # For some reason..... the problem is an Integer, not a MathProblem...
                 # For now, I could get the problem.... (it looks like an ID, but I should find the root cause first)
+                #Problem partially solved?
             if not (showSolvedProblems) and problem.is_solver(inter.author):
                 continue
             # Probably will be overhauled with str(problem)
@@ -322,7 +331,8 @@ class ProblemsCog(HelperCog):
         "Delete all automatically generated problems"
 
         await inter.reply(
-            embed=SimpleEmbed("", description="Attempting to delete bot problems"),
+            embed=SimpleEmbed("", 
+            description="Attempting to delete bot problems"),
             ephemeral=True,
         )  # may get rid of later? :)
         numDeletedProblems = 0
@@ -373,9 +383,12 @@ class ProblemsCog(HelperCog):
 
         await cooldowns.check_for_cooldown(inter, "submit_problem", 5)
 
-        if inter.guild != None and inter.guild.id not in self.cache.get_guilds():
+        if (
+            inter.guild is not None 
+            and inter.guild.id not in self.cache.get_guilds()
+        ):
             self.bot.cache.add_empty_guild(inter.guild)
-        if len(question) > 250:
+        if len(question) > self.cache.max_question_length:
             await inter.reply(
                 embed=ErrorEmbed(
                     "Your question is too long! Therefore, it cannot be added. The maximum question length is 250 characters.",
@@ -384,7 +397,7 @@ class ProblemsCog(HelperCog):
                 ephemeral=True,
             )
             return
-        if len(answer) > 100:
+        if len(answer) > self.cache.max_answer_length:
             await inter.reply(
                 embed=ErrorEmbed(
                     description="Your answer is longer than 100 characters. Therefore, it is too long and cannot be added.",
@@ -392,7 +405,7 @@ class ProblemsCog(HelperCog):
                 ),
                 ephemeral=True,
             )
-            remover = threading.Thread(target=asyncio.run, args=(self))
+            remover = threading.Thread(target=run, args=(self.cache.remove_duplicate_problems))
             remover.start()
             return
         if guild_question:
@@ -411,10 +424,11 @@ class ProblemsCog(HelperCog):
             guild_id = inter.guild.id
         except AssertionError:
             await inter.reply(
-                "In order to submit a problem for your guild, you must not be executing this command in a DM context!"
+                "In order to submit a problem for your guild, you must not be executing this command in a DM!"
             )
+            return
         if (
-            inter.guild == None or not guild_question
+            inter.guild is None or not guild_question
         ):  # There is no maximum global problem limit
             pass
         elif (
@@ -427,7 +441,8 @@ class ProblemsCog(HelperCog):
                 embed=ErrorEmbed(
                     f"You have reached the guild math problem limit of {self.cache.max_guild_problems} and therefore cannot create new problems!"
                     + (
-                        "This is to prevent spam. As of right now, there is no way to increase the guild problem limit (since there is no premium version)"
+                        """This is to prevent spam. 
+                        As of right now, there is no way to increase the guild problem limit (since there is no premium version)"""
                     )
                 )
             )
@@ -498,13 +513,16 @@ class ProblemsCog(HelperCog):
         self, inter, problem_id, answer, checking_guild_problem=False
     ):
         """/check_answer {problem_id} {answer_id} [checking_guild_problem = False]
-        Check your answer to the problem with the given id. If the problem is"""
+        Check your answer to the problem with the given id. 
+        The bot will tell you whether you got a problem wrong"""
         await cooldowns.check_for_cooldown(inter, "check_answer", 5)
         try:
             problem = await self.cache.get_problem(
-                inter.guild.id if checking_guild_problem else "null", str(problem_id)
+                inter.guild.id if checking_guild_problem else "null", 
+                str(problem_id)
             )
-            if problem.is_solver(inter.author):
+            #Make sure the author didn't already solve this problem
+            if problem.is_solver(inter.author): 
                 await inter.reply(
                     embed=ErrorEmbed(
                         "You have already solved this problem!",
@@ -513,19 +531,20 @@ class ProblemsCog(HelperCog):
                     ephemeral=True,
                 )
                 return
-        except KeyError:
+        except (KeyError, ProblemNotFound):
             await inter.reply(
                 embed=ErrorEmbed(
-                    "This problem doesn't exist!", custom_title="Nonexistant problem."
+                    "This problem doesn't exist!", 
+                    custom_title="Nonexistant problem."
                 ),
                 ephemeral=True,
             )
             return
-
+        #Should reverse this
         if not problem.check_answer(answer):
             await inter.reply(
                 embed=ErrorEmbed(
-                    "Sorry..... but you got it wrong! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.",
+                    "You didn't answer the problem correctly! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.",
                     custom_title="Sorry, your answer is wrong.",
                 ),
                 ephemeral=True,

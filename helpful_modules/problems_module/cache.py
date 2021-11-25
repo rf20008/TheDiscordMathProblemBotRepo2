@@ -40,7 +40,7 @@ class MathProblemCache:
         self.use_cached_problems = use_cached_problems
         self._max_answer = max_answer_length
         self._max_question = max_question_limit
-        self._guild_limit = max_guild_problems
+        self._max_guild_limit = max_guild_problems
         asyncio.run(self.initialize_sql_table())
         self.update_cache_by_default_when_requesting = (
             update_cache_by_default_when_requesting
@@ -109,7 +109,7 @@ class MathProblemCache:
 
     @property
     def max_guild_problems(self):
-        return self._guild_limit
+        return self._max_guild_limit
 
     def convert_to_dict(self):
         "A method that converts self to a dictionary (not used, will probably be removed soon)"

@@ -32,25 +32,29 @@ class DeveloperCommands(HelperCog):
         description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!",
     )
     @checks.trusted_users_only()
-    async def force_load_files(self, inter):
+    async def force_load_files(self, inter) -> None:
         "Forcefully load files"
 
         if inter.author.id not in self.bot.trusted_users:
             await inter.reply(
                 ErrorEmbed(
-                    "You aren't a trusted user! and therefore don't have permission to force-load files."
+                    """You aren't a trusted user.
+                    Therefore, you don't have permission to force-load files."""
                 )
             )
             return
         try:
             FileSaver3 = FileSaver(enabled=True, printSuccessMessagesByDefault=False)
             FileSaverDict = FileSaver3.load_files(self.bot.main_cache)
-            (guildMathProblems, self.bot.trusted_users, self.bot.vote_threshold) = (
+            (guildMathProblems, 
+            self.bot.trusted_users, 
+            self.bot.vote_threshold) = (
                 FileSaverDict["guildMathProblems"],
                 FileSaverDict["trusted_users"],
                 FileSaverDict["vote_threshold"],
             )
             FileSaver3.goodbye()
+            del guildMathProblems
             await inter.reply(
                 embed=SuccessEmbed("Successfully forcefully loaded files!")
             )
