@@ -3,6 +3,7 @@ from helpful_modules.problems_module import *
 from helpful_modules import cooldowns
 from helpful_modules.custom_embeds import *
 import dislash, nextcord
+from asyncio import run
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 from helpful_modules import checks, cooldowns, problems_module
 import aiosqlite
@@ -247,7 +248,7 @@ class ProblemsCog(HelperCog):
         else:
             guild_id = "null"
         # Check for no problems
-        if await self.bot.cache.get_guild_problems(inter.guild) == {}:
+        if await self.bot.cache.get_guild_problems(inter.guild) == 0:
             await inter.reply("No problems currently exist.")
             return
         # if not showSolvedProblems and False not in [inter.author.id in mathProblems[id]["solvers"] for id in mathProblems.keys()] or (show_guild_problems and (show_only_guild_problems and (guildMathProblems[inter.guild.id] == {}) or False not in [inter.author.id in guildMathProblems[guild_id][id]["solvers"] for id in guildMathProblems[guild_id].keys()])) or show_guild_problems and not show_only_guild_problems and False not in [inter.author.id in mathProblems[id]["solvers"] for id in mathProblems.keys()] and False not in [inter.author.id in guildMathProblems[guild_id][id]["solvers"] for id in guildMathProblems[guild_id].keys()]:
@@ -391,7 +392,7 @@ class ProblemsCog(HelperCog):
                 ),
                 ephemeral=True,
             )
-            remover = threading.Thread(target=self.cache.remove_duplicate_problems)
+            remover = threading.Thread(target=asyncio.run, args=(self))
             remover.start()
             return
         if guild_question:

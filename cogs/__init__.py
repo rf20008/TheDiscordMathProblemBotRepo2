@@ -1,4 +1,5 @@
 # The cogs folder! This contains all my cogs
+"A folder containing all the import cogs!"
 from .developer_commands import DeveloperCommands
 from .helper_cog import HelperCog
 from .problems_cog import ProblemsCog

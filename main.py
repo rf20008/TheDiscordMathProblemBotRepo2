@@ -36,7 +36,7 @@ from copy import copy
 # Imports - My own files
 from helpful_modules import _error_logging, checks, cooldowns
 from helpful_modules import custom_embeds, problems_module
-from helpful_modules import return_intents, save_files, the_documentation_file_loader
+from helpful_modules import save_files, the_documentation_file_loader, return_intents
 from helpful_modules.threads_or_useful_funcs import *
 
 # might be replaced with from helpful_modules import * and using __all__
@@ -111,10 +111,9 @@ def get_git_revision_hash() -> str:
 # Bot creation
 
 asyncio.set_event_loop(asyncio.new_event_loop())  # Otherwise, weird errors will happen
-Intents = return_intents.return_intents()
 bot = nextcord_commands.Bot(
     command_prefix=" ",
-    intents=Intents,
+    intents=return_intents.return_intents(),
     application_id=845751152901750824,
     status=nextcord.Status.idle,
     # activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂") # This didn't work anyway, will set the activity in on_connect

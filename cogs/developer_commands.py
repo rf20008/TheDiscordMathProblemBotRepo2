@@ -1,16 +1,16 @@
 "Admin-related commands"
-import random, os, warnings, threading, copy, nextcord, subprocess
-import dislash, traceback
+import random
+import dislash
 
 import nextcord.ext.commands as nextcord_commands
 from dislash import *
-from time import sleep, time, asctime
 
 from .helper_cog import HelperCog
 from helpful_modules import checks, cooldowns, the_documentation_file_loader
 from helpful_modules.custom_embeds import *
 
-from helpful_modules.save_files import FileSaver, problems_module
+from helpful_modules.save_files import FileSaver
+from helpful_modules import problems_module
 from helpful_modules.threads_or_useful_funcs import generate_new_id
 
 slash = None
