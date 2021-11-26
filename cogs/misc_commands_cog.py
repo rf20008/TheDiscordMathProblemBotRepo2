@@ -2,8 +2,9 @@ from dislash import *
 import nextcord
 from .helper_cog import HelperCog
 from sys import version_info, version
-from helpful_modules import checks, cooldowns
-from helpful_modules.custom_embeds import *
+from helpful_modules import cooldowns
+from helpful_modules.custom_embeds import SimpleEmbed, ErrorEmbed, SuccessEmbed
+from helpful_modules.save_files import FileSaver
 from helpful_modules.threads_or_useful_funcs import get_git_revision_hash
 from asyncio import sleep as asyncio_sleep
 import resource
@@ -57,7 +58,6 @@ class MiscCommandsCog(HelperCog):
             )
 
             memory_limit = resource.getrlimit(resource.RUSAGE_SELF)[0]
-            max_cpu = resource.RLIMIT_CPU
             current_usage = resource.getrusage(resource.RUSAGE_SELF)
 
             embed = embed.add_field(
@@ -67,9 +67,13 @@ class MiscCommandsCog(HelperCog):
 
         await inter.reply(embed=embed)
 
-    @slash_command(name="list_trusted_users", description="list all trusted users")
+    @slash_command(
+        name="list_trusted_users", 
+        description="list all trusted users"
+    )
+    @nextcord.ext.commands.cooldown(1, 5, nextcord.ext.commands.BucketType.user) # 5 second user cooldown
     async def list_trusted_users(self, inter):
-        "List all trusted users with username/discriminator"
+        "List all trusted users in username#discriminator format (takes no arguments)"
         await inter.reply(type=5)  # Defer
         # We might not be able to respond in time because of the 100ms delay between user fetching
         # This is to respect the API rate limit.
@@ -81,16 +85,40 @@ class MiscCommandsCog(HelperCog):
         __trusted_users = ""
 
         for user_id in self.bot.trusted_users:
-            user = await self.bot.fetch_user(user_id=user_id)
-            __trusted_users += f"""{user.name}#{user.discriminator}
+            try:
+                user = await self.bot.fetch_user(user_id=user_id)
+                __trusted_users += f"""{user.name}#{user.discriminator}
             """
-            await asyncio_sleep(
-                0.1
-            )  # 100 ms between fetching to respect the rate limit (and to prevent spam)
+            except nextcord.NotFound:
+                #A user with this ID does not exist
+                self.bot.trusted_users.remove(user_id) # delete the user!
+                try:
+                    f = FileSaver(name=4,enabled=True)
+                    f.save_files(
+                        self.bot.cache,
+                        vote_threshold=self.bot.vote_threshold,
+                        trusted_users_list=self.bot.trusted_users
+                    )
+                    f.goodbye() # This should delete it
+                    try:
+                        del f
+                    except NameError:
+                        pass
+                except BaseException as e:
+                    raise RuntimeError("Could not save the files after removing the trusted user with ID that does not exist!") from e
+            except nextcord.Forbidden as exc: #Cannot fetch this user!
+                raise RuntimeError('Cannot fetch users') from exc
+            else:
+                await asyncio_sleep(
+                    0.1
+                )  # 100 ms between fetching to respect the rate limit (and to prevent spam)
 
         await inter.reply(__trusted_users, ephemeral=True)
 
-    @slash_command(name="ping", description="Prints latency and takes no arguments")
+    @slash_command(
+        name="ping", 
+        description="Prints latency and takes no arguments"
+    )
     async def ping(self, inter):
         "Ping the bot which returns its latency!"
         await cooldowns.check_for_cooldown(inter, "ping", 5)
@@ -105,11 +133,13 @@ class MiscCommandsCog(HelperCog):
         name="what_is_vote_threshold",
         description="Prints the vote threshold and takes no arguments",
     )
-    async def what_is_vote_threshold(self, inter):
+    async def what_is_vote_threshold(self, inter: SlashInteraction):
         "Returns the vote threshold"
         await cooldowns.check_for_cooldown(inter, "what_is_vote_threshold", 5)
         await inter.reply(
-            embed=SuccessEmbed(f"The vote threshold is {self.bot.vote_threshold}."),
+            embed=SuccessEmbed(
+                f"The vote threshold is {self.bot.vote_threshold}."
+            ),
             ephemeral=True,
         )
 

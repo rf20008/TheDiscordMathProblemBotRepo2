@@ -202,7 +202,9 @@ async def on_slash_command_error(inter, error, print_stack_traceback=[True, stde
             ),
             file=print_stack_traceback[1],
         )
-
+    if isinstance(error, BaseException) and not isinstance(error, Exception):
+        # Errors that do not inherit from Exception are not meant to be caught
+        raise
     if isinstance(error, OnCooldown):
         await inter.reply(str(error))
         return
