@@ -31,10 +31,10 @@ class ProblemsCog(HelperCog):
                 required=True,
             ),
             Option(
-                name="guild_id", 
-                description="the guild id", 
+                name="guild_id",
+                description="the guild id",
                 type=OptionType.INTEGER,
-                required=False
+                required=False,
             ),
             Option(
                 name="new_question",
@@ -52,19 +52,17 @@ class ProblemsCog(HelperCog):
     )
     async def edit_problem(
         self,
-        inter: dislash.SlashInteraction, 
-        problem_id: int, 
-        new_question: str =None, 
-        new_answer: str =None, 
-        guild_id: int ="null"
+        inter: dislash.SlashInteraction,
+        problem_id: int,
+        new_question: str = None,
+        new_answer: str = None,
+        guild_id: int = "null",
     ) -> typing.Optional[nextcord.Message]:
         """/edit_problem problem_id:
         Allows you to edit a math problem."""
         await cooldowns.check_for_cooldown(inter, "edit_problem", 0.5)
         try:
-            problem = await self.cache.get_problem(
-                int(guild_id), 
-                int(problem_id))
+            problem = await self.cache.get_problem(int(guild_id), int(problem_id))
             if not problem.is_author(inter.author):
                 await inter.reply(
                     embed=ErrorEmbed(
@@ -88,10 +86,10 @@ class ProblemsCog(HelperCog):
                 await problem.edit(answer=new_answer)
                 e += f"changed the answer to {new_answer}"
             else:
-                #raise Exception(
+                # raise Exception(
                 #    "*** No new answer or new question provided. Aborting command...***"
-                #)
-                #Return error messages in favor of raising exceptions
+                # )
+                # Return error messages in favor of raising exceptions
                 return await inter.reply("You must provide a ")
 
         await inter.reply(embed=SuccessEmbed(e), ephemeral=True)
@@ -127,12 +125,12 @@ class ProblemsCog(HelperCog):
         ],
     )
     async def show_problem_info(
-        self, 
-        inter: dislash.SlashInteraction, 
-        problem_id: int, 
-        show_all_data: bool =False, 
-        raw: bool =False, 
-        is_guild_problem: bool =False
+        self,
+        inter: dislash.SlashInteraction,
+        problem_id: int,
+        show_all_data: bool = False,
+        raw: bool = False,
+        is_guild_problem: bool = False,
     ):
         "Show the info of a problem."
         await cooldowns.check_for_cooldown(inter, "edit_problem", 0.5)
@@ -148,9 +146,7 @@ class ProblemsCog(HelperCog):
         try:
             problem = await self.cache.get_problem(real_guild_id, str(problem_id))
         except ProblemNotFound:
-            await inter.reply(
-                embed=ErrorEmbed("Problem not found.")
-                )
+            await inter.reply(embed=ErrorEmbed("Problem not found."))
             return
 
         if True:
@@ -180,18 +176,14 @@ NumSolvers: {len(problem.get_solvers())}"""
                     )
                 ):  # Check for sufficient permissions
                     await inter.reply(
-                        embed=ErrorEmbed(
-                            "Insufficient permissions!"
-                            ), ephemeral=True
+                        embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True
                     )
                     return
                 Problem_as_str += f"\nAnswer: {problem.get_answer}"
 
             if raw:
                 await inter.reply(
-                    embed=SuccessEmbed(str(
-                        problem.to_dict()
-                        )), ephemeral=True
+                    embed=SuccessEmbed(str(problem.to_dict())), ephemeral=True
                 )
                 return
             await inter.reply(embed=SuccessEmbed(Problem_as_str), ephemeral=True)
@@ -208,9 +200,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             )
         ],
     )
-    async def list_all_problem_ids(self, inter, 
-        show_only_guild_problems=False
-    ):
+    async def list_all_problem_ids(self, inter, show_only_guild_problems=False):
         "Lists all problem ids."
         await cooldowns.check_for_cooldown(inter, "list_all_problem_ids", 2.5)
         if show_only_guild_problems:
@@ -223,22 +213,19 @@ NumSolvers: {len(problem.get_solvers())}"""
                 return
             if show_only_guild_problems:
                 guild_problems = await self.bot.cache.get_guild_problems(inter.guild)
-                    
+
             else:
                 guild_problems = await self.bot.cache.get_global_problems()
             thing_to_write = [str(problem) for problem in guild_problems]
             await inter.reply(
                 embed=SuccessEmbed(
-                    "\n".join(thing_to_write)[:1950], 
-                    successTitle="Problem IDs:"
+                    "\n".join(thing_to_write)[:1950], successTitle="Problem IDs:"
                 )
             )
             return
 
         global_problems = await self.bot.cache.get_global_problems()
-        thing_to_write = "\n".join(
-            [str(problem.id) for problem in global_problems]
-            )
+        thing_to_write = "\n".join([str(problem.id) for problem in global_problems])
         await inter.send(embed=SuccessEmbed(thing_to_write))
 
     @slash_command(
@@ -295,14 +282,12 @@ NumSolvers: {len(problem.get_solvers())}"""
         if show_guild_problems:
             for problem in await self.cache.get_guild_problems(guild_id):
                 if len(problem_info_as_str) >= 1930:
-                    problem_info_as_str += (
-                        "The combined length of the questions is too long.... shortening it!"
-                        )  # May be removed
-                    await inter.reply(embed=SuccessEmbed(
-                        problem_info_as_str[:1930])
-                    )
+                    problem_info_as_str += "The combined length of the questions is too long.... shortening it!"  # May be removed
+                    await inter.reply(embed=SuccessEmbed(problem_info_as_str[:1930]))
                     return
-                if not (showSolvedProblems) and problem.is_solver(inter.author): #If the user solved the problem, don't show the problem
+                if not (showSolvedProblems) and problem.is_solver(
+                    inter.author
+                ):  # If the user solved the problem, don't show the problem
                     continue
                 problem_info_as_str += "\n"
                 problem_info_as_str += str(problem.id) + "\t"
@@ -326,12 +311,8 @@ NumSolvers: {len(problem.get_solvers())}"""
         global_problems = await self.bot.get_global_problems()
         for problem in global_problems:
             if len(problem) >= 1930:
-                problem_info_as_str += (
-                    "The combined length of the questions is too long.... shortening it!"
-                )
-                await inter.reply(embed=SuccessEmbed(
-                    problem_info_as_str[:1930]
-                    ))
+                problem_info_as_str += "The combined length of the questions is too long.... shortening it!"
+                await inter.reply(embed=SuccessEmbed(problem_info_as_str[:1930]))
                 return
             if not isinstance(problem, problems_module.BaseProblem):
                 print(list(global_problems))
@@ -339,7 +320,7 @@ NumSolvers: {len(problem.get_solvers())}"""
                     "Uhhhhhhh..... the problem is not a MathProblem! Please help :-)"
                 )  # For some reason..... the problem is an Integer, not a MathProblem...
                 # For now, I could get the problem.... (it looks like an ID, but I should find the root cause first)
-                #Problem partially solved?
+                # Problem partially solved?
             if not (showSolvedProblems) and problem.is_solver(inter.author):
                 continue
             # Probably will be overhauled with str(problem)
@@ -367,8 +348,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         "Delete all automatically generated problems"
 
         await inter.reply(
-            embed=SimpleEmbed("", 
-            description="Attempting to delete bot problems"),
+            embed=SimpleEmbed("", description="Attempting to delete bot problems"),
             ephemeral=True,
         )  # may get rid of later? :)
         numDeletedProblems = 0
@@ -419,10 +399,7 @@ NumSolvers: {len(problem.get_solvers())}"""
 
         await cooldowns.check_for_cooldown(inter, "submit_problem", 5)
 
-        if (
-            inter.guild is not None 
-            and inter.guild.id not in self.cache.get_guilds()
-        ):
+        if inter.guild is not None and inter.guild.id not in self.cache.get_guilds():
             self.bot.cache.add_empty_guild(inter.guild)
         if len(question) > self.cache.max_question_length:
             await inter.reply(
@@ -441,7 +418,9 @@ NumSolvers: {len(problem.get_solvers())}"""
                 ),
                 ephemeral=True,
             )
-            remover = threading.Thread(target=run, args=(self.cache.remove_duplicate_problems))
+            remover = threading.Thread(
+                target=run, args=(self.cache.remove_duplicate_problems)
+            )
             remover.start()
             return
         if guild_question:
@@ -549,16 +528,15 @@ NumSolvers: {len(problem.get_solvers())}"""
         self, inter, problem_id, answer, checking_guild_problem=False
     ):
         """/check_answer {problem_id} {answer_id} [checking_guild_problem = False]
-        Check your answer to the problem with the given id. 
+        Check your answer to the problem with the given id.
         The bot will tell you whether you got a problem wrong"""
         await cooldowns.check_for_cooldown(inter, "check_answer", 5)
         try:
             problem = await self.cache.get_problem(
-                inter.guild.id if checking_guild_problem else "null", 
-                str(problem_id)
+                inter.guild.id if checking_guild_problem else "null", str(problem_id)
             )
-            #Make sure the author didn't already solve this problem
-            if problem.is_solver(inter.author): 
+            # Make sure the author didn't already solve this problem
+            if problem.is_solver(inter.author):
                 await inter.reply(
                     embed=ErrorEmbed(
                         "You have already solved this problem!",
@@ -570,13 +548,12 @@ NumSolvers: {len(problem.get_solvers())}"""
         except (KeyError, ProblemNotFound):
             await inter.reply(
                 embed=ErrorEmbed(
-                    "This problem doesn't exist!", 
-                    custom_title="Nonexistant problem."
+                    "This problem doesn't exist!", custom_title="Nonexistant problem."
                 ),
                 ephemeral=True,
             )
             return
-        #Should reverse this
+        # Should reverse this
         if not problem.check_answer(answer):
             await inter.reply(
                 embed=ErrorEmbed(

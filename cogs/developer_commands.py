@@ -46,9 +46,7 @@ class DeveloperCommands(HelperCog):
         try:
             FileSaver3 = FileSaver(enabled=True, printSuccessMessagesByDefault=False)
             FileSaverDict = FileSaver3.load_files(self.bot.main_cache)
-            (guildMathProblems, 
-            self.bot.trusted_users, 
-            self.bot.vote_threshold) = (
+            (guildMathProblems, self.bot.trusted_users, self.bot.vote_threshold) = (
                 FileSaverDict["guildMathProblems"],
                 FileSaverDict["trusted_users"],
                 FileSaverDict["vote_threshold"],
