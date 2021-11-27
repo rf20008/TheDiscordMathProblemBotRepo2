@@ -71,6 +71,7 @@ class MiscCommandsCog(HelperCog):
     @nextcord.ext.commands.cooldown(
         1, 5, nextcord.ext.commands.BucketType.user
     )  # 5 second user cooldown
+    @nextcord.ext.commands.guild_only # Due to bugs, it doesn't work in DM's
     async def list_trusted_users(self, inter):
         "List all trusted users in username#discriminator format (takes no arguments)"
         await inter.reply(type=5)  # Defer
@@ -117,6 +118,7 @@ class MiscCommandsCog(HelperCog):
         await inter.reply(__trusted_users, ephemeral=True)
 
     @slash_command(name="ping", description="Prints latency and takes no arguments")
+    
     async def ping(self, inter):
         "Ping the bot which returns its latency!"
         await cooldowns.check_for_cooldown(inter, "ping", 5)
