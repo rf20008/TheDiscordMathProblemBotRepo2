@@ -74,7 +74,8 @@ class MiscCommandsCog(HelperCog):
     @nextcord.ext.commands.guild_only() # Due to bugs, it doesn't work in DM's
     async def list_trusted_users(self, inter):
         "List all trusted users in username#discriminator format (takes no arguments)"
-        await inter.reply(type=5)  # Defer
+        #await inter.reply(type=5)  # Defer
+        #Deferring might be unnecessary & and cause errors
         # We might not be able to respond in time because of the 100ms delay between user fetching
         # This is to respect the API rate limit.
         if len(self.bot.trusted_users) == 0:
