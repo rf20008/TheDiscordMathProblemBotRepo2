@@ -2,6 +2,7 @@ from dislash import *
 import nextcord
 from .helper_cog import HelperCog
 from sys import version_info, version
+from os import cpu_count
 from helpful_modules import cooldowns
 from helpful_modules.custom_embeds import SimpleEmbed, ErrorEmbed, SuccessEmbed
 from helpful_modules.save_files import FileSaver
@@ -11,7 +12,7 @@ import resource
 
 
 class MiscCommandsCog(HelperCog):
-    def __init__(self, bot):
+    def __init__(self, bot: nextcord.ext.commands.Bot):
         super().__init__(bot)
         self.bot = bot
 
@@ -27,7 +28,10 @@ class MiscCommandsCog(HelperCog):
             )
         ],
     )
-    async def info(self, inter, include_extra_info=False):
+    @nextcord.ext.commands.cooldown(1,0.5,nextcord.ext.commands.BucketType.user)
+    async def info(self, inter: SlashInteraction, include_extra_info: bool=False):
+        """/info [include_extra_info: bool = False]
+        Show bot info. include_extra_info shows technical information!"""
         embed = SimpleEmbed(title="Bot info", description="")
         embed = embed.add_field(
             name="Original Bot Developer", value="ay136416#2707", inline=False
@@ -64,14 +68,23 @@ class MiscCommandsCog(HelperCog):
                 name="Memory Usage",
                 value=f"{round((current_usage[3]/memory_limit)*1000)/100}%",
             )
-
+            embed = embed.add_field(
+                name = "CPU count (which may not necessarily be the amount of CPU avaliable to the bot due to a Python limitation)",
+                value = str(cpu_count)
+                
+            )
         await inter.reply(embed=embed)
 
     @slash_command(name="list_trusted_users", description="list all trusted users")
     @nextcord.ext.commands.cooldown(
         1, 5, nextcord.ext.commands.BucketType.user
-    )  # 5 second user cooldown
+
+      )  # 5 second user cooldown
+    @nextcord.ext.commands.cooldown(
+        20, 50, nextcord.ext.commands.BucketType.default
+    ) #20 times before a global cooldown of 50 seconds is established
     @nextcord.ext.commands.guild_only() # Due to bugs, it doesn't work in DM's
+
     async def list_trusted_users(self, inter):
         "List all trusted users in username#discriminator format (takes no arguments)"
         #await inter.reply(type=5)  # Defer
@@ -159,8 +172,8 @@ class MiscCommandsCog(HelperCog):
     @slash_command(
         name="github_repo", description="Returns the link to the github repo"
     )
+    @nextcord.ext.commands.cooldown(2, 120, nextcord.ext.commands.BucketType.user)
     async def github_repo(inter):
-        await cooldowns.check_for_cooldown(inter, "github_repo", 5)
         await inter.reply(
             embed=SuccessEmbed(
                 "[Repo Link:](https://github.com/rf20008/TheDiscordMathProblemBotRepo) ",

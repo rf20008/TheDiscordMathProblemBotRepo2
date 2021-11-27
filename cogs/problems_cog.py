@@ -617,16 +617,16 @@ NumSolvers: {len(problem.get_solvers())}"""
             problem = await self.bot.cache.get_problem(
                 inter.guild.id if checking_guild_problem else "null", str(problem_id)
             )
-            if problem.is_solver(inter.author):
+            if problem.is_solver(inter.author): #If the user solved the problem
                 await inter.reply(
                     embed=ErrorEmbed(
                         "You have already solved this problem!",
                         custom_title="Already solved.",
                     ),
                     ephemeral=True,
-                )
+                ) # Don't let them re-solve the problem
                 return
-        except KeyError:
+        except ProblemNotFound: # But if the problem wasn't found, then tell them
             await inter.reply(
                 embed=ErrorEmbed(
                     "This problem doesn't exist!", custom_title="Nonexistant problem."
