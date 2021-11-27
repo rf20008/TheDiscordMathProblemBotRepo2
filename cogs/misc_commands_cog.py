@@ -70,11 +70,13 @@ class MiscCommandsCog(HelperCog):
     @slash_command(name="list_trusted_users", description="list all trusted users")
     @nextcord.ext.commands.cooldown(
         1, 5, nextcord.ext.commands.BucketType.user
+
       )  # 5 second user cooldown
     @nextcord.ext.commands.cooldown(
         20, 50, nextcord.ext.commands.BucketType.default
     ) #20 times before a global cooldown of 50 seconds is established
-    @nextcord.ext.commands.guild_only # Due to bugs, it doesn't work in DM's
+    @nextcord.ext.commands.guild_only() # Due to bugs, it doesn't work in DM's
+
     async def list_trusted_users(self, inter):
         "List all trusted users in username#discriminator format (takes no arguments)"
         await inter.reply(type=5)  # Defer
@@ -82,8 +84,8 @@ class MiscCommandsCog(HelperCog):
         # This is to respect the API rate limit.
         if len(self.bot.trusted_users) == 0:
             await inter.reply("There are no trusted users.")
-
-            raise Exception("There are no trusted users!")
+            return
+            #raise Exception("There are no trusted users!")
 
         __trusted_users = ""
 
