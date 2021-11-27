@@ -2,6 +2,7 @@ from dislash import *
 import nextcord
 from .helper_cog import HelperCog
 from sys import version_info, version
+from os import cpu_count
 from helpful_modules import cooldowns
 from helpful_modules.custom_embeds import SimpleEmbed, ErrorEmbed, SuccessEmbed
 from helpful_modules.save_files import FileSaver
@@ -27,7 +28,10 @@ class MiscCommandsCog(HelperCog):
             )
         ],
     )
-    async def info(self, inter, include_extra_info=False):
+    @nextcord.ext.commands.cooldown(1,0.5,nextcord.ext.commands.BucketType.user)
+    async def info(self, inter: SlashInteraction, include_extra_info: bool=False):
+        """/info [include_extra_info: bool = False]
+        Show bot info. include_extra_info shows technical information!"""
         embed = SimpleEmbed(title="Bot info", description="")
         embed = embed.add_field(
             name="Original Bot Developer", value="ay136416#2707", inline=False
@@ -64,7 +68,11 @@ class MiscCommandsCog(HelperCog):
                 name="Memory Usage",
                 value=f"{round((current_usage[3]/memory_limit)*1000)/100}%",
             )
-
+            embed = embed.add_field(
+                name = "CPU count (which may not necessarily be the amount of CPU avaliable to the bot due to a Python limitation)",
+                value = str(cpu_count)
+                
+            )
         await inter.reply(embed=embed)
 
     @slash_command(name="list_trusted_users", description="list all trusted users")
