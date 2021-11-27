@@ -11,7 +11,7 @@ import resource
 
 
 class MiscCommandsCog(HelperCog):
-    def __init__(self, bot):
+    def __init__(self, bot: nextcord.ext.commands.Bot):
         super().__init__(bot)
         self.bot = bot
 
@@ -70,7 +70,10 @@ class MiscCommandsCog(HelperCog):
     @slash_command(name="list_trusted_users", description="list all trusted users")
     @nextcord.ext.commands.cooldown(
         1, 5, nextcord.ext.commands.BucketType.user
-    )  # 5 second user cooldown
+      )  # 5 second user cooldown
+    @nextcord.ext.commands.cooldown(
+        20, 50, nextcord.ext.commands.BucketType.default
+    ) #20 times before a global cooldown of 50 seconds is established
     @nextcord.ext.commands.guild_only # Due to bugs, it doesn't work in DM's
     async def list_trusted_users(self, inter):
         "List all trusted users in username#discriminator format (takes no arguments)"
@@ -158,8 +161,8 @@ class MiscCommandsCog(HelperCog):
     @slash_command(
         name="github_repo", description="Returns the link to the github repo"
     )
+    @nextcord.ext.commands.cooldown(2, 120, nextcord.ext.commands.BucketType.user)
     async def github_repo(inter):
-        await cooldowns.check_for_cooldown(inter, "github_repo", 5)
         await inter.reply(
             embed=SuccessEmbed(
                 "[Repo Link:](https://github.com/rf20008/TheDiscordMathProblemBotRepo) ",
