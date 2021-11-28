@@ -43,7 +43,7 @@ def trusted_users_only():
         if inter.author.id in bot.trusted_users:
             return True
         raise NotTrustedUser(
-            f"You aren't a trusted user, {inter.author.mention}. Therefore, you do not have permission to run this command"
+            f"You aren't a trusted user, {inter.author.mention}. Therefore, you do not have permission to run this command!"
         )
 
     return dislash.check(predicate)

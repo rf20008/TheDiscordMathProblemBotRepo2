@@ -165,9 +165,9 @@ class DeveloperCommands(HelperCog):
             ),
         ],
     )
+    @nextcord_commands.cooldown(1,5,nextcord_commands.BucketType.user)
     async def documentation(self, inter, documentation_type, help_obj):
         "Prints documentation :-)"
-        await cooldowns.check_for_cooldown(inter, "documentation", 0.1)
         if documentation_type == "documentation_link":
             await inter.reply(
                 embed=self.custom_embeds.SuccessEmbed(
