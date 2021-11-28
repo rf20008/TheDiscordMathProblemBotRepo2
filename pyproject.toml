@@ -7,7 +7,7 @@ requires = ["poetry-core>=1.0.0"]
 authors = ["ay136416 <<>>"]
 description = "An open source discord bot for quizzes!"
 name = "thediscordmathproblembot"
-version = "0.0.2a2"
+version = "0.0.3a2"
 [tool.poetry.dependencies]
 "discord.py" = {git = "https://github.com/Rapptz/discord.py.git"}
 discord-py-slash-command = "^3.0.1"
@@ -22,4 +22,5 @@ python-dotenv = "^0.19.1"
 sqldict = {git = "https://github.com/rf20008/sqldict.git", rev = "main"}
 aiosqlite = {git = "https://github.com/omnilib/aiosqlite", rev = "main"}
 discord = "^1.7.3"
+topggpy = {version = "^1.4.0", optional = false}
 [tool.poetry.dev-dependencies]

@@ -1,9 +1,11 @@
 from dislash import *
 import nextcord
+import dislash
 from .helper_cog import HelperCog
 from sys import version_info, version
 from os import cpu_count
 from helpful_modules import cooldowns
+from nextcord.ext import commands, checks
 from helpful_modules.custom_embeds import SimpleEmbed, ErrorEmbed, SuccessEmbed
 from helpful_modules.save_files import FileSaver
 from helpful_modules.threads_or_useful_funcs import get_git_revision_hash
@@ -12,9 +14,11 @@ import resource
 
 
 class MiscCommandsCog(HelperCog):
-    def __init__(self, bot: nextcord.ext.commands.Bot):
+    def __init__(self, bot: commands.Bot):
         super().__init__(bot)
-        self.bot = bot
+        checks.setup(bot) # Sadly, Interactions do not have a bot parameter
+        self.bot: commands.Bot = bot
+
 
     @slash_command(
         name="info",
@@ -28,7 +32,7 @@ class MiscCommandsCog(HelperCog):
             )
         ],
     )
-    @nextcord.ext.commands.cooldown(1,0.5,nextcord.ext.commands.BucketType.user)
+    @commands.cooldown(1,0.5,commands.BucketType.user)
     async def info(self, inter: SlashInteraction, include_extra_info: bool=False):
         """/info [include_extra_info: bool = False]
         Show bot info. include_extra_info shows technical information!"""
@@ -76,14 +80,14 @@ class MiscCommandsCog(HelperCog):
         await inter.reply(embed=embed)
 
     @slash_command(name="list_trusted_users", description="list all trusted users")
-    @nextcord.ext.commands.cooldown(
-        1, 5, nextcord.ext.commands.BucketType.user
+    @commands.cooldown(
+        1, 5, commands.BucketType.user
 
       )  # 5 second user cooldown
-    @nextcord.ext.commands.cooldown(
-        20, 50, nextcord.ext.commands.BucketType.default
+    @commands.cooldown(
+        20, 50, commands.BucketType.default
     ) #20 times before a global cooldown of 50 seconds is established
-    @nextcord.ext.commands.guild_only() # Due to bugs, it doesn't work in DM's
+    @commands.guild_only() # Due to bugs, it doesn't work in DM's
 
     async def list_trusted_users(self, inter):
         "List all trusted users in username#discriminator format (takes no arguments)"
@@ -172,11 +176,61 @@ class MiscCommandsCog(HelperCog):
     @slash_command(
         name="github_repo", description="Returns the link to the github repo"
     )
-    @nextcord.ext.commands.cooldown(2, 120, nextcord.ext.commands.BucketType.user)
+    @commands.cooldown(2, 120, commands.BucketType.user)
     async def github_repo(inter):
+        """/github_repo
+        Gives you the link to the bot's github repo. 
+        If you are modifying this, because of the GPLv3 license, you must change this to reflect the new location of the bot's source code.
+        """
         await inter.reply(
             embed=SuccessEmbed(
                 "[Repo Link:](https://github.com/rf20008/TheDiscordMathProblemBotRepo) ",
                 successTitle="Here is the Github Repository Link.",
             )
         )
+    @slash_command(
+        name="set_vote_threshold",
+        description="Sets the vote threshold",
+        options=[
+            Option(
+                name="threshold",
+                description="the threshold you want to change it to",
+                type=OptionType.INTEGER,
+                required=True,
+            )
+        ],
+    )
+    @checks.trusted_users_only()
+    @commands.cooldown(1,50,BucketType.user) # Don't overload the bot (although trusted users will probably not)
+    @commands.cooldown(15,500,BucketType.default) # To prevent wars! If you want your own version, self host it :-) 
+    async def set_vote_threshold(self, inter: dislash.SlashInteraction, threshold: int):
+        """/set_vote_threshold [threshold: int]
+        Set the vote threshold. Only trusted users may do this."""
+        #try:
+        #    threshold = int(threshold)
+        #except TypeError:  # Conversion failed!
+        #    await inter.reply(
+        #        embed=ErrorEmbed(
+        #            "Invalid threshold argument! (threshold must be an integer)"
+        #        ),
+        #        ephemeral=True,
+        #    )
+        #    return
+        # Unnecessary because the type
+        if threshold < 1: # Threshold must be greater than 1!
+            await inter.reply(
+                embed=ErrorEmbed("You can't set the threshold to smaller than 1."),
+                ephemeral=True,
+            )
+            return
+        vote_threshold = int(threshold)
+        for problem in await self.bot.cache.get_global_problems():
+            if problem.get_num_voters() > vote_threshold:
+                await self.cache.remove_problem(problem.guild_id, problem.id)
+        await inter.reply(
+            embed=SuccessEmbed(
+                f"The vote threshold has successfully been changed to {threshold}!"
+            ),
+            ephemeral=True,
+        )
+        return

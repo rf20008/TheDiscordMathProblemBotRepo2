@@ -33,6 +33,8 @@ import aiosqlite
 from asyncio import sleep as asyncio_sleep
 from copy import copy
 
+from nextcord.ext.commands.cooldowns import BucketType
+
 # Imports - My own files
 from helpful_modules import _error_logging, checks, cooldowns
 from helpful_modules import custom_embeds, problems_module
@@ -256,51 +258,6 @@ async def on_slash_command_error(inter, error, print_stack_traceback=[True, stde
 
 
 
-@slash.slash_command(
-    name="set_vote_threshold",
-    description="Sets the vote threshold",
-    options=[
-        Option(
-            name="threshold",
-            description="the threshold you want to change it to",
-            type=OptionType.INTEGER,
-            required=True,
-        )
-    ],
-)
-@checks.trusted_users_only()
-async def set_vote_threshold(inter, threshold):
-    "Set the vote threshold"
-    await check_for_cooldown(inter, "")
-    if inter.guild is not None and inter.guild.id not in await main_cache.get_guilds():
-        main_cache.add_empty_guild(inter.guild)
-    global vote_threshold
-    try:
-        threshold = int(threshold)
-    except TypeError:  # Conversion failed!
-        await inter.reply(
-            embed=ErrorEmbed(
-                "Invalid threshold argument! (threshold must be an integer)"
-            ),
-            ephemeral=True,
-        )
-        return
-    if threshold < 1:
-        await inter.reply(
-            embed=ErrorEmbed("You can't set the threshold to smaller than 1."),
-            ephemeral=True,
-        )
-        return
-    vote_threshold = int(threshold)
-    for problem in main_cache.get_global_problems():
-        if problem.get_num_voters() > vote_threshold:
-            main_cache.remove_problem(problem.guild_id, problem.id)
-    await inter.reply(
-        embed=SuccessEmbed(
-            f"The vote threshold has successfully been changed to {threshold}!"
-        ),
-        ephemeral=True,
-    )
 
 
 @slash.slash_command(
@@ -322,7 +279,10 @@ async def set_vote_threshold(inter, threshold):
     ],
 )
 async def vote(inter, problem_id, is_guild_problem=False):
-    "Vote for the deletion of a problem"
+    """/vote [problem_id: int] [is_guild_problem: bool = False] 
+    Vote for the deletion of the problem with the given problem_id.
+if is_guild_problem is true, then the bot looks for the problem with the given problem id and guild id, and makes you vote for it.
+Otherwise, the bot looks for the global problem with given problem id (the guild id is None)."""
     await check_for_cooldown(5, "vote")
     try:
         problem = await main_cache.get_problem(
