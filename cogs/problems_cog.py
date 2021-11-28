@@ -697,7 +697,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             inter.author
         )  # Add the voter. Must be awaited because updating it in the cache is a coroutine.
         string_to_print = "You successfully voted for the problem's deletion! As long as this problem is not deleted, you can always un-vote. There are "
-        string_to_print += f"{problem.get_num_voters()}/{vote_threshold} votes on this problem!"  # Tell the user how many votes there are now
+        string_to_print += f"{problem.get_num_voters()}/{self.bot.vote_threshold} votes on this problem!"  # Tell the user how many votes there are now
         await inter.reply(
             embed=SuccessEmbed(string_to_print, title="You Successfully voted"),
             ephemeral=True,
@@ -717,7 +717,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             )
             return
 
-    @slash.slash_command(
+    @slash_command(
         name="unvote",
         description="Vote for the deletion of a problem",
         options=[
