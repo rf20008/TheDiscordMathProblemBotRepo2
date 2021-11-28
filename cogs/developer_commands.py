@@ -238,7 +238,7 @@ class DeveloperCommands(HelperCog):
             else "❌"
         )
         debug_dict["num_guild_problems"] = len(
-            self.bot.cache.get_guild_problems(inter.guild)
+            await self.bot.cache.get_guild_problems(inter.guild)
         )
         correct_permissions = {
             "read_message_history": "✅" if my_permissions.read_messages else "❌",
