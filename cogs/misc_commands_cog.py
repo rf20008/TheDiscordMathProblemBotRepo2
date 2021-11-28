@@ -5,7 +5,8 @@ from .helper_cog import HelperCog
 from sys import version_info, version
 from os import cpu_count
 from helpful_modules import cooldowns
-from nextcord.ext import commands, checks
+from nextcord.ext import commands
+from helpful_modules import checks
 from helpful_modules.custom_embeds import SimpleEmbed, ErrorEmbed, SuccessEmbed
 from helpful_modules.save_files import FileSaver
 from helpful_modules.threads_or_useful_funcs import get_git_revision_hash

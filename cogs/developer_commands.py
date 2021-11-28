@@ -233,7 +233,7 @@ class DeveloperCommands(HelperCog):
         ] = self.bot.cache.max_guild_problems  # the problem limit
         debug_dict["reached_max_problems?"] = (
             "✅"
-            if len(self.bot.cache.get_guild_problems(guild))
+            if len(await self.bot.cache.get_guild_problems(guild))
             >= self.bot.cache.max_guild_problems
             else "❌"
         )
