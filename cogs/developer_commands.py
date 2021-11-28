@@ -45,7 +45,7 @@ class DeveloperCommands(HelperCog):
             return
         try:
             FileSaver3 = FileSaver(enabled=True, printSuccessMessagesByDefault=False)
-            FileSaverDict = FileSaver3.load_files(self.bot.main_cache)
+            FileSaverDict = FileSaver3.load_files(self.bot.cache)
             (guildMathProblems, self.bot.trusted_users, self.bot.vote_threshold) = (
                 FileSaverDict["guildMathProblems"],
                 FileSaverDict["trusted_users"],
@@ -81,7 +81,7 @@ class DeveloperCommands(HelperCog):
         try:
             FileSaver2 = FileSaver(enabled=True)
             FileSaver2.save_files(
-                self.bot.main_cache,
+                self.bot.cache,
                 True,
                 {},
                 self.bot.vote_threshold,
@@ -230,15 +230,15 @@ class DeveloperCommands(HelperCog):
         debug_dict["author_id"] = inter.author.id
         debug_dict[
             "problem_limit"
-        ] = self.bot.main_cache.max_guild_problems  # the problem limit
+        ] = self.bot.cache.max_guild_problems  # the problem limit
         debug_dict["reached_max_problems?"] = (
             "✅"
-            if len(self.bot.main_cache.get_guild_problems(guild))
-            >= self.bot.main_cache.max_guild_problems
+            if len(self.bot.cache.get_guild_problems(guild))
+            >= self.bot.cache.max_guild_problems
             else "❌"
         )
         debug_dict["num_guild_problems"] = len(
-            self.bot.main_cache.get_guild_problems(inter.guild)
+            self.bot.cache.get_guild_problems(inter.guild)
         )
         correct_permissions = {
             "read_message_history": "✅" if my_permissions.read_messages else "❌",
