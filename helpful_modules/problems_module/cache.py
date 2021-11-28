@@ -157,7 +157,7 @@ class MathProblemCache:
             cursor = conn.cursor()
             await cursor.execute("SELECT * FROM problems")
 
-            for row in await cursor.fetchall():
+            async for row in cursor.fetchall():
                 Problem = BaseProblem.from_row(row, cache=copy(self))
                 if (
                     Problem.guild_id not in guild_ids

@@ -7,4 +7,4 @@ python-dotenv>=0.19.1
 git+git://github.com/rf20008/sqldict.git@main
 mysql-connector-python>=8.0.27
 aiohttp>=3.7.3, <3.8 
-git://github.com/top-gg/python-sdk.git
+git+git://github.com/top-gg/python-sdk.git@main
