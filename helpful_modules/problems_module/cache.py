@@ -125,7 +125,7 @@ class MathProblemCache:
     def convert_dict_to_math_problem(self, problem, use_from_dict=True):
         "Convert a dictionary into a math problem. It must be in the expected format. (Overriden by from_dict, but still used) Possibly not used due to SQL"
         if use_from_dict:
-            return BaseProblem.from_dict(problem, cache=self)
+            return BaseProblem.from_dict(problem, cache=self) # Return the baseproblem.from_dict method
         try:
             assert isinstance(problem, dict)
         except AssertionError:
@@ -143,6 +143,7 @@ class MathProblemCache:
             voters=problem["voters"],
             solvers=problem["solvers"],
             author=problem["author"],
+            cache = self,
         )
         return problem2
 

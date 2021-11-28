@@ -250,3 +250,21 @@ Traceback (most recent call last):
 helpful_modules.checks.NotTrustedUser: You aren't a trusted user, <@844633345815871519>. Therefore, you do not have permission to run this command
 
 
+Sun Nov 28 18:07:05 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 357, in invoke
+    await self._run_checks(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 97, in _run_checks
+    if not await _check(inter):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 221, in wrapper
+    return predicate(ctx)
+  File "/home/runner/TheDiscordMathProblemBot/helpful_modules/checks.py", line 45, in predicate
+    raise NotTrustedUser(
+helpful_modules.checks.NotTrustedUser: You aren't a trusted user, <@844633345815871519>. Therefore, you do not have permission to run this command!
+
+

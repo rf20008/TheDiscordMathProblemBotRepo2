@@ -61,7 +61,29 @@ dotenv.load_dotenv()
 DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
 if DISCORD_TOKEN is None:
     raise ValueError("Cannot start bot; no discord_token environment variable")
+def the_daemon_file_saver(bot):
+    "Auto-save files!"
+    global guildMathProblems, trusted_users, vote_threshold
 
+    FileSaverObj = save_files.FileSaver(
+        name="The Daemon File Saver", enabled=True, printSuccessMessagesByDefault=True
+    )
+    FileSaverDict = FileSaverObj.load_files(bot.cache, True)
+    (guildMathProblems, bot.trusted_users, vote_threshold) = (
+        FileSaverDict["guildMathProblems"],
+        FileSaverDict["trusted_users"],
+        FileSaverDict["vote_threshold"],
+    )
+
+    while True:
+        sleep(45)
+        FileSaverObj.save_files(
+            bot.cache,
+            False,
+            guildMathProblems,
+            vote_threshold,
+            bot.trusted_users,
+        )
 
 warnings.simplefilter("default")  # unnecessary, probably will be removed
 # constants
@@ -120,6 +142,8 @@ bot = nextcord_commands.Bot(
     status=nextcord.Status.idle,
     # activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂") # This didn't work anyway, will set the activity in on_connect
 )
+TheDaemonFileSaver= threading.Thread(target=the_daemon_file_saver, args = (bot,))
+TheDaemonFileSaver.start() 
 setup(bot)
 bot.cache = main_cache
 bot.trusted_users = copy(trusted_users)
@@ -344,7 +368,8 @@ async def delete_problem(inter, problem_id, is_guild_problem=False):
     ],
 )
 async def add_trusted_user(inter, user):
-    """The slash command that adds a trusted user. See the documentation for details.
+    """/add_trusted_user [user: User]
+    This slash commands adds a trusted user!
     You must be a trusted user to add a trusted user, and the user you are trying to make a trusted user must not be a trusted user.
     You must also share a server with the new trusted user."""
     await check_for_cooldown(inter, "add_trusted_user", 600)
@@ -378,7 +403,8 @@ async def add_trusted_user(inter, user):
     ],
 )
 async def remove_trusted_user(inter, user):
-    "Remove a trusted user"
+    """/remove_trusted_user [user: User]
+    Remove a trusted user. You must be a trusted user to do this."""
     await check_for_cooldown(inter, "remove_trusted_user", 600)
     if inter.author.id not in bot.trusted_users:
         await inter.reply(
@@ -426,8 +452,8 @@ async def remove_trusted_user(inter, user):
             required=False,
         ),
         Option(
-            name="is_legal",
-            description="Is this a legal request?",
+            name="type",
+            description="Request type",
             required=False,
             type=OptionType.BOOLEAN,
         ),
@@ -439,13 +465,13 @@ async def submit_a_request(
     offending_problem_id=None,
     extra_info=None,
     copyrighted_thing=None,
-    is_legal=False,
+    type="",
 ):
     "Submit a request! I will know! It uses a channel in my discord server and posts an embed"
     cooldowns.check_for_cooldown("submit_a_request", 5)  # 5 seconds cooldown
     if (
         extra_info is None
-        and is_legal is False
+        and type == ""
         and copyrighted_thing is not Exception
         and offending_problem_guild_id is None
         and offending_problem_id is None
@@ -454,27 +480,25 @@ async def submit_a_request(
     if extra_info is None:
         await inter.reply(embed=ErrorEmbed("Please provide extra information!"))
     assert len(extra_info) <= 5000
-    channel = await bot.fetch_channel(
-        901464948604039209
-    )  # CHANGE THIS IF YOU HAVE A DIFFERENT REQUESTS CHANNEL! (the part after id)
     try:
-        Problem = main_cache.get_problem(
+      channel = await bot.fetch_channel(
+          901464948604039209
+      )  # CHANGE THIS IF YOU HAVE A DIFFERENT REQUESTS CHANNEL! (the part after id)
+    except (nextcord.ext.commands.ChannelNotReadable, nextcord.Forbidden):
+        raise RuntimeError("The bot cannot send messages to the channel!")
+    try:
+        Problem = await bot.cache.get_problem(
             offending_problem_guild_id, offending_problem_id
         )
         problem_found = True
-    except (TypeError, KeyError):
+    except (TypeError, KeyError, problems_module.ProblemNotFound):
         # Problem not found
         problem_found = False
     content = bot.owner_id
     embed = nextcord.Embed(
-        title=f"A new request has been recieved from {inter.author.name}#{inter.author.discriminator}!",
+        title=f"A new {type} request has been recieved from {inter.author.name}#{inter.author.discriminator}!",
         description="",
     )
-    if is_legal:
-        embed = nextcord.Embed(
-            title=f"A new legal request has been recieved from {inter.author.name}#{inter.author.discriminator}!",
-            description="",
-        )
 
     if problem_found:
         embed.description = f"Problem_info:{ str(Problem)}"

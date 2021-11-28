@@ -4,30 +4,6 @@ import subprocess, random
 from .the_documentation_file_loader import DocumentationFileLoader
 
 
-def the_daemon_file_saver(bot):
-    "Auto-save files!"
-    global guildMathProblems, trusted_users, vote_threshold
-
-    FileSaverObj = save_files.FileSaver(
-        name="The Daemon File Saver", enabled=True, printSuccessMessagesByDefault=True
-    )
-    FileSaverDict = FileSaverObj.load_files(bot.cache, True)
-    (guildMathProblems, bot.trusted_users, vote_threshold) = (
-        FileSaverDict["guildMathProblems"],
-        FileSaverDict["trusted_users"],
-        FileSaverDict["vote_threshold"],
-    )
-
-    while True:
-        sleep(45)
-        FileSaverObj.save_files(
-            bot.cache,
-            False,
-            guildMathProblems,
-            vote_threshold,
-            bot.trusted_users,
-        )
-
 
 def generate_new_id():
     "Generate a random number from 0 to 10^14"
