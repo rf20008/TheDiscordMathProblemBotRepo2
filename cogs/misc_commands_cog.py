@@ -175,7 +175,7 @@ class MiscCommandsCog(HelperCog):
         name="github_repo", description="Returns the link to the github repo"
     )
     @commands.cooldown(2, 120, commands.BucketType.user)
-    async def github_repo(inter):
+    async def github_repo(self, inter):
         """/github_repo
         Gives you the link to the bot's github repo.
         If you are modifying this, because of the GPLv3 license, you must change this to reflect the new location of the bot's source code.

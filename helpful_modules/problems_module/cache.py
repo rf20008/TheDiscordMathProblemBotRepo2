@@ -154,10 +154,10 @@ class MathProblemCache:
 
         async with aiosqlite.connect(self.db_name) as conn:
             conn.row_factory = dict_factory
-            cursor = conn.cursor()
-            await cursor.execute("SELECT * FROM problems")
+            cursor = await conn.cursor()
+            cursor.execute("SELECT * FROM problems")
 
-            async for row in cursor.fetchall():
+            for row in await cursor.fetchall():
                 Problem = BaseProblem.from_row(row, cache=copy(self))
                 if (
                     Problem.guild_id not in guild_ids
