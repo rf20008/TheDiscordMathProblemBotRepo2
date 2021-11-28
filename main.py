@@ -307,7 +307,7 @@ Otherwise, the bot looks for the global problem with given problem id (the guild
         f"{problem.get_num_voters()}/{vote_threshold} votes on this problem!"
     )
     await inter.reply(
-        embed=SuccessEmbed(string_to_print, title="YouSuccessfully voted"),
+        embed=SuccessEmbed(string_to_print, title="You Successfully voted"),
         ephemeral=True,
     )
     if problem.get_num_voters() >= vote_threshold:

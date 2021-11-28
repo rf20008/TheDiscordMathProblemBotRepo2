@@ -41,6 +41,9 @@ class MiscCommandsCog(HelperCog):
             name="Original Bot Developer", value="ay136416#2707", inline=False
         )  # Could be sufficient for attribution (except for stating changes).
         embed = embed.add_field(
+            name = "Github Repository Link", value = "https://github.com/rf20008/TheDiscordMathProblemBotRepo"
+        )
+        embed = embed.add_field(
             name="Latest Git Commit Hash",
             value=str(get_git_revision_hash()),
             inline=False,

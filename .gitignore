@@ -146,7 +146,7 @@ dmypy.json
 ## me
 
 vote_threshold.txt # Use /what_is_vote_threshold to use. This may be outdated... (Also to help self-hosting the bot)
-trusted_users.txt # /list_trusted_users to list trusted users. This may be outdated
+trusted_users.txt # /list_trusted_users to list trusted users. 
 **/.env # keep my token safe
 .env #keep my token safe :)
 !**/*.py #never ignore any python file :)
@@ -165,9 +165,9 @@ pylint-1.rtf
 #Don't show pylint
 pylint/**
 pylint/*.txt
-**/.DS_Store
+**/.DS_Store # This is a macOS folder design file which is not necessary for this file
 **/config.json
-.env
+.env # I would like to keep my secrets safe. :-)
 
 #Whitelists
 !**/*.py #never ignore any python file :)
