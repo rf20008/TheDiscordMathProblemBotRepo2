@@ -16,9 +16,8 @@ import resource
 class MiscCommandsCog(HelperCog):
     def __init__(self, bot: commands.Bot):
         super().__init__(bot)
-        checks.setup(bot) # Sadly, Interactions do not have a bot parameter
+        checks.setup(bot)  # Sadly, Interactions do not have a bot parameter
         self.bot: commands.Bot = bot
-
 
     @slash_command(
         name="info",
@@ -32,8 +31,8 @@ class MiscCommandsCog(HelperCog):
             )
         ],
     )
-    @commands.cooldown(1,0.5,commands.BucketType.user)
-    async def info(self, inter: SlashInteraction, include_extra_info: bool=False):
+    @commands.cooldown(1, 0.5, commands.BucketType.user)
+    async def info(self, inter: SlashInteraction, include_extra_info: bool = False):
         """/info [include_extra_info: bool = False]
         Show bot info. include_extra_info shows technical information!"""
         embed = SimpleEmbed(title="Bot info", description="")
@@ -41,7 +40,8 @@ class MiscCommandsCog(HelperCog):
             name="Original Bot Developer", value="ay136416#2707", inline=False
         )  # Could be sufficient for attribution (except for stating changes).
         embed = embed.add_field(
-            name = "Github Repository Link", value = "https://github.com/rf20008/TheDiscordMathProblemBotRepo"
+            name="Github Repository Link",
+            value="https://github.com/rf20008/TheDiscordMathProblemBotRepo",
         )
         embed = embed.add_field(
             name="Latest Git Commit Hash",
@@ -76,32 +76,27 @@ class MiscCommandsCog(HelperCog):
                 value=f"{round((current_usage[3]/memory_limit)*1000)/100}%",
             )
             embed = embed.add_field(
-                name = "CPU count (which may not necessarily be the amount of CPU avaliable to the bot due to a Python limitation)",
-                value = str(cpu_count)
-                
+                name="CPU count (which may not necessarily be the amount of CPU avaliable to the bot due to a Python limitation)",
+                value=str(cpu_count),
             )
         await inter.reply(embed=embed)
 
     @slash_command(name="list_trusted_users", description="list all trusted users")
-    @commands.cooldown(
-        1, 5, commands.BucketType.user
-
-      )  # 5 second user cooldown
+    @commands.cooldown(1, 5, commands.BucketType.user)  # 5 second user cooldown
     @commands.cooldown(
         20, 50, commands.BucketType.default
-    ) #20 times before a global cooldown of 50 seconds is established
-    @commands.guild_only() # Due to bugs, it doesn't work in DM's
-
+    )  # 20 times before a global cooldown of 50 seconds is established
+    @commands.guild_only()  # Due to bugs, it doesn't work in DM's
     async def list_trusted_users(self, inter):
         "List all trusted users in username#discriminator format (takes no arguments)"
-        #await inter.reply(type=5)  # Defer
-        #Deferring might be unnecessary & and cause errors
+        # await inter.reply(type=5)  # Defer
+        # Deferring might be unnecessary & and cause errors
         # We might not be able to respond in time because of the 100ms delay between user fetching
         # This is to respect the API rate limit.
         if len(self.bot.trusted_users) == 0:
             await inter.reply("There are no trusted users.")
             return
-            #raise Exception("There are no trusted users!")
+            # raise Exception("There are no trusted users!")
 
         __trusted_users = ""
 
@@ -139,7 +134,6 @@ class MiscCommandsCog(HelperCog):
         await inter.reply(__trusted_users, ephemeral=True)
 
     @slash_command(name="ping", description="Prints latency and takes no arguments")
-    
     async def ping(self, inter):
         "Ping the bot which returns its latency!"
         await cooldowns.check_for_cooldown(inter, "ping", 5)
@@ -182,7 +176,7 @@ class MiscCommandsCog(HelperCog):
     @commands.cooldown(2, 120, commands.BucketType.user)
     async def github_repo(inter):
         """/github_repo
-        Gives you the link to the bot's github repo. 
+        Gives you the link to the bot's github repo.
         If you are modifying this, because of the GPLv3 license, you must change this to reflect the new location of the bot's source code.
         """
         await inter.reply(
@@ -191,6 +185,7 @@ class MiscCommandsCog(HelperCog):
                 successTitle="Here is the Github Repository Link.",
             )
         )
+
     @slash_command(
         name="set_vote_threshold",
         description="Sets the vote threshold",
@@ -204,14 +199,18 @@ class MiscCommandsCog(HelperCog):
         ],
     )
     @checks.trusted_users_only()
-    @commands.cooldown(1,50,BucketType.user) # Don't overload the bot (although trusted users will probably not)
-    @commands.cooldown(15,500,BucketType.default) # To prevent wars! If you want your own version, self host it :-) 
+    @commands.cooldown(
+        1, 50, BucketType.user
+    )  # Don't overload the bot (although trusted users will probably not)
+    @commands.cooldown(
+        15, 500, BucketType.default
+    )  # To prevent wars! If you want your own version, self host it :-)
     async def set_vote_threshold(self, inter: dislash.SlashInteraction, threshold: int):
         """/set_vote_threshold [threshold: int]
         Set the vote threshold. Only trusted users may do this."""
-        #try:
+        # try:
         #    threshold = int(threshold)
-        #except TypeError:  # Conversion failed!
+        # except TypeError:  # Conversion failed!
         #    await inter.reply(
         #        embed=ErrorEmbed(
         #            "Invalid threshold argument! (threshold must be an integer)"
@@ -220,7 +219,7 @@ class MiscCommandsCog(HelperCog):
         #    )
         #    return
         # Unnecessary because the type
-        if threshold < 1: # Threshold must be greater than 1!
+        if threshold < 1:  # Threshold must be greater than 1!
             await inter.reply(
                 embed=ErrorEmbed("You can't set the threshold to smaller than 1."),
                 ephemeral=True,

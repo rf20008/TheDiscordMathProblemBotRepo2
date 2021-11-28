@@ -4,6 +4,7 @@ from helpful_modules.custom_embeds import SimpleEmbed, SuccessEmbed, ErrorEmbed
 import dislash, nextcord
 from asyncio import run
 from dislash import Option, OptionType, OptionChoice
+from nextcord.ext import commands
 from helpful_modules import checks, cooldowns, problems_module
 import aiosqlite
 from dislash import *
@@ -312,9 +313,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         for problem in global_problems:
             if len(problem) >= 1930:
                 problem_info_as_str += "The combined length of the questions is too long.... shortening it!"
-                await inter.reply(embed=SuccessEmbed(
-                    problem_info_as_str[:1930])
-                    )
+                await inter.reply(embed=SuccessEmbed(problem_info_as_str[:1930]))
                 return
             if not isinstance(problem, problems_module.BaseProblem):
                 print(list(global_problems))
@@ -323,7 +322,7 @@ NumSolvers: {len(problem.get_solvers())}"""
                 )  # For some reason..... the problem is an Integer, not a MathProblem...
                 # solved?
             if not (showSolvedProblems) and problem.is_solver(inter.author):
-                continue # Don't show solved problems if the user doesn't want to see solved problems
+                continue  # Don't show solved problems if the user doesn't want to see solved problems
             # Probably will be overhauled with str(problem)
             problem_info_as_str += "\n"
             problem_info_as_str += str(problem.id) + "\t"
@@ -349,8 +348,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         "Delete all automatically generated problems"
 
         await inter.reply(
-            embed=SimpleEmbed("", 
-                description="Attempting to delete bot problems"),
+            embed=SimpleEmbed("", description="Attempting to delete bot problems"),
             ephemeral=True,
         )  # may get rid of later? :)
         numDeletedProblems = 0
@@ -393,7 +391,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         inter: dislash.SlashInteraction,
         answer: str,
         question: str,
-        guild_question: bool=False,
+        guild_question: bool = False,
     ) -> None:
         """/submit_problem {question:str}, {answer:str}, [guild_question:bool=false]
         Create & submit a new problem with the given question and answer.
@@ -468,16 +466,13 @@ NumSolvers: {len(problem.get_solvers())}"""
 
             problem_id = generate_new_id()
             if problem_id not in [
-                problem.id for problem in await self.cache.get_guild_problems(
-                    inter.guild
-                )
+                problem.id
+                for problem in await self.cache.get_guild_problems(inter.guild)
             ]:  # Make sure this id isn't already used!
                 break  # Break the loop if the problem isn't already used
 
-        if (
-            guild_question
-        ):  
-            # If this is a guild question, set the guild id 
+        if guild_question:
+            # If this is a guild question, set the guild id
             # to the guild id of the guild this command was ran in
             guild_id = str(inter.guild.id)
         else:  # But if it's global, make it global
@@ -553,8 +548,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         except (KeyError, problems_module.errors.ProblemNotFound):
             await inter.reply(
                 embed=ErrorEmbed(
-                    "This problem doesn't exist!", 
-                    custom_title="Nonexistant problem."
+                    "This problem doesn't exist!", custom_title="Nonexistant problem."
                 ),
                 ephemeral=True,
             )
@@ -577,6 +571,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             )
             await problem.add_solver(inter.author)
             return
+
     @slash_command(
         name="check_answer",
         description="Check if you are right",
@@ -602,13 +597,13 @@ NumSolvers: {len(problem.get_solvers())}"""
         ],
     )
     @checks.is_not_blacklisted()
-    @nextcord.ext.commands.cooldown(1,5,nextcord.ext.commands.BucketType.user)
+    @nextcord.ext.commands.cooldown(1, 5, nextcord.ext.commands.BucketType.user)
     async def check_answer(
         self,
-        inter: dislash.SlashInteraction, 
-        problem_id: int, 
-        answer: str, 
-        checking_guild_problem: bool=False
+        inter: dislash.SlashInteraction,
+        problem_id: int,
+        answer: str,
+        checking_guild_problem: bool = False,
     ):
         """/check_answer {problem_id: int} {answer: str} [checking_guild_problem: bool = False]
         Check your answer to the problem with the given id. If the problem is"""
@@ -617,16 +612,16 @@ NumSolvers: {len(problem.get_solvers())}"""
             problem = await self.bot.cache.get_problem(
                 inter.guild.id if checking_guild_problem else "null", str(problem_id)
             )
-            if problem.is_solver(inter.author): #If the user solved the problem
+            if problem.is_solver(inter.author):  # If the user solved the problem
                 await inter.reply(
                     embed=ErrorEmbed(
                         "You have already solved this problem!",
                         custom_title="Already solved.",
                     ),
                     ephemeral=True,
-                ) # Don't let them re-solve the problem
+                )  # Don't let them re-solve the problem
                 return
-        except ProblemNotFound: # But if the problem wasn't found, then tell them
+        except ProblemNotFound:  # But if the problem wasn't found, then tell them
             await inter.reply(
                 embed=ErrorEmbed(
                     "This problem doesn't exist!", custom_title="Nonexistant problem."
@@ -642,7 +637,7 @@ NumSolvers: {len(problem.get_solvers())}"""
                     custom_title="Sorry, your answer is wrong.",
                 ),
                 ephemeral=True,
-        )
+            )
         else:
             await inter.reply(
                 embed=SuccessEmbed(
@@ -652,6 +647,140 @@ NumSolvers: {len(problem.get_solvers())}"""
             )
             await problem.add_solver(inter.author)
             return
+
+    @slash_command(
+        name="vote",
+        description="Vote for the deletion of a problem",
+        options=[
+            Option(
+                name="problem_id",
+                description="problem id of the problem you are attempting to delete",
+                type=OptionType.INTEGER,
+                required=True,
+            ),
+            Option(
+                name="is_guild_problem",
+                description="problem id of the problem you are attempting to delete",
+                type=OptionType.BOOLEAN,
+                required=False,
+            ),
+        ],
+    )
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def vote(self, inter, problem_id, is_guild_problem=False):
+        """/vote [problem_id: int] [is_guild_problem: bool = False]
+        Vote for the deletion of the problem with the given problem_id.
+        if is_guild_problem is true, then the bot looks for the problem with the given problem id and guild id, and makes you vote for it.
+        Otherwise, the bot looks for the global problem with given problem id (the guild id is None).
+        There is a 5 second cooldown on this command, to prevent spam."""
+        try:
+            problem = await self.bot.cache.get_problem(
+                inter.guild.id if is_guild_problem else "null",
+                problem_id=str(problem_id),  # Will probably have to change
+            )  # Get the problem
+            if problem.is_voter(
+                inter.author
+            ):  # You can't vote for a problem you already voted for!
+                await inter.reply(
+                    embed=ErrorEmbed(
+                        "You have already voted for the deletion of this problem!"
+                    ),
+                    ephemeral=True,
+                )
+                return  # Exit the command
+        except problems_module.ProblemNotFound:
+            await inter.reply(  # The problem doesn't exist
+                embed=ErrorEmbed("This problem doesn't exist!"), ephemeral=True
+            )
+            return
+        await problem.add_voter(
+            inter.author
+        )  # Add the voter. Must be awaited because updating it in the cache is a coroutine.
+        string_to_print = "You successfully voted for the problem's deletion! As long as this problem is not deleted, you can always un-vote. There are "
+        string_to_print += f"{problem.get_num_voters()}/{vote_threshold} votes on this problem!"  # Tell the user how many votes there are now
+        await inter.reply(
+            embed=SuccessEmbed(string_to_print, title="You Successfully voted"),
+            ephemeral=True,
+        )
+        if (
+            problem.get_num_voters() >= self.bot.vote_threshold
+        ):  # Has it passed the vote threshold?
+            # If it did, delete the problem
+            await self.bot.cache.remove_problem(
+                guild_id=problem.guild_id, problem_id=problem.id
+            )  # Remove the problem, after it passes the vote threshold
+            await inter.reply(  # May cause problems in a DM
+                embed=SimpleEmbed(
+                    "This problem has surpassed the threshold and has been deleted!"
+                ),
+                ephemeral=True,
+            )
+            return
+
+    @slash.slash_command(
+        name="unvote",
+        description="Vote for the deletion of a problem",
+        options=[
+            Option(
+                name="problem_id",
+                description="problem id of the problem you are attempting to delete",
+                type=OptionType.INTEGER,
+                required=True,
+            ),
+            Option(
+                name="is_guild_problem",
+                description="problem id of the problem you are attempting to delete",
+                type=OptionType.BOOLEAN,
+                required=False,
+            ),
+        ],
+    )
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def unvote(
+        self,
+        inter: dislash.SlashInteraction,
+        problem_id: int,
+        is_guild_problem: bool = False,
+    ):
+        """/unvote [problem_id: int] [is_guild_problem: bool = False]
+        Searches for the problem with the given id. If is_guild_problem is True, the guild id of the problem that it searches for will be the guild id of the context.
+        Otherwise, it will look for the global problem with the given id.
+        After searching for the problem, it removes your vote for deletion of that problem.
+        There is a 5 second cooldown on this command."""
+        try:
+            problem = await self.bot.cache.get_problem(
+                inter.guild.id if is_guild_problem else "null",
+                problem_id=str(problem_id),
+            )  # Get the problem!
+            if not problem.is_voter(
+                inter.author
+            ):  # You can't unvote unless you are voting
+                await inter.reply(
+                    embed=ErrorEmbed(
+                        "You can't unvote because you are not voting for the deletion of this problem!"
+                    ),
+                    ephemeral=True,
+                )
+                return
+        except problems_module.ProblemNotFound:
+            await inter.reply(  # The problem doesn't exist, get_problem will raise ProblemNotFound
+                embed=ErrorEmbed("This problem doesn't exist!"), ephemeral=True
+            )
+            return
+        problem.voters.remove(inter.author.id)  # Remove the user id from problem
+        await problem.update_self()  # Save the changes to the database.
+
+        successMessage = f"You successfully unvoted for the problem's deletion!" + (
+            "As long as this problem is not deleted, you can always un-vote."
+            + (
+                "There are {problem.get_num_voters()}/{self.bot.vote_threshold} votes on this problem!"
+            )
+        )
+
+        await inter.reply(
+            embed=SuccessEmbed(successMessage, successTitle="Successfully unvoted!"),
+            ephemeral=True,
+        )  # Tell the user of the successful unvote.
 
 
 def setup(bot):
