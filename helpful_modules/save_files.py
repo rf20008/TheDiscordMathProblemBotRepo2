@@ -57,9 +57,13 @@ class FileSaver:
         with open("trusted_users.txt", "r") as file2:
             for line in file2:
                 trusted_users.append(int(line))
+        vote_threshold = False
         with open("vote_threshold.txt", "r") as file3:
             for line in file3:
-                vote_threshold = int(line)
+                if str(line).isnumeric(): # Make sure that an empty string does not become the new vote threshold
+                  vote_threshold = int(line)
+        if not vote_threshold:
+            raise RuntimeError("vote_threshold not given!!")
 
         with open("guild_math_problems.json", "r") as file4:
             guildMathProblems = json.load(fp=file4)

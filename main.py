@@ -56,32 +56,33 @@ try:
 
     assert hasattr(dotenv, "load_dotenv")
 except (ModuleNotFoundError, AssertionError):
-    print("Dotenv could not be found, therefore cannot load .env")
+    raise RuntimeError("Dotenv could not be found, therefore cannot load .env")
 dotenv.load_dotenv()
 DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
 if DISCORD_TOKEN is None:
     raise ValueError("Cannot start bot; no discord_token environment variable")
-def the_daemon_file_saver(bot):
+def the_daemon_file_saver():
     "Auto-save files!"
-    global guildMathProblems, trusted_users, vote_threshold
-
+    global bot, guildMathProblems, trusted_users, vote_threshold
+    print("Initializing the filesaver")
     FileSaverObj = save_files.FileSaver(
         name="The Daemon File Saver", enabled=True, printSuccessMessagesByDefault=True
     )
+    print("Loading files...")
     FileSaverDict = FileSaverObj.load_files(bot.cache, True)
     (guildMathProblems, bot.trusted_users, bot.vote_threshold) = (
         FileSaverDict["guildMathProblems"],
         FileSaverDict["trusted_users"],
         int(FileSaverDict["vote_threshold"]),
     )
-
     while True:
         sleep(45)
+        print('Saving files')
         FileSaverObj.save_files(
             bot.cache,
             False,
             guildMathProblems,
-            vote_threshold,
+            bot.vote_threshold,
             bot.trusted_users,
         )
 
@@ -105,7 +106,7 @@ main_cache = problems_module.MathProblemCache(
     update_cache_by_default_when_requesting=True,
     use_cached_problems=False,
 )  # Generate a new cache for the bot!
-vote_threshold = -1
+vote_threshold = 0 #default
 mathProblems = {}
 guildMathProblems = {}
 guild_maximum_problem_limit = 125
@@ -158,7 +159,7 @@ bot.add_check(is_not_blacklisted)
 bot.vote_threshold = copy(vote_threshold)
 bot.blacklisted_users = []
 _the_daemon_file_saver = threading.Thread(
-    target=the_daemon_file_saver, name="The File Saver", daemon=True, args=(bot,)
+    target=the_daemon_file_saver, name="The File Saver", daemon=True # Make sure that the bot object passed to the_daemon_file_saver is the same one used by the rest of the program
 )
 _the_daemon_file_saver.start()
 # bot.load_extension("jishaku")
@@ -535,4 +536,5 @@ async def on_guild_join(guild):
 if __name__ == "__main__":
     print("The bot has finished setting up and will now run.")
     # slash.run(DISCORD_TOKEN)
+
     bot.run(DISCORD_TOKEN)

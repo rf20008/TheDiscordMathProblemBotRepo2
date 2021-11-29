@@ -168,7 +168,7 @@ voice = ["PyNaCl (>=1.3.0,<1.5)"]
 type = "git"
 url = "https://github.com/nextcord/nextcord.git"
 reference = "master"
-resolved_reference = "95413f194bd998a9edf3ddf9e7aaa3d3cc13d6e3"
+resolved_reference = "b11434c063198cf14aff66cf6837f07bccf5ff33"
 
 [[package]]
 name = "orjson"
@@ -206,14 +206,21 @@ resolved_reference = "80963165fe10fe933053685f75740eb0fd65a72d"
 
 [[package]]
 name = "topggpy"
-version = "1.4.0"
+version = "2.0.0a1"
 description = "A simple API wrapper for Top.gg written in Python."
 category = "main"
 optional = false
 python-versions = ">= 3.6"
+develop = false
 
 [package.dependencies]
-"discord.py" = "*"
+aiohttp = ">=3.6.0,<3.9.0"
+
+[package.source]
+type = "git"
+url = "https://github.com/top-gg/python-sdk.git"
+reference = "master"
+resolved_reference = "bc3c062018cd951c7b51cf82b61681fdd2dde88a"
 
 [[package]]
 name = "typing-extensions"
@@ -238,7 +245,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "c5980b71671049e3bf9d070c6f02a771ede1ba4a70c30e0e40683f2e34882ed5"
+content-hash = "66bbd67e6583463ffc2f0c30820065ce4ed40668d139ef4fda96493ccbd91467"
 
 [metadata.files]
 aiohttp = [
@@ -412,10 +419,7 @@ python-dotenv = [
     {file = "python_dotenv-0.19.2-py2.py3-none-any.whl", hash = "sha256:32b2bdc1873fd3a3c346da1c6db83d0053c3c62f28f1f38516070c4c8971b1d3"},
 ]
 sqldict = []
-topggpy = [
-    {file = "topggpy-1.4.0-py3-none-any.whl", hash = "sha256:d0c9e329c6613d6a4889ad56295554e60440a5c5025d92ea3bf0b7a816dae27c"},
-    {file = "topggpy-1.4.0.tar.gz", hash = "sha256:75a2f3011a073c058238b740989155cc85598250ed605b788b5de28c4314ec04"},
-]
+topggpy = []
 typing-extensions = [
     {file = "typing_extensions-3.10.0.2-py2-none-any.whl", hash = "sha256:d8226d10bc02a29bcc81df19a26e56a9647f8b0a6d4a83924139f4a8b01f17b7"},
     {file = "typing_extensions-3.10.0.2-py3-none-any.whl", hash = "sha256:f1d25edafde516b146ecd0613dabcc61409817af4766fbbcfb8d1ad4ec441a34"},
