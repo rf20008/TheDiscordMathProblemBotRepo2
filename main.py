@@ -69,7 +69,7 @@ def the_daemon_file_saver(bot):
         name="The Daemon File Saver", enabled=True, printSuccessMessagesByDefault=True
     )
     FileSaverDict = FileSaverObj.load_files(bot.cache, True)
-    (guildMathProblems, bot.trusted_users, vote_threshold) = (
+    (guildMathProblems, bot.trusted_users, botvote_threshold) = (
         FileSaverDict["guildMathProblems"],
         FileSaverDict["trusted_users"],
         FileSaverDict["vote_threshold"],
