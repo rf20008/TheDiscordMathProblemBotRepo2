@@ -142,8 +142,7 @@ bot = nextcord_commands.Bot(
     status=nextcord.Status.idle,
     # activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂") # This didn't work anyway, will set the activity in on_connect
 )
-TheDaemonFileSaver= threading.Thread(target=the_daemon_file_saver, args = (bot,))
-TheDaemonFileSaver.start() 
+
 setup(bot)
 bot.cache = main_cache
 bot.trusted_users = copy(trusted_users)
