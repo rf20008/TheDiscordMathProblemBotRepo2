@@ -48,7 +48,7 @@ class HelperCog(nextcord.ext.commands.Cog):
         bypass_ctx_check=False,
         bypass_argument_checks=False,
     ):
-        "A helper method that will change the vote_threshold"
+        "A helper method that will change the vote_threshold to the one specified"
         if not bypass_ctx_check:
             assert isinstance(
                 ctx, (nextcord.ext.commands.Context, dislash.BaseInteraction)
@@ -74,7 +74,7 @@ class HelperCog(nextcord.ext.commands.Cog):
         bypass_ctx_check=False,
         bypass_argument_checks=False,
     ):
-        "A helper method that will change the trusted_users"
+        "A helper method that will change the trusted_users. This will replace the trusted users with the one given!"
         if not bypass_ctx_check:
             assert isinstance(
                 ctx, (nextcord.ext.commands.Context, dislash.BaseInteraction)
