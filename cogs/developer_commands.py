@@ -176,7 +176,7 @@ class DeveloperCommands(HelperCog):
         ],
     )
     @nextcord_commands.cooldown(1,5,nextcord_commands.BucketType.user)
-    @nextcord_commands.cooldowns(500,750,nextcord_commands.BucketType.default)
+    @nextcord_commands.cooldown(500,750,nextcord_commands.BucketType.default)
     async def documentation(self, inter, documentation_type, help_obj) -> typing.Optional[nextcord.Message]:
         """/documentation {documentation_type: str|documentation_link|command_help|function_help} {help_obj}
 
