@@ -177,7 +177,7 @@ class DeveloperCommands(HelperCog):
         ],
     )
     @nextcord_commands.cooldown(1,5,nextcord_commands.BucketType.user)
-    @nextcord_commands.cooldowns(500,750,nextcord_commands.BucketType.default)
+    @nextcord_commands.cooldown(500,750,nextcord_commands.BucketType.default)
     async def documentation(self, inter, documentation_type, help_obj) -> typing.Optional[nextcord.Message]:
         """/documentation {documentation_type: str|documentation_link|command_help|function_help} {help_obj}
 
@@ -203,7 +203,11 @@ class DeveloperCommands(HelperCog):
             commands = self.bot.slash.slash_commands
             try:
                 command_func = commands[help_obj]
-                return await inter.reply(embed=SuccessEmbed(description=str(command_func.__doc__)))
+                command_docstring = command_func.__doc__
+                if command_docstring is None:
+                    return await inter.reply("Either there is a bug in the bot... or in the dislash library... or your command does not have documentation... or all 3. Anyway, if this happens, please report it!")
+                return await inter.reply(embed=SuccessEmbed(
+                  description=str(command_docstring)))
             except KeyError:
                 return await inter.reply(
                     embed=ErrorEmbed(
