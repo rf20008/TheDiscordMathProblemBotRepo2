@@ -71,11 +71,12 @@ class DeveloperCommands(HelperCog):
     )
     @checks.trusted_users_only()
     async def force_save_files(self, inter):
-        "Forcefully saves files. Takes no arguments. Mostly for debugging purposes"
+
+        """Forcefully saves files. Takes no arguments. Mostly for debugging purposes"""
 
         if inter.author.id not in self.bot.trusted_users:
             await inter.reply(
-                embed=self.custom_embeds.ErrorEmbed(
+                embed=ErrorEmbed(
                     "You aren't trusted and therefore don't have permission to forcesave files."
                 )
             )
@@ -92,11 +93,11 @@ class DeveloperCommands(HelperCog):
             )
             FileSaver2.goodbye()
             await inter.reply(
-                embed=self.custom_embeds.SuccessEmbed("Successfully saved 4 files!")
+                embed=SuccessEmbed("Successfully saved 4 files!")
             )
         except RuntimeError as exc:
             await inter.reply(
-                embed=self.custom_embeds.ErrorEmbed("Something went wrong...")
+                embed=ErrorEmbed("Something went wrong...")
             )
             raise exc
 
@@ -127,7 +128,7 @@ class DeveloperCommands(HelperCog):
         The purpose of this command is to test the bot's on_slash_command_error event!"""
         if inter.author.id not in self.bot.trusted_users: # Check that the user is a trusted user
             await inter.send(
-                embed=self.custom_embeds.ErrorEmbed(
+                embed=ErrorEmbed(
                     f"⚠ {inter.author.mention}, you do not have permission to intentionally raise errors for debugging purposes.",
                     custom_title="Insufficient permission to raise errors.",
                 ),
@@ -190,7 +191,7 @@ class DeveloperCommands(HelperCog):
         (argument_name: type) A required argument of type type"""
         if documentation_type == "documentation_link":
             await inter.reply(
-                embed=self.custom_embeds.SuccessEmbed(
+                embed=SuccessEmbed(
                     f"""<@{inter.author.id}> [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
         """
                 ),
@@ -224,12 +225,12 @@ class DeveloperCommands(HelperCog):
         except the_documentation_file_loader.DocumentationNotFound as e:
             if isinstance(e, the_documentation_file_loader.DocumentationFileNotFound):
                 await inter.reply(
-                    embed=self.custom_embeds.ErrorEmbed(
+                    embed=ErrorEmbed(
                         "Documentation file was not found. Please report this error!"
                     )
                 )
                 return None
-            await inter.reply(embed=self.custom_embeds.ErrorEmbed(str(e)))
+            await inter.reply(embed=ErrorEmbed(str(e)))
             return None
         await inter.reply(_documentation)
 
