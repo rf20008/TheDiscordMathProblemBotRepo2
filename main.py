@@ -61,6 +61,8 @@ dotenv.load_dotenv()
 DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
 if DISCORD_TOKEN is None:
     raise ValueError("Cannot start bot; no discord_token environment variable")
+
+
 def the_daemon_file_saver():
     "Auto-save files!"
     global bot, guildMathProblems, trusted_users, vote_threshold
@@ -77,7 +79,7 @@ def the_daemon_file_saver():
     )
     while True:
         sleep(45)
-        print('Saving files')
+        print("Saving files")
         FileSaverObj.save_files(
             bot.cache,
             False,
@@ -85,6 +87,7 @@ def the_daemon_file_saver():
             bot.vote_threshold,
             bot.trusted_users,
         )
+
 
 warnings.simplefilter("default")  # unnecessary, probably will be removed
 # constants
@@ -106,7 +109,7 @@ main_cache = problems_module.MathProblemCache(
     update_cache_by_default_when_requesting=True,
     use_cached_problems=False,
 )  # Generate a new cache for the bot!
-vote_threshold = 0 #default
+vote_threshold = 0  # default
 mathProblems = {}
 guildMathProblems = {}
 guild_maximum_problem_limit = 125
@@ -159,7 +162,9 @@ bot.add_check(is_not_blacklisted)
 bot.vote_threshold = copy(vote_threshold)
 bot.blacklisted_users = []
 _the_daemon_file_saver = threading.Thread(
-    target=the_daemon_file_saver, name="The File Saver", daemon=True # Make sure that the bot object passed to the_daemon_file_saver is the same one used by the rest of the program
+    target=the_daemon_file_saver,
+    name="The File Saver",
+    daemon=True,  # Make sure that the bot object passed to the_daemon_file_saver is the same one used by the rest of the program
 )
 _the_daemon_file_saver.start()
 # bot.load_extension("jishaku")
@@ -481,9 +486,9 @@ async def submit_a_request(
         await inter.reply(embed=ErrorEmbed("Please provide extra information!"))
     assert len(extra_info) <= 5000
     try:
-      channel = await bot.fetch_channel(
-          901464948604039209
-      )  # CHANGE THIS IF YOU HAVE A DIFFERENT REQUESTS CHANNEL! (the part after id)
+        channel = await bot.fetch_channel(
+            901464948604039209
+        )  # CHANGE THIS IF YOU HAVE A DIFFERENT REQUESTS CHANNEL! (the part after id)
     except (nextcord.ext.commands.ChannelNotReadable, nextcord.Forbidden):
         raise RuntimeError("The bot cannot send messages to the channel!")
     try:

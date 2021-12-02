@@ -92,13 +92,9 @@ class DeveloperCommands(HelperCog):
                 self.bot.trusted_users,
             )
             FileSaver2.goodbye()
-            await inter.reply(
-                embed=SuccessEmbed("Successfully saved 4 files!")
-            )
+            await inter.reply(embed=SuccessEmbed("Successfully saved 4 files!"))
         except RuntimeError as exc:
-            await inter.reply(
-                embed=ErrorEmbed("Something went wrong...")
-            )
+            await inter.reply(embed=ErrorEmbed("Something went wrong..."))
             raise exc
 
     @dislash.is_owner()
@@ -126,17 +122,17 @@ class DeveloperCommands(HelperCog):
         This command raises an error (of type error_type) that has the description of the error_description.
         You must be a trusted user and the bot owner to run this command!
         The purpose of this command is to test the bot's on_slash_command_error event!"""
-        if inter.author.id not in self.bot.trusted_users: # Check that the user is a trusted user
+        if (
+            inter.author.id not in self.bot.trusted_users
+        ):  # Check that the user is a trusted user
             await inter.send(
                 embed=ErrorEmbed(
                     f"⚠ {inter.author.mention}, you do not have permission to intentionally raise errors for debugging purposes.",
                     custom_title="Insufficient permission to raise errors.",
                 ),
-                allowed_mentions = nextcord.AllowedMentions(
-                    everyone=False, 
-                    users = [], 
-                    roles = [], 
-                    replied_user = False)
+                allowed_mentions=nextcord.AllowedMentions(
+                    everyone=False, users=[], roles=[], replied_user=False
+                ),
             )
             return
         if error_description == None:
@@ -176,9 +172,11 @@ class DeveloperCommands(HelperCog):
             ),
         ],
     )
-    @nextcord_commands.cooldown(1,5,nextcord_commands.BucketType.user)
-    @nextcord_commands.cooldown(500,750,nextcord_commands.BucketType.default)
-    async def documentation(self, inter, documentation_type, help_obj) -> typing.Optional[nextcord.Message]:
+    @nextcord_commands.cooldown(1, 5, nextcord_commands.BucketType.user)
+    @nextcord_commands.cooldown(500, 750, nextcord_commands.BucketType.default)
+    async def documentation(
+        self, inter, documentation_type, help_obj
+    ) -> typing.Optional[nextcord.Message]:
         """/documentation {documentation_type: str|documentation_link|command_help|function_help} {help_obj}
 
         Prints documentation :-). If the documentation is a command, it attempts to get its docstring.
@@ -199,25 +197,28 @@ class DeveloperCommands(HelperCog):
             )
             return None
         if documentation_type == "command_help":
-            #Might fail
+            # Might fail
             commands = self.bot.slash.slash_commands
             try:
                 command_func = commands[help_obj]
                 command_docstring = command_func.__doc__
                 if command_docstring is None:
-                    return await inter.reply("Either there is a bug in the bot... or in the dislash library... or your command does not have documentation... or all 3. Anyway, if this happens, please report it!")
-                return await inter.reply(embed=SuccessEmbed(
-                  description=str(command_docstring)))
+                    return await inter.reply(
+                        "Either there is a bug in the bot... or in the dislash library... or your command does not have documentation... or all 3. Anyway, if this happens, please report it!"
+                    )
+                return await inter.reply(
+                    embed=SuccessEmbed(description=str(command_docstring))
+                )
             except KeyError:
                 return await inter.reply(
                     embed=ErrorEmbed(
                         custom_title="I couldn't find your command!",
-                        description=":x: Could not find the command specified. "
+                        description=":x: Could not find the command specified. ",
                     )
                 )
             except AttributeError as exc:
-                #My experiment failed
-                raise Exception("uh oh...") from exc #My experiment failed!
+                # My experiment failed
+                raise Exception("uh oh...") from exc  # My experiment failed!
         documentation_loader = the_documentation_file_loader.DocumentationFileLoader()
         try:
             _documentation = documentation_loader.get_documentation(

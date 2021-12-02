@@ -60,8 +60,10 @@ class FileSaver:
         vote_threshold = False
         with open("vote_threshold.txt", "r") as file3:
             for line in file3:
-                if str(line).isnumeric(): # Make sure that an empty string does not become the new vote threshold
-                  vote_threshold = int(line)
+                if str(
+                    line
+                ).isnumeric():  # Make sure that an empty string does not become the new vote threshold
+                    vote_threshold = int(line)
         if not vote_threshold:
             raise RuntimeError("vote_threshold not given!!")
 

@@ -10,11 +10,13 @@ def mysql_connection(*args, **kwargs) -> None:
     Otherwise, the connection will commit and close. It will not return anything. :-)
     This function is licensed under GPLv3."""
     connection = mysql.connector.connect(*args, **kwargs)
-    an_exception_occured = False # Did an exception occur?
+    an_exception_occured = False  # Did an exception occur?
     try:
         yield connection
     except:
-        print("An exception happened in the bot. After closing resources, the exception will be raised")
+        print(
+            "An exception happened in the bot. After closing resources, the exception will be raised"
+        )
         connection.commit()
         connection.close()
         raise

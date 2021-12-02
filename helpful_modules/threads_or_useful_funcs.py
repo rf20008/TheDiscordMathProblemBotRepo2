@@ -4,7 +4,6 @@ import subprocess, random
 from .the_documentation_file_loader import DocumentationFileLoader
 
 
-
 def generate_new_id():
     "Generate a random number from 0 to 10^14"
     return random.randint(0, 10 ** 14)
