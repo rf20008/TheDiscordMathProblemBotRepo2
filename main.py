@@ -16,6 +16,7 @@ import asyncio
 import copy
 import random
 import os
+import logging
 import warnings
 from time import sleep, time, asctime
 import subprocess
@@ -168,7 +169,7 @@ _the_daemon_file_saver = threading.Thread(
 )
 _the_daemon_file_saver.start()
 # bot.load_extension("jishaku")
-
+bot.log = logging.getLogger(__name__)
 
 slash = InteractionClient(client=bot, sync_commands=True)
 bot.slash = slash
@@ -193,6 +194,14 @@ async def on_connect():
         ),
         status=nextcord.Status.idle,
     )
+    bot.log.debug("Deleting data from guilds the bot was kicked from while it was offline")
+    bot_guild_ids = [guild.id for guild in bot.guilds]
+    for guild_id in bot.cache.get_guilds(bot): # Obtain all guilds the cache stores data (will need to be upgraded.)
+        if guild_id not in bot_guild_ids: # It's not in!
+            bot.log.debug("The bot is deleting data from a guild it has left.")
+            await bot.cache.remove_all_by_guild_id(guild_id) # Delete the data
+
+    
 
 
 @bot.event
@@ -535,7 +544,9 @@ async def on_guild_join(guild):
         raise RuntimeError(
             "Oh no..... there is a guild with id _global... this will mess up the bot!"
         )  # Make sure that a guild with id _global doesn't mess up stuff
-
+@bot.event
+async def on_guild_remove(guild):
+    await bot.cache.remove_all_by_guild_id(guild.id) # Remove all guild-related stuff
 
 if __name__ == "__main__":
     print("The bot has finished setting up and will now run.")

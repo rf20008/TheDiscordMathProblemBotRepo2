@@ -14,6 +14,8 @@ THIS APPLICATION DOES NOT KNOWINGLY STORE COPYRIGHTED PROBLEMS OR PROBLEMS THAT 
 
 To the maximum extent of applicable law, I am not liable for any problems or quizzes or quiz-related material submitted (unless the author of the problem, as shown by the application, is me) through this application. 
 
+I am also not liable to you if my bot shuts down or turns off to the maximum extent of applicable law.
+
 ## Why we store your data
 
 Storing data you voluntarily submit to the bot, and data obtained via the Discord API, is required for the core functionality of the bot.
