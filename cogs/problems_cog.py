@@ -158,7 +158,7 @@ class ProblemsCog(HelperCog):
                 inter.reply(embed=embed1)
                 return
             problem = await self.cache.get_problem(
-                int(inter.guild.id) if is_guild_problem else "_global", str(problem_id)
+                int(inter.guild.id) if is_guild_problem else None, str(problem_id)
             )
             Problem_as_str = f"""Question: {problem.get_question()}
 Author: {str(problem.get_author())}
@@ -476,7 +476,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             # to the guild id of the guild this command was ran in
             guild_id = str(inter.guild.id)
         else:  # But if it's global, make it global
-            guild_id = "_global"
+            guild_id = None
         problem = problems_module.BaseProblem(
             question=question,
             answer=answer,

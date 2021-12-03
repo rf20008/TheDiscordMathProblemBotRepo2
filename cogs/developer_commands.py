@@ -388,11 +388,11 @@ class DeveloperCommands(HelperCog):
             question=question,
             answer=str(answer),
             author=845751152901750824,
-            guild_id="null",
+            guild_id=None,
             id=problem_id,
             cache=self.cache,
         )
-        await self.cache.add_problem("null", problem_id, Problem)
+        await self.cache.add_problem(None, problem_id, Problem)
         await inter.reply(
             embed=SuccessEmbed(
                 f"Successfully created {str(num_new_problems_to_generate)} new problems!"

@@ -538,11 +538,11 @@ async def submit_a_request(
 @bot.event
 async def on_guild_join(guild):
     "Ran when the bot joins a guild!"
-    if guild.id == "_global":  # Should never happen
+    if guild.id == None:  # Should never happen
         await guild.leave() # This will mess up stuff
         print("Oh no")
         raise RuntimeError(
-            "Oh no..... there is a guild with id _global... this will mess up the bot!"
+            "Oh no..... there is a guild with id None... this will mess up the bot!"
         )  # Make sure that a guild with id _global doesn't mess up stuff
 @bot.event
 async def on_guild_remove(guild):
