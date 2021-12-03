@@ -237,3 +237,31 @@ class MiscCommandsCog(HelperCog):
             ephemeral=True,
         )
         return
+    
+    @slash_command(description = "Interact with your user data")
+    async def user_data(inter: dislash.SlashInteraction):
+        "The base command to interact with your user data. This doesn't do anything (you need to call a subcommand"
+        pass
+    @nextcord.ext.commands.cooldown(1,500,nextcord.ext.commands.BucketType.user) # To prevent abuse
+    @user_data.sub_command(
+        name = "delete_all",
+        description = "Delete all problems, quizzes, and quiz submissions you created!",
+        options = [
+                Option(
+                    name = "save_data_before_deletion",
+                    description = "Whether to give you your problems or submissions, in JSON format! Defaults to True",
+                    type = OptionType.BOOLEAN,
+                    required=False
+                )
+            ]
+        )
+    async def delete_all(self, inter, save_data_before_deletion: bool):
+        """Delete all your data. YOU MUST CONFIRM THIS!
+        This has a 500 second cooldown."""
+
+        if save_data_before_deletion:
+            json_data: dict = self._get_json_data_by_user(inter.author)
+        confirmation_view = nextcord.ui.View(timeout=60.0)
+        confirmation_button = nextcord.ui.Button(style=nextcord.ButtonStyle.blurple, custom_id = "30", 
+            disabled=False, row = 0)
+    

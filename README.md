@@ -55,7 +55,7 @@ No privileged intents are required (the bot has been designed to not require pri
 6. Clone my repo (``git clone https://github.com/rf20008/TheDiscordMathProblemBotRepo``)
 7. move to the new directory containing the repository you cloned (which should be this one. The folder name is the same name as the repository name)
 8. Create a .env file inside the repository folder. Inside it, you need to put 
-``DISCORD_TOKEN = `<your discord token>` `` (Replace `<your discord token>`) with the discord bot token you got from the bot user you made.
+Make sure to add the env keys listed below.
 9. Run the main.py file (```poetry install; pip3 install -r requirements.txt; python3 main.py```) Don't use the -O / -OO option (assert statements are necessary to run the bot, and they only run if \_\_debug\_\_ is true, which is not the case if the -O option is selected)
 10. Invite the bot bot (use the invite link, but replace the client_id field with your bot's client id)
 ## Update the bot with my changes
@@ -64,3 +64,17 @@ No privileged intents are required (the bot has been designed to not require pri
 2. Run ``git pull`` (updates the repo)
 3. If there are any merge conflicts, please fix them. Then do step 2. If there are no merge conflicts, skip this step
 4. Stop your bot! And then re-start it again
+
+
+## .env things required
+
+Required:
+DISCORD_TOKEN: your discord token
+
+Unused:
+use_sqlite: str (if not set to the string "True", mysql will be used) # Use this for local testing, and mysql for global testing
+sqlite_database_path: path to sqlite db
+mysql_db_ip: The IP/webserver of the MySQL database
+mysql_db_username: Your username to the MySQL database
+mysql_db_pass: Your password to the MySQL database
+mysql_db_name: Your MySQL database name

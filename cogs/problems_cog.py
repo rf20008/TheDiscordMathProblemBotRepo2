@@ -486,7 +486,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             cache=self.cache,
         )  # Create the problem!
         await self.cache.add_problem(
-            guild_id=str(guild_id), problem_id=str(problem_id), Problem=problem
+            guild_id=guild_id, problem_id=problem_id, Problem=problem
         )  # Add the problem
 
         await inter.reply(
