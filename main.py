@@ -196,7 +196,7 @@ async def on_connect():
     )
     bot.log.debug("Deleting data from guilds the bot was kicked from while it was offline")
     bot_guild_ids = [guild.id for guild in bot.guilds]
-    for guild_id in bot.cache.get_guilds(bot): # Obtain all guilds the cache stores data (will need to be upgraded.)
+    for guild_id in await bot.cache.get_guilds(bot): # Obtain all guilds the cache stores data (will need to be upgraded.)
         if guild_id not in bot_guild_ids: # It's not in!
             bot.log.debug("The bot is deleting data from a guild it has left.")
             await bot.cache.remove_all_by_guild_id(guild_id) # Delete the data
