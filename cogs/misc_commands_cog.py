@@ -1,7 +1,6 @@
 from dislash import *
 import nextcord
 import dislash
-from nextcord.embeds import MaybeEmpty
 from .helper_cog import HelperCog
 from sys import version_info, version
 from os import cpu_count
