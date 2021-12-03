@@ -1,0 +1,20 @@
+Fri Dec  3 22:43:43 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/client.py", line 351, in _run_event
+    await coro(*args, **kwargs)
+  File "main.py", line 199, in on_connect
+    for guild_id in bot.cache.get_guilds(bot): # Obtain all guilds the cache stores data (will need to be upgraded.)
+TypeError: 'coroutine' object is not iterable
+
+
+Fri Dec  3 22:45:21 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/client.py", line 351, in _run_event
+    await coro(*args, **kwargs)
+  File "main.py", line 199, in on_connect
+    for guild_id in bot.cache.get_guilds(bot): # Obtain all guilds the cache stores data (will need to be upgraded.)
+TypeError: 'coroutine' object is not iterable
+
+

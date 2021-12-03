@@ -13,6 +13,7 @@ from helpful_modules.custom_buttons import *
 from helpful_modules.threads_or_useful_funcs import get_git_revision_hash
 from asyncio import sleep as asyncio_sleep
 import resource
+from typing import Union
 from copy import copy
 from io import BytesIO # For file submitting!
 
@@ -297,7 +298,7 @@ class MiscCommandsCog(HelperCog):
         view.add_item(confirmation_button)
         view.add_item(deny_button)
         return await inter.reply(embed = SimpleEmbed(title = "Are you sure?", description = "This will delete all your data!"), view = view)
-    async def _get_json_data_by_user(self,author: nextcord.User | nextcord.Member) -> dict:
+    async def _get_json_data_by_user(self,author: Union[nextcord.User,  nextcord.Member]) -> dict:
         "A helper function to obtain a user's stored data and return the dictionarified version of it."
         raw_data = await self.cache.get_all_by_author_id(author.id)
         new_data = {
