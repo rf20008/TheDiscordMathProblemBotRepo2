@@ -1,49 +1,40 @@
 #  _____ Privacy policy
 
-## Definitions
-"User data" includes all data that the bot obtains through the Discord API. 
-This data is used in accordance with the code (which is provided in this repository) and with this Privacy Policy </br>
-"Problems" includes all problems that are submitted to this bot via the slash commands. </br>
-"Quizzes" includes all quizzes, and all quiz-related materials, which are submitted by you to me (via my bot.) </br>
-"You" means you, the user of my services. </br>
-"Me/I" means me  (@rf20008)/@ay13416#2707, the developer of this application, which is provided to you free of charge under the GNU General Public License version 3.
-## DISCLAIMER 
-<!please contribute>
+Most of the content in this privacy policy should be self-explanatory. (Write to me if it isn't!)
+If you use this application (the Discord Math Problem Bot), (I assume that) you (would) agree to this policy. If you do not agree, don't use this application!
 
-THIS APPLICATION DOES NOT KNOWINGLY STORE COPYRIGHTED PROBLEMS OR PROBLEMS THAT ARE SUBMITTED TO THE BOT WITHOUT PRIOR APPROVAL AND LICENSING! 
+## COPYRIGHT DISCLAIMER
 
-To the maximum extent of applicable law, I am not liable for any problems or quizzes or quiz-related material submitted (unless the author of the problem, as shown by the application, is me) through this application. 
+When you submit a problem, quiz, etc. to this bot, you (the user of the bot) give me (ay136416 / rf20008) a royalty-free, worldwide, non-revocable, etc. license with enough rights to allow me to use this bot to process, store, show, etc. the problem in order for the bot to function properly. However, you don't necessarily transfer ownership to me, and you still get credit for this problem wherever the bot shows it.
 
-I am also not liable to you if my bot shuts down or turns off to the maximum extent of applicable law.
+## LIABILITY DISCLAIMER
+
+I'm not liable for content this bot shows you. Sometimes I shut my bot off for development purposes (if I do, I usually notify you), but otherwise I'm not liable to anyone for that too. I try to get rid of bugs, but I'm not liable for them if they occur.
+(In some places, I'm not allowed to legally disclaim liability. If you live in such a place, please ignore this section.)
 
 ## Why we store your data
 
-Storing data you voluntarily submit to the bot, and data obtained via the Discord API, is required for the core functionality of the bot.
+Storing data you voluntarily submit to the bot, and data from the Discord API, is required for this bot to work.
 
-## Which data I store through this application
+## What data I store through this application
 
 Data I store through this application include data from the Discord API, problems submitted, quizzes submitted, quiz problems submitted, deletion votes to problems, quiz submissions submitted. We may also store quiz gradings (and comments). 
 
-## Disclosure of your data.
+## Disclosure of your data
 
-Problems or quizzes will be disclosed to people who want to view your problems, and are in the same guild as the problem, or if the problem is a global problem and the user uses the bot. Therefore, when you submit a problem, quiz, submission, or grade, you give us a license that is worldwide, non-revokeable except via deletion of the data you store, royalty-free, but does not transfer ownership of the problem to us. You are still attributed when you create a problem.
+Problems or quizzes will be shown to people who want to view your problems, and are in the same guild as the problem, or if the problem is a global problem and the user uses the bot.
+If other kinds of data are disclosed, then either I intend this (and will notify you and update this document accordingly), or it's a bug. If it's a bug, please notify me.
 
-## Deleting your data I store
+## Seeing and deleting your data
 
-As of right now, quizzes do not have a user interface, so they cannot be deleted. Problems you submit can be deleted via /delete_problem. Due to Discord limitations, you are not able to delete problems that are part of Discord servers are not a part of. There are plans to implement a /delete_all_my_data command, which will delete all your problems, quizzes, quiz submissions, and grades you submitted.
+You can see *all* of your data using the command /user_data get_data.
 
-## Extra things you need to know
+As of right now, quizzes do not have a user interface, but problems you submit can still be deleted via ``/delete_problem``. Due to Discord limitations, you are not able to delete individual problems that are part of Discord servers are not a part of. There is also a ``/delete_all_my_data`` command, which will delete *all* your problems, quizzes, quiz submissions, and grades you submitted (including guilds you are not part of).
 
-Because this bot is open source, extra data may be collected about you that is not explicitly mentioned in this policy may be stored about you. However, this does summarize most of the data we store about you.
+## Updates and notification
 
-## Updates
-
-This policy may be updated at any time. Because this application do not store email information or Discord username/discriminator combinations with the intent of contacting you if policy updates occur, we cannot, and will not, contact you about changes to this policy. 
-
-# One final thing
-
-When you use this application, you agree to these policies. If you do not agree to these policies, do not use this application.
+I may update this policy at any time. We don't store contact information (such as Discord usernames, emails, etc.), so we can't contact users individually. However, we can notify you through the official Discord server or through the bot's status. 
 
 # Contributions
 
-Contributions to this application must follow the GPL v3 license. I greatly appreciate any and all contributions you make!
+For legal reasons, all contributions to this application *must* be licensed under GPLv3 or later. I am not legally allowed to accept contributions licensed under any other license. I greatly appreciate your contributions!
