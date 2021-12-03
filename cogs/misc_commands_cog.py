@@ -265,11 +265,11 @@ class MiscCommandsCog(HelperCog):
         If save_data_before_deletion, the data about you will be sent as a json file
         This has a 500 second cooldown."""
         if save_data_before_deletion:
-            json_data: dict = await self._get_json_data_by_user(inter.author)
-            file_version = self._file_version_of_item(str(json_data), file_name = "your_data.json")
-        confirmation_view = nextcord.ui.View(timeout=60.0)
+            json_data: dict = await self._get_json_data_by_user(inter.author) # Get the data
+            file_version = self._file_version_of_item(str(json_data), file_name = "your_data.json") # Turn it into a dictionary
         
         async def confirm_callback(self: ConfirmationButton, interaction: nextcord.Interaction, _extra_data: dict):
+            "The function that runs when the button gets pressed. This actually deletes the data"
             assert self.check(interaction)
             kwargs = {"content": "Successfully deleted your data! Your data should now be cleared now."}
             if "file" in _extra_data.keys():
@@ -282,6 +282,7 @@ class MiscCommandsCog(HelperCog):
             self.view.stop()
             return
         async def deny_callback(self: BasicButton, interaction: nextcord.Interaction):
+            "A function that runs when the"
             await interaction.response.reply("Your data is safe! It has not been deleted.")
             self.view.stop()
             return
@@ -289,10 +290,10 @@ class MiscCommandsCog(HelperCog):
         _extra_data = {"cache": copy(self.bot.cache)}
         if save_data_before_deletion:
             _extra_data["file"] = file_version
-        confirmation_button = ConfirmationButton(callback = confirm_callback, style=nextcord.ButtonStyle.blurple, custom_id = "30", 
+        confirmation_button = ConfirmationButton(callback = confirm_callback, style=nextcord.ButtonStyle.danger, label = "I'm 100\% \sure I want to delete my data!", 
             disabled=False, _extra_data = _extra_data)
         deny_button = BasicButton(check = lambda self, inter: inter.user.id == self.user_for,
-            callback = deny_callback, style = nextcord.ButtonStyle.blurple, disabled = False)
+            callback = deny_callback, style = nextcord.ButtonStyle.green, disabled = False, label = "Never mind....")
         view = MyView(timeout=30)
         view.add_item(confirmation_button)
         view.add_item(deny_button)
@@ -307,7 +308,13 @@ class MiscCommandsCog(HelperCog):
         }
         return new_data
     def _file_version_of_item(self, item: str, file_name) -> nextcord.File:
+        assert isinstance(item, str)
         return nextcord.File(BytesIO(bytes(item, 'utf-8')),filename = file_name)
-
-        
+    @user_data.sub_command(
+        name = "get_data",
+        description = "Get a jsonified version of the data stored with this application!"
+    )
+    async def get_data(self, inter):
+        file = self._file_version_of_item(str(await self._get_json_data_by_user(inter.author)), file_name = "your_data.json")
+        return await inter.reply(file = file, embed = SuccessEmbed("Your json data has been attached! Unfortunately, there is no parse command."))
     
