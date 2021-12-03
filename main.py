@@ -231,60 +231,10 @@ async def on_error(event, *args, **kwargs):
 
 @bot.event
 async def on_slash_command_error(inter, error, print_stack_traceback=[True, stderr]):
-    "Function called when a slash command errors, which will inevitably happen"
-    if print_stack_traceback[0]:
-        # print the traceback to the file
-        print(
-            "\n".join(
-                traceback.format_exception(
-                    etype=type(error), value=error, tb=error.__traceback__
-                )
-            ),
-            file=print_stack_traceback[1],
-        )
-    if isinstance(error, BaseException) and not isinstance(error, Exception):
-        # Errors that do not inherit from Exception are not meant to be caught
-        raise
-    if isinstance(error, OnCooldown):
-        await inter.reply(str(error))
-        return
-    error_traceback_as_obj = traceback.format_exception(
-        etype=type(error), value=error, tb=error.__traceback__
-    )
-    log_error(error)  # Log the error
-    if isinstance(error, NotOwner):
-        await inter.reply(embed=ErrorEmbed("You are not the owner of this bot."))
-        return
-    # Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
+    "Function called when a slash command errors, which will inevitably happen. All of the functionality was moved to base_on_error :-)"
+    # print the traceback to the file
+    return await inter.reply(**base_on_error(inter, error))
 
-    error_traceback = "\n".join(error_traceback_as_obj)
-    try:
-        embed = discord.Embed(
-            colour=discord.Colour.red(),
-            description=nextcord.utils.escape_markdown(error_traceback),
-            title="Oh, no! An error occurred!",
-        )
-    except TypeError:
-        # send as plain text
-        plain_text = (
-            "__**Oh no! An Exception occured! And it couldn't be sent as an embed!\n```"
-        )
-        plain_text += nextcord.utils.escape_markdown(error_traceback)
-        plain_text += f"```Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
-        await inter.reply(plain_text)
-        return
-    assert isinstance(embed, discord.Embed)
-    footer = f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
-    embed.set_footer(text=footer)
-    try:
-        await inter.reply(embed=embed)
-    except discord.errors.InvalidArgument:  # not an embed
-        plain_text = (
-            "__**Oh no! An Exception occured! And it couldn't be sent as an embed!\n```"
-        )
-        plain_text += nextcord.utils.escape_markdown(error_traceback)
-        plain_text += f"```Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
-        await inter.reply(plain_text)
 
 
 ##@bot.command(help = """Adds a trusted user!
