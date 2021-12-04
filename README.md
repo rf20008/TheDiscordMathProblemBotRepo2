@@ -3,6 +3,10 @@
 # If you run into issues
 If you run into any issues create an issue or DM me (ay136416#2707)). 
 
+# ANNOUNCEMENT
+
+CC-BY-SA 4.0 is no longer a valid license to use this bot under!
+
 # Contribute :-)
 
 If you open a PR/Issue, I'll look at it and maybe merge it! <br>

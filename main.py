@@ -23,6 +23,8 @@ import subprocess
 import traceback
 import threading
 from sys import stderr, exc_info, stdout
+from asyncio import sleep as asyncio_sleep
+from copy import copy
 
 # Imports - 3rd party
 import discord
@@ -30,9 +32,8 @@ import dislash  # https://github.com/EQUENOS/dislash.py
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 import nextcord  # https://github.com/nextcord/nextcord
 import nextcord.ext.commands as nextcord_commands
-import aiosqlite
-from asyncio import sleep as asyncio_sleep
-from copy import copy
+import aiosqlite # https://github.com/omnilib/aiosqlite
+
 
 from nextcord.ext.commands.cooldowns import BucketType
 
@@ -42,9 +43,6 @@ from helpful_modules import custom_embeds, problems_module
 from helpful_modules import save_files, the_documentation_file_loader, return_intents
 from helpful_modules.threads_or_useful_funcs import *
 
-# might be replaced with from helpful_modules import * and using __all__
-
-import cogs
 from cogs import *
 from helpful_modules.cooldowns import check_for_cooldown, OnCooldown
 from helpful_modules._error_logging import log_error
@@ -61,7 +59,7 @@ except (ModuleNotFoundError, AssertionError):
 dotenv.load_dotenv()
 DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
 if DISCORD_TOKEN is None:
-    raise ValueError("Cannot start bot; no discord_token environment variable")
+    raise RuntimeError("Cannot start bot; no discord_token environment variable")
 
 
 def the_daemon_file_saver():

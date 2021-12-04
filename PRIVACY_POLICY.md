@@ -11,6 +11,7 @@ When you submit a problem, quiz, etc. to this bot, you (the user of the bot) giv
 
 I'm not liable for content this bot shows you. Sometimes I shut my bot off for development purposes (if I do, I usually notify you), but otherwise I'm not liable to anyone for that too. I try to get rid of bugs, but I'm not liable for them if they occur.
 (In some places, I'm not allowed to legally disclaim liability. If you live in such a place, please ignore this section.)
+(In some scenerios, laws might supercede this policy and I may still be liable. This is the case if there is no plausible interpretation of the law that says I am not liable to you. In those cases, I am still liable.)
 
 ## Why we store your data
 
