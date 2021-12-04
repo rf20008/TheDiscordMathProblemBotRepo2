@@ -1,0 +1,10 @@
+Sat Dec  4 02:53:03 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/client.py", line 351, in _run_event
+    await coro(*args, **kwargs)
+  File "main.py", line 236, in on_slash_command_error
+    return await inter.reply(**base_on_error(inter, error))
+TypeError: reply() argument after ** must be a mapping, not coroutine
+
+

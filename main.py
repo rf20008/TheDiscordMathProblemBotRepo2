@@ -231,7 +231,7 @@ async def on_error(event, *args, **kwargs):
 async def on_slash_command_error(inter, error, print_stack_traceback=[True, stderr]):
     "Function called when a slash command errors, which will inevitably happen. All of the functionality was moved to base_on_error :-)"
     # print the traceback to the file
-    return await inter.reply(**base_on_error(inter, error))
+    return await inter.reply(**await base_on_error(inter, error))
 
 
 
