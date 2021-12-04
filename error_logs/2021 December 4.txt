@@ -8,3 +8,275 @@ Traceback (most recent call last):
 TypeError: reply() argument after ** must be a mapping, not coroutine
 
 
+Sat Dec  4 02:54:14 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+TypeError: user_data() takes 1 positional argument but 2 were given
+
+
+Sat Dec  4 02:55:14 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+TypeError: user_data() takes 1 positional argument but 2 were given
+
+
+Sat Dec  4 02:56:10 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 359, in invoke
+    await self.invoke_children(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 350, in invoke_children
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 347, in invoke_children
+    await subcmd._maybe_cog_call(self._cog, interaction, option)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 318, in get_data
+    file = self._file_version_of_item(str(await self._get_json_data_by_user(inter.author)), file_name = "your_data.json")
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 303, in _get_json_data_by_user
+    raw_data = await self.cache.get_all_by_author_id(author.id)
+  File "/home/runner/TheDiscordMathProblemBot/helpful_modules/problems_module/cache.py", line 633, in get_all_by_author_id
+    await cursor.execute(
+AttributeError: 'Result' object has no attribute 'execute'
+
+
+Sat Dec  4 02:57:15 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 359, in invoke
+    await self.invoke_children(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 350, in invoke_children
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 347, in invoke_children
+    await subcmd._maybe_cog_call(self._cog, interaction, option)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 318, in get_data
+    file = self._file_version_of_item(str(await self._get_json_data_by_user(inter.author)), file_name = "your_data.json")
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 303, in _get_json_data_by_user
+    raw_data = await self.cache.get_all_by_author_id(author.id)
+  File "/home/runner/TheDiscordMathProblemBot/helpful_modules/problems_module/cache.py", line 633, in get_all_by_author_id
+    await cursor.execute(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/cursor.py", line 37, in execute
+    await self._execute(self._cursor.execute, sql, parameters)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/cursor.py", line 31, in _execute
+    return await self._conn._execute(fn, *args, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/core.py", line 129, in _execute
+    return await future
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/core.py", line 102, in run
+    result = function()
+sqlite3.OperationalError: no such column: user_id
+
+
+Sat Dec  4 02:58:49 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 359, in invoke
+    await self.invoke_children(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 350, in invoke_children
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 347, in invoke_children
+    await subcmd._maybe_cog_call(self._cog, interaction, option)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 318, in get_data
+    file = self._file_version_of_item(str(await self._get_json_data_by_user(inter.author)), file_name = "your_data.json")
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 303, in _get_json_data_by_user
+    raw_data = await self.cache.get_all_by_author_id(author.id)
+  File "/home/runner/TheDiscordMathProblemBot/helpful_modules/problems_module/cache.py", line 633, in get_all_by_author_id
+    await cursor.execute(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/cursor.py", line 37, in execute
+    await self._execute(self._cursor.execute, sql, parameters)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/cursor.py", line 31, in _execute
+    return await self._conn._execute(fn, *args, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/core.py", line 129, in _execute
+    return await future
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/core.py", line 102, in run
+    result = function()
+ValueError: parameters are of unsupported type
+
+
+Sat Dec  4 03:01:07 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 359, in invoke
+    await self.invoke_children(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 350, in invoke_children
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 347, in invoke_children
+    await subcmd._maybe_cog_call(self._cog, interaction, option)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 318, in get_data
+    file = self._file_version_of_item(str(await self._get_json_data_by_user(inter.author)), file_name = "your_data.json")
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 303, in _get_json_data_by_user
+    raw_data = await self.cache.get_all_by_author_id(author.id)
+  File "/home/runner/TheDiscordMathProblemBot/helpful_modules/problems_module/cache.py", line 633, in get_all_by_author_id
+    await cursor.execute(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/cursor.py", line 37, in execute
+    await self._execute(self._cursor.execute, sql, parameters)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/cursor.py", line 31, in _execute
+    return await self._conn._execute(fn, *args, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/core.py", line 129, in _execute
+    return await future
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/core.py", line 102, in run
+    result = function()
+ValueError: parameters are of unsupported type
+
+
+Sat Dec  4 03:02:25 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 359, in invoke
+    await self.invoke_children(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 350, in invoke_children
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 347, in invoke_children
+    await subcmd._maybe_cog_call(self._cog, interaction, option)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 318, in get_data
+    file = self._file_version_of_item(str(await self._get_json_data_by_user(inter.author)), file_name = "your_data.json")
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 303, in _get_json_data_by_user
+    raw_data = await self.cache.get_all_by_author_id(author.id)
+  File "/home/runner/TheDiscordMathProblemBot/helpful_modules/problems_module/cache.py", line 632, in get_all_by_author_id
+    await cursor.execute(
+AttributeError: 'Result' object has no attribute 'execute'
+
+
+Sat Dec  4 03:05:50 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 359, in invoke
+    await self.invoke_children(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 350, in invoke_children
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 347, in invoke_children
+    await subcmd._maybe_cog_call(self._cog, interaction, option)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 318, in get_data
+    file = self._file_version_of_item(str(await self._get_json_data_by_user(inter.author)), file_name = "your_data.json")
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 303, in _get_json_data_by_user
+    raw_data = await self.cache.get_all_by_author_id(author.id)
+  File "/home/runner/TheDiscordMathProblemBot/helpful_modules/problems_module/cache.py", line 633, in get_all_by_author_id
+    await cursor.execute(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/cursor.py", line 37, in execute
+    await self._execute(self._cursor.execute, sql, parameters)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/cursor.py", line 31, in _execute
+    return await self._conn._execute(fn, *args, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/core.py", line 129, in _execute
+    return await future
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/core.py", line 102, in run
+    result = function()
+ValueError: parameters are of unsupported type
+
+
+Sat Dec  4 03:06:44 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 359, in invoke
+    await self.invoke_children(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 350, in invoke_children
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 347, in invoke_children
+    await subcmd._maybe_cog_call(self._cog, interaction, option)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 318, in get_data
+    file = self._file_version_of_item(str(await self._get_json_data_by_user(inter.author)), file_name = "your_data.json")
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 303, in _get_json_data_by_user
+    raw_data = await self.cache.get_all_by_author_id(author.id)
+  File "/home/runner/TheDiscordMathProblemBot/helpful_modules/problems_module/cache.py", line 633, in get_all_by_author_id
+    await cursor.execute(
+AttributeError: 'Result' object has no attribute 'execute'
+
+
+Sat Dec  4 03:06:45 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 359, in invoke
+    await self.invoke_children(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 350, in invoke_children
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 347, in invoke_children
+    await subcmd._maybe_cog_call(self._cog, interaction, option)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 318, in get_data
+    file = self._file_version_of_item(str(await self._get_json_data_by_user(inter.author)), file_name = "your_data.json")
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 303, in _get_json_data_by_user
+    raw_data = await self.cache.get_all_by_author_id(author.id)
+  File "/home/runner/TheDiscordMathProblemBot/helpful_modules/problems_module/cache.py", line 633, in get_all_by_author_id
+    await cursor.execute(
+AttributeError: 'Result' object has no attribute 'execute'
+
+

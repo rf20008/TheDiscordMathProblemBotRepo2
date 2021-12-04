@@ -242,7 +242,7 @@ class MiscCommandsCog(HelperCog):
         return
     
     @slash_command(description = "Interact with your user data")
-    async def user_data(inter: dislash.SlashInteraction):
+    async def user_data(self: "MiscCommandsCog", inter: dislash.SlashInteraction):
         "The base command to interact with your user data. This doesn't do anything (you need to call a subcommand"
         pass
     @nextcord.ext.commands.cooldown(1,500,nextcord.ext.commands.BucketType.user) # To prevent abuse

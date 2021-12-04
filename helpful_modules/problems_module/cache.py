@@ -91,7 +91,7 @@ class MathProblemCache:
                 """CREATE TABLE IF NOT EXISTS quiz_submissions (
                 guild_id INT,
                 quiz_id INT NOT NULL,
-                USER_ID INT NOT NULL,
+                user_id INT NOT NULL,
                 submissions BLOB NOT NULL
                 )"""
             )  # as dictionary
@@ -628,10 +628,10 @@ class MathProblemCache:
         assert isinstance(author_id, int)  # Make sure it is of type integer
         async with aiosqlite.connect(self.db_name) as conn:
             cursor = conn.cursor()  # Create a cursor
-
+            cursor = await cursor
             # Get all quiz problems they made
             await cursor.execute(
-                "SELECT * FROM quizzes WHERE user_id = ?", (author_id)
+                "SELECT * FROM quizzes WHERE author = ?", (author_id)
             )  # Get all problems made by the author
             quiz_problems_raw = [
                 dict_factory(cursor, row) for row in await cursor.fetchall()
@@ -643,7 +643,7 @@ class MathProblemCache:
 
             # Get the submissions now
             await cursor.execute(
-                "SELECT submissions FROM quiz_submissions WHERE user_id = ?",
+                "SELECT submissions FROM quiz_submissions WHERE author = ?",
                 (author_id),
             )  # Get the submissions
             # Convert them to QuizSubmissions!
