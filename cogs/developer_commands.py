@@ -19,7 +19,7 @@ slash = None
 
 
 class DeveloperCommands(HelperCog):
-    def __init__(self, bot):
+    def __init__(self, bot: nextcord.ext.commands.Bot):
         global checks
 
         super().__init__(bot)
@@ -70,7 +70,7 @@ class DeveloperCommands(HelperCog):
         description="Forcefully saves files (can only be used by trusted users).",
     )
     @checks.trusted_users_only()
-    async def force_save_files(self, inter):
+    async def force_save_files(self, inter: dislash.SlashInteraction):
 
         """Forcefully saves files. Takes no arguments. Mostly for debugging purposes"""
 
@@ -117,7 +117,7 @@ class DeveloperCommands(HelperCog):
             ),
         ],
     )
-    async def raise_error(self, inter, error_type, error_description=None) -> None:
+    async def raise_error(self, inter, error_type: typing.Literal["Exception"], error_description: str = None) -> None:
         """/raise_error {error_type: str|Exception} [error_description: str = None]
         This command raises an error (of type error_type) that has the description of the error_description.
         You must be a trusted user and the bot owner to run this command!
@@ -397,6 +397,75 @@ class DeveloperCommands(HelperCog):
             embed=SuccessEmbed(
                 f"Successfully created {str(num_new_problems_to_generate)} new problems!"
             ),
+            ephemeral=True,
+        )
+    @slash.slash_command(
+        name="add_trusted_user",
+        description="Adds a trusted user",
+        options=[
+            Option(
+                name="user",
+                description="The user you want to give super special bot access to",
+                type=OptionType.USER,
+                required=True,
+            )
+        ],
+    )
+    @checks.trusted_users_only()
+    @nextcord.ext.commands.cooldown(1,600,nextcord.ext.commands.BucketType.user)
+    async def add_trusted_user(self, inter: dislash.SlashInteraction, user: nextcord.Member):
+        """/add_trusted_user [user: User]
+        This slash commands adds a trusted user!
+        You must be a trusted user to add a trusted user, and the user you are trying to make a trusted user must not be a trusted user.
+        You must also share a server with the new trusted user."""
+        if inter.author.id not in self.bot.trusted_users:
+            await inter.reply(
+                embed=ErrorEmbed("You aren't a trusted user!"), ephemeral=True
+            )
+            return
+        if user.id in self.bot.trusted_users:
+            await inter.reply(
+                embed=ErrorEmbed(f"{user.name} is already a trusted user!"), ephemeral=True
+            )
+            return
+        self.bot.trusted_users.append(user.id)
+        await inter.reply(
+            embed=ErrorEmbed(f"Successfully made {user.nick} a trusted user!"),
+            ephemeral=True,
+        )
+
+
+    @slash.slash_command(
+        name="remove_trusted_user",
+        description="removes a trusted user",
+        options=[
+            Option(
+                name="user",
+                description="The user you want to take super special bot access from",
+                type=OptionType.USER,
+                required=True,
+            )
+        ],
+    )
+    @nextcord.ext.commands.cooldown(1,600,nextcord.ext.commands.BucketType.user)
+    @checks.trusted_users_only()
+    async def remove_trusted_user(self: "DeveloperCommands", inter: dislash.SlashInteraction, user: nextcord.User):
+        """/remove_trusted_user [user: User]
+        Remove a trusted user. You must be a trusted user to do this.
+        There is also a 10 minute cooldown to prevent raids!"""
+        if inter.author.id not in self.bot.trusted_users:
+            await inter.reply(
+                embed=ErrorEmbed("You aren't a trusted user!"), ephemeral=True
+            )
+            return
+        if user.id not in self.bot.trusted_users:
+            await inter.reply(
+                embed=ErrorEmbed(f"{user.name} isn't a trusted user!", ephemeral=True)
+            )
+            return
+        self.bot.trusted_users.pop(user.id)
+        await inter.reply(
+            embed=ErrorEmbed(f"Successfully made {user.nick} no longer a trusted user!"),
             ephemeral=True,
         )
 
