@@ -1,5 +1,5 @@
 "Licensed under CC-BY-SA 4.0/GPLv3"
-
+import mysql.connector
 
 class MathProblemsModuleException(Exception):
     "The base exception for problems_module."
@@ -29,9 +29,6 @@ class GuildAlreadyExistsException(MathProblemsModuleException):
     pass
 
 
-class ProblemNotFoundException(MathProblemsModuleException):
-    "Raised when a problem is not found."
-    pass
 
 
 class TooManyProblems(MathProblemsModuleException):
@@ -39,13 +36,16 @@ class TooManyProblems(MathProblemsModuleException):
     pass
 
 
-class ProblemNotFound(KeyError):
+class ProblemNotFound(KeyError, MathProblemsModuleException):
     "Raised when a problem isn't found"
     pass
 
+class ProblemNotFoundException(ProblemNotFound):
+    "Raised when a problem is not found."
+    pass
 
 class ProblemNotWrittenException(MathProblemsModuleException):
-    "Raised when trying to grade a written problem but the problem is not graded"
+    "Raised when trying to grade a written problem but the problem is not a written problem"
     pass
 
 
@@ -57,6 +57,13 @@ class QuizAlreadySubmitted(MathProblemsModuleException):
 class SQLException(MathProblemsModuleException):
     "Raised when an error happens relating to SQL!"
     pass
+
+class MySQLException(SQLException, mysql.connector.Error):
+    "A generic MYSQL exception"
+    def __init__(self, message, base_error):
+        SQLException.__init__(self,message)
+        self.base_error = base_error
+        
 
 
 class QuizNotFound(MathProblemsModuleException):

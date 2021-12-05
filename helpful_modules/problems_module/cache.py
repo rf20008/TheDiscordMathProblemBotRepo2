@@ -1,4 +1,5 @@
 import asyncio
+import typing
 import sqldict
 import aiosqlite
 from copy import deepcopy, copy
@@ -17,13 +18,13 @@ class MathProblemCache:
 
     def __init__(
         self,
-        max_answer_length=100,
-        max_question_limit=250,
-        max_guild_problems=125,
-        warnings_or_errors="warnings",
+        max_answer_length: int =100,
+        max_question_limit: int=250,
+        max_guild_problems: int=125,
+        warnings_or_errors: Union[Literal["warnings"], Literal["errors"]]="warnings",
         db_name: str = "problems_module.db",
-        name="1",
-        update_cache_by_default_when_requesting=True,
+        name: str="1",
+        update_cache_by_default_when_requesting: bool=True,
         use_cached_problems: bool = False,
     ):
         "Create a new MathProblemCache. the arguments should be self-explanatory"
@@ -122,7 +123,7 @@ class MathProblemCache:
                 e[guild_id][Problem.id] = Problem.to_dict()
         return e
 
-    def convert_dict_to_math_problem(self, problem, use_from_dict=True):
+    def convert_dict_to_math_problem(self, problem: dict, use_from_dict: bool=True):
         "Convert a dictionary into a math problem. It must be in the expected format. (Overriden by from_dict, but still used) Possibly not used due to SQL"
         if use_from_dict:
             return BaseProblem.from_dict(
@@ -149,7 +150,7 @@ class MathProblemCache:
         )
         return problem2
 
-    async def update_cache(self):
+    async def update_cache(self: "MathProblemCache") -> None:
         "Method revamped! This method updates the cache of the guilds, the guild problems, and the cache of the global problems. Takes O(N) time"
         guild_problems = {}
         guild_ids = []
@@ -158,10 +159,10 @@ class MathProblemCache:
         async with aiosqlite.connect(self.db_name) as conn:
             conn.row_factory = dict_factory
             cursor = await conn.cursor()
-            await cursor.execute("SELECT * FROM problems")
+            await cursor.execute("SELECT * FROM problems") #Get all problems
 
             for row in await cursor.fetchall():
-                Problem = BaseProblem.from_row(row, cache=copy(self))
+                Problem = BaseProblem.from_row(row, cache=copy(self)) # Convert the problems to math problems
                 if (
                     Problem.guild_id not in guild_ids
                 ):  # Similar logic: Make sure it's there!
@@ -186,8 +187,8 @@ class MathProblemCache:
         self.guild_ids = deepcopy(guild_ids)
         self.global_problems = deepcopy(global_problems)
 
-    async def get_problem(self, guild_id: int, problem_id: int):
-        "Gets the problem with this guild id and problem id"
+    async def get_problem(self, guild_id: int, problem_id: int) -> BaseProblem:
+        "Gets the problem with this guild id and problem id. If the problem is not found, a ProblemNotFound exception will be raised."
 
         if not isinstance(guild_id, int):
             if self.warnings:
@@ -203,9 +204,9 @@ class MathProblemCache:
                 raise TypeError("problem_id is not a integer")
         if self.use_cached_problems:
             if self.update_cache_by_default_when_requesting:
-                await self.update_cache()
+                await self.update_cache() #Make sure the cache is up-to-date
             try:
-                return self.guild_problems[guild_id][problem_id]
+                return self.guild_problems[guild_id][problem_id] # Get the cached problem!
             except KeyError:
                 raise ProblemNotFound(
                     "Problem not found in the cache! You may want to try again, but without caching!"
@@ -247,7 +248,7 @@ class MathProblemCache:
                     row = rows[0]
                 return BaseProblem.from_row(rows[0], cache=copy(self))
 
-    async def get_guild_problems(self, Guild):
+    async def get_guild_problems(self, Guild: nextcord.Guild) -> typing.List[BaseProblem]:
         """Gets the guild problems! Guild must be a Guild object. If you are trying to get global problems, use get_global_problems."""
         if self.update_cache_by_default_when_requesting:
             await self.update_cache()
@@ -256,13 +257,13 @@ class MathProblemCache:
         except KeyError:
             return {}
 
-    async def get_global_problems(self):
+    async def get_global_problems(self: "MathProblemCache"):
         "Returns global problems"
         if self.update_cache_by_default_when_requesting:
             await self.update_cache()
         return self.global_problems
 
-    def add_empty_guild(self, Guild):
+    def add_empty_guild(self, Guild) -> None:
         "Adds an dictionary that is empty for the guild. Guild must be a nextcord.Guild object"
         warnings.warn("Deprecated method: add_empty_guild", DeprecationWarning)
         pass  # No longer needed
@@ -276,7 +277,7 @@ class MathProblemCache:
         #
         # self._dict[Guild.id] = {}
 
-    async def add_problem(self, guild_id: int, problem_id: int, Problem: BaseProblem):
+    async def add_problem(self, guild_id: int, problem_id: int, Problem: BaseProblem) -> Optional[BaseProblem]:
         "Adds a problem and returns the added MathProblem"
         # Preliminary checks -otherwise SQL bugs
         if not isinstance(guild_id, int):
@@ -300,7 +301,7 @@ class MathProblemCache:
                 raise MathProblemsModuleException(
                     "Problem already exists! Use update_problem instead"
                 )
-        except ProblemNotFound:  # an exception raised when the problem already exists!
+        except ProblemNotFound:  # an exception raised when the problem does not exist! That means we're good to add the problem!
             pass
         if (
             self.update_cache_by_default_when_requesting
@@ -322,7 +323,7 @@ class MathProblemCache:
         if not isinstance(
             Problem, (BaseProblem)
         ):  # Make sure it's actually a Problem and not something else
-            raise TypeError("Problem is not a valid MathProblem object.")
+            raise TypeError("Problem is not a valid Problem object.")
         # All the checks passed, hooray! Now let's add the problem.
         async with aiosqlite.connect(self.db_name) as conn:
 
@@ -363,11 +364,11 @@ class MathProblemCache:
 
     async def remove_problem(self, guild_id: int, problem_id: int) -> BaseProblem:
         "Removes a problem. Returns the deleted problem"
-        Problem = self.get_problem(guild_id, problem_id)
+        Problem = await self.get_problem(guild_id, problem_id)
         await self.remove_problem_without_returning(guild_id, problem_id)
         return Problem
 
-    async def remove_problem_without_returning(self, guild_id, problem_id) -> None:
+    async def remove_problem_without_returning(self, guild_id: int, problem_id: int) -> None:
         "Remove a problem without returning! Saves time."
         if not isinstance(guild_id, int):
             if self.warnings:
@@ -404,16 +405,17 @@ class MathProblemCache:
                 (guild_id, problem_id),
             )  # The actual deletion
             try:
-                del self.guild_problems[guild_id][problem_id]
+                del self.guild_problems[guild_id][problem_id] # Delete from the cache
+                await self.update_cache()
             except KeyError:
                 # It's already deleted!
                 pass
 
             await conn.commit()
 
-    async def remove_duplicate_problems(self):
+    async def remove_duplicate_problems(self) -> None:
         "Deletes duplicate problems. Takes O(N^2) time which is slow"
-        async with aiosqlite.connect(self.db_name) as conn:
+        async with aiosqlite.connect(self.db_name) as conn: #Fetch the list of problems
             cursor = conn.cursor()
             await cursor.execute("SELECT * FROM problems")
             all_problems = [
@@ -683,7 +685,7 @@ class MathProblemCache:
             await cursor.execute(
                 "DELETE FROM quiz_submissions WHERE author = ?", (user_id)
             )  # Delete all quiz submissions created by the author
-            await conn.commit()  # Otherwise, nothing happens!
+            await conn.commit()  # Otherwise, nothing happens and it rolls back!!
 
     async def delete_all_by_guild_id(self, guild_id: int) -> None:
         "Delete all data stored by a given guild. This deletes all problems & quizzes & quiz submissions under that guild!"
