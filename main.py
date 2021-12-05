@@ -173,8 +173,9 @@ bot.log = logging.getLogger(__name__)
 
 slash = InteractionClient(client=bot, sync_commands=True)
 bot.slash = slash
-bot.add_cog(DeveloperCommands(bot))
-bot.add_cog(ProblemsCog(bot))
+# Add the commands
+bot.add_cog(DeveloperCommands(bot)) 
+bot.add_cog(ProblemsCog(bot)) 
 bot.add_cog(QuizCog(bot))
 bot.add_cog(MiscCommandsCog(bot))
 
@@ -199,7 +200,6 @@ async def on_connect():
     )
     bot_guild_ids = [guild.id for guild in bot.guilds]
     for guild_id in await bot.cache.get_guilds(
-        bot
     ):  # Obtain all guilds the cache stores data (will need to be upgraded.)
         if guild_id not in bot_guild_ids:  # It's not in!
             bot.log.debug("The bot is deleting data from a guild it has left.")
@@ -243,110 +243,6 @@ async def on_slash_command_error(inter, error):
 ##adds the user's id to the trusted users list
 ##(can only be used by trusted users)""",
 ##brief = "Adds a trusted user")
-
-
-
-
-
-
-
-@slash.slash_command(
-    name="submit_a_request",
-    description="Submit a request. I will know!",
-    options=[
-        Option(
-            name="offending_problem_guild_id",
-            description="The guild id of the problem you are trying to remove. The guild id of a global problem is null",
-            type=OptionType.INTEGER,
-            required=False,
-        ),
-        Option(
-            name="offending_problem_id",
-            description="The problem id of the problem. Very important (so I know which problem to check)",
-            type=OptionType.INTEGER,
-            required=False,
-        ),
-        Option(
-            name="extra_info",
-            description="A up to 5000 character description (about 2 pages) Use this wisely!",
-            type=OptionType.STRING,
-            required=False,
-        ),
-        Option(
-            name="copyrighted_thing",
-            description="The copyrighted thing that this problem is violating",
-            type=OptionType.STRING,
-            required=False,
-        ),
-        Option(
-            name="type",
-            description="Request type",
-            required=False,
-            type=OptionType.BOOLEAN,
-        ),
-    ],
-)
-async def submit_a_request(
-    inter,
-    offending_problem_guild_id=None,
-    offending_problem_id=None,
-    extra_info=None,
-    copyrighted_thing=None,
-    type="",
-):
-    "Submit a request! I will know! It uses a channel in my discord server and posts an embed"
-    cooldowns.check_for_cooldown("submit_a_request", 5)  # 5 seconds cooldown
-    if (
-        extra_info is None
-        and type == ""
-        and copyrighted_thing is not Exception
-        and offending_problem_guild_id is None
-        and offending_problem_id is None
-    ):
-        await inter.reply(embed=ErrorEmbed("You must specify some field."))
-    if extra_info is None:
-        await inter.reply(embed=ErrorEmbed("Please provide extra information!"))
-    assert len(extra_info) <= 5000
-    try:
-        channel = await bot.fetch_channel(
-            901464948604039209
-        )  # CHANGE THIS IF YOU HAVE A DIFFERENT REQUESTS CHANNEL! (the part after id)
-    except (nextcord.ext.commands.ChannelNotReadable, nextcord.Forbidden):
-        raise RuntimeError("The bot cannot send messages to the channel!")
-    try:
-        Problem = await bot.cache.get_problem(
-            offending_problem_guild_id, offending_problem_id
-        )
-        problem_found = True
-    except (TypeError, KeyError, problems_module.ProblemNotFound):
-        # Problem not found
-        problem_found = False
-    content = bot.owner_id
-    embed = nextcord.Embed(
-        title=f"A new {type} request has been recieved from {inter.author.name}#{inter.author.discriminator}!",
-        description="",
-    )
-
-    if problem_found:
-        embed.description = f"Problem_info:{ str(Problem)}"
-    embed.description += f"""Copyrighted thing: (if legal): {copyrighted_thing}
-    Extra info: {extra_info}"""
-    if problem_found:
-        embed.set_footer(text=str(Problem) + asctime())
-    else:
-        embed.set_footer(text=str(asctime()))
-
-    content = "A request has been submitted."
-    for (
-        owner_id
-    ) in (
-        bot.owner_ids
-    ):  # Mentioning owners: may be removed (you can also remove it as well)
-        content += f"<@{owner_id}>"
-    content += f"<@{bot.owner_id}>"
-    await channel.send(embed=embed, content=content)
-    await inter.reply("Your request has been submitted!")
-
 
 @bot.event
 async def on_guild_join(guild):
