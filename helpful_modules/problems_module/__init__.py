@@ -1,7 +1,7 @@
 # This module is the 'core' of my bot!
 # It's quite important.
 
-# Licensed under CC-BY-SA (or GPLv3, because free licenses are irrevokeable)
+# Licensed under GPLv3
 from .errors import *
 from .base_problem import BaseProblem
 from .quizzes import *
