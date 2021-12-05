@@ -279,11 +279,13 @@ class MiscCommandsCog(HelperCog):
             await _extra_data['cache'].delete_all_by_user_id(interaction.user.id)
 
             await interaction.responder.send_message(**kwargs)
+            self.disable()
             self.view.stop()
             return
         async def deny_callback(self: BasicButton, interaction: nextcord.Interaction):
             "A function that runs when the"
             await interaction.response.reply("Your data is safe! It has not been deleted.")
+            self.disable()
             self.view.stop()
             return
 

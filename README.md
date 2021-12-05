@@ -5,7 +5,8 @@ If you run into any issues create an issue or DM me (ay136416#2707)).
 
 # ANNOUNCEMENT
 
-CC-BY-SA 4.0 is no longer a valid license to use this bot under!
+CC-BY-SA 4.0 is no longer a valid license to use this bot under! You **must** license the bot under GPLv3 (or a later verson.)
+(CC-BY-SA 4.0 has a one way migration to GPLv3, so you are allowed to do this.)
 
 # Contribute :-)
 
@@ -19,7 +20,7 @@ A few guidelines:
 6) No syntax errors, please! <br>
 7) You should lint your code. (this uses [python-black](https://pypi.org/project/black/)) <br>
 8) Follow common sense <br>
-9) Make sure to follow CC-BY-SA 4.0 or GPL v3!
+9) Make sure to follow GPLv3! (You'll need to include the link to the modified version of my code and make it somehow __***easily***__ accessible through the bot (or if you're just fixing a bug the 'forked from' label should be enough attribution), state signifigant changes made to the software, include the license (which is already done for you, don't modify LICENSE. Treat it as read-only.) You must state if )
 # Invite my bot!
 
 Recommended invite: https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147568640&scope=bot%20applications.commands
@@ -70,15 +71,26 @@ Make sure to add the env keys listed below.
 4. Stop your bot! And then re-start it again
 
 
-## .env things required
+## .env key-value pairs required
 
 Required:
 DISCORD_TOKEN: your discord token
 
 Unused:
 use_sqlite: str (if not set to the string "True", mysql will be used) # Use this for local testing, and mysql for global testing
+Eventually will be unused (and removed)
 sqlite_database_path: path to sqlite db
 mysql_db_ip: The IP/webserver of the MySQL database
 mysql_db_username: Your username to the MySQL database
 mysql_db_pass: Your password to the MySQL database
 mysql_db_name: Your MySQL database name
+
+source_code_link: link to the place that contains the bot's source code (if modified)! This must be public (and filling it out __should__ fufill the Disclose source requirement of GPLv3)
+
+## Attribution / Contributors
+
+MySQL: https://pypi.org/project/mysql-connector-python/#files
+GPLv3 simplified: https://tldrlegal.com/license/gnu-general-public-license-v3-(gpl-3)
+@duck-master helped me revise the privacy policy.
+(get_git_revision_hash)[https://stackoverflow.com/a/21901260]
+Disabling buttons: https://stackoverflow.com/questions/68842747/how-to-disable-button-once-it-is-clicked-in-discord-js-13 & help from @umairshasheen78 (through Discord)
