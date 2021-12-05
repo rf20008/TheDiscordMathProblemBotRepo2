@@ -1,4 +1,4 @@
-#  _____ Privacy policy
+# Privacy policy
 
 Most of the content in this privacy policy should be self-explanatory. (Write to me if it isn't!)
 If you use this application (the Discord Math Problem Bot), (I assume that) you (would) agree to this policy. If you do not agree, don't use this application!
