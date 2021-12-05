@@ -143,9 +143,9 @@ class ProblemsCog(HelperCog):
                 "*** AttributeError: guild.id was not found! Please report this error or refrain from using it here***"
             ) from exc
 
-        real_guild_id = str(inter.guild.id) if is_guild_problem else "null"
+        real_guild_id = int(inter.guild.id) if is_guild_problem else None
         try:
-            problem = await self.cache.get_problem(real_guild_id, str(problem_id))
+            problem = await self.cache.get_problem(real_guild_id, int(problem_id))
         except ProblemNotFound:
             await inter.reply(embed=ErrorEmbed("Problem not found."))
             return
@@ -158,7 +158,7 @@ class ProblemsCog(HelperCog):
                 inter.reply(embed=embed1)
                 return
             problem = await self.cache.get_problem(
-                int(inter.guild.id) if is_guild_problem else None, str(problem_id)
+                int(inter.guild.id) if is_guild_problem else None, int(problem_id)
             )
             Problem_as_str = f"""Question: {problem.get_question()}
 Author: {str(problem.get_author())}
@@ -399,7 +399,7 @@ NumSolvers: {len(problem.get_solvers())}"""
 
         await cooldowns.check_for_cooldown(inter, "submit_problem", 5)
 
-        if len(question) > self.cache.max_question_length:
+        if len(question) > self.cache.max_question_length: #Check to make sure it's not too long!
             await inter.reply(
                 embed=ErrorEmbed(
                     f"Your question is too long! Therefore, it cannot be added. The maximum question length is {self.cache.max_question_length} characters.",
@@ -533,7 +533,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         await cooldowns.check_for_cooldown(inter, "check_answer", 5)
         try:
             problem = await self.cache.get_problem(
-                inter.guild.id if checking_guild_problem else "null", str(problem_id)
+                inter.guild.id if checking_guild_problem else "null", int(problem_id)
             )
             # Make sure the author didn't already solve this problem
             if problem.is_solver(inter.author):
@@ -605,12 +605,12 @@ NumSolvers: {len(problem.get_solvers())}"""
         answer: str,
         checking_guild_problem: bool = False,
     ):
-        """/check_answer {problem_id: int} {answer: str} [checking_guild_problem: bool = False]
+        """/check_answer {problem_id: int} {answer: str} [checking_guild_problem: bool = false]
         Check your answer to the problem with the given id. If the problem is"""
 
         try:
             problem = await self.bot.cache.get_problem(
-                inter.guild.id if checking_guild_problem else "null", str(problem_id)
+                inter.guild.id if checking_guild_problem else None, int(problem_id)
             )
             if problem.is_solver(inter.author):  # If the user solved the problem
                 await inter.reply(
@@ -675,8 +675,8 @@ NumSolvers: {len(problem.get_solvers())}"""
         There is a 5 second cooldown on this command, to prevent spam."""
         try:
             problem = await self.bot.cache.get_problem(
-                inter.guild.id if is_guild_problem else "null",
-                problem_id=str(problem_id),  # Will probably have to change
+                inter.guild.id if is_guild_problem else None, # If it's a guild problem, set the guild id to the guild_id, otherwise set it to None
+                problem_id=int(problem_id),  # Will probably have to change
             )  # Get the problem
             if problem.is_voter(
                 inter.author
@@ -749,8 +749,8 @@ NumSolvers: {len(problem.get_solvers())}"""
         There is a 5 second cooldown on this command."""
         try:
             problem = await self.bot.cache.get_problem(
-                inter.guild.id if is_guild_problem else "null",
-                problem_id=str(problem_id),
+                inter.guild.id if is_guild_problem else None,
+                problem_id=int(problem_id),
             )  # Get the problem!
             if not problem.is_voter(
                 inter.author
