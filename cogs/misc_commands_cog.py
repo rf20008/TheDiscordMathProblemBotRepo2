@@ -9,9 +9,11 @@ from nextcord.ext import commands
 from helpful_modules import checks
 from helpful_modules.custom_embeds import SimpleEmbed, ErrorEmbed, SuccessEmbed
 from helpful_modules.save_files import FileSaver
+from helpful_modules import problems_module
 from helpful_modules.custom_buttons import *
 from helpful_modules.threads_or_useful_funcs import get_git_revision_hash
 from asyncio import sleep as asyncio_sleep
+from time import asctime
 import resource
 from typing import Union
 from copy import copy
@@ -365,3 +367,100 @@ class MiscCommandsCog(HelperCog):
                 "Your json data has been attached! Unfortunately, there is no parse command."
             ),
         )
+    @slash_command(
+        name="submit_a_request",
+        description="Submit a request. I will know!",
+        options=[
+            Option(
+                name="offending_problem_guild_id",
+                description="The guild id of the problem you are trying to remove. The guild id of a global problem is null",
+                type=OptionType.INTEGER,
+                required=False,
+            ),
+            Option(
+                name="offending_problem_id",
+                description="The problem id of the problem. Very important (so I know which problem to check)",
+                type=OptionType.INTEGER,
+                required=False,
+            ),
+            Option(
+                name="extra_info",
+                description="A up to 5000 character description (about 2 pages) Use this wisely!",
+                type=OptionType.STRING,
+                required=False,
+            ),
+            Option(
+                name="copyrighted_thing",
+                description="The copyrighted thing that this problem is violating",
+                type=OptionType.STRING,
+                required=False,
+            ),
+            Option(
+                name="type",
+                description="Request type",
+                required=False,
+                type=OptionType.BOOLEAN,
+            ),
+        ],
+    )
+    async def submit_a_request(
+        self,
+        inter: dislash.SlashInteraction,
+        offending_problem_guild_id: int=None,
+        offending_problem_id: int=None,
+        extra_info: str=None,
+        copyrighted_thing: str = Exception,
+        type: str="",
+    ):
+        "Submit a request! I will know! It uses a channel in my discord server and posts an embed"
+        if (
+            extra_info is None
+            and type == ""
+            and copyrighted_thing is not Exception
+            and offending_problem_guild_id is None
+            and offending_problem_id is None
+        ):
+            await inter.reply(embed=ErrorEmbed("You must specify some field."))
+        if extra_info is None:
+            await inter.reply(embed=ErrorEmbed("Please provide extra information!"))
+        assert len(extra_info) <= 5000
+        try:
+            channel = await self.bot.fetch_channel(
+                901464948604039209
+            )  # CHANGE THIS IF YOU HAVE A DIFFERENT REQUESTS CHANNEL! (the part after id)
+        except (nextcord.ext.commands.ChannelNotReadable, nextcord.Forbidden):
+            raise RuntimeError("The bot cannot send messages to the channel!")
+        try:
+            Problem = await self.bot.cache.get_problem(
+                offending_problem_guild_id, offending_problem_id
+            )
+            problem_found = True
+        except (TypeError, KeyError, problems_module.ProblemNotFound):
+            # Problem not found
+            problem_found = False
+        content = self.bot.owner_id
+        embed = nextcord.Embed(
+            title=f"A new {type} request has been recieved from {inter.author.name}#{inter.author.discriminator}!",
+            description="",
+        )
+
+        if problem_found:
+            embed.description = f"Problem_info:{ str(Problem)}"
+        embed.description += f"""Copyrighted thing: (if legal): {copyrighted_thing}
+        Extra info: {extra_info}"""
+        if problem_found:
+            embed.set_footer(text=str(Problem) + asctime())
+        else:
+            embed.set_footer(text=str(asctime()))
+
+        content = "A request has been submitted."
+        for (
+            owner_id
+        ) in (
+            self.bot.owner_ids
+        ):  # Mentioning owners: may be removed (you can also remove it as well)
+            content += f"<@{owner_id}>"
+        content += f"<@{self.bot.owner_id}>"
+        await channel.send(embed=embed, content=content)
+        await inter.reply("Your request has been submitted!")
+
