@@ -785,7 +785,83 @@ NumSolvers: {len(problem.get_solvers())}"""
             embed=SuccessEmbed(successMessage, successTitle="Successfully unvoted!"),
             ephemeral=True,
         )  # Tell the user of the successful unvote.
-
+    @slash_command(
+        name="delete_problem",
+        description="Deletes a problem",
+        options=[
+            Option(
+                name="problem_id",
+                description="Problem ID!",
+                type=OptionType.INTEGER,
+                required=True,
+            ),
+            Option(
+                name="is_guild_problem",
+                description="whether deleting a guild problem",
+                type=OptionType.USER,
+                required=False,
+            ),
+        ],
+    )
+    @nextcord.ext.commands.cooldown(1,0.5,nextcord.ext.commands.BucketType.user)
+    async def delete_problem(self, inter, problem_id: int, is_guild_problem: bool=False) -> typing.Optional[nextcord.Message]: 
+        "Delete a math problem"
+        guild_id = inter.guild.id
+        if is_guild_problem:
+            if guild_id is None:
+                await inter.reply(
+                    embed=ErrorEmbed(
+                        "Run this command in the discord server which has the problem you are trying to delete, or switch is_guild_problem to False."
+                    )
+                )
+                return
+            try:
+                problem = await self.cache.get_problem(guild_id if is_guild_problem else None, problem_id)
+            except (problems_module.ProblemNotFound, ProblemNotFoundException):
+                return await inter.reply(
+                    embed = ErrorEmbed(
+                        description = "This problem does not exist!",
+                        custom_title = "Problem not found"
+                    )
+                )
+            if not (
+                inter.author.id in self.bot.trusted_users
+                or not problem.is_author()
+                or (inter.author.guild_permissions.administrator)
+            ):
+                await inter.reply(
+                    embed=ErrorEmbed("Insufficient permissions"), ephemeral=True
+                )
+                return
+            await main_cache.remove_problem(guild_id, problem_id)
+            await inter.reply(
+                embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!"),
+                ephemeral=True,
+            )
+        if guild_id is None:
+            await inter.reply(
+                embed=ErrorEmbed(
+                    "Run this command in the discord server which has the problem, or switch is_guild_problem to False."
+                )
+            )
+            return
+        if problem_id not in main_cache.get_guild_problems(inter.guild).keys():
+            await inter.reply(
+                embed=ErrorEmbed("That problem doesn't exist."), ephemeral=True
+            )
+            return
+        if not (
+            inter.author.id in bot.trusted_users
+            or not (main_cache.get_problem(guild_id, problem_id).is_author())
+            or inter.author.guild_permissions.administrator
+        ):  # Not
+            await inter.reply(embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True)
+            return
+        main_cache.remove_problem(None, problem_id)
+        await inter.reply(
+            embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!"),
+            ephemeral=True,
+        )
 
 def setup(bot):
     bot.add_cog(ProblemsCog(bot))

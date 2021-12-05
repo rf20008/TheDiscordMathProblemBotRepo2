@@ -17,6 +17,7 @@ import copy
 import random
 import os
 import logging
+import typing
 import warnings
 from time import sleep, time, asctime
 import subprocess
@@ -41,6 +42,7 @@ from nextcord.ext.commands.cooldowns import BucketType
 from helpful_modules import _error_logging, checks, cooldowns
 from helpful_modules import custom_embeds, problems_module
 from helpful_modules import save_files, the_documentation_file_loader, return_intents
+from helpful_modules.problems_module.errors import *
 from helpful_modules.threads_or_useful_funcs import *
 
 from cogs import *
@@ -230,7 +232,7 @@ async def on_error(event, *args, **kwargs):
 
 
 @bot.event
-async def on_slash_command_error(inter, error, print_stack_traceback=[True, stderr]):
+async def on_slash_command_error(inter, error):
     "Function called when a slash command errors, which will inevitably happen. All of the functionality was moved to base_on_error :-)"
     # print the traceback to the file
     return await inter.reply(**await base_on_error(inter, error))
@@ -243,79 +245,7 @@ async def on_slash_command_error(inter, error, print_stack_traceback=[True, stde
 ##brief = "Adds a trusted user")
 
 
-@slash.slash_command(
-    name="delete_problem",
-    description="Deletes a problem",
-    options=[
-        Option(
-            name="problem_id",
-            description="Problem ID!",
-            type=OptionType.INTEGER,
-            required=True,
-        ),
-        Option(
-            name="is_guild_problem",
-            description="whether deleting a guild problem",
-            type=OptionType.USER,
-            required=False,
-        ),
-    ],
-)
-async def delete_problem(inter, problem_id, is_guild_problem=False):
-    "Delete a math problem"
-    await check_for_cooldown(inter, "unvote", 0.5)
-    guild_id = inter.guild.id
-    if is_guild_problem:
-        if guild_id is None:
-            await inter.reply(
-                embed=ErrorEmbed(
-                    "Run this command in the discord server which has the problem you are trying to delete, or switch is_guild_problem to False."
-                )
-            )
-            return
-        if problem_id not in main_cache.get_guild_problems(inter.guild).keys():
-            await inter.reply(
-                embed=ErrorEmbed("That problem doesn't exist."), ephemeral=True
-            )
-            return
-        if not (
-            inter.author.id in bot.trusted_users
-            or not (main_cache.get_problem(str(guild_id), str(problem_id)).is_author())
-            or (inter.author.guild_permissions.administrator)
-        ):
-            await inter.reply(
-                embed=ErrorEmbed("Insufficient permissions"), ephemeral=True
-            )
-            return
-        await main_cache.remove_problem(guild_id, problem_id)
-        await inter.reply(
-            embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!"),
-            ephemeral=True,
-        )
-    if guild_id is None:
-        await inter.reply(
-            embed=ErrorEmbed(
-                "Run this command in the discord server which has the problem, or switch is_guild_problem to False."
-            )
-        )
-        return
-    if problem_id not in main_cache.get_guild_problems(inter.guild).keys():
-        await inter.reply(
-            embed=ErrorEmbed("That problem doesn't exist."), ephemeral=True
-        )
-        return
-    if not (
-        inter.author.id in bot.trusted_users
-        or not (main_cache.get_problem(guild_id, problem_id).is_author())
-        or inter.author.guild_permissions.administrator
-    ):  # Not
-        await inter.reply(embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True)
-        return
-    main_cache.remove_problem("null", problem_id)
-    await inter.reply(
-        embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!"),
-        ephemeral=True,
-    )
+
 
 
 @slash.slash_command(
