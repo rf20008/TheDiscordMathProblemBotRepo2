@@ -445,12 +445,14 @@ class MathProblemCache:
         if bot is not None:
             self._guilds = []
             for guild_id in self.guild_ids:
-                guild = bot.get_guild(guild_id) # Get the guild
-                if guild is None: # Guild not found
+                guild = bot.get_guild(guild_id)  # Get the guild
+                if guild is None:  # Guild not found
                     if self.warnings:
-                        warnings.warn("guild is None") # Warn?
+                        warnings.warn("guild is None")  # Warn?
                     else:
-                        raise RuntimeError(f"Guild not found (id: {guild_id}) :-(") # Or error
+                        raise RuntimeError(
+                            f"Guild not found (id: {guild_id}) :-("
+                        )  # Or error
                 else:
                     self._guilds.append(guild)
             return self._guilds
@@ -666,24 +668,39 @@ class MathProblemCache:
             "quiz_submissions": quiz_submissions,
             "problems": problems,
         }
-        
-    async def delete_all_by_user_id(self,user_id: int) -> None:
+
+    async def delete_all_by_user_id(self, user_id: int) -> None:
         "Delete all data stored under a given user id"
         assert isinstance(user_id, int)
         async with aiosqlite.connect(self.db) as conn:
             cursor = conn.cursor()
-            await cursor.execute("DELETE FROM problems WHERE author = ?", (user_id,)) # Delete all problems submitted by the author
-            await cursor.execute("DELETE FROM quizzes WHERE author = ?", (user_id)) # Delete all quiz problems submitted by the author
-            await cursor.execute("DELETE FROM quiz_submissions WHERE author = ?", (user_id)) # Delete all quiz submissions created by the author
-            await conn.commit() # Otherwise, nothing happens!
-    async def delete_all_by_guild_id(self,guild_id: int) -> None:
+            await cursor.execute(
+                "DELETE FROM problems WHERE author = ?", (user_id,)
+            )  # Delete all problems submitted by the author
+            await cursor.execute(
+                "DELETE FROM quizzes WHERE author = ?", (user_id)
+            )  # Delete all quiz problems submitted by the author
+            await cursor.execute(
+                "DELETE FROM quiz_submissions WHERE author = ?", (user_id)
+            )  # Delete all quiz submissions created by the author
+            await conn.commit()  # Otherwise, nothing happens!
+
+    async def delete_all_by_guild_id(self, guild_id: int) -> None:
         "Delete all data stored by a given guild. This deletes all problems & quizzes & quiz submissions under that guild!"
         if guild_id is None:
-            raise MathProblemsModuleException("You are not allowed to delete global problems!")
+            raise MathProblemsModuleException(
+                "You are not allowed to delete global problems!"
+            )
         assert isinstance(guild_id, int)
         async with aiosqlite.connect(self.db) as conn:
             cursor = conn.cursor()
-            await cursor.execute("DELETE FROM problems WHERE guild_id = ?", (guild_id,)) # Delete all problems from the guild
-            await cursor.execute("DELETE FROM quizzes WHERE guild_id = ?", (guild_id)) # Delete all quiz problems from the guild
-            await cursor.execute("DELETE FROM quiz_submissions WHERE guild_id = ?", (guild_id)) # Delete all quiz submissions from the guild!
-            await conn.commit() # Otherwise, nothing happens!
+            await cursor.execute(
+                "DELETE FROM problems WHERE guild_id = ?", (guild_id,)
+            )  # Delete all problems from the guild
+            await cursor.execute(
+                "DELETE FROM quizzes WHERE guild_id = ?", (guild_id)
+            )  # Delete all quiz problems from the guild
+            await cursor.execute(
+                "DELETE FROM quiz_submissions WHERE guild_id = ?", (guild_id)
+            )  # Delete all quiz submissions from the guild!
+            await conn.commit()  # Otherwise, nothing happens!

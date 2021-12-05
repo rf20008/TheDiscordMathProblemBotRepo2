@@ -15,7 +15,8 @@ from asyncio import sleep as asyncio_sleep
 import resource
 from typing import Union
 from copy import copy
-from io import BytesIO # For file submitting!
+from io import BytesIO  # For file submitting!
+
 
 class MiscCommandsCog(HelperCog):
     def __init__(self, bot: commands.Bot):
@@ -240,51 +241,66 @@ class MiscCommandsCog(HelperCog):
             ephemeral=True,
         )
         return
-    
-    @slash_command(description = "Interact with your user data")
+
+    @slash_command(description="Interact with your user data")
     async def user_data(self: "MiscCommandsCog", inter: dislash.SlashInteraction):
         "The base command to interact with your user data. This doesn't do anything (you need to call a subcommand"
         pass
-    @nextcord.ext.commands.cooldown(1,500,nextcord.ext.commands.BucketType.user) # To prevent abuse
+
+    @nextcord.ext.commands.cooldown(
+        1, 500, nextcord.ext.commands.BucketType.user
+    )  # To prevent abuse
     @user_data.sub_command(
-        name = "delete_all",
-        description = "Delete all problems, quizzes, and quiz submissions you created!",
-        options = [
-                Option(
-                    name = "save_data_before_deletion",
-                    description = "Whether to give you your problems or submissions, in JSON format! Defaults to True",
-                    type = OptionType.BOOLEAN,
-                    required=False
-                )
-            ]
-        )
-    async def delete_all(self,
-     inter, save_data_before_deletion: bool = True):
+        name="delete_all",
+        description="Delete all problems, quizzes, and quiz submissions you created!",
+        options=[
+            Option(
+                name="save_data_before_deletion",
+                description="Whether to give you your problems or submissions, in JSON format! Defaults to True",
+                type=OptionType.BOOLEAN,
+                required=False,
+            )
+        ],
+    )
+    async def delete_all(self, inter, save_data_before_deletion: bool = True):
         """/user_data delete_all [save_data_before_deletion: bool = Trie]
         Delete all your data. YOU MUST CONFIRM THIS!
         If save_data_before_deletion, the data about you will be sent as a json file
         This has a 500 second cooldown."""
         if save_data_before_deletion:
-            json_data: dict = await self._get_json_data_by_user(inter.author) # Get the data
-            file_version = self._file_version_of_item(str(json_data), file_name = "your_data.json") # Turn it into a dictionary
-        
-        async def confirm_callback(self: ConfirmationButton, interaction: nextcord.Interaction, _extra_data: dict):
+            json_data: dict = await self._get_json_data_by_user(
+                inter.author
+            )  # Get the data
+            file_version = self._file_version_of_item(
+                str(json_data), file_name="your_data.json"
+            )  # Turn it into a dictionary
+
+        async def confirm_callback(
+            self: ConfirmationButton,
+            interaction: nextcord.Interaction,
+            _extra_data: dict,
+        ):
             "The function that runs when the button gets pressed. This actually deletes the data"
             assert self.check(interaction)
-            kwargs = {"content": "Successfully deleted your data! Your data should now be cleared now."}
+            kwargs = {
+                "content": "Successfully deleted your data! Your data should now be cleared now."
+            }
             if "file" in _extra_data.keys():
-                #Return the file
-                kwargs['file'] = _extra_data['file']
+                # Return the file
+                kwargs["file"] = _extra_data["file"]
 
-            await _extra_data['cache'].delete_all_by_user_id(interaction.user.id)
+            await _extra_data["cache"].delete_all_by_user_id(interaction.user.id)
 
             await interaction.responder.send_message(**kwargs)
             self.disable()
             self.view.stop()
             return
+
         async def deny_callback(self: BasicButton, interaction: nextcord.Interaction):
             "A function that runs when the"
-            await interaction.response.reply("Your data is safe! It has not been deleted.")
+            await interaction.response.reply(
+                "Your data is safe! It has not been deleted."
+            )
             self.disable()
             self.view.stop()
             return
@@ -292,31 +308,60 @@ class MiscCommandsCog(HelperCog):
         _extra_data = {"cache": copy(self.bot.cache)}
         if save_data_before_deletion:
             _extra_data["file"] = file_version
-        confirmation_button = ConfirmationButton(callback = confirm_callback, style=nextcord.ButtonStyle.danger, label = "I'm 100\% \sure I want to delete my data!", 
-            disabled=False, _extra_data = _extra_data)
-        deny_button = BasicButton(check = lambda self, inter: inter.user.id == self.user_for,
-            callback = deny_callback, style = nextcord.ButtonStyle.green, disabled = False, label = "Never mind....")
+        confirmation_button = ConfirmationButton(
+            callback=confirm_callback,
+            style=nextcord.ButtonStyle.danger,
+            label="I'm 100\% \sure I want to delete my data!",
+            disabled=False,
+            _extra_data=_extra_data,
+        )
+        deny_button = BasicButton(
+            check=lambda self, inter: inter.user.id == self.user_for,
+            callback=deny_callback,
+            style=nextcord.ButtonStyle.green,
+            disabled=False,
+            label="Never mind....",
+        )
         view = MyView(timeout=30)
         view.add_item(confirmation_button)
         view.add_item(deny_button)
-        return await inter.reply(embed = SimpleEmbed(title = "Are you sure?", description = "This will delete all your data!"), view = view)
-    async def _get_json_data_by_user(self,author: Union[nextcord.User,  nextcord.Member]) -> dict:
+        return await inter.reply(
+            embed=SimpleEmbed(
+                title="Are you sure?", description="This will delete all your data!"
+            ),
+            view=view,
+        )
+
+    async def _get_json_data_by_user(
+        self, author: Union[nextcord.User, nextcord.Member]
+    ) -> dict:
         "A helper function to obtain a user's stored data and return the dictionarified version of it."
         raw_data = await self.cache.get_all_by_author_id(author.id)
         new_data = {
             "Problems": [problem.to_dict() for problem in raw_data["problems"]],
             "Quizzes": [quiz.to_dict() for quiz in raw_data["quizzes"]],
-            "Quiz Submissions": [submission.to_dict() for submission in raw_data["submissions"]]
+            "Quiz Submissions": [
+                submission.to_dict() for submission in raw_data["submissions"]
+            ],
         }
         return new_data
+
     def _file_version_of_item(self, item: str, file_name) -> nextcord.File:
         assert isinstance(item, str)
-        return nextcord.File(BytesIO(bytes(item, 'utf-8')),filename = file_name)
+        return nextcord.File(BytesIO(bytes(item, "utf-8")), filename=file_name)
+
     @user_data.sub_command(
-        name = "get_data",
-        description = "Get a jsonified version of the data stored with this application!"
+        name="get_data",
+        description="Get a jsonified version of the data stored with this application!",
     )
     async def get_data(self, inter):
-        file = self._file_version_of_item(str(await self._get_json_data_by_user(inter.author)), file_name = "your_data.json")
-        return await inter.reply(file = file, embed = SuccessEmbed("Your json data has been attached! Unfortunately, there is no parse command."))
-    
+        file = self._file_version_of_item(
+            str(await self._get_json_data_by_user(inter.author)),
+            file_name="your_data.json",
+        )
+        return await inter.reply(
+            file=file,
+            embed=SuccessEmbed(
+                "Your json data has been attached! Unfortunately, there is no parse command."
+            ),
+        )

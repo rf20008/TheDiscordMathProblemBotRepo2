@@ -32,7 +32,7 @@ import dislash  # https://github.com/EQUENOS/dislash.py
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 import nextcord  # https://github.com/nextcord/nextcord
 import nextcord.ext.commands as nextcord_commands
-import aiosqlite # https://github.com/omnilib/aiosqlite
+import aiosqlite  # https://github.com/omnilib/aiosqlite
 
 
 from nextcord.ext.commands.cooldowns import BucketType
@@ -192,14 +192,16 @@ async def on_connect():
         ),
         status=nextcord.Status.idle,
     )
-    bot.log.debug("Deleting data from guilds the bot was kicked from while it was offline")
+    bot.log.debug(
+        "Deleting data from guilds the bot was kicked from while it was offline"
+    )
     bot_guild_ids = [guild.id for guild in bot.guilds]
-    for guild_id in await bot.cache.get_guilds(bot): # Obtain all guilds the cache stores data (will need to be upgraded.)
-        if guild_id not in bot_guild_ids: # It's not in!
+    for guild_id in await bot.cache.get_guilds(
+        bot
+    ):  # Obtain all guilds the cache stores data (will need to be upgraded.)
+        if guild_id not in bot_guild_ids:  # It's not in!
             bot.log.debug("The bot is deleting data from a guild it has left.")
-            await bot.cache.remove_all_by_guild_id(guild_id) # Delete the data
-
-    
+            await bot.cache.remove_all_by_guild_id(guild_id)  # Delete the data
 
 
 @bot.event
@@ -232,7 +234,6 @@ async def on_slash_command_error(inter, error, print_stack_traceback=[True, stde
     "Function called when a slash command errors, which will inevitably happen. All of the functionality was moved to base_on_error :-)"
     # print the traceback to the file
     return await inter.reply(**await base_on_error(inter, error))
-
 
 
 ##@bot.command(help = """Adds a trusted user!
@@ -487,14 +488,17 @@ async def submit_a_request(
 async def on_guild_join(guild):
     "Ran when the bot joins a guild!"
     if guild.id == None:  # Should never happen
-        await guild.leave() # This will mess up stuff
+        await guild.leave()  # This will mess up stuff
         print("Oh no")
         raise RuntimeError(
             "Oh no..... there is a guild with id None... this will mess up the bot!"
         )  # Make sure that a guild with id _global doesn't mess up stuff
+
+
 @bot.event
 async def on_guild_remove(guild):
-    await bot.cache.remove_all_by_guild_id(guild.id) # Remove all guild-related stuff
+    await bot.cache.remove_all_by_guild_id(guild.id)  # Remove all guild-related stuff
+
 
 if __name__ == "__main__":
     print("The bot has finished setting up and will now run.")

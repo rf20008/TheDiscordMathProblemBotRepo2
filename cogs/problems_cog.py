@@ -399,7 +399,9 @@ NumSolvers: {len(problem.get_solvers())}"""
 
         await cooldowns.check_for_cooldown(inter, "submit_problem", 5)
 
-        if len(question) > self.cache.max_question_length: #Check to make sure it's not too long!
+        if (
+            len(question) > self.cache.max_question_length
+        ):  # Check to make sure it's not too long!
             await inter.reply(
                 embed=ErrorEmbed(
                     f"Your question is too long! Therefore, it cannot be added. The maximum question length is {self.cache.max_question_length} characters.",
@@ -675,7 +677,9 @@ NumSolvers: {len(problem.get_solvers())}"""
         There is a 5 second cooldown on this command, to prevent spam."""
         try:
             problem = await self.bot.cache.get_problem(
-                inter.guild.id if is_guild_problem else None, # If it's a guild problem, set the guild id to the guild_id, otherwise set it to None
+                inter.guild.id
+                if is_guild_problem
+                else None,  # If it's a guild problem, set the guild id to the guild_id, otherwise set it to None
                 problem_id=int(problem_id),  # Will probably have to change
             )  # Get the problem
             if problem.is_voter(
