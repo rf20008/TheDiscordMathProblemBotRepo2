@@ -399,7 +399,7 @@ class DeveloperCommands(HelperCog):
             ),
             ephemeral=True,
         )
-    @slash.slash_command(
+    @slash_command(
         name="add_trusted_user",
         description="Adds a trusted user",
         options=[
@@ -435,7 +435,7 @@ class DeveloperCommands(HelperCog):
         )
 
 
-    @slash.slash_command(
+    @slash_command(
         name="remove_trusted_user",
         description="removes a trusted user",
         options=[
