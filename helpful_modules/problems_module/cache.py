@@ -11,6 +11,7 @@ from .errors import *
 from helpful_modules.dict_factory import dict_factory
 from .base_problem import BaseProblem
 from .quizzes import *
+from .mysql_connector_with_stmt import *
 
 
 class MathProblemCache:
@@ -18,6 +19,12 @@ class MathProblemCache:
 
     def __init__(
         self,
+        *,
+        mysql_username: str,
+        mysql_password: str,
+        mysql_db_ip: str,
+        mysql_db_name: str,
+        use_sqlite: bool = False,
         max_answer_length: int =100,
         max_question_limit: int=250,
         max_guild_problems: int=125,
@@ -26,10 +33,14 @@ class MathProblemCache:
         name: str="1",
         update_cache_by_default_when_requesting: bool=True,
         use_cached_problems: bool = False,
+        
+
     ):
         "Create a new MathProblemCache. the arguments should be self-explanatory"
         # make_sql_table([], db_name = sql_dict_db_name)
         # make_sql_table([], db_name = "MathProblemCache1.db", table_name="kv_store")
+        if use_sqlite:
+            warnings.warn("Sqlite has been deprecated. Use MySQL instead.")
         self.db_name = db_name
         if warnings_or_errors not in ["warnings", "errors"]:
             raise ValueError(
@@ -38,14 +49,20 @@ class MathProblemCache:
         self.warnings = (
             warnings_or_errors == "warnings"
         )  # Whether to raise TypeErrors or warn
+        self.use_sqlite=use_sqlite
         self.use_cached_problems = use_cached_problems
-        self._max_answer = max_answer_length
-        self._max_question = max_question_limit
+        self._max_answer_length = max_answer_length
+        self._max_question_length = max_question_limit
         self._max_guild_limit = max_guild_problems
+        self.mysql_username = mysql_username
+        self.mysql_password = mysql_password
+        self.mysql_db_ip = mysql_db_ip
+        self.mysql_db_name = mysql_db_name
         asyncio.run(self.initialize_sql_table())
         self.update_cache_by_default_when_requesting = (
             update_cache_by_default_when_requesting
         )
+        
 
     def _initialize_sql_dict(self):
         self._sql_dict = sqldict.SqlDict(
@@ -56,66 +73,107 @@ class MathProblemCache:
         )
 
     async def initialize_sql_table(self):
-        async with aiosqlite.connect(self.db_name) as conn:
-            cursor = await conn.cursor()
-            await cursor.execute(
-                """CREATE TABLE IF NOT EXISTS problems (
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db_name) as conn:
+                cursor = await conn.cursor()
+                await cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS problems (
+                        guild_id INT,
+                        problem_id INT,
+                        question TEXT(2000) NOT NULL,
+                        answers BLOB NOT NULL, 
+                        author INT NOT NULL,
+                        voters BLOB NOT NULL,
+                        solvers BLOB NOT NULL
+                        )"""
+                )  # Blob types will be compliled with pickle.loads() and pickle.dumps() (they are lists)
+                # author: int = user_id
+
+                await cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS quizzes (
                     guild_id INT,
-                    problem_id INT,
-                    question TEXT(2000) NOT NULL,
-                    answers BLOB NOT NULL, 
-                    author INT NOT NULL,
+                    quiz_id INT NOT NULL PRIMARY KEY,
+                    problem_id INT NOT NULL,
+                    question TEXT(500) NOT NULL,
+                    answer BLOB NOT NULL,
                     voters BLOB NOT NULL,
-                    solvers BLOB NOT NULL
-                    )"""
-            )  # Blob types will be compliled with pickle.loads() and pickle.dumps() (they are lists)
-            # author: int = user_id
-
-            await cursor.execute(
-                """CREATE TABLE IF NOT EXISTS quizzes (
-                guild_id INT,
-                quiz_id INT NOT NULL PRIMARY KEY,
-                problem_id INT NOT NULL,
-                question TEXT(500) NOT NULL,
-                answer BLOB NOT NULL,
-                voters BLOB NOT NULL,
-                author INT NOT NULL,
-                solvers INT NOT NULL
-            )"""
-            )
-            # Used for quizzes
-            # answer: Blob (a list)
-            # voters: Blob (a list)
-            # solvers: Blob (a list)
-            # submissions: Blob (a dictionary)
-            await cursor.execute(
-                """CREATE TABLE IF NOT EXISTS quiz_submissions (
-                guild_id INT,
-                quiz_id INT NOT NULL,
-                user_id INT NOT NULL,
-                submissions BLOB NOT NULL
+                    author INT NOT NULL,
+                    solvers INT NOT NULL
                 )"""
-            )  # as dictionary
-            # Used to store submissions!
+                )
+                # Used for quizzes
+                # answer: Blob (a list)
+                # voters: Blob (a list)
+                # solvers: Blob (a list)
+                # submissions: Blob (a dictionary)
+                await cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS quiz_submissions (
+                    guild_id INT,
+                    quiz_id INT NOT NULL,
+                    user_id INT NOT NULL,
+                    submissions BLOB NOT NULL
+                    )"""
+                )  # as dictionary
+                # Used to store submissions!
 
-            await conn.commit()  # Otherwise, when this closes, the database just reverted!
+                await conn.commit()  # Otherwise, when this closes, the database just reverted!
+        else:
+             with mysql_connection(
+                host=self.mysql_db_ip,
+                password = self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS problems (
+                        guild_id INT,
+                        problem_id INT,
+                        question TEXT(2000) NOT NULL,
+                        answers BLOB NOT NULL, 
+                        author INT NOT NULL,
+                        voters BLOB NOT NULL,
+                        solvers BLOB NOT NULL
+                        )"""
+                )  # Blob types will be compliled with pickle.loads() and pickle.dumps() (they are lists)
+                # author: int = user_id
+                cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS quizzes (
+                    guild_id INT,
+                    quiz_id INT NOT NULL PRIMARY KEY,
+                    problem_id INT NOT NULL,
+                    question TEXT(500) NOT NULL,
+                    answer BLOB NOT NULL,
+                    voters BLOB NOT NULL,
+                    author INT NOT NULL,
+                    solvers INT NOT NULL
+                )"""
+                )
+                cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS quiz_submissions (
+                    guild_id INT,
+                    quiz_id INT NOT NULL,
+                    user_id INT NOT NULL,
+                    submissions BLOB NOT NULL
+                    )"""
+                )  # as dictionary
+                # Used to store submissions
 
     @property
     def max_answer_length(self):
-        return self._max_answer
+        return self._max_answer_length
 
     @property
     def max_question_length(self):
-        return self._max_question
+        return self._max_question_length
 
     @property
     def max_guild_problems(self):
         return self._max_guild_limit
 
-    def convert_to_dict(self):
+    async def convert_to_dict(self):
         "A method that converts self to a dictionary (not used, will probably be removed soon)"
         e = {}
-        self.update_cache()
+        await self.update_cache()
 
         for guild_id in self.guild_ids:
             e[guild_id] = {}
@@ -155,25 +213,46 @@ class MathProblemCache:
         guild_problems = {}
         guild_ids = []
         global_problems = {}
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db_name) as conn:
+                conn.row_factory = dict_factory
+                cursor = await conn.cursor()
+                await cursor.execute("SELECT * FROM problems") #Get all problems
 
-        async with aiosqlite.connect(self.db_name) as conn:
-            conn.row_factory = dict_factory
-            cursor = await conn.cursor()
-            await cursor.execute("SELECT * FROM problems") #Get all problems
-
-            for row in await cursor.fetchall():
-                Problem = BaseProblem.from_row(row, cache=copy(self)) # Convert the problems to math problems
-                if (
-                    Problem.guild_id not in guild_ids
-                ):  # Similar logic: Make sure it's there!
-                    guild_ids.append(Problem.guild_id)
-                    guild_problems[Problem.guild_id] = {}  # For quick, cached access?
-                try:
-                    guild_problems[Problem.guild_id][Problem.id] = Problem
-                except BaseException as e:
-                    raise SQLException(
-                        "For some reason, the cache couldn't be updated. Please help!"
-                    ) from e
+                for row in await cursor.fetchall():
+                    Problem = BaseProblem.from_row(row, cache=copy(self)) # Convert the problems to math problems
+                    if (
+                        Problem.guild_id not in guild_ids
+                    ):  # Similar logic: Make sure it's there!
+                        guild_ids.append(Problem.guild_id)
+                        guild_problems[Problem.guild_id] = {}  # For quick, cached access?
+                    try:
+                        guild_problems[Problem.guild_id][Problem.id] = Problem
+                    except BaseException as e:
+                        raise SQLException(
+                            "For some reason, the cache couldn't be updated. Please help!"
+                        ) from e
+        else:
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password = self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute("SELECT * FROM problems") #Get all problems
+                for row in cursor.fetchall():
+                    Problem = BaseProblem.from_row(row, cache=copy(self))
+                    if (
+                        Problem.guild_id not in guild_ids
+                    ):  # Similar logic: Make sure it's there!
+                        guild_ids.append(Problem.guild_id)
+                        guild_problems[Problem.guild_id] = {}  # For quick, cached access?
+                    try:
+                        guild_problems[Problem.guild_id][Problem.id] = Problem
+                    except BaseException as e:
+                        raise SQLException(
+                            "For some reason, the cache couldn't be updated. Please help!"
+                        ) from e
 
         try:
             global_problems = deepcopy(
@@ -213,40 +292,55 @@ class MathProblemCache:
                 )
         else:
             # Otherwise, use SQL to get the problem!
-            async with aiosqlite.connect(self.db_name) as conn:
+            if self.use_sqlite:
+                async with aiosqlite.connect(self.db_name) as conn:
 
-                try:
-                    conn.row_factory = dict_factory  # Make sure the row_factory can be set to dict_factory
-                except BaseException as exc:
-                    # Not writeable?
                     try:
-                        dict_factory  # Check for nameerror
-                    except NameError as exc2:
-                        raise MathProblemsModuleException(
-                            "dict_factory could not be found"
-                        ) from exc2
-                    if isinstance(exc, AttributeError):  # Can't set attribute
-                        pass
-                    else:
-                        raise  # Re-raise the exception
-                cursor = conn.cursor()
-                await cursor.execute(
-                    "SELECT * from problems WHERE guild_id = ? AND problem_id = ?",
-                    (guild_id, problem_id),
-                )
-                rows = await cursor.fetchall()
-                if len(rows) == 0:
-                    raise ProblemNotFound("Problem not found!")
-                elif len(rows) > 1:
-                    raise TooManyProblems(
-                        f"{len(rows)} problems exist with the same guild_id and problem_id, not 1"
+                        conn.row_factory = dict_factory  # Make sure the row_factory can be set to dict_factory
+                    except BaseException as exc:
+                        # Not writeable?
+                        try:
+                            dict_factory  # Check for nameerror
+                        except NameError as exc2:
+                            raise MathProblemsModuleException(
+                                "dict_factory could not be found"
+                            ) from exc2
+                        if isinstance(exc, AttributeError):  # Can't set attribute
+                            pass
+                        else:
+                            raise  # Re-raise the exception
+                    cursor = conn.cursor()
+                    await cursor.execute(
+                        "SELECT * from problems WHERE guild_id = ? AND problem_id = ?",
+                        (guild_id, problem_id),
                     )
-                await conn.commit()
-                if isinstance(rows[0], sqlite3.Row):
-                    row = dict_factory(cursor, rows[0])  #
-                else:
-                    row = rows[0]
-                return BaseProblem.from_row(rows[0], cache=copy(self))
+                    rows = await cursor.fetchall()
+                    if len(rows) == 0:
+                        raise ProblemNotFound("Problem not found!")
+                    elif len(rows) > 1:
+                        raise TooManyProblems(
+                            f"{len(rows)} problems exist with the same guild_id and problem_id, not 1"
+                        )
+                    await conn.commit()
+                    if isinstance(rows[0], sqlite3.Row):
+                        row = dict_factory(cursor, rows[0])  #
+                    else:
+                        row = rows[0]
+                    return BaseProblem.from_row(rows[0], cache=copy(self))
+            else:
+                with mysql_connection(
+                host=self.mysql_db_ip,
+                password = self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name) as connection:
+                    cursor = connection.cursor(dictionaries=True)
+                    cursor.execute("SELECT * from problems WHERE guild_id = %i AND problem_id = %i") #Get the problem
+                    rows = cursor.fetchall()
+                    if len(rows) == 0:
+                        raise ProblemNotFound("Problem not found!")
+                    elif len(rows) > 1:
+                        raise TooManyProblems("Uh oh... 2 problems exist with the same guild id and the same problem id")
+                    return BaseProblem.from_row(cache=copy(self), row=rows[0])
 
     async def get_guild_problems(self, Guild: nextcord.Guild) -> typing.List[BaseProblem]:
         """Gets the guild problems! Guild must be a Guild object. If you are trying to get global problems, use get_global_problems."""
@@ -297,7 +391,7 @@ class MathProblemCache:
 
         # Make sure the problem does not exist!
         try:
-            if self.get_problem(guild_id, problem_id) is not None:
+            if (await self.get_problem(guild_id, problem_id)) is not None:
                 raise MathProblemsModuleException(
                     "Problem already exists! Use update_problem instead"
                 )
@@ -318,50 +412,68 @@ class MathProblemCache:
                 raise TooManyProblems(
                     f"There are already {self.max_guild_problems} problems!"
                 )
-        except KeyError:
+        except KeyError: #New guild creating first problem
             pass
         if not isinstance(
             Problem, (BaseProblem)
         ):  # Make sure it's actually a Problem and not something else
             raise TypeError("Problem is not a valid Problem object.")
         # All the checks passed, hooray! Now let's add the problem.
-        async with aiosqlite.connect(self.db_name) as conn:
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db_name) as conn:
 
-            try:
-                conn.row_factory = (
-                    dict_factory  # Make sure the row_factory can be set to dict_factory
-                )
-            except BaseException as exc:
-                # Not writeable?
                 try:
-                    dict_factory  # Check for nameerror
-                except NameError as exc2:
-                    raise MathProblemsModuleException(
-                        "dict_factory could not be found"
-                    ) from exc2
-                if isinstance(exc, AttributeError):  # Can't set attribute
-                    pass
-                else:
-                    raise  # Re-raise the exception
-            cursor = conn.cursor()
-            # We will raise if the problem already exists!
-            await cursor.execute(
-                """INSERT INTO problems (guild_id, problem_id, question, answer, voters, solvers, author)
-            VALUES (?,?,?,?,?,?,?)""",
-                (
-                    int(Problem.guild_id),
-                    int(Problem.id),
-                    Problem.get_question(),
-                    pickle.dumps(Problem.get_answers()),
-                    pickle.dumps(Problem.get_voters()),
-                    pickle.dumps(Problem.get_solvers()),
-                    int(Problem.author),
-                ),
-            )
+                    conn.row_factory = (
+                        dict_factory  # Make sure the row_factory can be set to dict_factory
+                    )
+                except BaseException as exc:
+                    # Not writeable?
+                    try:
+                        dict_factory  # Check for nameerror
+                    except NameError as exc2:
+                        raise MathProblemsModuleException(
+                            "dict_factory could not be found"
+                        ) from exc2
+                    if isinstance(exc, AttributeError):  # Can't set attribute
+                        pass
+                    else:
+                        raise  # Re-raise the exception
+                cursor = conn.cursor()
+                # We will raise if the problem already exists!
+                await cursor.execute(
+                    """INSERT INTO problems (guild_id, problem_id, question, answer, voters, solvers, author)
+                VALUES (?,?,?,?,?,?,?)""",
+                    (
+                        int(Problem.guild_id),
+                        int(Problem.id),
+                        Problem.get_question(),
+                        pickle.dumps(Problem.get_answers()),
+                        pickle.dumps(Problem.get_voters()),
+                        pickle.dumps(Problem.get_solvers()),
+                        int(Problem.author),
+                    ),
+                )
 
-            await conn.commit()
-        return Problem
-
+                await conn.commit()
+            return Problem
+        else:
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password = self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                await cursor.execute(
+                    """INSERT INTO problems (guild_id, problem_id, question, answer, voters, solvers, author)
+                VALUES (%i,%i,%s,%b,%b,%b,%i)""",
+                    (
+                        int(Problem.guild_id),
+                        int(Problem.id),
+                        Problem.get_question(),
+                        pickle.dumps(Problem.get_answers()),
+                        pickle.dumps(Problem.get_voters()),
+                        pickle.dumps(Problem.get_solvers()),
+                        int(Problem.author)))
     async def remove_problem(self, guild_id: int, problem_id: int) -> BaseProblem:
         "Removes a problem. Returns the deleted problem"
         Problem = await self.get_problem(guild_id, problem_id)
@@ -382,47 +494,78 @@ class MathProblemCache:
                 warnings.warn("problem_id isn't an integer")
             else:
                 raise TypeError("problem_id isn't an integer!")
-        async with aiosqlite.connect(self.db_name) as conn:
-            try:
-                conn.row_factory = (
-                    dict_factory  # Make sure the row_factory can be set to dict_factory
-                )
-            except BaseException as exc:
-                # Not writeable?
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db_name) as conn:
                 try:
-                    dict_factory  # Check for nameerror
-                except NameError as exc2:
-                    raise MathProblemsModuleException(
-                        "dict_factory could not be found"
-                    ) from exc2
-                if isinstance(exc, AttributeError):  # Can't set attribute
+                    conn.row_factory = (
+                        dict_factory  # Make sure the row_factory can be set to dict_factory
+                    )
+                except BaseException as exc:
+                    # Not writeable?
+                    try:
+                        dict_factory  # Check for nameerror
+                    except NameError as exc2:
+                        raise MathProblemsModuleException(
+                            "dict_factory could not be found"
+                        ) from exc2
+                    if isinstance(exc, AttributeError):  # Can't set attribute
+                        pass
+                    else:
+                        raise  # Re-raise the exception
+                cursor = conn.cursor()
+                await cursor.execute(
+                    "DELETE FROM problems WHERE guild_id = %i and problem_id = %i",
+                    (guild_id, problem_id),
+                )  # The actual deletion
+                try:
+                    del self.guild_problems[guild_id][problem_id] # Delete from the cache
+                    await self.update_cache()
+                except KeyError:
+                    # It's already deleted!
                     pass
-                else:
-                    raise  # Re-raise the exception
-            cursor = conn.cursor()
-            await cursor.execute(
-                "DELETE FROM problems WHERE guild_id = ? and problem_id = ?",
-                (guild_id, problem_id),
-            )  # The actual deletion
-            try:
-                del self.guild_problems[guild_id][problem_id] # Delete from the cache
-                await self.update_cache()
-            except KeyError:
-                # It's already deleted!
-                pass
 
-            await conn.commit()
+                await conn.commit()
+
+        else:
+            with mysql_connection(host=self.mysql_db_ip,
+                password = self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name) as connection:
+                    cursor = connection.cursor(dictionaries=True)
+                    cursor.execute(
+                    "DELETE FROM problems WHERE guild_id = %i and problem_id = %i",
+                    (guild_id, problem_id),
+                )  # The actual deletion
+                    try:
+                        del self.guild_problems[guild_id][problem_id] # Delete from the cache
+                        await self.update_cache()
+                    except KeyError:
+                        pass
+                    connection.commit()
+
 
     async def remove_duplicate_problems(self) -> None:
         "Deletes duplicate problems. Takes O(N^2) time which is slow"
-        async with aiosqlite.connect(self.db_name) as conn: #Fetch the list of problems
-            cursor = conn.cursor()
-            await cursor.execute("SELECT * FROM problems")
-            all_problems = [
-                BaseProblem.from_row(dict_factory(cursor, row))
-                for row in deepcopy(await cursor.fetchall())
-            ]
-            await conn.commit()
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db_name) as conn: #Fetch the list of problems
+                cursor = conn.cursor()
+                await cursor.execute("SELECT * FROM problems")
+                all_problems = [
+                    BaseProblem.from_row(dict_factory(cursor, row))
+                    for row in deepcopy(await cursor.fetchall())
+                ]
+                await conn.commit()
+        else:
+            with mysql_connection(host=self.mysql_db_ip,
+                password = self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                await cursor.execute("SELECT * FROM Problems")
+                all_problems = [
+                    BaseProblem.from_row(row, cache=copy(self))
+                    for row in cursor.fetchall()
+                ]
         for problemA in range(len(all_problems)):
             for problemB in range(len(all_problems)):
                 if problemA == problemB:  # Same index?

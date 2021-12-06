@@ -805,7 +805,8 @@ NumSolvers: {len(problem.get_solvers())}"""
     )
     @nextcord.ext.commands.cooldown(1,0.5,nextcord.ext.commands.BucketType.user)
     async def delete_problem(self: "ProblemsCog", inter: dislash.SlashInteraction, problem_id: int, is_guild_problem: bool=False) -> typing.Optional[nextcord.Message]: 
-        "Delete a math problem"
+        """/delete_problem (problem_id: int) [is_guild_problem: bool = False]
+        Delete a problem. You must either have the Administrator permission in the guild, and the problem must be a guild problem, or"""
         guild_id = inter.guild.id
         if is_guild_problem:
             if guild_id is None:

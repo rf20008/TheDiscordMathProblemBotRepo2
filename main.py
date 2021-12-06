@@ -50,14 +50,14 @@ from helpful_modules._error_logging import log_error
 from helpful_modules.custom_embeds import *
 from helpful_modules.checks import is_not_blacklisted, setup
 from helpful_modules.the_documentation_file_loader import *
-
+from helpful_modules.constants_loader import *
 try:
     import dotenv  # https://pypi.org/project/python-dotenv/
 
     assert hasattr(dotenv, "load_dotenv")
 except (ModuleNotFoundError, AssertionError):
     raise RuntimeError("Dotenv could not be found, therefore cannot load .env")
-dotenv.load_dotenv()
+dotenv.find_dotenv()
 DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
 if DISCORD_TOKEN is None:
     raise RuntimeError("Cannot start bot; no discord_token environment variable")
@@ -100,6 +100,7 @@ except (KeyError, AssertionError):
     raise RuntimeError(
         "You haven't setup the .env file correctly! You need DISCORD_TOKEN=<your token>"
     )
+bot_constants = BotConstants(dotenv.find_dotenv())
 main_cache = problems_module.MathProblemCache(
     max_answer_length=2000,
     max_question_limit=250,
@@ -108,7 +109,11 @@ main_cache = problems_module.MathProblemCache(
     db_name="MathProblemCache1.db",
     update_cache_by_default_when_requesting=True,
     use_cached_problems=False,
-)  # Generate a new cache for the bot!
+    mysql_username = bot_constants.MYSQL_USERNAME,
+    mysql_password = bot_constants.MYSQL_PASSWORD,
+    mysql_db_ip = bot_constants.MYSQL_DB_IP,
+    mysql_db_name = bot_constants.MYSQL_DB_NAME,
+    use_sqlite = bot_constants.USE_SQLITE)  # Generate a new cache for the bot!
 vote_threshold = 0  # default
 mathProblems = {}
 guildMathProblems = {}
@@ -177,7 +182,7 @@ bot.add_cog(DeveloperCommands(bot))
 bot.add_cog(ProblemsCog(bot)) 
 bot.add_cog(QuizCog(bot))
 bot.add_cog(MiscCommandsCog(bot))
-
+bot.CONSTANTS = bot_constants
 print("Bots successfully created.")
 
 # Events
