@@ -175,3 +175,4 @@ pylint/*.txt
 !.gitignore
 !docs/** # The documentation needs to be not git-ignored
 !**/__init__.py
+.env.save

@@ -825,9 +825,9 @@ NumSolvers: {len(problem.get_solvers())}"""
                     )
                 )
             if not (
-                inter.author.id in self.bot.trusted_users
-                or not problem.is_author()
-                or (inter.author.guild_permissions.administrator)
+                inter.author.id in self.bot.trusted_users # Global trusted users can delete problems
+                or not problem.is_author() # Authors can delete
+                or (inter.author.guild_permissions.administrator and is_guild_problem) # Users with the 'adminstrator' permission can delete problems
             ):
                 await inter.reply(
                     embed=ErrorEmbed("Insufficient permissions"), ephemeral=True

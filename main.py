@@ -14,7 +14,6 @@ if (
 # imports - standard library
 import asyncio
 import copy
-import random
 import os
 import logging
 import typing
