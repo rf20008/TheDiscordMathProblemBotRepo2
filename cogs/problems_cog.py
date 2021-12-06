@@ -845,7 +845,7 @@ NumSolvers: {len(problem.get_solvers())}"""
                 )
             )
             return
-        if problem_id not in self.cache.get_guild_problems(inter.guild).keys():
+        if problem_id not in (await self.cache.get_guild_problems(inter.guild)).keys():
             await inter.reply(
                 embed=ErrorEmbed("That problem doesn't exist."), ephemeral=True
             )
@@ -853,7 +853,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         if not (
             inter.author.id in self.bot.trusted_users
             or not (self.cache.get_problem(guild_id, problem_id).is_author())
-            or inter.author.guild_permissions.administrator
+            or (inter.author.guild_permissions.administrator and is_guild_problem)
         ):  # Not
             await inter.reply(embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True)
             return
