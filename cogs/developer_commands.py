@@ -161,6 +161,7 @@ class DeveloperCommands(HelperCog):
                     OptionChoice(name="documentation_link", value="documentation_link"),
                     OptionChoice(name="command_help", value="command_help"),
                     OptionChoice(name="function_help", value="function_help"),
+                    OptionChoice(name="privacy_policy", value = "privacy_policy")
                 ],
                 required=True,
             ),
@@ -219,25 +220,32 @@ class DeveloperCommands(HelperCog):
             except AttributeError as exc:
                 # My experiment failed
                 raise Exception("uh oh...") from exc  # My experiment failed!
-        documentation_loader = the_documentation_file_loader.DocumentationFileLoader()
-        try:
-            _documentation = documentation_loader.get_documentation(
-                {
-                    "function_help": "docs/misc-non-commands-documentation.md",
-                }[documentation_type],
-                help_obj,
-            )
-        except the_documentation_file_loader.DocumentationNotFound as e:
-            if isinstance(e, the_documentation_file_loader.DocumentationFileNotFound):
-                await inter.reply(
-                    embed=ErrorEmbed(
-                        "Documentation file was not found. Please report this error!"
-                    )
+        elif documentation_type == "function_help":
+            documentation_loader = the_documentation_file_loader.DocumentationFileLoader()
+            try:
+                _documentation = documentation_loader.get_documentation(
+                    {
+                        "function_help": "docs/misc-non-commands-documentation.md",
+                    }[documentation_type],
+                    help_obj,
                 )
+            except the_documentation_file_loader.DocumentationNotFound as e:
+                if isinstance(e, the_documentation_file_loader.DocumentationFileNotFound):
+                    await inter.reply(
+                        embed=ErrorEmbed(
+                            "Documentation file was not found. Please report this error!"
+                        )
+                    )
+                    return None
+                await inter.reply(embed=ErrorEmbed(str(e)))
                 return None
-            await inter.reply(embed=ErrorEmbed(str(e)))
-            return None
-        await inter.reply(_documentation)
+            await inter.reply(_documentation)
+        elif documentation_type == "privacy_policy":
+            with open("/PRIVACY_POLICY.md") as file: # Replace this with
+                await inter.reply(content="\n".join(
+                    [str(line) for line in file]
+                    ))
+            return 
 
     @dislash.cooldown(1, 0.1)
     @slash_command(
@@ -326,6 +334,7 @@ class DeveloperCommands(HelperCog):
             )
         ],
     )
+    @nextcord.ext.commands.cooldown(1,30,nextcord.ext.commands.BucketType.user)
     async def generate_new_problems(self, inter, num_new_problems_to_generate):
         "Generate new Problems"
         await cooldowns.check_for_cooldown(
@@ -356,7 +365,11 @@ class DeveloperCommands(HelperCog):
             if operation == "^":
                 try:
                     answer = num1 ** num2
-                except OverflowError:
+                except OverflowError: # Too big?
+                    try:
+                        del answer 
+                    except NameError:
+                        pass
                     continue
             elif operation == "+":
                 answer = num1 + num2
@@ -470,9 +483,7 @@ class DeveloperCommands(HelperCog):
         )
 
 
-def setup(bot):
-    global problems_module, SuccessEmbed, ErrorEmbed, the_documentation_file_loader, slash
-
+def setup(bot: nextcord.ext.commands.Bot):
     bot.add_cog(DeveloperCommands(bot))
 
 

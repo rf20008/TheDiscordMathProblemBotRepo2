@@ -126,11 +126,11 @@ class MathProblemCache:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     """CREATE TABLE IF NOT EXISTS problems (
-                        guild_id INT,
-                        problem_id INT,
+                        guild_id BIGINT,
+                        problem_id BIGINT,
                         question TEXT(2000) NOT NULL,
                         answers BLOB NOT NULL, 
-                        author INT NOT NULL,
+                        author BIGINT NOT NULL,
                         voters BLOB NOT NULL,
                         solvers BLOB NOT NULL
                         )"""
@@ -138,21 +138,21 @@ class MathProblemCache:
                 # author: int = user_id
                 cursor.execute(
                     """CREATE TABLE IF NOT EXISTS quizzes (
-                    guild_id INT,
-                    quiz_id INT NOT NULL PRIMARY KEY,
-                    problem_id INT NOT NULL,
+                    guild_id BIGINT,
+                    quiz_id BIGINT NOT NULL PRIMARY KEY,
+                    problem_id BIGINT NOT NULL,
                     question TEXT(500) NOT NULL,
                     answer BLOB NOT NULL,
                     voters BLOB NOT NULL,
-                    author INT NOT NULL,
-                    solvers INT NOT NULL
+                    author BIGINT NOT NULL,
+                    solvers BLOB NOT NULL
                 )"""
                 )
                 cursor.execute(
                     """CREATE TABLE IF NOT EXISTS quiz_submissions (
-                    guild_id INT,
-                    quiz_id INT NOT NULL,
-                    user_id INT NOT NULL,
+                    guild_id BIGINT,
+                    quiz_id BIGINT NOT NULL,
+                    user_id BIGINT NOT NULL,
                     submissions BLOB NOT NULL
                     )"""
                 )  # as dictionary
@@ -614,53 +614,89 @@ class MathProblemCache:
             )
         except QuizNotFound:
             pass
-        async with aiosqlite.connect(self.db_name) as conn:
-            try:
-                conn.row_factory = (
-                    dict_factory  # Make sure the row_factory can be set to dict_factory
-                )
-            except BaseException as exc:
-                # Not writeable?
+        if self.use_sqlite:
+
+            async with aiosqlite.connect(self.db_name) as conn:
                 try:
-                    dict_factory  # Check for nameerror
-                except NameError as exc2:
-                    raise MathProblemsModuleException(
-                        "dict_factory could not be found"
-                    ) from exc2
-                if isinstance(exc, AttributeError):  # Can't set attribute
-                    pass
-                else:
-                    raise  # Re-raise the exception
+                    conn.row_factory = (
+                        dict_factory  # Make sure the row_factory can be set to dict_factory
+                    )
+                except BaseException as exc:
+                    # Not writeable?
+                    try:
+                        dict_factory  # Check for nameerror
+                    except NameError as exc2:
+                        raise MathProblemsModuleException(
+                            "dict_factory could not be found"
+                        ) from exc2
+                    if isinstance(exc, AttributeError):  # Can't set attribute
+                        pass
+                    else:
+                        raise  # Re-raise the exception
 
-            cursor = conn.cursor()
-            for item in quiz:
-                await cursor.execute(
-                    """INSERT INTO quizzes (guild_id, quiz_id, problem_id, question, answer, voters, solvers, author)
-                VALUES (?,?,?,?,?,?,?,?)""",
-                    (
-                        item.guild_id,
-                        item.quiz_id,
-                        item.problem_id,
-                        item.question,
-                        pickle.dumps(item.answers),
-                        pickle.dumps(item.voters),
-                        pickle.dumps(item.solvers),
-                        item.author,
-                    ),
-                )
-            for item in quiz.submissions:
-                await cursor.execute(
-                    """INSERT INTO quiz_submissions (guild_id, quiz_id, user_id, submissions)
-                VALUES (?,?,?,?)""",
-                    (
-                        item.guild_id,
-                        item.quiz_id,
-                        item.user_id,
-                        pickle.dumps(item.to_dict()),
-                    ),
-                )
+                cursor = conn.cursor()
+                for item in quiz:
+                    await cursor.execute(
+                        """INSERT INTO quizzes (guild_id, quiz_id, problem_id, question, answer, voters, solvers, author)
+                    VALUES (?,?,?,?,?,?,?,?)""",
+                        (
+                            item.guild_id,
+                            item.quiz_id,
+                            item.problem_id,
+                            item.question,
+                            pickle.dumps(item.answers),
+                            pickle.dumps(item.voters),
+                            pickle.dumps(item.solvers),
+                            item.author,
+                        ),
+                    )
+                for item in quiz.submissions:
+                    await cursor.execute(
+                        """INSERT INTO quiz_submissions (guild_id, quiz_id, user_id, submissions)
+                    VALUES (?,?,?,?)""",
+                        (
+                            item.guild_id,
+                            item.quiz_id,
+                            item.user_id,
+                            pickle.dumps(item.to_dict()),
+                        ),
+                    )
 
-            await conn.commit()
+                await conn.commit()
+        else:
+            with mysql_connection(host=self.mysql_db_ip,
+                password = self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name) as connection:
+                cursor = connection.cursor(dictionaries=True)
+
+                cursor = connection.cursor(dictionaries=True)
+                for item in quiz:
+                    cursor.execute(
+                        """INSERT INTO quizzes (guild_id, quiz_id, problem_id, question, answer, voters, solvers, author)
+                    VALUES ('%i','%i','%i',%s,%b,%b,%b,'%i')""",
+                        (
+                            item.guild_id,
+                            item.quiz_id,
+                            item.problem_id,
+                            item.question,
+                            pickle.dumps(item.answers),
+                            pickle.dumps(item.voters),
+                            pickle.dumps(item.solvers),
+                            item.author,
+                        ),
+                    )
+                for item in quiz.submissions:
+                    cursor.execute(
+                        """INSERT INTO quiz_submissions (guild_id, quiz_id, user_id, submissions)
+                    VALUES (%i,%l,%l,?)""",
+                        (
+                            item.guild_id,
+                            item.quiz_id,
+                            item.user_id,
+                            pickle.dumps(item.to_dict()),
+                        ),
+                    )
 
     def __str__(self):
         raise NotImplementedError
@@ -708,46 +744,69 @@ class MathProblemCache:
             quiz = Quiz(quiz_id, problems, submissions, cache=copy(self))
             return quiz
 
-    async def update_problem(self, guild_id, problem_id, new: BaseProblem) -> None:
+    async def update_problem(self, guild_id: int, problem_id: int, new: BaseProblem) -> None:
         "Update the problem stored with the given guild id and problem id"
         assert isinstance(guild_id, str)
         assert isinstance(problem_id, str)
         assert isinstance(new, BaseProblem) and not isinstance(new, QuizProblem)
-        async with aiosqlite.connect(self.db_name) as conn:
-            try:
-                conn.row_factory = (
-                    dict_factory  # Make sure the row_factory can be set to dict_factory
-                )
-            except BaseException as exc:
-                # Not writeable?
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db_name) as conn:
                 try:
-                    dict_factory  # Check for nameerror
-                except NameError as exc2:
-                    raise MathProblemsModuleException(
-                        "dict_factory could not be found"
-                    ) from exc2
-                if isinstance(exc, AttributeError):  # Can't set attribute
-                    pass
-                else:
-                    raise  # Re-raise the exception
-            cursor = conn.cursor()
-            # We will raise if the problem already exists!
-            await cursor.execute(
-                """UPDATE problems 
-            SET guild_id = ?, problem_id = ?, question = ?, answer = ?, voters = ?, solvers = ?, author = ?
-            WHERE guild_id = ? AND problem_id = ?;""",
-                (
-                    int(new.guild_id),
-                    int(new.id),
-                    new.get_question(),
-                    pickle.dumps(new.get_answers()),
-                    pickle.dumps(new.get_voters()),
-                    pickle.dumps(new.get_solvers()),
-                    int(new.author),
-                    int(new.guild_id),
-                    int(new.id),
-                ),
-            )
+                    conn.row_factory = (
+                        dict_factory  # Make sure the row_factory can be set to dict_factory
+                    )
+                except BaseException as exc:
+                    # Not writeable?
+                    try:
+                        dict_factory  # Check for nameerror
+                    except NameError as exc2:
+                        raise MathProblemsModuleException(
+                            "dict_factory could not be found"
+                        ) from exc2
+                    if isinstance(exc, AttributeError):  # Can't set attribute
+                        pass
+                    else:
+                        raise  # Re-raise the exception
+                cursor = conn.cursor()
+                # We will raise if the problem already exists!
+                await cursor.execute(
+                    """UPDATE problems 
+                    SET guild_id = ?, problem_id = ?, question = ?, answer = ?, voters = ?, solvers = ?, author = ?
+                    WHERE guild_id = ? AND problem_id = ?;""",
+                    (
+                        int(new.guild_id),
+                        int(new.id),
+                        new.get_question(),
+                        pickle.dumps(new.get_answers()),
+                        pickle.dumps(new.get_voters()),
+                        pickle.dumps(new.get_solvers()),
+                        int(new.author),
+                        int(guild_id),
+                        int(problem_id),
+                    ),
+                )
+        else:
+            with mysql_connection(host=self.mysql_db_ip,
+                password = self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
+                    """UPDATE problems 
+                    SET guild_id = %i, problem_id = %i, question = %s, answer = %b, voters = %b, solvers = %b, author = %i
+                    WHERE guild_id = %i AND problem_id = %i""",
+                    (
+                        int(new.guild_id),
+                        int(new.id),
+                        new.question,
+                        pickle.dumps(new.get_answers()),
+                        pickle.dumps(new.voters),
+                        pickle.dumps(new.solvers),
+                        int(new.author),
+                        guild_id,
+                        problem_id
+                    )
+                )
 
     async def update_quiz(self, quiz_id, new) -> None:
         "Update the quiz with the id given"
@@ -760,59 +819,82 @@ class MathProblemCache:
 
     async def delete_quiz(self, quiz_id):
         "Delete a quiz!"
-        async with aiosqlite.connect(self.db_name) as conn:
-            cursor = conn.cursor()
-            await cursor.execute(
-                "DELETE FROM quizzes WHERE quiz_id = ?", (quiz_id,)
-            )  # Delete the quiz's problems
-            await cursor.execute(
-                "DELETE FROM quiz_submissions WHERE quiz_id=?", (quiz_id)
-            )  # Delete the submissions as well.
-            await conn.commit()  # Commit
-
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db_name) as conn:
+                cursor = conn.cursor()
+                await cursor.execute(
+                    "DELETE FROM quizzes WHERE quiz_id = ?", (quiz_id,)
+                )  # Delete the quiz's problems
+                await cursor.execute(
+                    "DELETE FROM quiz_submissions WHERE quiz_id='?'", (quiz_id)
+                )  # Delete the submissions as well.
+                await conn.commit()  # Commit
+        else:
+            with mysql_connection(host=self.mysql_db_ip,
+                password = self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
+                    "DELETE FROM quizzes WHERE quiz_id = '?'", (quiz_id,)
+                )  # Delete the quiz's problems
+                cursor.execute(
+                    "DELETE FROM quiz_submissions WHERE quiz_id='?'", (quiz_id)
+                )  # Delete the submissions as well.
     async def get_all_by_author_id(self, author_id: int) -> dict:
         "Return a dictionary containing everything that was created by the author"
         assert isinstance(author_id, int)  # Make sure it is of type integer
-        async with aiosqlite.connect(self.db_name) as conn:
-            cursor = conn.cursor()  # Create a cursor
-            cursor = await cursor
-            # Get all quiz problems they made
-            await cursor.execute(
-                "SELECT * FROM quizzes WHERE author = ?", (author_id)
-            )  # Get all problems made by the author
-            quiz_problems_raw = [
-                dict_factory(cursor, row) for row in await cursor.fetchall()
-            ]  # Get the results and convert it to a dictionary
-            quiz_problems = [
-                QuizProblem.from_row(item, cache=copy(self))
-                for item in quiz_problems_raw
-            ]  # Convert the rows into QuizProblems, because these will be easier to use than rows will (and it will also be more readable)
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db_name) as conn:
+                cursor = conn.cursor()  # Create a cursor
+                cursor = await cursor
+                # Get all quiz problems they made
+                await cursor.execute(
+                    "SELECT * FROM quizzes WHERE author = ?", (author_id)
+                )  # Get all problems made by the author
+                quiz_problems_raw = [
+                    dict_factory(cursor, row) for row in await cursor.fetchall()
+                ]  # Get the results and convert it to a dictionary
+                quiz_problems = [
+                    QuizProblem.from_row(item, cache=copy(self))
+                    for item in quiz_problems_raw
+                ]  # Convert the rows into QuizProblems, because these will be easier to use than rows will (and it will also be more readable)
 
-            # Get the submissions now
-            await cursor.execute(
-                "SELECT submissions FROM quiz_submissions WHERE author = ?",
-                (author_id),
-            )  # Get the submissions
-            # Convert them to QuizSubmissions!
-            quiz_submissions = [
-                QuizSubmission.from_dict(pickle.loads(item))
-                for item in await cursor.fetchall()
-            ]  # For each item: load it from bytes into a dictionary and convert the dictionary into a QuizSubmission! However, I should just pickle it directly.
+                # Get the submissions now
+                await cursor.execute(
+                    "SELECT submissions FROM quiz_submissions WHERE author = ?",
+                    (author_id),
+                )  # Get the submissions
+                # Convert them to QuizSubmissions!
+                quiz_submissions = [
+                    QuizSubmission.from_dict(pickle.loads(item))
+                    for item in await cursor.fetchall()
+                ]  # For each item: load it from bytes into a dictionary and convert the dictionary into a QuizSubmission! However, I should just pickle it directly.
 
-            # Get the problems the author made that are not attached to a quiz
-            await cursor.execute(
-                "SELECT * FROM problems WHERE user_id = ?", (author_id)
-            )
-            problems = [
-                BaseProblem.from_row(dict_factory(cursor, row))
-                for row in await cursor.fetchall()
-            ]
-
+                # Get the problems the author made that are not attached to a quiz
+                await cursor.execute(
+                    "SELECT * FROM problems WHERE user_id = ?", (author_id)
+                )
+                problems = [
+                    BaseProblem.from_row(dict_factory(cursor, row))
+                    for row in await cursor.fetchall()
+                ]
+        else:
+            with mysql_connection(host=self.mysql_db_ip,
+                password = self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
+                    "SELECT * FROM quizzes WHERE author = '%i'", (author_id)
+                )
+                quiz_problems = [QuizProblem.from_row(row, cache=copy(self)) for row in cursor.fetchall()]
+                
         return {
             "quiz_problems": quiz_problems,
             "quiz_submissions": quiz_submissions,
             "problems": problems,
-        }
+        }   
 
     async def delete_all_by_user_id(self, user_id: int) -> None:
         "Delete all data stored under a given user id"
