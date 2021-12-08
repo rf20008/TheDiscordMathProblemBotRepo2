@@ -117,7 +117,12 @@ class DeveloperCommands(HelperCog):
             ),
         ],
     )
-    async def raise_error(self, inter, error_type: typing.Literal["Exception"], error_description: str = None) -> None:
+    async def raise_error(
+        self,
+        inter,
+        error_type: typing.Literal["Exception"],
+        error_description: str = None,
+    ) -> None:
         """/raise_error {error_type: str|Exception} [error_description: str = None]
         This command raises an error (of type error_type) that has the description of the error_description.
         You must be a trusted user and the bot owner to run this command!
@@ -161,7 +166,7 @@ class DeveloperCommands(HelperCog):
                     OptionChoice(name="documentation_link", value="documentation_link"),
                     OptionChoice(name="command_help", value="command_help"),
                     OptionChoice(name="function_help", value="function_help"),
-                    OptionChoice(name="privacy_policy", value = "privacy_policy")
+                    OptionChoice(name="privacy_policy", value="privacy_policy"),
                 ],
                 required=True,
             ),
@@ -221,7 +226,9 @@ class DeveloperCommands(HelperCog):
                 # My experiment failed
                 raise Exception("uh oh...") from exc  # My experiment failed!
         elif documentation_type == "function_help":
-            documentation_loader = the_documentation_file_loader.DocumentationFileLoader()
+            documentation_loader = (
+                the_documentation_file_loader.DocumentationFileLoader()
+            )
             try:
                 _documentation = documentation_loader.get_documentation(
                     {
@@ -230,7 +237,9 @@ class DeveloperCommands(HelperCog):
                     help_obj,
                 )
             except the_documentation_file_loader.DocumentationNotFound as e:
-                if isinstance(e, the_documentation_file_loader.DocumentationFileNotFound):
+                if isinstance(
+                    e, the_documentation_file_loader.DocumentationFileNotFound
+                ):
                     await inter.reply(
                         embed=ErrorEmbed(
                             "Documentation file was not found. Please report this error!"
@@ -241,11 +250,9 @@ class DeveloperCommands(HelperCog):
                 return None
             await inter.reply(_documentation)
         elif documentation_type == "privacy_policy":
-            with open("/PRIVACY_POLICY.md") as file: # Replace this with
-                await inter.reply(content="\n".join(
-                    [str(line) for line in file]
-                    ))
-            return 
+            with open("/PRIVACY_POLICY.md") as file:  # Replace this with
+                await inter.reply(content="\n".join([str(line) for line in file]))
+            return
 
     @dislash.cooldown(1, 0.1)
     @slash_command(
@@ -334,7 +341,7 @@ class DeveloperCommands(HelperCog):
             )
         ],
     )
-    @nextcord.ext.commands.cooldown(1,30,nextcord.ext.commands.BucketType.user)
+    @nextcord.ext.commands.cooldown(1, 30, nextcord.ext.commands.BucketType.user)
     async def generate_new_problems(self, inter, num_new_problems_to_generate):
         "Generate new Problems"
         await cooldowns.check_for_cooldown(
@@ -365,9 +372,9 @@ class DeveloperCommands(HelperCog):
             if operation == "^":
                 try:
                     answer = num1 ** num2
-                except OverflowError: # Too big?
+                except OverflowError:  # Too big?
                     try:
-                        del answer 
+                        del answer
                     except NameError:
                         pass
                     continue
@@ -412,6 +419,7 @@ class DeveloperCommands(HelperCog):
             ),
             ephemeral=True,
         )
+
     @slash_command(
         name="add_trusted_user",
         description="Adds a trusted user",
@@ -425,8 +433,10 @@ class DeveloperCommands(HelperCog):
         ],
     )
     @checks.trusted_users_only()
-    @nextcord.ext.commands.cooldown(1,600,nextcord.ext.commands.BucketType.user)
-    async def add_trusted_user(self, inter: dislash.SlashInteraction, user: nextcord.Member):
+    @nextcord.ext.commands.cooldown(1, 600, nextcord.ext.commands.BucketType.user)
+    async def add_trusted_user(
+        self, inter: dislash.SlashInteraction, user: nextcord.Member
+    ):
         """/add_trusted_user [user: User]
         This slash commands adds a trusted user!
         You must be a trusted user to add a trusted user, and the user you are trying to make a trusted user must not be a trusted user.
@@ -438,7 +448,8 @@ class DeveloperCommands(HelperCog):
             return
         if user.id in self.bot.trusted_users:
             await inter.reply(
-                embed=ErrorEmbed(f"{user.name} is already a trusted user!"), ephemeral=True
+                embed=ErrorEmbed(f"{user.name} is already a trusted user!"),
+                ephemeral=True,
             )
             return
         self.bot.trusted_users.append(user.id)
@@ -446,7 +457,6 @@ class DeveloperCommands(HelperCog):
             embed=ErrorEmbed(f"Successfully made {user.nick} a trusted user!"),
             ephemeral=True,
         )
-
 
     @slash_command(
         name="remove_trusted_user",
@@ -460,9 +470,11 @@ class DeveloperCommands(HelperCog):
             )
         ],
     )
-    @nextcord.ext.commands.cooldown(1,600,nextcord.ext.commands.BucketType.user)
+    @nextcord.ext.commands.cooldown(1, 600, nextcord.ext.commands.BucketType.user)
     @checks.trusted_users_only()
-    async def remove_trusted_user(self: "DeveloperCommands", inter: dislash.SlashInteraction, user: nextcord.User):
+    async def remove_trusted_user(
+        self: "DeveloperCommands", inter: dislash.SlashInteraction, user: nextcord.User
+    ):
         """/remove_trusted_user [user: User]
         Remove a trusted user. You must be a trusted user to do this.
         There is also a 10 minute cooldown to prevent raids!"""
@@ -478,7 +490,9 @@ class DeveloperCommands(HelperCog):
             return
         self.bot.trusted_users.pop(user.id)
         await inter.reply(
-            embed=ErrorEmbed(f"Successfully made {user.nick} no longer a trusted user!"),
+            embed=ErrorEmbed(
+                f"Successfully made {user.nick} no longer a trusted user!"
+            ),
             ephemeral=True,
         )
 

@@ -785,6 +785,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             embed=SuccessEmbed(successMessage, successTitle="Successfully unvoted!"),
             ephemeral=True,
         )  # Tell the user of the successful unvote.
+
     @slash_command(
         name="delete_problem",
         description="Deletes a problem",
@@ -803,8 +804,13 @@ NumSolvers: {len(problem.get_solvers())}"""
             ),
         ],
     )
-    @nextcord.ext.commands.cooldown(1,0.5,nextcord.ext.commands.BucketType.user)
-    async def delete_problem(self: "ProblemsCog", inter: dislash.SlashInteraction, problem_id: int, is_guild_problem: bool=False) -> typing.Optional[nextcord.Message]: 
+    @nextcord.ext.commands.cooldown(1, 0.5, nextcord.ext.commands.BucketType.user)
+    async def delete_problem(
+        self: "ProblemsCog",
+        inter: dislash.SlashInteraction,
+        problem_id: int,
+        is_guild_problem: bool = False,
+    ) -> typing.Optional[nextcord.Message]:
         """/delete_problem (problem_id: int) [is_guild_problem: bool = False]
         Delete a problem. You must either have the Administrator permission in the guild, and the problem must be a guild problem, or"""
         guild_id = inter.guild.id
@@ -817,18 +823,23 @@ NumSolvers: {len(problem.get_solvers())}"""
                 )
                 return
             try:
-                problem = await self.cache.get_problem(guild_id if is_guild_problem else None, problem_id)
+                problem = await self.cache.get_problem(
+                    guild_id if is_guild_problem else None, problem_id
+                )
             except (problems_module.ProblemNotFound, ProblemNotFoundException):
                 return await inter.reply(
-                    embed = ErrorEmbed(
-                        description = "This problem does not exist!",
-                        custom_title = "Problem not found"
+                    embed=ErrorEmbed(
+                        description="This problem does not exist!",
+                        custom_title="Problem not found",
                     )
                 )
             if not (
-                inter.author.id in self.bot.trusted_users # Global trusted users can delete problems
-                or not problem.is_author() # Authors can delete
-                or (inter.author.guild_permissions.administrator and is_guild_problem) # Users with the 'adminstrator' permission can delete problems
+                inter.author.id
+                in self.bot.trusted_users  # Global trusted users can delete problems
+                or not problem.is_author()  # Authors can delete
+                or (
+                    inter.author.guild_permissions.administrator and is_guild_problem
+                )  # Users with the 'adminstrator' permission can delete problems
             ):
                 await inter.reply(
                     embed=ErrorEmbed("Insufficient permissions"), ephemeral=True
@@ -856,13 +867,16 @@ NumSolvers: {len(problem.get_solvers())}"""
             or not (self.cache.get_problem(guild_id, problem_id).is_author())
             or (inter.author.guild_permissions.administrator and is_guild_problem)
         ):  # Not
-            await inter.reply(embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True)
+            await inter.reply(
+                embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True
+            )
             return
         await self.cache.remove_problem(None, problem_id)
         await inter.reply(
             embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!"),
             ephemeral=True,
         )
+
 
 def setup(bot):
     bot.add_cog(ProblemsCog(bot))

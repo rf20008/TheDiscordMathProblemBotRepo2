@@ -1,5 +1,6 @@
 import asyncio
 import typing
+from mysql.connector import connect
 import sqldict
 import aiosqlite
 from copy import deepcopy, copy
@@ -25,16 +26,14 @@ class MathProblemCache:
         mysql_db_ip: str,
         mysql_db_name: str,
         use_sqlite: bool = False,
-        max_answer_length: int =100,
-        max_question_limit: int=250,
-        max_guild_problems: int=125,
-        warnings_or_errors: Union[Literal["warnings"], Literal["errors"]]="warnings",
+        max_answer_length: int = 100,
+        max_question_limit: int = 250,
+        max_guild_problems: int = 125,
+        warnings_or_errors: Union[Literal["warnings"], Literal["errors"]] = "warnings",
         db_name: str = "problems_module.db",
-        name: str="1",
-        update_cache_by_default_when_requesting: bool=True,
+        name: str = "1",
+        update_cache_by_default_when_requesting: bool = True,
         use_cached_problems: bool = False,
-        
-
     ):
         "Create a new MathProblemCache. the arguments should be self-explanatory"
         # make_sql_table([], db_name = sql_dict_db_name)
@@ -49,7 +48,7 @@ class MathProblemCache:
         self.warnings = (
             warnings_or_errors == "warnings"
         )  # Whether to raise TypeErrors or warn
-        self.use_sqlite=use_sqlite
+        self.use_sqlite = use_sqlite
         self.use_cached_problems = use_cached_problems
         self._max_answer_length = max_answer_length
         self._max_question_length = max_question_limit
@@ -62,7 +61,6 @@ class MathProblemCache:
         self.update_cache_by_default_when_requesting = (
             update_cache_by_default_when_requesting
         )
-        
 
     def _initialize_sql_dict(self):
         self._sql_dict = sqldict.SqlDict(
@@ -118,11 +116,12 @@ class MathProblemCache:
 
                 await conn.commit()  # Otherwise, when this closes, the database just reverted!
         else:
-             with mysql_connection(
+            with mysql_connection(
                 host=self.mysql_db_ip,
-                password = self.mysql_password,
+                password=self.mysql_password,
                 user=self.mysql_username,
-                database=self.mysql_db_name) as connection:
+                database=self.mysql_db_name,
+            ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     """CREATE TABLE IF NOT EXISTS problems (
@@ -181,7 +180,7 @@ class MathProblemCache:
                 e[guild_id][Problem.id] = Problem.to_dict()
         return e
 
-    def convert_dict_to_math_problem(self, problem: dict, use_from_dict: bool=True):
+    def convert_dict_to_math_problem(self, problem: dict, use_from_dict: bool = True):
         "Convert a dictionary into a math problem. It must be in the expected format. (Overriden by from_dict, but still used) Possibly not used due to SQL"
         if use_from_dict:
             return BaseProblem.from_dict(
@@ -217,15 +216,19 @@ class MathProblemCache:
             async with aiosqlite.connect(self.db_name) as conn:
                 conn.row_factory = dict_factory
                 cursor = await conn.cursor()
-                await cursor.execute("SELECT * FROM problems") #Get all problems
+                await cursor.execute("SELECT * FROM problems")  # Get all problems
 
                 for row in await cursor.fetchall():
-                    Problem = BaseProblem.from_row(row, cache=copy(self)) # Convert the problems to math problems
+                    Problem = BaseProblem.from_row(
+                        row, cache=copy(self)
+                    )  # Convert the problems to math problems
                     if (
                         Problem.guild_id not in guild_ids
                     ):  # Similar logic: Make sure it's there!
                         guild_ids.append(Problem.guild_id)
-                        guild_problems[Problem.guild_id] = {}  # For quick, cached access?
+                        guild_problems[
+                            Problem.guild_id
+                        ] = {}  # For quick, cached access?
                     try:
                         guild_problems[Problem.guild_id][Problem.id] = Problem
                     except BaseException as e:
@@ -235,18 +238,21 @@ class MathProblemCache:
         else:
             with mysql_connection(
                 host=self.mysql_db_ip,
-                password = self.mysql_password,
+                password=self.mysql_password,
                 user=self.mysql_username,
-                database=self.mysql_db_name) as connection:
+                database=self.mysql_db_name,
+            ) as connection:
                 cursor = connection.cursor(dictionaries=True)
-                cursor.execute("SELECT * FROM problems") #Get all problems
+                cursor.execute("SELECT * FROM problems")  # Get all problems
                 for row in cursor.fetchall():
                     Problem = BaseProblem.from_row(row, cache=copy(self))
                     if (
                         Problem.guild_id not in guild_ids
                     ):  # Similar logic: Make sure it's there!
                         guild_ids.append(Problem.guild_id)
-                        guild_problems[Problem.guild_id] = {}  # For quick, cached access?
+                        guild_problems[
+                            Problem.guild_id
+                        ] = {}  # For quick, cached access?
                     try:
                         guild_problems[Problem.guild_id][Problem.id] = Problem
                     except BaseException as e:
@@ -283,9 +289,11 @@ class MathProblemCache:
                 raise TypeError("problem_id is not a integer")
         if self.use_cached_problems:
             if self.update_cache_by_default_when_requesting:
-                await self.update_cache() #Make sure the cache is up-to-date
+                await self.update_cache()  # Make sure the cache is up-to-date
             try:
-                return self.guild_problems[guild_id][problem_id] # Get the cached problem!
+                return self.guild_problems[guild_id][
+                    problem_id
+                ]  # Get the cached problem!
             except KeyError:
                 raise ProblemNotFound(
                     "Problem not found in the cache! You may want to try again, but without caching!"
@@ -329,20 +337,27 @@ class MathProblemCache:
                     return BaseProblem.from_row(rows[0], cache=copy(self))
             else:
                 with mysql_connection(
-                host=self.mysql_db_ip,
-                password = self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name) as connection:
+                    host=self.mysql_db_ip,
+                    password=self.mysql_password,
+                    user=self.mysql_username,
+                    database=self.mysql_db_name,
+                ) as connection:
                     cursor = connection.cursor(dictionaries=True)
-                    cursor.execute("SELECT * from problems WHERE guild_id = %i AND problem_id = %i") #Get the problem
+                    cursor.execute(
+                        "SELECT * from problems WHERE guild_id = %i AND problem_id = %i"
+                    )  # Get the problem
                     rows = cursor.fetchall()
                     if len(rows) == 0:
                         raise ProblemNotFound("Problem not found!")
                     elif len(rows) > 1:
-                        raise TooManyProblems("Uh oh... 2 problems exist with the same guild id and the same problem id")
+                        raise TooManyProblems(
+                            "Uh oh... 2 problems exist with the same guild id and the same problem id"
+                        )
                     return BaseProblem.from_row(cache=copy(self), row=rows[0])
 
-    async def get_guild_problems(self, Guild: nextcord.Guild) -> typing.List[BaseProblem]:
+    async def get_guild_problems(
+        self, Guild: nextcord.Guild
+    ) -> typing.List[BaseProblem]:
         """Gets the guild problems! Guild must be a Guild object. If you are trying to get global problems, use get_global_problems."""
         if self.update_cache_by_default_when_requesting:
             await self.update_cache()
@@ -371,7 +386,9 @@ class MathProblemCache:
         #
         # self._dict[Guild.id] = {}
 
-    async def add_problem(self, guild_id: int, problem_id: int, Problem: BaseProblem) -> Optional[BaseProblem]:
+    async def add_problem(
+        self, guild_id: int, problem_id: int, Problem: BaseProblem
+    ) -> Optional[BaseProblem]:
         "Adds a problem and returns the added MathProblem"
         # Preliminary checks -otherwise SQL bugs
         if not isinstance(guild_id, int):
@@ -412,7 +429,7 @@ class MathProblemCache:
                 raise TooManyProblems(
                     f"There are already {self.max_guild_problems} problems!"
                 )
-        except KeyError: #New guild creating first problem
+        except KeyError:  # New guild creating first problem
             pass
         if not isinstance(
             Problem, (BaseProblem)
@@ -423,9 +440,7 @@ class MathProblemCache:
             async with aiosqlite.connect(self.db_name) as conn:
 
                 try:
-                    conn.row_factory = (
-                        dict_factory  # Make sure the row_factory can be set to dict_factory
-                    )
+                    conn.row_factory = dict_factory  # Make sure the row_factory can be set to dict_factory
                 except BaseException as exc:
                     # Not writeable?
                     try:
@@ -459,9 +474,10 @@ class MathProblemCache:
         else:
             with mysql_connection(
                 host=self.mysql_db_ip,
-                password = self.mysql_password,
+                password=self.mysql_password,
                 user=self.mysql_username,
-                database=self.mysql_db_name) as connection:
+                database=self.mysql_db_name,
+            ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 await cursor.execute(
                     """INSERT INTO problems (guild_id, problem_id, question, answer, voters, solvers, author)
@@ -473,14 +489,19 @@ class MathProblemCache:
                         pickle.dumps(Problem.get_answers()),
                         pickle.dumps(Problem.get_voters()),
                         pickle.dumps(Problem.get_solvers()),
-                        int(Problem.author)))
+                        int(Problem.author),
+                    ),
+                )
+
     async def remove_problem(self, guild_id: int, problem_id: int) -> BaseProblem:
         "Removes a problem. Returns the deleted problem"
         Problem = await self.get_problem(guild_id, problem_id)
         await self.remove_problem_without_returning(guild_id, problem_id)
         return Problem
 
-    async def remove_problem_without_returning(self, guild_id: int, problem_id: int) -> None:
+    async def remove_problem_without_returning(
+        self, guild_id: int, problem_id: int
+    ) -> None:
         "Remove a problem without returning! Saves time."
         if not isinstance(guild_id, int):
             if self.warnings:
@@ -497,9 +518,7 @@ class MathProblemCache:
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
                 try:
-                    conn.row_factory = (
-                        dict_factory  # Make sure the row_factory can be set to dict_factory
-                    )
+                    conn.row_factory = dict_factory  # Make sure the row_factory can be set to dict_factory
                 except BaseException as exc:
                     # Not writeable?
                     try:
@@ -518,7 +537,9 @@ class MathProblemCache:
                     (guild_id, problem_id),
                 )  # The actual deletion
                 try:
-                    del self.guild_problems[guild_id][problem_id] # Delete from the cache
+                    del self.guild_problems[guild_id][
+                        problem_id
+                    ]  # Delete from the cache
                     await self.update_cache()
                 except KeyError:
                     # It's already deleted!
@@ -527,27 +548,32 @@ class MathProblemCache:
                 await conn.commit()
 
         else:
-            with mysql_connection(host=self.mysql_db_ip,
-                password = self.mysql_password,
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
                 user=self.mysql_username,
-                database=self.mysql_db_name) as connection:
-                    cursor = connection.cursor(dictionaries=True)
-                    cursor.execute(
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
                     "DELETE FROM problems WHERE guild_id = %i and problem_id = %i",
                     (guild_id, problem_id),
                 )  # The actual deletion
-                    try:
-                        del self.guild_problems[guild_id][problem_id] # Delete from the cache
-                        await self.update_cache()
-                    except KeyError:
-                        pass
-                    connection.commit()
-
+                try:
+                    del self.guild_problems[guild_id][
+                        problem_id
+                    ]  # Delete from the cache
+                    await self.update_cache()
+                except KeyError:
+                    pass
+                connection.commit()
 
     async def remove_duplicate_problems(self) -> None:
         "Deletes duplicate problems. Takes O(N^2) time which is slow"
         if self.use_sqlite:
-            async with aiosqlite.connect(self.db_name) as conn: #Fetch the list of problems
+            async with aiosqlite.connect(
+                self.db_name
+            ) as conn:  # Fetch the list of problems
                 cursor = conn.cursor()
                 await cursor.execute("SELECT * FROM problems")
                 all_problems = [
@@ -556,10 +582,12 @@ class MathProblemCache:
                 ]
                 await conn.commit()
         else:
-            with mysql_connection(host=self.mysql_db_ip,
-                password = self.mysql_password,
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
                 user=self.mysql_username,
-                database=self.mysql_db_name) as connection:
+                database=self.mysql_db_name,
+            ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 await cursor.execute("SELECT * FROM Problems")
                 all_problems = [
@@ -618,9 +646,7 @@ class MathProblemCache:
 
             async with aiosqlite.connect(self.db_name) as conn:
                 try:
-                    conn.row_factory = (
-                        dict_factory  # Make sure the row_factory can be set to dict_factory
-                    )
+                    conn.row_factory = dict_factory  # Make sure the row_factory can be set to dict_factory
                 except BaseException as exc:
                     # Not writeable?
                     try:
@@ -664,10 +690,12 @@ class MathProblemCache:
 
                 await conn.commit()
         else:
-            with mysql_connection(host=self.mysql_db_ip,
-                password = self.mysql_password,
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
                 user=self.mysql_username,
-                database=self.mysql_db_name) as connection:
+                database=self.mysql_db_name,
+            ) as connection:
                 cursor = connection.cursor(dictionaries=True)
 
                 cursor = connection.cursor(dictionaries=True)
@@ -689,7 +717,7 @@ class MathProblemCache:
                 for item in quiz.submissions:
                     cursor.execute(
                         """INSERT INTO quiz_submissions (guild_id, quiz_id, user_id, submissions)
-                    VALUES (%i,%l,%l,?)""",
+                    VALUES ('%i','%l','%l',%b)""",
                         (
                             item.guild_id,
                             item.quiz_id,
@@ -704,47 +732,68 @@ class MathProblemCache:
     async def get_quiz(self, quiz_id: int) -> Optional[Quiz]:
         "Get the quiz with the id specified. Returns None if not found"
         assert isinstance(quiz_id, int)
-        async with aiosqlite.connect(self.db_name) as conn:
-            try:
-                conn.row_factory = (
-                    dict_factory  # Make sure the row_factory can be set to dict_factory
-                )
-            except BaseException as exc:
-                # Not writeable?
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db_name) as conn:
                 try:
-                    dict_factory  # Check for nameerror
-                except NameError as exc2:
-                    raise MathProblemsModuleException(
-                        "dict_factory could not be found"
-                    ) from exc2
-                if isinstance(exc, AttributeError):  # Can't set attribute
-                    pass
-                else:
-                    raise  # Re-raise the exception
-            cursor = conn.cursor()
-            await cursor.execute("SELECT * FROM quizzes WHERE quiz_id=?", (quiz_id,))
-            problems = await cursor.fetchall()
-            if len(problems) == 0:
-                raise QuizNotFound(f"Quiz id {quiz_id} not found")
+                    conn.row_factory = dict_factory  # Make sure the row_factory can be set to dict_factory
+                except BaseException as exc:
+                    # Not writeable?
+                    try:
+                        dict_factory  # Check for nameerror
+                    except NameError as exc2:
+                        raise MathProblemsModuleException(
+                            "dict_factory could not be found"
+                        ) from exc2
+                    if isinstance(exc, AttributeError):  # Can't set attribute
+                        pass
+                    else:
+                        raise  # Re-raise the exception
+                cursor = conn.cursor()
+                await cursor.execute(
+                    "SELECT * FROM quizzes WHERE quiz_id=?", (quiz_id,)
+                )
+                problems = await cursor.fetchall()
+                if len(problems) == 0:
+                    raise QuizNotFound(f"Quiz id {quiz_id} not found")
 
-            await cursor.execute(
-                "SELECT submissions FROM quiz_submissions WHERE quiz_id = ?"
-            )
-            submissions = await cursor.fetchall()
-            submissions = [
-                QuizSubmission.from_dict(pickle.loads(item), cache=copy(self))
-                for item in submissions
-            ]
-            problems = [
-                QuizProblem.from_row(dict_factory(cursor, row), cache=copy(self))
-                for row in problems
-            ]
+                await cursor.execute(
+                    "SELECT submissions FROM quiz_submissions WHERE quiz_id = ?"
+                )
+                submissions = await cursor.fetchall()
+                submissions = [
+                    QuizSubmission.from_dict(pickle.loads(item), cache=copy(self))
+                    for item in submissions
+                ]
+                problems = [
+                    QuizProblem.from_row(dict_factory(cursor, row), cache=copy(self))
+                    for row in problems
+                ]
+        else:
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute("SELECT * FROM quizzes WHERE quiz_id = '%i'", (quiz_id,))
+                problems = [
+                    QuizProblem.from_row(row, copy(self)) for row in cursor.fetchall()
+                ]
+                cursor.execute(
+                    "SELECT * FROM submissions WHERE quiz_id = '%i'", (quiz_id,)
+                )
+                submissions = [
+                    QuizSubmission.from_dict(pickle.loads(row), cache=copy(self))
+                    for row in cursor.fetchall()
+                ]
 
-            # Actual Quiz generation time
-            quiz = Quiz(quiz_id, problems, submissions, cache=copy(self))
-            return quiz
+        quiz = Quiz(quiz_id, problems, submissions, cache=copy(self))
+        return quiz
 
-    async def update_problem(self, guild_id: int, problem_id: int, new: BaseProblem) -> None:
+    async def update_problem(
+        self, guild_id: int, problem_id: int, new: BaseProblem
+    ) -> None:
         "Update the problem stored with the given guild id and problem id"
         assert isinstance(guild_id, str)
         assert isinstance(problem_id, str)
@@ -752,9 +801,7 @@ class MathProblemCache:
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
                 try:
-                    conn.row_factory = (
-                        dict_factory  # Make sure the row_factory can be set to dict_factory
-                    )
+                    conn.row_factory = dict_factory  # Make sure the row_factory can be set to dict_factory
                 except BaseException as exc:
                     # Not writeable?
                     try:
@@ -786,15 +833,17 @@ class MathProblemCache:
                     ),
                 )
         else:
-            with mysql_connection(host=self.mysql_db_ip,
-                password = self.mysql_password,
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
                 user=self.mysql_username,
-                database=self.mysql_db_name) as connection:
+                database=self.mysql_db_name,
+            ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     """UPDATE problems 
-                    SET guild_id = %i, problem_id = %i, question = %s, answer = %b, voters = %b, solvers = %b, author = %i
-                    WHERE guild_id = %i AND problem_id = %i""",
+                    SET guild_id = '%i', problem_id = '%i', question = %s, answer = %b, voters = %b, solvers = %b, author = '%i'
+                    WHERE guild_id = '%i' AND problem_id = '%i'""",
                     (
                         int(new.guild_id),
                         int(new.id),
@@ -804,8 +853,8 @@ class MathProblemCache:
                         pickle.dumps(new.solvers),
                         int(new.author),
                         guild_id,
-                        problem_id
-                    )
+                        problem_id,
+                    ),
                 )
 
     async def update_quiz(self, quiz_id, new) -> None:
@@ -826,14 +875,16 @@ class MathProblemCache:
                     "DELETE FROM quizzes WHERE quiz_id = ?", (quiz_id,)
                 )  # Delete the quiz's problems
                 await cursor.execute(
-                    "DELETE FROM quiz_submissions WHERE quiz_id='?'", (quiz_id)
+                    "DELETE FROM quiz_submissions WHERE quiz_id=?", (quiz_id)
                 )  # Delete the submissions as well.
                 await conn.commit()  # Commit
         else:
-            with mysql_connection(host=self.mysql_db_ip,
-                password = self.mysql_password,
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
                 user=self.mysql_username,
-                database=self.mysql_db_name) as connection:
+                database=self.mysql_db_name,
+            ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     "DELETE FROM quizzes WHERE quiz_id = '?'", (quiz_id,)
@@ -841,6 +892,7 @@ class MathProblemCache:
                 cursor.execute(
                     "DELETE FROM quiz_submissions WHERE quiz_id='?'", (quiz_id)
                 )  # Delete the submissions as well.
+
     async def get_all_by_author_id(self, author_id: int) -> dict:
         "Return a dictionary containing everything that was created by the author"
         assert isinstance(author_id, int)  # Make sure it is of type integer
@@ -880,37 +932,55 @@ class MathProblemCache:
                     for row in await cursor.fetchall()
                 ]
         else:
-            with mysql_connection(host=self.mysql_db_ip,
-                password = self.mysql_password,
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
                 user=self.mysql_username,
-                database=self.mysql_db_name) as connection:
+                database=self.mysql_db_name,
+            ) as connection:
                 cursor = connection.cursor(dictionaries=True)
-                cursor.execute(
-                    "SELECT * FROM quizzes WHERE author = '%i'", (author_id)
-                )
-                quiz_problems = [QuizProblem.from_row(row, cache=copy(self)) for row in cursor.fetchall()]
-                
+                cursor.execute("SELECT * FROM quizzes WHERE author = '%i'", (author_id))
+                quiz_problems = [
+                    QuizProblem.from_row(row, cache=copy(self))
+                    for row in cursor.fetchall()
+                ]
+
         return {
             "quiz_problems": quiz_problems,
             "quiz_submissions": quiz_submissions,
             "problems": problems,
-        }   
+        }
 
     async def delete_all_by_user_id(self, user_id: int) -> None:
         "Delete all data stored under a given user id"
         assert isinstance(user_id, int)
-        async with aiosqlite.connect(self.db) as conn:
-            cursor = conn.cursor()
-            await cursor.execute(
-                "DELETE FROM problems WHERE author = ?", (user_id,)
-            )  # Delete all problems submitted by the author
-            await cursor.execute(
-                "DELETE FROM quizzes WHERE author = ?", (user_id)
-            )  # Delete all quiz problems submitted by the author
-            await cursor.execute(
-                "DELETE FROM quiz_submissions WHERE author = ?", (user_id)
-            )  # Delete all quiz submissions created by the author
-            await conn.commit()  # Otherwise, nothing happens and it rolls back!!
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db) as conn:
+                cursor = conn.cursor()
+                await cursor.execute(
+                    "DELETE FROM problems WHERE author = ?", (user_id,)
+                )  # Delete all problems submitted by the author
+                await cursor.execute(
+                    "DELETE FROM quizzes WHERE author = ?", (user_id)
+                )  # Delete all quiz problems submitted by the author
+                await cursor.execute(
+                    "DELETE FROM quiz_submissions WHERE author = ?", (user_id)
+                )  # Delete all quiz submissions created by the author
+                await conn.commit()  # Otherwise, nothing happens and it rolls back!!
+        else:
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute("DELETE FROM problems WHERE author = '%i'", (user_id,))
+                cursor.execute("DELETE FROM quizzes WHERE author = '%i'", (user_id,))
+                cursor.execute(
+                    "DELETE FROM quiz_submissions WHERE author = '%i'", (user_id)
+                )
+                connection.commit()
 
     async def delete_all_by_guild_id(self, guild_id: int) -> None:
         "Delete all data stored by a given guild. This deletes all problems & quizzes & quiz submissions under that guild!"

@@ -367,6 +367,7 @@ class MiscCommandsCog(HelperCog):
                 "Your json data has been attached! Unfortunately, there is no parse command."
             ),
         )
+
     @slash_command(
         name="submit_a_request",
         description="Submit a request. I will know!",
@@ -406,11 +407,11 @@ class MiscCommandsCog(HelperCog):
     async def submit_a_request(
         self,
         inter: dislash.SlashInteraction,
-        offending_problem_guild_id: int=None,
-        offending_problem_id: int=None,
-        extra_info: str=None,
+        offending_problem_guild_id: int = None,
+        offending_problem_id: int = None,
+        extra_info: str = None,
         copyrighted_thing: str = Exception,
-        type: str="",
+        type: str = "",
     ):
         "Submit a request! I will know! It uses a channel in my discord server and posts an embed"
         if (
@@ -463,4 +464,3 @@ class MiscCommandsCog(HelperCog):
         content += f"<@{self.bot.owner_id}>"
         await channel.send(embed=embed, content=content)
         await inter.reply("Your request has been submitted!")
-

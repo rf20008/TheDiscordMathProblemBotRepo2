@@ -51,6 +51,7 @@ from helpful_modules.custom_embeds import *
 from helpful_modules.checks import is_not_blacklisted, setup
 from helpful_modules.the_documentation_file_loader import *
 from helpful_modules.constants_loader import *
+
 try:
     import dotenv  # https://pypi.org/project/python-dotenv/
 
@@ -109,11 +110,12 @@ main_cache = problems_module.MathProblemCache(
     db_name="MathProblemCache1.db",
     update_cache_by_default_when_requesting=True,
     use_cached_problems=False,
-    mysql_username = bot_constants.MYSQL_USERNAME,
-    mysql_password = bot_constants.MYSQL_PASSWORD,
-    mysql_db_ip = bot_constants.MYSQL_DB_IP,
-    mysql_db_name = bot_constants.MYSQL_DB_NAME,
-    use_sqlite = bot_constants.USE_SQLITE)  # Generate a new cache for the bot!
+    mysql_username=bot_constants.MYSQL_USERNAME,
+    mysql_password=bot_constants.MYSQL_PASSWORD,
+    mysql_db_ip=bot_constants.MYSQL_DB_IP,
+    mysql_db_name=bot_constants.MYSQL_DB_NAME,
+    use_sqlite=bot_constants.USE_SQLITE,
+)  # Generate a new cache for the bot!
 vote_threshold = 0  # default
 mathProblems = {}
 guildMathProblems = {}
@@ -178,8 +180,8 @@ bot.log = logging.getLogger(__name__)
 slash = InteractionClient(client=bot, sync_commands=True)
 bot.slash = slash
 # Add the commands
-bot.add_cog(DeveloperCommands(bot)) 
-bot.add_cog(ProblemsCog(bot)) 
+bot.add_cog(DeveloperCommands(bot))
+bot.add_cog(ProblemsCog(bot))
 bot.add_cog(QuizCog(bot))
 bot.add_cog(MiscCommandsCog(bot))
 bot.CONSTANTS = bot_constants
@@ -203,7 +205,10 @@ async def on_connect():
         "Deleting data from guilds the bot was kicked from while it was offline"
     )
     bot_guild_ids = [guild.id for guild in bot.guilds]
-    for guild_id in await bot.cache.get_guilds(
+    for (
+        guild_id
+    ) in (
+        await bot.cache.get_guilds()
     ):  # Obtain all guilds the cache stores data (will need to be upgraded.)
         if guild_id not in bot_guild_ids:  # It's not in!
             bot.log.debug("The bot is deleting data from a guild it has left.")
@@ -247,6 +252,7 @@ async def on_slash_command_error(inter, error):
 ##adds the user's id to the trusted users list
 ##(can only be used by trusted users)""",
 ##brief = "Adds a trusted user")
+
 
 @bot.event
 async def on_guild_join(guild):
