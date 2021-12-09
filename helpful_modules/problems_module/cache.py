@@ -946,7 +946,7 @@ class MathProblemCache:
                     for row in cursor.fetchall()
                 ]
                 cursor.execute(
-                    "SELECT submissions FROM quiz_submissions WHERE author = '%i'",
+                    "SELECT submissions FROM quiz_submissions WHERE user_id = '%i'",
                     (author_id),
                 )
                 quiz_submissions = [
@@ -982,7 +982,7 @@ class MathProblemCache:
                     "DELETE FROM quizzes WHERE author = ?", (user_id)
                 )  # Delete all quiz problems submitted by the author
                 await cursor.execute(
-                    "DELETE FROM quiz_submissions WHERE author = ?", (user_id)
+                    "DELETE FROM quiz_submissions WHERE user_id = ?", (user_id)
                 )  # Delete all quiz submissions created by the author
                 await conn.commit()  # Otherwise, nothing happens and it rolls back!!
         else:

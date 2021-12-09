@@ -1,7 +1,7 @@
 # This module is the 'core' of my bot!
 # It's quite important.
 
-# Licensed under GPLv3
+# This module is licensed under GPLv3
 
 #     This file is part of The Discord Math Problem Bot.
 # 

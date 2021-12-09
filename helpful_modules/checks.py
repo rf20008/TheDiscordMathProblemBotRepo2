@@ -40,6 +40,8 @@ def custom_check(
 
 def trusted_users_only():
     def predicate(inter):
+        if bot == None or bot.trusted_users == []:
+            return False
         if inter.author.id in bot.trusted_users:
             return True
         raise NotTrustedUser(
@@ -53,6 +55,7 @@ def administrator_or_trusted_users_only():
     "Checks if the user has administrator permission or is a bot trusted user."
 
     def predicate(inter):
+        
         if (
             inter.author.guild_permissions.adminstrator
             or inter.author.id in bot.trusted_users

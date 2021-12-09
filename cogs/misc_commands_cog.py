@@ -265,7 +265,7 @@ class MiscCommandsCog(HelperCog):
             )
         ],
     )
-    async def delete_all(self, inter, save_data_before_deletion: bool = True):
+    async def delete_all(self: "MiscCommandsCog", inter: dislash.SlashInteraction, save_data_before_deletion: bool = True):
         """/user_data delete_all [save_data_before_deletion: bool = Trie]
         Delete all your data. YOU MUST CONFIRM THIS!
         If save_data_before_deletion, the data about you will be sent as a json file
