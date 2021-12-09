@@ -84,8 +84,9 @@ class MiscCommandsCog(HelperCog):
             )
             embed = embed.add_field(
                 name="CPU count (which may not necessarily be the amount of CPU avaliable to the bot due to a Python limitation)",
-                value=str(cpu_count),
+                value=str(cpu_count()),
             )
+            embed = embed.add_field(name="License",value="This bot is licensed under GPLv3")
         await inter.reply(embed=embed)
 
     @slash_command(name="list_trusted_users", description="list all trusted users")

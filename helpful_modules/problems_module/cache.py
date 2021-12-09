@@ -897,13 +897,13 @@ class MathProblemCache:
     async def get_all_by_author_id(self, author_id: int) -> dict:
         "Return a dictionary containing everything that was created by the author"
         assert isinstance(author_id, int)  # Make sure it is of type integer
+        print(author_id)
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
-                cursor = conn.cursor()  # Create a cursor
-                cursor = await cursor
+                cursor = await conn.cursor()  # Create a cursor
                 # Get all quiz problems they made
                 await cursor.execute(
-                    "SELECT * FROM quizzes WHERE author = ?", (author_id)
+                    "SELECT * FROM quizzes WHERE author = ?", (int(author_id),)
                 )  # Get all problems made by the author
                 quiz_problems_raw = [
                     dict_factory(cursor, row) for row in await cursor.fetchall()
