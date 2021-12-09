@@ -1,4 +1,5 @@
 import asyncio
+from types import FunctionType as function
 import typing
 from mysql.connector import connect
 from nextcord import guild
