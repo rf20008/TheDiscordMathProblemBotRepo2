@@ -2,7 +2,7 @@ from dislash.interactions.interaction import BaseInteraction
 import nextcord, dislash
 from copy import deepcopy
 from warnings import warn
-from helpful_modules import checks
+from helpful_modules import checks, problems_module
 
 
 class HelperCog(nextcord.ext.commands.Cog):
@@ -23,9 +23,9 @@ class HelperCog(nextcord.ext.commands.Cog):
             self.b["custom_embeds"].ErrorEmbed,
             self.b["the_documentation_file_loader"],
         )
-        self.cache = bot.cache
-        self.slash = bot.slash
-        self.bot = bot
+        self.cache: problems_module.MathProblemCache = bot.cache
+        self.slash: dislash.InteractionClient = bot.slash
+        self.bot: nextcord.ext.commands.Bot = bot
         self.check_for_cooldown = self.bot._transport_modules["check_for_cooldown"]
         self.custom_embeds = self.bot._transport_modules["custom_embeds"]
         self.checks = self.bot._transport_modules["checks"]

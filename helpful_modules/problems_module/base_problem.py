@@ -245,7 +245,7 @@ class BaseProblem:
         return {
             "type": "MathProblem",
             "question": self.question,
-            "answer": self.answer,
+            "answers": self.get_answers(),
             "id": str(self.id),
             "guild_id": str(self.guild_id),
             "voters": self.voters,

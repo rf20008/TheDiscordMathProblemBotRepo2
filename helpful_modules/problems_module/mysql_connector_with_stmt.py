@@ -1,6 +1,7 @@
 import mysql.connector
 import contextlib
 
+# Licensed under GPLv3 (or later)
 
 @contextlib.contextmanager
 def mysql_connection(*args, **kwargs) -> None:
@@ -14,7 +15,7 @@ def mysql_connection(*args, **kwargs) -> None:
         yield connection
     except:
         print(
-            "An exception happened in the bot. After closing resources, the exception will be raised"
+            "An exception occured!. After closing resources, the exception will be raised"
         )
         connection.commit()
         connection.close()

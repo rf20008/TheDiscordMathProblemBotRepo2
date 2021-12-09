@@ -17,6 +17,7 @@ from time import asctime
 import resource
 from typing import Union
 from copy import copy
+import orjson
 from io import BytesIO  # For file submitting!
 
 
@@ -25,6 +26,7 @@ class MiscCommandsCog(HelperCog):
         super().__init__(bot)
         checks.setup(bot)  # Sadly, Interactions do not have a bot parameter
         self.bot: commands.Bot = bot
+        self.cache: problems_module.MathProblemCache = bot.cache
 
     @slash_command(
         name="info",
@@ -264,6 +266,18 @@ class MiscCommandsCog(HelperCog):
                 description="Whether to give you your problems or submissions, in JSON format! Defaults to True",
                 type=OptionType.BOOLEAN,
                 required=False,
+            ),
+            Option(
+                name="delete_votes",
+                description = "Whether to delete your votes. ",
+                type = OptionType.BOOLEAN,
+                required = False
+            ),
+            Option(
+                name = "delete_solves",
+                description = "Whether to erase whether you have solved a problem or not",
+                type = OptionType.BOOLEAN,
+                required = False
             )
         ],
     )
@@ -271,8 +285,11 @@ class MiscCommandsCog(HelperCog):
         self: "MiscCommandsCog",
         inter: dislash.SlashInteraction,
         save_data_before_deletion: bool = True,
+        delete_votes = False,
+        delete_solves = False
+
     ):
-        """/user_data delete_all [save_data_before_deletion: bool = Trie]
+        """/user_data delete_all [save_data_before_deletion: bool = True] [delete_votes: bool = False] [delete_solves: bool = False]
         Delete all your data. YOU MUST CONFIRM THIS!
         If save_data_before_deletion, the data about you will be sent as a json file
         This has a 500 second cooldown."""
@@ -299,6 +316,22 @@ class MiscCommandsCog(HelperCog):
                 kwargs["file"] = _extra_data["file"]
 
             await _extra_data["cache"].delete_all_by_user_id(interaction.user.id)
+            if _extra_data['delete_votes']:
+                problems_to_remove_votes_for = await _extra_data['cache'].get_problems_by_func(
+                    func = lambda problem, user_id: user_id in problem.voters,
+                    args = [interaction.user.id]
+                )
+                for problem in problems_to_remove_votes_for:
+                    problem.voters.remove(interaction.user.id)
+                    await problem.update_self()
+            if _extra_data['delete_solves']:
+                problems_to_remove_solves_for = await _extra_data['cache'].get_problems_by_func(
+                    func = lambda problem, user_id: user_id in problem.solvers,
+                    args = [interaction.user.id]
+                )
+                for problem in problems_to_remove_solves_for:
+                    problem.solvers.remove(interaction.user.id)
+                    await problem.update_self()
 
             await interaction.responder.send_message(**kwargs)
             self.disable()
@@ -314,7 +347,9 @@ class MiscCommandsCog(HelperCog):
             self.view.stop()
             return
 
-        _extra_data = {"cache": copy(self.bot.cache)}
+        _extra_data = {"cache": copy(self.bot.cache),
+        'delete_votes': delete_votes,
+        'delete_solves': delete_solves}
         if save_data_before_deletion:
             _extra_data["file"] = file_version
         confirmation_button = ConfirmationButton(
@@ -346,12 +381,22 @@ class MiscCommandsCog(HelperCog):
     ) -> dict:
         "A helper function to obtain a user's stored data and return the dictionarified version of it."
         raw_data = await self.cache.get_all_by_author_id(author.id)
+        problems_user_voted_for = await self.cache.get_problems_by_func(
+            func = lambda problem, user_id: user_id in problem.voters,
+            args = (author,)
+        )
+        problems_user_solved = await self.cache.get_problems_by_func(
+            func = lambda problem, user_id: user_id in problem.solvers,
+            args = (author,)
+        )
         new_data = {
             "Problems": [problem.to_dict() for problem in raw_data["problems"]],
             "Quizzes": [quiz.to_dict() for quiz in raw_data["quizzes"]],
             "Quiz Submissions": [
                 submission.to_dict() for submission in raw_data["submissions"]
             ],
+            "Problems the user voted for": [problem.to_dict().pop('answers') for problem in problems_user_voted_for],
+            "Problems the user solved": [problem.to_dict() for problem in problems_user_solved]
         }
         return new_data
 
@@ -364,9 +409,9 @@ class MiscCommandsCog(HelperCog):
         description="Get a jsonified version of the data stored with this application!",
     )
     async def get_data(self, inter):
-        file = self._file_version_of_item(
-            str(await self._get_json_data_by_user(inter.author)),
-            file_name="your_data.json",
+        file = nextcord.File(
+            BytesIO(orjson.dumps(await self._get_json_data_by_user(inter.author), options = orjson.OPT_INDENT_2)),
+            filename="your_data.json"
         )
         return await inter.reply(
             file=file,
