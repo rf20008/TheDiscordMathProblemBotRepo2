@@ -238,10 +238,6 @@ class BaseProblem:
 
     def convert_to_dict(self):
         """Convert self to a dictionary"""
-        warnings.warn(
-            "This method has been deprecated. Use from_dict for continued support!",
-            DeprecationWarning,
-        )
         return {
             "type": "MathProblem",
             "question": self.question,
