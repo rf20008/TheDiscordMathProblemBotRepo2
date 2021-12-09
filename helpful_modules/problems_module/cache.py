@@ -345,9 +345,7 @@ class MathProblemCache:
         ]
         problems_that_meet_the_criteria = global_problems_that_meet_the_criteria
         problems_that_meet_the_criteria.extend(guild_problems_that_meet_the_criteria)
-        return problems_that_meet_the_criteria.extend(
-          
-        )
+        return problems_that_meet_the_criteria
 
     async def get_problem(self, guild_id: int, problem_id: int) -> BaseProblem:
         "Gets the problem with this guild id and problem id. If the problem is not found, a ProblemNotFound exception will be raised."
