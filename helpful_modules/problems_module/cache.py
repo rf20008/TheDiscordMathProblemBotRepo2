@@ -857,9 +857,10 @@ class MathProblemCache:
                     ),
                 )
 
-    async def update_quiz(self, quiz_id, new) -> None:
+    async def update_quiz(self, quiz_id: int, new: Quiz) -> None:
         "Update the quiz with the id given"
-        assert isinstance(quiz_id, str)
+        # Because quizzes consist of multiple rows, it would be hard/impossible to replace each row one at a time
+        assert isinstance(quiz_id, int)
         assert isinstance(new, Quiz)
         assert new.id == quiz_id
         await self.delete_quiz(quiz_id)
@@ -943,6 +944,23 @@ class MathProblemCache:
                 quiz_problems = [
                     QuizProblem.from_row(row, cache=copy(self))
                     for row in cursor.fetchall()
+                ]
+                cursor.execute(
+                    "SELECT submissions FROM quiz_submissions WHERE author = '%i'",
+                    (author_id),
+                )
+                quiz_submissions = [
+                    QuizSubmission.from_dict(submission, cache=copy(self))
+                    for submission in [
+                        pickle.loads(item["submissions"]) for item in cursor.fetchall()
+                    ]
+                ]
+                cursor.execute(
+                    "SELECT * FROM problems WHERE author = '%i'", (author_id)
+                )
+                problems = [
+                    BaseProblem.from_dict(item, cache=copy(self))
+                    for item in cursor.fetchall()
                 ]
 
         return {
