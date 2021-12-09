@@ -232,22 +232,24 @@ class BaseProblem:
         )
         return problem2
 
-    def to_dict(self):
+    def to_dict(self, show_answer=True):
         "An alias for convert_to_dict"
-        return self.convert_to_dict()
+        return self.convert_to_dict(show_answer)
 
-    def convert_to_dict(self):
+    def convert_to_dict(self, show_answer = True):
         """Convert self to a dictionary"""
-        return {
+        _dict = {
             "type": "MathProblem",
             "question": self.question,
-            "answers": self.get_answers(),
             "id": str(self.id),
             "guild_id": str(self.guild_id),
             "voters": self.voters,
             "solvers": self.solvers,
             "author": self.author,
         }
+        if show_answer:
+          _dict['answers'] = self.get_answers()
+        return _dict
 
     def add_voter(self, voter):
         """Adds a voter. Voter must be a nextcord.User object or nextcord.Member object."""

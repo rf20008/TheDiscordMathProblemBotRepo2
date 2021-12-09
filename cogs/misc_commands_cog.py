@@ -385,17 +385,19 @@ class MiscCommandsCog(HelperCog):
             func = lambda problem, user_id: user_id in problem.voters,
             args = (author,)
         )
+        print(problems_user_voted_for)
         problems_user_solved = await self.cache.get_problems_by_func(
             func = lambda problem, user_id: user_id in problem.solvers,
             args = (author,)
         )
         new_data = {
             "Problems": [problem.to_dict() for problem in raw_data["problems"]],
-            "Quizzes": [quiz.to_dict() for quiz in raw_data["quizzes"]],
+            "Quiz Problems": [quiz_problem.to_dict() for quiz_problem in raw_data["quiz_problems"]],
             "Quiz Submissions": [
-                submission.to_dict() for submission in raw_data["submissions"]
+                submission.to_dict() for submission in raw_data["quiz_submissions"]
             ],
-            "Problems the user voted for": [problem.to_dict().pop('answers') for problem in problems_user_voted_for],
+            
+            "Problems the user voted for": [problem.to_dict(show_answers=False) for problem in problems_user_voted_for],
             "Problems the user solved": [problem.to_dict() for problem in problems_user_solved]
         }
         return new_data
