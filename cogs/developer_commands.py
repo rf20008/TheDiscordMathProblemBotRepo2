@@ -1,4 +1,4 @@
-"Admin-related commands"
+"Admin-related commands. Licensed under GPLv3"
 import random
 import dislash
 import typing
@@ -98,6 +98,7 @@ class DeveloperCommands(HelperCog):
             raise exc
 
     @dislash.is_owner()
+    @checks.trusted_users_only()
     @dislash.cooldown(1, 5, type=BucketType.user)
     @slash_command(
         name="raise_error",
@@ -119,7 +120,7 @@ class DeveloperCommands(HelperCog):
     )
     async def raise_error(
         self,
-        inter,
+        inter: dislash.SlashInteraction,
         error_type: typing.Literal["Exception"],
         error_description: str = None,
     ) -> None:

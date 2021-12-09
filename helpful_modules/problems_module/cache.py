@@ -1,6 +1,7 @@
 import asyncio
 import typing
 from mysql.connector import connect
+from nextcord import guild
 import sqldict
 import aiosqlite
 from copy import deepcopy, copy
@@ -212,6 +213,8 @@ class MathProblemCache:
         guild_problems = {}
         guild_ids = []
         global_problems = {}
+        quiz_problems_dict = {}
+        quiz_submissions_dict = {}
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
                 conn.row_factory = dict_factory
@@ -235,6 +238,23 @@ class MathProblemCache:
                         raise SQLException(
                             "For some reason, the cache couldn't be updated. Please help!"
                         ) from e
+                    await cursor.execute("SELECT * FROM quizzes")
+                    for row in await cursor.fetchall():
+                        quiz_problem = QuizProblem.from_row(row, cache=copy(self))
+                        try:
+                            quiz_problems_dict[quiz_problem.id].append(quiz_problem)
+                        except KeyError:
+                            quiz_problems_dict[quiz_problem.id] = [quiz_problem]
+                    await cursor.execute("SELECT submissions from quiz_submissions")
+                    for row in await cursor.fetchall():
+                        submission = QuizSubmission.from_dict(
+                            pickle.loads(row["submission"])
+                        )
+                        try:
+                            quiz_submissions_dict[submission.quiz_id].append(submission)
+                        except KeyError:
+                            quiz_submissions_dict[submission.quiz_id] = [submission]
+
         else:
             with mysql_connection(
                 host=self.mysql_db_ip,
@@ -259,6 +279,22 @@ class MathProblemCache:
                         raise SQLException(
                             "For some reason, the cache couldn't be updated. Please help!"
                         ) from e
+                cursor.execute("SELECT * FROM quizzes")
+                for row in cursor.fetchall():
+                    quiz_problem = QuizProblem.from_row(row, cache=copy(self))
+                    try:
+                        quiz_problems_dict[quiz_problem.id].append(quiz_problem)
+                    except KeyError:
+                        quiz_problems_dict[quiz_problem.id] = [quiz_problem]
+                cursor.execute("SELECT submissions from quiz_submissions")
+                for row in cursor.fetchall():
+                    submission = QuizSubmission.from_dict(
+                        pickle.loads(row["submission"])
+                    )
+                    try:
+                        quiz_submissions_dict[submission.quiz_id].append(submission)
+                    except KeyError:
+                        quiz_submissions_dict[submission.quiz_id] = [submission]
 
         try:
             global_problems = deepcopy(
@@ -271,6 +307,46 @@ class MathProblemCache:
         )  # More deep-copying (so it refers to a different object)
         self.guild_ids = deepcopy(guild_ids)
         self.global_problems = deepcopy(global_problems)
+        self.cached_quizzes = [
+            Quiz(_id, quiz_problems_dict[_id], submissions=quiz_submissions_dict[_id])
+            for _id in quiz_problems_dict.keys()
+        ]
+        self.cached_submissions = quiz_submissions_dict.values()
+
+    async def get_quizzes_by_func(
+        self: "MathProblemCache",
+        func: function = lambda quiz: False,
+        args: typing.Union[tuple, list] = [],
+        kwargs: dict = {},
+    ) -> typing.List[Quiz]:
+        "Get the quizzes that match the function. Function is a function that takes in the quiz, and the provided arguments and keyword arguments. Return True to signify you want the quiz in the list, and False to signify you don't."
+        await self.update_cache()
+        return [quiz for quiz in self.cached_quizzes if func(quiz, *args, **kwargs)]
+
+    async def get_problems_by_func(
+        self: "MathProblemCache",
+        func: function = lambda problem: False,
+        args: typing.Union[tuple, list] = [],
+        kwargs: dict = {},
+    ) -> typing.List[BaseProblem]:
+        "Returns the list of all problems that match the given function"
+        await self.update_cache()
+        guild_problems = []
+        for item in self.guild_problems.values():
+            guild_problems.extend(
+                item.values()
+            )  # This could be a list concentation (but it creates the list of guild problems)
+        return [
+            problem
+            for problem in self.global_problems.values()
+            if func(
+                problem, *args, **kwargs
+            )  # Global problems that match the given function
+        ].extend(
+            [
+                problem for problem in guild_problems if func(problem, *args, **kwargs)
+            ]  # Guild problems that match the given function
+        )
 
     async def get_problem(self, guild_id: int, problem_id: int) -> BaseProblem:
         "Gets the problem with this guild id and problem id. If the problem is not found, a ProblemNotFound exception will be raised."
@@ -945,7 +1021,7 @@ class MathProblemCache:
                     for row in cursor.fetchall()
                 ]
                 cursor.execute(
-                    "SELECT submissions FROM quiz_submissions WHERE author = '%i'",
+                    "SELECT submissions FROM quiz_submissions WHERE user_id = '%i'",
                     (author_id),
                 )
                 quiz_submissions = [
@@ -981,7 +1057,7 @@ class MathProblemCache:
                     "DELETE FROM quizzes WHERE author = ?", (user_id)
                 )  # Delete all quiz problems submitted by the author
                 await cursor.execute(
-                    "DELETE FROM quiz_submissions WHERE author = ?", (user_id)
+                    "DELETE FROM quiz_submissions WHERE user_id = ?", (user_id)
                 )  # Delete all quiz submissions created by the author
                 await conn.commit()  # Otherwise, nothing happens and it rolls back!!
         else:

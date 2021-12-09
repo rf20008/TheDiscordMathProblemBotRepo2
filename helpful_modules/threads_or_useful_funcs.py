@@ -11,6 +11,7 @@ from ._error_logging import log_error
 from .cooldowns import OnCooldown
 from sys import stderr
 
+# Licensed under GPLv3
 
 def generate_new_id():
     "Generate a random number from 0 to 10^14"

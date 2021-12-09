@@ -51,7 +51,7 @@ from helpful_modules.custom_embeds import *
 from helpful_modules.checks import is_not_blacklisted, setup
 from helpful_modules.the_documentation_file_loader import *
 from helpful_modules.constants_loader import *
-
+VERSION = "0.0.3a3"
 try:
     import dotenv  # https://pypi.org/project/python-dotenv/
 

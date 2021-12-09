@@ -75,8 +75,6 @@ Make sure to add the env keys listed below.
 
 Required:
 DISCORD_TOKEN: your discord token
-
-Unused:
 use_sqlite: str (if not set to the string "True", mysql will be used) # Use this for local testing, and mysql for global testing
 Eventually will be unused (and removed)
 sqlite_database_path: path to sqlite db
@@ -85,7 +83,8 @@ mysql_db_username: Your username to the MySQL database
 mysql_db_pass: Your password to the MySQL database
 mysql_db_name: Your MySQL database name
 
-source_code_link: link to the place that contains the bot's source code (if modified)! This must be public (and filling it out __should__ fufill the Disclose source requirement of GPLv3)
+source_code_link: link to the place that contains the bot's source code (if modified)! This must be public (and filling it out __should__ fufill the Disclose source requirement of GPLv3, if it is valid) 
+
 
 ## Attribution / Contributors
 
