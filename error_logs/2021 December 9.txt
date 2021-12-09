@@ -424,3 +424,51 @@ Traceback (most recent call last):
 TypeError: 'NoneType' object is not iterable
 
 
+Thu Dec  9 21:18:56 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 359, in invoke
+    await self.invoke_children(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 350, in invoke_children
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 347, in invoke_children
+    await subcmd._maybe_cog_call(self._cog, interaction, option)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 415, in get_data
+    BytesIO(orjson.dumps(await self._get_json_data_by_user(inter.author), options = orjson.OPT_INDENT_2)),
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 400, in _get_json_data_by_user
+    "Problems the user voted for": [problem.to_dict(show_answers=False) for problem in problems_user_voted_for],
+TypeError: 'NoneType' object is not iterable
+
+
+Thu Dec  9 21:22:55 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 359, in invoke
+    await self.invoke_children(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 350, in invoke_children
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 347, in invoke_children
+    await subcmd._maybe_cog_call(self._cog, interaction, option)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 415, in get_data
+    BytesIO(orjson.dumps(await self._get_json_data_by_user(inter.author), options = orjson.OPT_INDENT_2)),
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 400, in _get_json_data_by_user
+    "Problems the user voted for": [problem.to_dict(show_answers=False) for problem in problems_user_voted_for],
+TypeError: 'NoneType' object is not iterable
+
+
