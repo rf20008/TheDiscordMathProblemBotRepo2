@@ -1,4 +1,4 @@
-"Licensed under CC-BY-SA 4.0/GPLv3"
+"Licensed under GPLv3"
 import mysql.connector
 
 

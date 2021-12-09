@@ -4,6 +4,9 @@ from .custom_embeds import SuccessEmbed, ErrorEmbed
 from .threads_or_useful_funcs import base_on_error
 from copy import deepcopy
 
+#Licensed under the GNU GPLv3 (or later)
+
+
 
 class MyView(nextcord.ui.View):
     "A better? view for my bot (which is easier for my bot to work with)"
