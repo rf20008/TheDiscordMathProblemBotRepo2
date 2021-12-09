@@ -134,3 +134,197 @@ Traceback (most recent call last):
 sqlite3.OperationalError: no such column: author
 
 
+Thu Dec  9 17:42:50 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 359, in invoke
+    await self.invoke_children(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 350, in invoke_children
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 347, in invoke_children
+    await subcmd._maybe_cog_call(self._cog, interaction, option)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 362, in get_data
+    str(await self._get_json_data_by_user(inter.author)),
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 342, in _get_json_data_by_user
+    raw_data = await self.cache.get_all_by_author_id(author.id)
+  File "/home/runner/TheDiscordMathProblemBot/helpful_modules/problems_module/cache.py", line 917, in get_all_by_author_id
+    await cursor.execute(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/cursor.py", line 37, in execute
+    await self._execute(self._cursor.execute, sql, parameters)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/cursor.py", line 31, in _execute
+    return await self._conn._execute(fn, *args, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/core.py", line 129, in _execute
+    return await future
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/core.py", line 102, in run
+    result = function()
+sqlite3.OperationalError: no such column: author
+
+
+Thu Dec  9 18:41:40 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 359, in invoke
+    await self.invoke_children(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 350, in invoke_children
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 347, in invoke_children
+    await subcmd._maybe_cog_call(self._cog, interaction, option)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 362, in get_data
+    str(await self._get_json_data_by_user(inter.author)),
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 342, in _get_json_data_by_user
+    raw_data = await self.cache.get_all_by_author_id(author.id)
+  File "/home/runner/TheDiscordMathProblemBot/helpful_modules/problems_module/cache.py", line 917, in get_all_by_author_id
+    await cursor.execute(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/cursor.py", line 37, in execute
+    await self._execute(self._cursor.execute, sql, parameters)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/cursor.py", line 31, in _execute
+    return await self._conn._execute(fn, *args, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/core.py", line 129, in _execute
+    return await future
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/core.py", line 102, in run
+    result = function()
+sqlite3.OperationalError: no such column: author
+
+
+Thu Dec  9 18:41:42 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 359, in invoke
+    await self.invoke_children(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 350, in invoke_children
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 347, in invoke_children
+    await subcmd._maybe_cog_call(self._cog, interaction, option)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 362, in get_data
+    str(await self._get_json_data_by_user(inter.author)),
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 342, in _get_json_data_by_user
+    raw_data = await self.cache.get_all_by_author_id(author.id)
+  File "/home/runner/TheDiscordMathProblemBot/helpful_modules/problems_module/cache.py", line 917, in get_all_by_author_id
+    await cursor.execute(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/cursor.py", line 37, in execute
+    await self._execute(self._cursor.execute, sql, parameters)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/cursor.py", line 31, in _execute
+    return await self._conn._execute(fn, *args, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/core.py", line 129, in _execute
+    return await future
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/core.py", line 102, in run
+    result = function()
+sqlite3.OperationalError: no such column: author
+
+
+Thu Dec  9 19:31:20 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 359, in invoke
+    await self.invoke_children(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 350, in invoke_children
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 347, in invoke_children
+    await subcmd._maybe_cog_call(self._cog, interaction, option)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 362, in get_data
+    str(await self._get_json_data_by_user(inter.author)),
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 342, in _get_json_data_by_user
+    raw_data = await self.cache.get_all_by_author_id(author.id)
+  File "/home/runner/TheDiscordMathProblemBot/helpful_modules/problems_module/cache.py", line 917, in get_all_by_author_id
+    await cursor.execute(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/cursor.py", line 37, in execute
+    await self._execute(self._cursor.execute, sql, parameters)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/cursor.py", line 31, in _execute
+    return await self._conn._execute(fn, *args, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/core.py", line 129, in _execute
+    return await future
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/core.py", line 102, in run
+    result = function()
+sqlite3.OperationalError: no such column: author
+
+
+Thu Dec  9 19:33:18 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 359, in invoke
+    await self.invoke_children(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 350, in invoke_children
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 347, in invoke_children
+    await subcmd._maybe_cog_call(self._cog, interaction, option)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 362, in get_data
+    str(await self._get_json_data_by_user(inter.author)),
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 342, in _get_json_data_by_user
+    raw_data = await self.cache.get_all_by_author_id(author.id)
+  File "/home/runner/TheDiscordMathProblemBot/helpful_modules/problems_module/cache.py", line 916, in get_all_by_author_id
+    await cursor.execute(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/cursor.py", line 37, in execute
+    await self._execute(self._cursor.execute, sql, parameters)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/cursor.py", line 31, in _execute
+    return await self._conn._execute(fn, *args, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/core.py", line 129, in _execute
+    return await future
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/aiosqlite/core.py", line 102, in run
+    result = function()
+ValueError: parameters are of unsupported type
+
+
+Thu Dec  9 19:34:42 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 359, in invoke
+    await self.invoke_children(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 350, in invoke_children
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 347, in invoke_children
+    await subcmd._maybe_cog_call(self._cog, interaction, option)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 362, in get_data
+    str(await self._get_json_data_by_user(inter.author)),
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 345, in _get_json_data_by_user
+    "Quizzes": [quiz.to_dict() for quiz in raw_data["quizzes"]],
+KeyError: 'quizzes'
+
+

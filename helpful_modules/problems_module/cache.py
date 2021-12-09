@@ -896,8 +896,7 @@ class MathProblemCache:
 
     async def get_all_by_author_id(self, author_id: int) -> dict:
         "Return a dictionary containing everything that was created by the author"
-        assert isinstance(author_id, int)  # Make sure it is of type integer
-        print(author_id)
+        assert isinstance(author_id, int)  # Make sure it is of type integef
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
                 cursor = await conn.cursor()  # Create a cursor
@@ -915,8 +914,8 @@ class MathProblemCache:
 
                 # Get the submissions now
                 await cursor.execute(
-                    "SELECT submissions FROM quiz_submissions WHERE author = ?",
-                    (author_id),
+                    "SELECT submissions FROM quiz_submissions WHERE user_id = ?",
+                    (author_id,),
                 )  # Get the submissions
                 # Convert them to QuizSubmissions!
                 quiz_submissions = [
@@ -926,7 +925,7 @@ class MathProblemCache:
 
                 # Get the problems the author made that are not attached to a quiz
                 await cursor.execute(
-                    "SELECT * FROM problems WHERE user_id = ?", (author_id)
+                    "SELECT * FROM problems WHERE author = ?", (author_id,)
                 )
                 problems = [
                     BaseProblem.from_row(dict_factory(cursor, row))
