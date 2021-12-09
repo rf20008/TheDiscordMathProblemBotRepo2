@@ -55,7 +55,7 @@ def administrator_or_trusted_users_only():
     "Checks if the user has administrator permission or is a bot trusted user."
 
     def predicate(inter):
-        
+
         if (
             inter.author.guild_permissions.adminstrator
             or inter.author.id in bot.trusted_users

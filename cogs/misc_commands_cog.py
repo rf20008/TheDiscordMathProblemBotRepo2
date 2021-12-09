@@ -86,7 +86,9 @@ class MiscCommandsCog(HelperCog):
                 name="CPU count (which may not necessarily be the amount of CPU avaliable to the bot due to a Python limitation)",
                 value=str(cpu_count()),
             )
-            embed = embed.add_field(name="License",value="This bot is licensed under GPLv3")
+            embed = embed.add_field(
+                name="License", value="This bot is licensed under GPLv3"
+            )
         await inter.reply(embed=embed)
 
     @slash_command(name="list_trusted_users", description="list all trusted users")
@@ -265,7 +267,11 @@ class MiscCommandsCog(HelperCog):
             )
         ],
     )
-    async def delete_all(self: "MiscCommandsCog", inter: dislash.SlashInteraction, save_data_before_deletion: bool = True):
+    async def delete_all(
+        self: "MiscCommandsCog",
+        inter: dislash.SlashInteraction,
+        save_data_before_deletion: bool = True,
+    ):
         """/user_data delete_all [save_data_before_deletion: bool = Trie]
         Delete all your data. YOU MUST CONFIRM THIS!
         If save_data_before_deletion, the data about you will be sent as a json file
