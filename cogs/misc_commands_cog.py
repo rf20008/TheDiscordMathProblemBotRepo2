@@ -412,14 +412,21 @@ class MiscCommandsCog(HelperCog):
     )
     async def get_data(self, inter):
         file = nextcord.File(
-            BytesIO(orjson.dumps(await self._get_json_data_by_user(inter.author), options = orjson.OPT_INDENT_2)),
+            BytesIO(orjson.dumps(await self._get_json_data_by_user(inter.author), orjson.OPT_INDENT_2)),
             filename="your_data.json"
         )
+        #await inter.reply(
+        #  embed=SuccessEmbed(
+        #    "Your json data will be attached in the next message due to API #limitations!"
+        #  ),
+        #  ephemeral = True 
+        #)
         return await inter.reply(
             file=file,
-            embed=SuccessEmbed(
-                "Your json data has been attached! Unfortunately, there is no parse command."
-            ),
+            #embed=SuccessEmbed(
+            #    "Your json data has been attached! Unfortunately, there is no #parse command."
+            #),
+            ephemeral=True
         )
 
     @slash_command(
