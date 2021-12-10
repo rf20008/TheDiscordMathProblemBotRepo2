@@ -411,6 +411,9 @@ class MiscCommandsCog(HelperCog):
         description="Get a jsonified version of the data stored with this application!",
     )
     async def get_data(self, inter):
+        """/user_data get_data
+        Get all the data the bot stores about you.
+        Due to a Discord limitation, the bot cannot send the file in the interaction response, so you will be DMed instead."""
         file = nextcord.File(
             BytesIO(orjson.dumps(await self._get_json_data_by_user(inter.author), orjson.OPT_INDENT_2)),
             filename="your_data.json"
@@ -421,13 +424,33 @@ class MiscCommandsCog(HelperCog):
         #  ),
         #  ephemeral = True 
         #)
-        return await inter.reply(
-            file=file,
-            #embed=SuccessEmbed(
-            #    "Your json data has been attached! Unfortunately, there is no #parse command."
-            #),
-            ephemeral=True
-        )
+        successful = None
+        exc_raised = None
+        try:
+            await inter.author.send(
+                embed = SuccessEmbed(
+                    "Your data has been attached in this message!"
+                ),
+                file = file
+            )
+            successful=True
+        except BaseException as e:
+            successful=False
+            exc_raised = e
+        if successful:
+            return await inter.reply(
+                embed = SuccessEmbed(
+                    "I have DMed you your data!"
+                ),
+                ephemeral=True
+            )
+        else:
+            await inter.reply(
+                embed = ErrorEmbed(
+                    "I was unable to DM you your data. Please check your privacy settings. If this is a bug, please report it"
+                )
+            )
+            raise exc_raised
 
     @slash_command(
         name="submit_a_request",

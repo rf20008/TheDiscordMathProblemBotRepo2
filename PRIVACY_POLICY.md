@@ -1,7 +1,7 @@
 # Privacy policy
 
 Most of the content in this privacy policy should be self-explanatory. (Write to me if it isn't!)
-If you use this application (the Discord Math Problem Bot), (I assume that) you (would) agree to this policy. If you do not agree, don't use this application!
+If you use this application (the Discord Math Problem Bot), (I assume that) you (would) agree to this policy. If you do not agree, don't use this application! We don't store data about you without your consent. (We may recieve data from the Discord API, but we don't store it)
 
 ## COPYRIGHT DISCLAIMER
 
