@@ -415,9 +415,9 @@ class MiscCommandsCog(HelperCog):
         Get all the data the bot stores about you.
         Due to a Discord limitation, the bot cannot send the file in the interaction response, so you will be DMed instead."""
         file = nextcord.File(
-            BytesIO(orjson.dumps(await self._get_json_data_by_user(inter.author), orjson.OPT_INDENT_2)),
-            filename="your_data.json"
-        )
+              BytesIO(orjson.dumps(await self._get_json_data_by_user(inter.author),option=orjson.OPT_INDENT_2)),
+              filename="your_data.json"
+            )
         #await inter.reply(
         #  embed=SuccessEmbed(
         #    "Your json data will be attached in the next message due to API #limitations!"

@@ -34,3 +34,61 @@ Traceback (most recent call last):
 AttributeError: 'NoneType' object has no attribute 'send'
 
 
+Fri Dec 10 03:30:53 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 359, in invoke
+    await self.invoke_children(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 350, in invoke_children
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 347, in invoke_children
+    await subcmd._maybe_cog_call(self._cog, interaction, option)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 425, in get_data
+    #  ephemeral = True
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 227, in reply
+    return await self.channel.send(**send_kwargs)  # type: ignore
+AttributeError: 'NoneType' object has no attribute 'send'
+
+
+Fri Dec 10 03:30:53 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/nextcord/client.py", line 351, in _run_event
+    await coro(*args, **kwargs)
+  File "main.py", line 247, in on_slash_command_error
+    return await inter.reply(**await base_on_error(inter, error))
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/interactions/interaction.py", line 227, in reply
+    return await self.channel.send(**send_kwargs)  # type: ignore
+AttributeError: 'NoneType' object has no attribute 'send'
+
+
+Fri Dec 10 03:37:02 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 359, in invoke
+    await self.invoke_children(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 350, in invoke_children
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 347, in invoke_children
+    await subcmd._maybe_cog_call(self._cog, interaction, option)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 418, in get_data
+    BytesIO(orjson.dumps(await self._get_json_data_by_user(inter.author)  ,option=orjson.OPT_INDENT_2),
+TypeError: BytesIO() takes at most 1 argument (2 given)
+
+
