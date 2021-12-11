@@ -3,6 +3,7 @@ import contextlib
 
 # Licensed under GPLv3 (or later)
 
+
 @contextlib.contextmanager
 def mysql_connection(*args, **kwargs) -> None:
     """A custom with statement to connect to a MySQL database.
