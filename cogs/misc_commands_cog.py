@@ -420,7 +420,7 @@ class MiscCommandsCog(HelperCog):
         description="Get a jsonified version of the data stored with this application!",
     )
     @nextcord.ext.commands.cooldown(1,100,nextcord.ext.commands.BucketType.user)
-    @nextcord.ext.commands.cooldown(50,1000, nextcord.ext.comamnds.BucketType.default)
+    @nextcord.ext.commands.cooldown(50,1000, nextcord.ext.commands.BucketType.default)
     async def get_data(self, inter):
         """/user_data get_data
         Get all the data the bot stores about you.
