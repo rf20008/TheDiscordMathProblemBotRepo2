@@ -114,7 +114,7 @@ class MiscCommandsCog(HelperCog):
 
         for user_id in self.bot.trusted_users:
             try:
-                user = await self.bot.fetch_user(user_id=user_id)
+                user = await self.bot.fetch_user(user_id)
                 __trusted_users += f"""{user.name}#{user.discriminator}
             """
             except nextcord.NotFound:
