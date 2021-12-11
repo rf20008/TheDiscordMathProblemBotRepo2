@@ -647,6 +647,7 @@ class MathProblemCache:
                     "DELETE FROM problems WHERE guild_id = %i and problem_id = %i",
                     (guild_id, problem_id),
                 )  # The actual deletion
+                connection.commit()
                 try:
                     del self.guild_problems[guild_id][
                         problem_id
@@ -654,7 +655,7 @@ class MathProblemCache:
                     await self.update_cache()
                 except KeyError:
                     pass
-                connection.commit()
+                
 
     async def remove_duplicate_problems(self) -> None:
         "Deletes duplicate problems. Takes O(N^2) time which is slow"
@@ -724,7 +725,7 @@ class MathProblemCache:
         "Add a quiz"
         assert isinstance(quiz, Quiz)
         try:
-            self.get_quiz(quiz._id)
+            await self.get_quiz(quiz._id)
             raise MathProblemsModuleException(
                 "Quiz already exists! Use update_quiz instead"
             )

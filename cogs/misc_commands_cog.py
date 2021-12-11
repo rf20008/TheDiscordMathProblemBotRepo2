@@ -193,7 +193,7 @@ class MiscCommandsCog(HelperCog):
         """
         await inter.reply(
             embed=SuccessEmbed(
-                "[Repo Link:](https://github.com/rf20008/TheDiscordMathProblemBotRepo) ",
+                f"[Repo Link:]{self.bot.constants.GITHUB_REPO_LINK}",
                 successTitle="Here is the Github Repository Link.",
             )
         )
@@ -419,15 +419,23 @@ class MiscCommandsCog(HelperCog):
         name="get_data",
         description="Get a jsonified version of the data stored with this application!",
     )
+    @nextcord.ext.commands.cooldown(1,100,nextcord.ext.commands.BucketType.user)
+    @nextcord.ext.commands.cooldown(50,1000, nextcord.ext.comamnds.BucketType.default)
     async def get_data(self, inter):
         """/user_data get_data
         Get all the data the bot stores about you.
-        Due to a Discord limitation, the bot cannot send the file in the interaction response, so you will be DMed instead."""
+        Due to a Discord limitation, the bot cannot send the file in the interaction response, so you will be DMed instead.
+        To prevent spam and getting ratelimited, there is a 100 second cooldown."""
         file = nextcord.File(
-              BytesIO(orjson.dumps(await self._get_json_data_by_user(inter.author),option=orjson.OPT_INDENT_2)),
-              filename="your_data.json"
-            )
-        #await inter.reply(
+            BytesIO(
+                orjson.dumps(
+                    await self._get_json_data_by_user(inter.author),
+                    option=orjson.OPT_INDENT_2,
+                )
+            ),
+            filename="your_data.json",
+        )
+        # await inter.reply(
         #  embed=SuccessEmbed(
         #    "Your json data will be attached in the next message due to API #limitations!"
         #  ),
