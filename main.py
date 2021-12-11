@@ -3,14 +3,15 @@
 # Feel free to contribute! :-)
 # Python 3.8+ is required.
 # Python 3.10 might not work with the bot, because it can't connect to Discord
+from sys import exit
+
+from helpful_modules import constants_loader
 
 if (
     not __debug__
 ):  # __debug__ must be true for the bot to run (because assert statements)
-    raise RuntimeError(
-        "__debug__ must be True for the bot to run! (Don't run with -o or -OO)"
-    )
-
+    exit("__debug__ must be True for the bot to run! (Don't run with -o or -OO)")
+del exit
 # imports - standard library
 import asyncio
 import copy
@@ -56,10 +57,11 @@ VERSION = "0.0.3a3"
 try:
     import dotenv  # https://pypi.org/project/python-dotenv/
 
-    assert hasattr(dotenv, "load_dotenv")
+    assert hasattr(dotenv, "load_dotenv") and hasattr(dotenv, "find_dotenv")
 except (ModuleNotFoundError, AssertionError):
     raise RuntimeError("Dotenv could not be found, therefore cannot load .env")
 dotenv.find_dotenv()
+dotenv.load_dotenv(dotenv.find_dotenv())
 DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
 if DISCORD_TOKEN is None:
     raise RuntimeError("Cannot start bot; no discord_token environment variable")
@@ -157,6 +159,7 @@ bot = nextcord_commands.Bot(
 
 setup(bot)
 bot.cache = main_cache
+bot.constants = bot_constants
 bot.trusted_users = copy(trusted_users)
 bot._transport_modules = {
     "problems_module": problems_module,
@@ -167,6 +170,10 @@ bot._transport_modules = {
     "checks": checks,
 }
 bot.add_check(is_not_blacklisted)
+bot.add_check(nextcord.ext.commands.bot_has_permissions(
+    send_messages=True,
+    
+))
 bot.vote_threshold = copy(vote_threshold)
 bot.blacklisted_users = []
 _the_daemon_file_saver = threading.Thread(
