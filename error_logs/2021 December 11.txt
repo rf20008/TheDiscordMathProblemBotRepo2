@@ -46,3 +46,23 @@ Traceback (most recent call last):
 AttributeError: 'int' object has no attribute 'id'
 
 
+Sat Dec 11 18:16:27 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_client.py", line 1275, in _on_slash_command
+    await app_command.invoke(inter)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 362, in invoke
+    raise err
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 358, in invoke
+    await self._maybe_cog_call(self._cog, interaction, interaction.data)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/slash_core.py", line 112, in _maybe_cog_call
+    return await self(cog, inter, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/dislash/application_commands/core.py", line 72, in __call__
+    return await self.func(*args, **kwargs)
+  File "/home/runner/TheDiscordMathProblemBot/cogs/problems_cog.py", line 284, in list_all_problems
+    for problem in await self.cache.get_guild_problems(guild_id):
+  File "/home/runner/TheDiscordMathProblemBot/helpful_modules/problems_module/cache.py", line 439, in get_guild_problems
+    assert isinstance(Guild, nextcord.Guild)
+AssertionError
+
+

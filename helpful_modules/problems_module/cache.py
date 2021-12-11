@@ -280,13 +280,14 @@ class MathProblemCache:
                         raise SQLException(
                             "For some reason, the cache couldn't be updated. Please help!"
                         ) from e
-                cursor.execute("SELECT * FROM quizzes")
+                cursor.execute("SELECT * FROM quizzes") #Get all quiz problems
                 for row in cursor.fetchall():
-                    quiz_problem = QuizProblem.from_row(row, cache=copy(self))
+                    quiz_problem = QuizProblem.from_row(row, cache=copy(self)) #Turn the quiz problems into QuizProblem objects
                     try:
-                        quiz_problems_dict[quiz_problem.id].append(quiz_problem)
+                        quiz_problems_dict[quiz_problem.id].append(quiz_problem) #Add it to the quiz with the given id
                     except KeyError:
-                        quiz_problems_dict[quiz_problem.id] = [quiz_problem]
+                        quiz_problems_dict[quiz_problem.id] = [quiz_problem] # New quiz!
+                #Similar log for quiz submissions
                 cursor.execute("SELECT submissions from quiz_submissions")
                 for row in cursor.fetchall():
                     submission = QuizSubmission.from_dict(
@@ -436,13 +437,23 @@ class MathProblemCache:
         self, Guild: nextcord.Guild
     ) -> typing.List[BaseProblem]:
         """Gets the guild problems! Guild must be a Guild object. If you are trying to get global problems, use get_global_problems."""
+        assert isinstance(Guild, nextcord.Guild)
         if self.update_cache_by_default_when_requesting:
             await self.update_cache()
         try:
             return self.guild_problems[Guild.id]
         except KeyError:
             return {}
-
+    async def get_problems_by_guild_id(
+      self, id: int
+    ) -> typing.List[BaseProblem]:
+        assert isinstance(id, int)
+        if id == None:
+          return await self.get_global_problems()
+        try:
+            return self.guild_problems[id]
+        except KeyError:
+            return {}
     async def get_global_problems(self: "MathProblemCache"):
         "Returns global problems"
         if self.update_cache_by_default_when_requesting:

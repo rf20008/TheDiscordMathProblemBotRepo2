@@ -6,7 +6,7 @@ import pickle
 import traceback
 import sys
 from helpful_modules.dict_factory import dict_factory
-
+import typing
 
 class BaseProblem:
     "For readability purposes :) This also isn't an ABC."
@@ -64,16 +64,25 @@ class BaseProblem:
 
     async def edit(
         self,
-        question=None,
-        answer=None,
-        id=None,
-        guild_id=None,
-        voters=None,
-        solvers=None,
-        author=None,
-        answers=None,
+        question: str=None,
+        answer: str=None,
+        id: int=None,
+        guild_id: int=None,
+        voters: typing.Optional[typing.List[int]] =None,
+        solvers: typing.Optional[typing.List[int]] =None,
+        author: typing.Optional[int]=None,
+        answers: typing.Optional[typing.Union[int,str,bool]]=None,
     ) -> None:
         """Edit a math problem. The edit is in place"""
+        if answers != None and not isinstance(answers, list):
+          raise TypeError("Answers is not a list!")
+        else:
+          for item in range(len(answers)):
+            if not isinstance(answers[item], (
+              int, str, bool
+            )):
+              raise TypeError(f"Item #{item} is not an integer, string, or boolean!")
+
         if guild_id not in [None, None] and not isinstance(guild_id, int):
             raise TypeError("guild_id is not an integer")
         if not isinstance(id, int) and id is not None:
@@ -88,8 +97,6 @@ class BaseProblem:
             raise TypeError("voters is not a list")
         if not isinstance(solvers, list) and solvers is not None:
             raise TypeError("solvers is not a list")
-        if not isinstance(answers, list) and answers is not None:
-            raise TypeError("answers is not a list")
         if (
             id is not None
             or guild_id is not None

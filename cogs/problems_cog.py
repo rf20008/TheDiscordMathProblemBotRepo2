@@ -281,7 +281,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         problem_info_as_str = ""
         problem_info_as_str += "Problem Id \t Question \t numVotes \t numSolvers"
         if show_guild_problems:
-            for problem in await self.cache.get_guild_problems(guild_id):
+            for problem in await self.cache.get_problems_by_guild_id(guild_id):
                 if len(problem_info_as_str) >= 1930:
                     problem_info_as_str += "The combined length of the questions is too long.... shortening it!"  # May be removed
                     await inter.reply(embed=SuccessEmbed(problem_info_as_str[:1930]))
@@ -343,10 +343,11 @@ NumSolvers: {len(problem.get_solvers())}"""
         description="delete all automatically generated problems",
     )
     @checks.trusted_users_only()
+    @nextcord.ext.commands.cooldown(1,15,nextcord.ext.commands.BucketType.user)
     async def delallbotproblems(self, inter):
-        await cooldowns.check_for_cooldown(inter, "delallbotproblems", 10)
-        "Delete all automatically generated problems"
-
+        """/delallbotproblems
+        Delete all automatically generated problems."""
+        assert inter.author.id in self.bot.trusted_users
         await inter.reply(
             embed=SimpleEmbed("", description="Attempting to delete bot problems"),
             ephemeral=True,
