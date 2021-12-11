@@ -269,25 +269,24 @@ class MiscCommandsCog(HelperCog):
             ),
             Option(
                 name="delete_votes",
-                description = "Whether to delete your votes. ",
-                type = OptionType.BOOLEAN,
-                required = False
+                description="Whether to delete your votes. ",
+                type=OptionType.BOOLEAN,
+                required=False,
             ),
             Option(
-                name = "delete_solves",
-                description = "Whether to erase whether you have solved a problem or not",
-                type = OptionType.BOOLEAN,
-                required = False
-            )
+                name="delete_solves",
+                description="Whether to erase whether you have solved a problem or not",
+                type=OptionType.BOOLEAN,
+                required=False,
+            ),
         ],
     )
     async def delete_all(
         self: "MiscCommandsCog",
         inter: dislash.SlashInteraction,
         save_data_before_deletion: bool = True,
-        delete_votes = False,
-        delete_solves = False
-
+        delete_votes=False,
+        delete_solves=False,
     ):
         """/user_data delete_all [save_data_before_deletion: bool = True] [delete_votes: bool = False] [delete_solves: bool = False]
         Delete all your data. YOU MUST CONFIRM THIS!
@@ -316,18 +315,22 @@ class MiscCommandsCog(HelperCog):
                 kwargs["file"] = _extra_data["file"]
 
             await _extra_data["cache"].delete_all_by_user_id(interaction.user.id)
-            if _extra_data['delete_votes']:
-                problems_to_remove_votes_for = await _extra_data['cache'].get_problems_by_func(
-                    func = lambda problem, user_id: user_id in problem.voters,
-                    args = [interaction.user.id]
+            if _extra_data["delete_votes"]:
+                problems_to_remove_votes_for = await _extra_data[
+                    "cache"
+                ].get_problems_by_func(
+                    func=lambda problem, user_id: user_id in problem.voters,
+                    args=[interaction.user.id],
                 )
                 for problem in problems_to_remove_votes_for:
                     problem.voters.remove(interaction.user.id)
                     await problem.update_self()
-            if _extra_data['delete_solves']:
-                problems_to_remove_solves_for = await _extra_data['cache'].get_problems_by_func(
-                    func = lambda problem, user_id: user_id in problem.solvers,
-                    args = [interaction.user.id]
+            if _extra_data["delete_solves"]:
+                problems_to_remove_solves_for = await _extra_data[
+                    "cache"
+                ].get_problems_by_func(
+                    func=lambda problem, user_id: user_id in problem.solvers,
+                    args=[interaction.user.id],
                 )
                 for problem in problems_to_remove_solves_for:
                     problem.solvers.remove(interaction.user.id)
@@ -347,9 +350,11 @@ class MiscCommandsCog(HelperCog):
             self.view.stop()
             return
 
-        _extra_data = {"cache": copy(self.bot.cache),
-        'delete_votes': delete_votes,
-        'delete_solves': delete_solves}
+        _extra_data = {
+            "cache": copy(self.bot.cache),
+            "delete_votes": delete_votes,
+            "delete_solves": delete_solves,
+        }
         if save_data_before_deletion:
             _extra_data["file"] = file_version
         confirmation_button = ConfirmationButton(
@@ -382,23 +387,27 @@ class MiscCommandsCog(HelperCog):
         "A helper function to obtain a user's stored data and return the dictionarified version of it."
         raw_data = await self.cache.get_all_by_author_id(author.id)
         problems_user_voted_for = await self.cache.get_problems_by_func(
-            func = lambda problem, user_id: user_id in problem.voters,
-            args = (author,)
+            func=lambda problem, user_id: user_id in problem.voters, args=(author,)
         )
         print(problems_user_voted_for)
         problems_user_solved = await self.cache.get_problems_by_func(
-            func = lambda problem, user_id: user_id in problem.solvers,
-            args = (author,)
+            func=lambda problem, user_id: user_id in problem.solvers, args=(author,)
         )
         new_data = {
             "Problems": [problem.to_dict() for problem in raw_data["problems"]],
-            "Quiz Problems": [quiz_problem.to_dict() for quiz_problem in raw_data["quiz_problems"]],
+            "Quiz Problems": [
+                quiz_problem.to_dict() for quiz_problem in raw_data["quiz_problems"]
+            ],
             "Quiz Submissions": [
                 submission.to_dict() for submission in raw_data["quiz_submissions"]
             ],
-            
-            "Problems the user voted for": [problem.to_dict(show_answers=False) for problem in problems_user_voted_for],
-            "Problems the user solved": [problem.to_dict() for problem in problems_user_solved]
+            "Problems the user voted for": [
+                problem.to_dict(show_answers=False)
+                for problem in problems_user_voted_for
+            ],
+            "Problems the user solved": [
+                problem.to_dict() for problem in problems_user_solved
+            ],
         }
         return new_data
 
@@ -422,32 +431,27 @@ class MiscCommandsCog(HelperCog):
         #  embed=SuccessEmbed(
         #    "Your json data will be attached in the next message due to API #limitations!"
         #  ),
-        #  ephemeral = True 
-        #)
+        #  ephemeral = True
+        # )
         successful = None
         exc_raised = None
         try:
             await inter.author.send(
-                embed = SuccessEmbed(
-                    "Your data has been attached in this message!"
-                ),
-                file = file
+                embed=SuccessEmbed("Your data has been attached in this message!"),
+                file=file,
             )
-            successful=True
+            successful = True
         except BaseException as e:
-            successful=False
+            successful = False
             exc_raised = e
         if successful:
             return await inter.reply(
-                embed = SuccessEmbed(
-                    "I have DMed you your data!"
-                ),
-                ephemeral=True
+                embed=SuccessEmbed("I have DMed you your data!"), ephemeral=True
             )
         else:
             await inter.reply(
-                embed = ErrorEmbed(
-                    "I was unable to DM you your data. Please check your privacy settings. If this is a bug, please report it"
+                embed=ErrorEmbed(
+                    "I was unable to DM you your data. Please check your privacy settings. If this is a bug, please report it!"
                 )
             )
             raise exc_raised

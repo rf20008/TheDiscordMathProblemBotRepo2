@@ -236,7 +236,7 @@ class BaseProblem:
         "An alias for convert_to_dict"
         return self.convert_to_dict(show_answer)
 
-    def convert_to_dict(self, show_answer = True):
+    def convert_to_dict(self, show_answer=True):
         """Convert self to a dictionary"""
         _dict = {
             "type": "MathProblem",
@@ -248,7 +248,7 @@ class BaseProblem:
             "author": self.author,
         }
         if show_answer:
-          _dict['answers'] = self.get_answers()
+            _dict["answers"] = self.get_answers()
         return _dict
 
     def add_voter(self, voter):

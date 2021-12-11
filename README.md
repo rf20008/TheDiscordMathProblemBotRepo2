@@ -3,10 +3,15 @@
 # If you run into issues
 If you run into any issues create an issue or DM me (ay136416#2707)). 
 
-# ANNOUNCEMENT
+# Announcements
 
-CC-BY-SA 4.0 is no longer a valid license to use this bot under! You **must** license the bot under GPLv3 (or a later verson.)
-(CC-BY-SA 4.0 has a one way migration to GPLv3, so you are allowed to do this.)
+<ol>
+<li> **CC-BY-SA 4.0 is no longer a valid license to use this bot under! You **must** license the bot under GPLv3 (or a later verson.)
+(CC-BY-SA 4.0 has a one way migration to GPLv3, so you are allowed to do this.)** </li>
+<li> **Everything (even things that do not explicitly say they are licensed under GPLv3) in this repository except for things that are ignored in .gitignored are licensed under GPLv3. This includes every python file.** </li>
+</ol>
+
+
 
 # Contribute :-)
 
@@ -82,8 +87,7 @@ mysql_db_ip: The IP/webserver of the MySQL database
 mysql_db_username: Your username to the MySQL database
 mysql_db_pass: Your password to the MySQL database
 mysql_db_name: Your MySQL database name
-
-source_code_link: link to the place that contains the bot's source code (if modified)! This must be public (and filling it out __should__ fufill the Disclose source requirement of GPLv3, if it is valid) 
+source_code_link: link to the place that contains the bot's source code (if modified)! This must be public and have the actual source code (and filling it out __should__ fufill the Disclose source requirement of GPLv3, if it is valid). However, unless I am sued or legally obligated to check if it's valid, I won't check.
 
 
 ## Attribution / Contributors

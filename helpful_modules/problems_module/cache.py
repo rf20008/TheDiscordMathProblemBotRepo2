@@ -338,10 +338,12 @@ class MathProblemCache:
                 item.values()
             )  # This could be a list concentation (but it creates the list of guild problems)
         global_problems_that_meet_the_criteria = [
-          problem for problem in self.global_problems.values() if func(problem, *args, **kwargs)
+            problem
+            for problem in self.global_problems.values()
+            if func(problem, *args, **kwargs)
         ]
         guild_problems_that_meet_the_criteria = [
-          problem for problem in guild_problems if func(problem, *args, **kwargs)
+            problem for problem in guild_problems if func(problem, *args, **kwargs)
         ]
         problems_that_meet_the_criteria = global_problems_that_meet_the_criteria
         problems_that_meet_the_criteria.extend(guild_problems_that_meet_the_criteria)

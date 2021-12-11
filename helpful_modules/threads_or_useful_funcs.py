@@ -13,6 +13,7 @@ from sys import stderr
 
 # Licensed under GPLv3
 
+
 def generate_new_id():
     "Generate a random number from 0 to 10^14"
     return random.randint(0, 10 ** 14)
@@ -44,20 +45,30 @@ async def base_on_error(inter, error):
         ),
         file=stderr,
     )
+    log_error(error)  # Log the error
+    error_traceback = "\n".join(
+        traceback.format_exception(
+            etype=type(error), value=error, tb=error.__traceback__
+        )
+    )
     if isinstance(error, BaseException) and not isinstance(error, Exception):
         # Errors that do not inherit from Exception are not meant to be caught
         raise
     if isinstance(error, (OnCooldown, nextcord.ext.commands.CommandOnCooldown)):
+        # This is a cooldown exception
         return {"content": str(error)}
-    error_traceback_as_obj = traceback.format_exception(
-        etype=type(error), value=error, tb=error.__traceback__
-    )
-    log_error(error)  # Log the error
+    if isinstance(error, (nextcord.Forbidden,)):
+        extra_content = """There was a 403 error. This means either
+        1) You didn't give me enough permissions to function correctly, or
+        2) There's a bug! If so, please report it!
+        
+        The error traceback is below."""
+        return {"content": extra_content + error_traceback}
+
     if isinstance(error, NotOwner):
         return {"embed": ErrorEmbed("You are not the owner of this bot.")}
     # Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
 
-    error_traceback = "\n".join(error_traceback_as_obj)
     try:
         embed = nextcord.Embed(
             colour=nextcord.Colour.red(),
