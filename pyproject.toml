@@ -23,5 +23,5 @@ sqldict = {git = "https://github.com/rf20008/sqldict.git", rev = "main"}
 aiosqlite = {git = "https://github.com/omnilib/aiosqlite", rev = "main"}
 discord = "^1.7.3"
 topggpy = {git = "https://github.com/top-gg/python-sdk.git", optional = false}
-"mysql-connector-python" = "^8.0.0"
+mysql-connector-python = "^8.0.27"
 [tool.poetry.dev-dependencies]
