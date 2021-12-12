@@ -20,6 +20,6 @@ python-dotenv = "^0.19.1"
 aiosqlite = {git = "https://github.com/omnilib/aiosqlite", rev = "main"}
 discord = "^1.7.3"
 topggpy = {git = "https://github.com/top-gg/python-sdk.git", optional = false}
-disnake = {git = "https://github.com/DisnakeDev/disnake", optional=false}
+disnake = {git = "https://github.com/DisnakeDev/disnake.git"}
 mysql-connector-python = "^8.0.27"
 [tool.poetry.dev-dependencies]

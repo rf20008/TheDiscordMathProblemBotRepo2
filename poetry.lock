@@ -136,7 +136,7 @@ voice = ["PyNaCl (>=1.3.0,<1.5)"]
 type = "git"
 url = "https://github.com/DisnakeDev/disnake"
 reference = "master"
-resolved_reference = "b3102f5316ca101a539f27a94e8620876081e8f3"
+resolved_reference = "999887017c59d954beb40eb5fadd565412cc7dfa"
 
 [[package]]
 name = "idna"
@@ -261,7 +261,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "3973a94121e9bf0cd4a6c63944f1a694ea5987aa138f75dc9c88f5ba6cdb8a8d"
+content-hash = "1196b5c715fde5b88df334dc48b58c1e2efa7724c47f21ef6b4187203e3051ed"
 
 [metadata.files]
 aiohttp = [
