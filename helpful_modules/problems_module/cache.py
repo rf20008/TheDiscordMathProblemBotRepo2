@@ -622,7 +622,7 @@ class MathProblemCache:
                             "dict_factory could not be found"
                         ) from exc2
                     if isinstance(exc, AttributeError):  # Can't set attribute
-                        pass
+                        raise SQLException("Uh oh")
                     else:
                         raise  # Re-raise the exception
                 cursor = conn.cursor()
