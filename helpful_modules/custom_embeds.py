@@ -1,4 +1,4 @@
-from discord import Embed, Color
+from disnake import Embed, Color
 from random import randint
 
 
