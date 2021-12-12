@@ -478,7 +478,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         if guild_question:
             # If this is a guild question, set the guild id
             # to the guild id of the guild this command was ran in
-            guild_id = str(inter.guild.id)
+            guild_id = inter.guild.id
         else:  # But if it's global, make it global
             guild_id = None
         problem = problems_module.BaseProblem(
