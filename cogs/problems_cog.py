@@ -343,7 +343,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         description="delete all automatically generated problems",
     )
     @checks.trusted_users_only()
-    @nextcord.ext.commands.cooldown(1,15,nextcord.ext.commands.BucketType.user)
+    @nextcord.ext.commands.cooldown(1, 15, nextcord.ext.commands.BucketType.user)
     async def delallbotproblems(self, inter):
         """/delallbotproblems
         Delete all automatically generated problems."""
@@ -435,8 +435,8 @@ NumSolvers: {len(problem.get_solvers())}"""
             return
         try:
             assert not (
-                guild_question and (inter.guild is None
-                or not hasattr(inter.guild, 'id'))
+                guild_question
+                and (inter.guild is None or not hasattr(inter.guild, "id"))
             ), "This command may not be used in DMs!"
             guild_id = inter.guild.id
         except AssertionError:

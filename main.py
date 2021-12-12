@@ -170,10 +170,11 @@ bot._transport_modules = {
     "checks": checks,
 }
 bot.add_check(is_not_blacklisted)
-bot.add_check(nextcord.ext.commands.bot_has_permissions(
-    send_messages=True,
-    
-))
+bot.add_check(
+    nextcord.ext.commands.bot_has_permissions(
+        send_messages=True,
+    )
+)
 bot.vote_threshold = copy(vote_threshold)
 bot.blacklisted_users = []
 _the_daemon_file_saver = threading.Thread(
