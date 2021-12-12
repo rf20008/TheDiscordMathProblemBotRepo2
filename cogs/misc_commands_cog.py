@@ -40,7 +40,7 @@ class MiscCommandsCog(HelperCog):
             )
         ],
     )
-    @commands.cooldown(1, 0.5, commands.BucketType.user)
+    @commands.cooldown(1, 150, commands.BucketType.user)
     async def info(self, inter: SlashInteraction, include_extra_info: bool = False):
         """/info [include_extra_info: bool = False]
         Show bot info. include_extra_info shows technical information!"""
@@ -50,7 +50,7 @@ class MiscCommandsCog(HelperCog):
         )  # Could be sufficient for attribution (except for stating changes).
         embed = embed.add_field(
             name="Github Repository Link",
-            value="https://github.com/rf20008/TheDiscordMathProblemBotRepo",
+            value=self.bot.constants.SOURCE_CODE_LINK
         )
         embed = embed.add_field(
             name="Latest Git Commit Hash",
@@ -414,13 +414,11 @@ class MiscCommandsCog(HelperCog):
     def _file_version_of_item(self, item: str, file_name) -> nextcord.File:
         assert isinstance(item, str)
         return nextcord.File(BytesIO(bytes(item, "utf-8")), filename=file_name)
-
+    @nextcord.ext.commands.cooldown(1, 100, nextcord.ext.commands.BucketType.user)
     @user_data.sub_command(
         name="get_data",
         description="Get a jsonified version of the data stored with this application!",
     )
-    @nextcord.ext.commands.cooldown(1, 100, nextcord.ext.commands.BucketType.user)
-    @nextcord.ext.commands.cooldown(50, 1000, nextcord.ext.commands.BucketType.default)
     async def get_data(self, inter):
         """/user_data get_data
         Get all the data the bot stores about you.
