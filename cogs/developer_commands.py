@@ -1,11 +1,12 @@
 "Admin-related commands. Licensed under GPLv3"
+from copy import copy
 import random
 import dislash
 import typing
 import nextcord
 import nextcord.ext.commands as nextcord_commands
 import disnake
-from disnake import commands
+from disnake.ext import commands
 from disnake import *
 
 from helper_cog import HelperCog
@@ -30,13 +31,13 @@ class DeveloperCommands(HelperCog):
         checks.setup(bot)
 
     @dislash.cooldown(1, 5)
-    @self.bot.slash_command(
+    @commands.slash_command(
         name="force_load_files",
         description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!",
     )
     @checks.trusted_users_only()
-    async def force_load_files(self, inter) -> None:
-        "Forcefully load files"
+    async def force_load_files(self, inter: disnake.ApplicationCommandInteraction) -> None:
+        """Forcefully load files. You must be a trusted user to do this command. This command does not take any arguments other than the category and the interaction."""
 
         if inter.author.id not in self.bot.trusted_users:
             await inter.reply(
@@ -65,18 +66,20 @@ class DeveloperCommands(HelperCog):
             # return
             raise  # I actually want to fix this bug!
 
-    @dislash.cooldown(1, 5)
-    @slash_command(
+    @commands.cooldown(1, 5)
+    @commands.slash_command(
         name="force_save_files",
         description="Forcefully saves files (can only be used by trusted users).",
     )
     @checks.trusted_users_only()
-    async def force_save_files(self, inter: dislash.SlashInteraction):
-
-        """Forcefully saves files. Takes no arguments. Mostly for debugging purposes"""
+    async def force_save_files(self, inter: disnake.ApplicationCommandInteraction):
+        """/force_save_files.
+        Forcefully saves files. Takes no arguments. Mostly for debugging purposes.
+        You must be a trusted user to do this!
+        There is a 5 second cooldown on this command."""
 
         if inter.author.id not in self.bot.trusted_users:
-            await inter.reply(
+            await inter.send(
                 embed=ErrorEmbed(
                     "You aren't trusted and therefore don't have permission to forcesave files."
                 )
@@ -93,15 +96,15 @@ class DeveloperCommands(HelperCog):
                 self.bot.trusted_users,
             )
             FileSaver2.goodbye()
-            await inter.reply(embed=SuccessEmbed("Successfully saved 4 files!"))
+            await inter.send(embed=SuccessEmbed("Successfully saved 4 files!"))
         except RuntimeError as exc:
-            await inter.reply(embed=ErrorEmbed("Something went wrong..."))
+            await inter.send(embed=ErrorEmbed("Something went wrong..."))
             raise exc
 
-    @dislash.is_owner()
-    @disnake.trusted_users_only()
-    @disnake.cooldown(1, 5, type=BucketType.user)
-    @slash_command(
+    @disnake.is_owner()
+    @checks.trusted_users_only()
+    @disnake.cooldown(1, 5, type=disnake.ext.commands.BucketType.user)
+    @commands.slash_command(
         name="raise_error",
         description="⚠ This command will raise an error. Useful for testing on_slash_command_error",
         options=[
@@ -114,14 +117,14 @@ class DeveloperCommands(HelperCog):
             Option(
                 name="error_description",
                 description="The description of the error",
-                type=OptionType.STRING,
+                type=OptionType.string,
                 required=False,
             ),
         ],
     )
     async def raise_error(
         self,
-        inter: dislash.SlashInteraction,
+        inter: disnake.ApplicationCommandInteraction,
         error_type: typing.Literal["Exception"],
         error_description: str = None,
     ) -> None:
@@ -157,7 +160,7 @@ class DeveloperCommands(HelperCog):
         raise error
 
     @dislash.cooldown(1, 0.1)
-    @slash_command(
+    @commands.slash_command(
         name="documentation",
         description="Returns help!",
         options=[
@@ -176,14 +179,16 @@ class DeveloperCommands(HelperCog):
                 name="help_obj",
                 description="What you want help on",
                 required=True,
-                type=OptionType.STRING,
+                type=OptionType.string,
             ),
         ],
     )
-    @nextcord_commands.cooldown(1, 5, nextcord_commands.BucketType.user)
-    @nextcord_commands.cooldown(500, 750, nextcord_commands.BucketType.default)
+    @commands.cooldown(1,1,commands.BucketType.user)
     async def documentation(
-        self, inter, documentation_type, help_obj
+        self, 
+        inter: disnake.ApplicationCommandInteraction, 
+        documentation_type: typing.Literal["documentation_link", "command_help", "function_help", "privacy_policy"], 
+        help_obj: str
     ) -> typing.Optional[nextcord.Message]:
         """/documentation {documentation_type: str|documentation_link|command_help|function_help} {help_obj}
 
@@ -196,7 +201,7 @@ class DeveloperCommands(HelperCog):
         [argument_name: type = default] (an argument with choices of type type, and defaults to default if not specified. Strings are represented without quotation marks.)
         (argument_name: type) A required argument of type type"""
         if documentation_type == "documentation_link":
-            await inter.reply(
+            await inter.send(
                 embed=SuccessEmbed(
                     f"""<@{inter.author.id}> [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
         """
@@ -211,14 +216,14 @@ class DeveloperCommands(HelperCog):
                 command_func = commands[help_obj]
                 command_docstring = command_func.func.__doc__
                 if command_docstring is None:
-                    return await inter.reply(
+                    return await inter.send(
                         "Either there is a bug in the bot... or in the dislash library... or your command does not have documentation... or all 3. Anyway, if this happens, please report it!"
                     )
-                return await inter.reply(
+                return await inter.send(
                     embed=SuccessEmbed(description=str(command_docstring))
                 )
             except KeyError:
-                return await inter.reply(
+                return await inter.send(
                     embed=ErrorEmbed(
                         custom_title="I couldn't find your command!",
                         description=":x: Could not find the command specified. ",
@@ -248,38 +253,39 @@ class DeveloperCommands(HelperCog):
                         )
                     )
                     return None
-                await inter.reply(embed=ErrorEmbed(str(e)))
+                await inter.send(embed=ErrorEmbed(str(e)))
                 return None
-            await inter.reply(_documentation)
+            await inter.send(_documentation)
         elif documentation_type == "privacy_policy":
-            with open("/PRIVACY_POLICY.md") as file:  # Replace this with
+            with open("/PRIVACY_POLICY.md") as file:  # Replace this with the path
                 await inter.reply(content="\n".join([str(line) for line in file]))
             return
 
     @dislash.cooldown(1, 0.1)
-    @slash_command(
+    @commands.slash_command(
         name="debug",
         description="Helpful for debugging :-)",
         options=[
             Option(
                 name="raw",
                 description="raw debug data?",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
             Option(
                 name="send_ephermally",
                 description="Send the debug message ephermally?",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
         ],
     )
-    async def debug(self, inter, raw=False, send_ephermally=True):
-        "Provides helpful debug information :-)"
+    async def debug(self, inter: disnake.ApplicationCommandInteraction, raw: bool=False, send_ephermally: bool =True):
+        """/debug [raw: bool = False] [send_ephermally: bool = False]
+        Provides helpful debug information :-)"""
         guild = inter.guild  # saving me typing trouble!
         if inter.guild is None:
-            await inter.reply("This command can only be ran in servers!")
+            await inter.send(content="This command can only be ran in servers!")
             return
         me = guild.me
         my_permissions = me.guild_permissions
@@ -315,7 +321,7 @@ class DeveloperCommands(HelperCog):
         }
         debug_dict["correct_permissions"] = correct_permissions
         if raw:
-            await inter.reply(str(debug_dict), ephemeral=send_ephermally)
+            await inter.send(str(debug_dict), ephemeral=send_ephermally)
             return
         else:
             text = ""
@@ -327,25 +333,26 @@ class DeveloperCommands(HelperCog):
                         if not isinstance(item2, dict):
                             text += f"{item.get(item2)}: {debug_dict[item]}"
                         else:
-                            raise RecursionError from Exception("***Nested too much***")
+                            raise RecursionError('uh oh') from Exception("***Nested too much***")
 
-        await inter.reply(text, ephemeral=send_ephermally)
+        await inter.send(text, ephemeral=send_ephermally)
 
-    @slash_command(
+    @commands.slash_command(
         name="generate_new_problems",
         description="Generates new problems",
         options=[
             Option(
                 name="num_new_problems_to_generate",
                 description="the number of problems that should be generated",
-                type=OptionType.INTEGER,
+                type=OptionType.integer,
                 required=True,
             )
         ],
     )
     @nextcord.ext.commands.cooldown(1, 30, nextcord.ext.commands.BucketType.user)
-    async def generate_new_problems(self, inter, num_new_problems_to_generate):
-        "Generate new Problems"
+    async def generate_new_problems(self, inter: disnake.ApplicationCommandInteraction, num_new_problems_to_generate: int) -> typing.Optional[disnake.Message]:
+        """/generate_new_problems [num_new_problems_to_generate: int]
+        Generate new Problems."""
         await cooldowns.check_for_cooldown(
             inter, "generate_new_problems", 30
         )  # 30 second cooldown!
@@ -355,8 +362,10 @@ class DeveloperCommands(HelperCog):
             await inter.reply(embed=ErrorEmbed("You aren't trusted!", ephemeral=True))
             return
         if num_new_problems_to_generate > 200:
-            await inter.reply(
-                "You are trying to create too many problems. Try something smaller than or equal to 200.",
+            return await inter.reply(
+                embed = ErrorEmbed(
+                    "You are trying to create too many problems. Try something smaller than or equal to 200."
+                ),
                 ephemeral=True,
             )
 
@@ -374,6 +383,7 @@ class DeveloperCommands(HelperCog):
             if operation == "^":
                 try:
                     answer = num1 ** num2
+
                 except OverflowError:  # Too big?
                     try:
                         del answer
@@ -389,47 +399,47 @@ class DeveloperCommands(HelperCog):
             elif operation == "/":
                 answer = round(num1 * 100 / num2) / 100
 
-        while True:
-            problem_id = generate_new_id()
-            if problem_id not in [
-                problem.id for problem in await self.cache.get_global_problems()
-            ]:  # All problem_ids
-                break
-        question = (
-            f"What is {num1} "
-            + {
-                "*": "times",
-                "+": "times",
-                "-": "minus",
-                "/": "divided by",
-                "^": "to the power of",
-            }[operation]
-            + f" {str(num2)}?"
-        )
-        Problem = problems_module.BaseProblem(
-            question=question,
-            answer=str(answer),
-            author=845751152901750824,
-            guild_id=None,
-            id=problem_id,
-            cache=self.cache,
-        )
-        await self.cache.add_problem(None, problem_id, Problem)
-        await inter.reply(
+            while True:
+                problem_id = generate_new_id()
+                if problem_id not in [
+                    problem.id for problem in await self.cache.get_global_problems()
+                ]:  # All problem_ids
+                    break
+            question = (
+                f"What is {num1} "
+                + {
+                    "*": "times",
+                    "+": "times",
+                    "-": "minus",
+                    "/": "divided by",
+                    "^": "to the power of",
+                }[operation]
+                + f" {str(num2)}?"
+            )
+            Problem = problems_module.BaseProblem(
+                question=question,
+                answer=str(answer),
+                author=845751152901750824,
+                guild_id=None,
+                id=problem_id,
+                cache=copy(self.cache),
+            )
+            await self.cache.add_problem(None, problem_id, Problem)
+        await inter.send(
             embed=SuccessEmbed(
                 f"Successfully created {str(num_new_problems_to_generate)} new problems!"
             ),
             ephemeral=True,
         )
 
-    @slash_command(
+    @commands.slash_command(
         name="add_trusted_user",
         description="Adds a trusted user",
         options=[
             Option(
                 name="user",
                 description="The user you want to give super special bot access to",
-                type=OptionType.USER,
+                type=OptionType.user,
                 required=True,
             )
         ],
@@ -437,8 +447,8 @@ class DeveloperCommands(HelperCog):
     @checks.trusted_users_only()
     @nextcord.ext.commands.cooldown(1, 600, nextcord.ext.commands.BucketType.user)
     async def add_trusted_user(
-        self, inter: dislash.SlashInteraction, user: nextcord.Member
-    ):
+        self, inter: dislash.SlashInteraction, user: disnake.Member
+    ) -> None:
         """/add_trusted_user [user: User]
         This slash commands adds a trusted user!
         You must be a trusted user to add a trusted user, and the user you are trying to make a trusted user must not be a trusted user.
@@ -459,15 +469,16 @@ class DeveloperCommands(HelperCog):
             embed=ErrorEmbed(f"Successfully made {user.nick} a trusted user!"),
             ephemeral=True,
         )
+        return
 
-    @slash_command(
+    @commands.slash_command(
         name="remove_trusted_user",
         description="removes a trusted user",
         options=[
             Option(
                 name="user",
                 description="The user you want to take super special bot access from",
-                type=OptionType.USER,
+                type=OptionType.user,
                 required=True,
             )
         ],
@@ -476,7 +487,7 @@ class DeveloperCommands(HelperCog):
     @checks.trusted_users_only()
     async def remove_trusted_user(
         self: "DeveloperCommands", inter: dislash.SlashInteraction, user: nextcord.User
-    ):
+    ) -> typing.Optional[disnake.InteractionMessage]:
         """/remove_trusted_user [user: User]
         Remove a trusted user. You must be a trusted user to do this.
         There is also a 10 minute cooldown to prevent raids!"""
