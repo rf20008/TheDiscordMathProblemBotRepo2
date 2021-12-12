@@ -425,6 +425,8 @@ NumSolvers: {len(problem.get_solvers())}"""
             remover.start()
             return
         if guild_question:
+            if inter.guild is None:
+              raise RuntimeError("You're not allowed to submit guild problems because you're executing this in a DM context, or there is a bug with the library")
             guild_id = inter.guild.id
             if guild_id is None:
                 await inter.reply(
