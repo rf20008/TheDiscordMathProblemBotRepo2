@@ -485,7 +485,7 @@ class MathProblemCache:
     ) -> Optional[BaseProblem]:
         "Adds a problem and returns the added MathProblem"
         # Preliminary checks -otherwise SQL bugs
-        if not isinstance(guild_id, int):
+        if not isinstance(guild_id, int) and guild_id is not None:
             if self.warnings:
                 warnings.warn(
                     "guild_id is not an integer.... this may cause an exception"

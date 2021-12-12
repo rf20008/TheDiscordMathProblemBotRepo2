@@ -478,7 +478,10 @@ NumSolvers: {len(problem.get_solvers())}"""
         if guild_question:
             # If this is a guild question, set the guild id
             # to the guild id of the guild this command was ran in
-            guild_id = str(inter.guild.id)
+            if not inter.guild or inter.guild.id is None:
+                raise RuntimeError("You're not allowed to create guild problems unless you execute this command in a guild!")
+
+            guild_id = int(inter.guild.id)
         else:  # But if it's global, make it global
             guild_id = None
         problem = problems_module.BaseProblem(
@@ -486,7 +489,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             answer=answer,
             id=problem_id,
             author=inter.author.id,
-            guild_id=guild_id,
+            guild_id=int(guild_id),
             cache=self.cache,
         )  # Create the problem!
         await self.cache.add_problem(
