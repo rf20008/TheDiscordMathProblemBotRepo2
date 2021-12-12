@@ -40,7 +40,7 @@ class MiscCommandsCog(HelperCog):
             )
         ],
     )
-    @commands.cooldown(1, 150, commands.BucketType.user)
+    @dislash.cooldown(1, 150, commands.BucketType.user)
     async def info(self, inter: SlashInteraction, include_extra_info: bool = False):
         """/info [include_extra_info: bool = False]
         Show bot info. include_extra_info shows technical information!"""
@@ -172,12 +172,13 @@ class MiscCommandsCog(HelperCog):
         name="generate_invite_link",
         description="Generates a invite link for this bot! Takes no arguments",
     )
+    @dislash.cooldown(1,5,nextcord.ext.commands.BucketType.user)
     async def generate_invite_link(self, inter):
-        "Generate an invite link for the bot."
+        "Generate an invite link for the bot. This command has been deprecated."
         await cooldowns.check_for_cooldown(inter, "generateInviteLink", 5)
         await inter.reply(
             embed=SuccessEmbed(
-                "https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147552256&scope=bot%20applications.commands"
+                self.bot.constants.SOURCE_CODE_LINK+"\n (This command has been deprecated)"
             ),
             ephemeral=True,
         )
