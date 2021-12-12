@@ -1,5 +1,6 @@
 from dislash.interactions.interaction import BaseInteraction
 import nextcord, dislash
+import helpful_modules
 from copy import deepcopy
 from warnings import warn
 from helpful_modules import checks, problems_module

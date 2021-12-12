@@ -4,10 +4,11 @@ import dislash
 import typing
 import nextcord
 import nextcord.ext.commands as nextcord_commands
+import disnake
+from disnake import commands
 from disnake import *
-from nextcord.mentions import AllowedMentions
 
-from .helper_cog import HelperCog
+from helper_cog import HelperCog
 from helpful_modules import checks, cooldowns, the_documentation_file_loader
 from helpful_modules.custom_embeds import *
 
@@ -29,7 +30,7 @@ class DeveloperCommands(HelperCog):
         checks.setup(bot)
 
     @dislash.cooldown(1, 5)
-    @slash_command(
+    @self.bot.slash_command(
         name="force_load_files",
         description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!",
     )
@@ -98,8 +99,8 @@ class DeveloperCommands(HelperCog):
             raise exc
 
     @dislash.is_owner()
-    @checks.trusted_users_only()
-    @dislash.cooldown(1, 5, type=BucketType.user)
+    @disnake.trusted_users_only()
+    @disnake.cooldown(1, 5, type=BucketType.user)
     @slash_command(
         name="raise_error",
         description="⚠ This command will raise an error. Useful for testing on_slash_command_error",
