@@ -36,7 +36,9 @@ class DeveloperCommands(HelperCog):
         description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!",
     )
     @checks.trusted_users_only()
-    async def force_load_files(self, inter: disnake.ApplicationCommandInteraction) -> None:
+    async def force_load_files(
+        self, inter: disnake.ApplicationCommandInteraction
+    ) -> None:
         """Forcefully load files. You must be a trusted user to do this command. This command does not take any arguments other than the category and the interaction."""
 
         if inter.author.id not in self.bot.trusted_users:
@@ -178,28 +180,37 @@ class DeveloperCommands(HelperCog):
             Option(
                 name="help_obj",
                 description="What you want help on",
-                required=True,
+                required=False,
                 type=OptionType.string,
             ),
         ],
     )
-    @commands.cooldown(1,1,commands.BucketType.user)
+    @commands.cooldown(1, 1, commands.BucketType.user)
     async def documentation(
-        self, 
-        inter: disnake.ApplicationCommandInteraction, 
-        documentation_type: typing.Literal["documentation_link", "command_help", "function_help", "privacy_policy"], 
-        help_obj: str
-    ) -> typing.Optional[nextcord.Message]:
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        documentation_type: typing.Literal[
+            "documentation_link", "command_help", "function_help", "privacy_policy"
+        ],
+        help_obj: str = None,
+    ) -> typing.Optional[disnake.Message]:
         """/documentation {documentation_type: str|documentation_link|command_help|function_help} {help_obj}
 
         Prints documentation :-). If the documentation is a command, it attempts to get its docstring.
         Otherwise, it gets the cached documentation.
+        help_obj will be ignored if documentation_type is privacy_policy or documentation_link.
         Legend (for other documentation)
         /command_name: the command
         {argument_name: type |choice1|choice2|...} (for a required argument with choices of type type, and the avaliable choices are choice1, choice 2, etc)
         {argument_name: type |choice1|choice2|... = default} (an optional argument that defaults to default if not specified. Arguments must be a choice specified(from choice 1 etc) and must be of the type specified.)
         [argument_name: type = default] (an argument with choices of type type, and defaults to default if not specified. Strings are represented without quotation marks.)
         (argument_name: type) A required argument of type type"""
+        if help_obj is None and documentation_type in ["command_help", "function_help"]:
+            return await inter.send(
+                embed=ErrorEmbed(
+                    "I can't help you with a command or function unless you tell me what you want help on!"
+                )
+            )
         if documentation_type == "documentation_link":
             await inter.send(
                 embed=SuccessEmbed(
@@ -211,7 +222,6 @@ class DeveloperCommands(HelperCog):
             return None
         if documentation_type == "command_help":
             # Might fail
-            commands = self.bot.slash.slash_commands
             try:
                 command_func = commands[help_obj]
                 command_docstring = command_func.func.__doc__
@@ -280,7 +290,12 @@ class DeveloperCommands(HelperCog):
             ),
         ],
     )
-    async def debug(self, inter: disnake.ApplicationCommandInteraction, raw: bool=False, send_ephermally: bool =True):
+    async def debug(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        raw: bool = False,
+        send_ephermally: bool = True,
+    ):
         """/debug [raw: bool = False] [send_ephermally: bool = False]
         Provides helpful debug information :-)"""
         guild = inter.guild  # saving me typing trouble!
@@ -333,7 +348,9 @@ class DeveloperCommands(HelperCog):
                         if not isinstance(item2, dict):
                             text += f"{item.get(item2)}: {debug_dict[item]}"
                         else:
-                            raise RecursionError('uh oh') from Exception("***Nested too much***")
+                            raise RecursionError("uh oh") from Exception(
+                                "***Nested too much***"
+                            )
 
         await inter.send(text, ephemeral=send_ephermally)
 
@@ -350,7 +367,11 @@ class DeveloperCommands(HelperCog):
         ],
     )
     @nextcord.ext.commands.cooldown(1, 30, nextcord.ext.commands.BucketType.user)
-    async def generate_new_problems(self, inter: disnake.ApplicationCommandInteraction, num_new_problems_to_generate: int) -> typing.Optional[disnake.Message]:
+    async def generate_new_problems(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        num_new_problems_to_generate: int,
+    ) -> typing.Optional[disnake.Message]:
         """/generate_new_problems [num_new_problems_to_generate: int]
         Generate new Problems."""
         await cooldowns.check_for_cooldown(
@@ -363,7 +384,7 @@ class DeveloperCommands(HelperCog):
             return
         if num_new_problems_to_generate > 200:
             return await inter.reply(
-                embed = ErrorEmbed(
+                embed=ErrorEmbed(
                     "You are trying to create too many problems. Try something smaller than or equal to 200."
                 ),
                 ephemeral=True,

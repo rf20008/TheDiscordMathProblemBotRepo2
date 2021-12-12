@@ -1,11 +1,11 @@
-from dislash import *
+from disnake import *
+from disnake.ext import commands
 import nextcord
-import dislash
+import disnake
 from .helper_cog import HelperCog
 from sys import version_info, version
 from os import cpu_count
 from helpful_modules import cooldowns
-from nextcord.ext import commands
 from helpful_modules import checks
 from helpful_modules.custom_embeds import SimpleEmbed, ErrorEmbed, SuccessEmbed
 from helpful_modules.save_files import FileSaver
@@ -28,7 +28,7 @@ class MiscCommandsCog(HelperCog):
         self.bot: commands.Bot = bot
         self.cache: problems_module.MathProblemCache = bot.cache
 
-    @slash_command(
+    @commands.slash_command(
         name="info",
         description="Bot info!",
         options=[
@@ -40,8 +40,12 @@ class MiscCommandsCog(HelperCog):
             )
         ],
     )
-    @dislash.cooldown(1, 150, commands.BucketType.user)
-    async def info(self, inter: SlashInteraction, include_extra_info: bool = False):
+    @disnake.cooldown(1, 150, commands.BucketType.user)
+    async def info(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        include_extra_info: bool = False,
+    ):
         """/info [include_extra_info: bool = False]
         Show bot info. include_extra_info shows technical information!"""
         embed = SimpleEmbed(title="Bot info", description="")
@@ -49,8 +53,7 @@ class MiscCommandsCog(HelperCog):
             name="Original Bot Developer", value="ay136416#2707", inline=False
         )  # Could be sufficient for attribution (except for stating changes).
         embed = embed.add_field(
-            name="Github Repository Link",
-            value=self.bot.constants.SOURCE_CODE_LINK
+            name="Github Repository Link", value=self.bot.constants.SOURCE_CODE_LINK
         )
         embed = embed.add_field(
             name="Latest Git Commit Hash",
@@ -76,6 +79,9 @@ class MiscCommandsCog(HelperCog):
             embed = embed.add_field(
                 name="Nextcord version", value=str(nextcord.__version__)
             )
+            embed = embed.add_field(
+                name="Disnake version", value=str(disnake.__version__)
+            )
 
             memory_limit = resource.getrlimit(resource.RUSAGE_SELF)[0]
             current_usage = resource.getrusage(resource.RUSAGE_SELF)
@@ -89,24 +95,29 @@ class MiscCommandsCog(HelperCog):
                 value=str(cpu_count()),
             )
             embed = embed.add_field(
-                name="License", value="This bot is licensed under GPLv3"
+                name="License",
+                value="This bot is licensed under GPLv3. Please see [the official GPLv3 website](https://www.gnu.org/licenses/gpl-3.0.en.html) for more details.",
             )
-        await inter.reply(embed=embed)
 
-    @slash_command(name="list_trusted_users", description="list all trusted users")
+        await inter.send(embed=embed)
+
+    @disnake.slash_command(
+        name="list_trusted_users", description="list all trusted users"
+    )
     @commands.cooldown(1, 5, commands.BucketType.user)  # 5 second user cooldown
     @commands.cooldown(
         20, 50, commands.BucketType.default
     )  # 20 times before a global cooldown of 50 seconds is established
     @commands.guild_only()  # Due to bugs, it doesn't work in DM's
     async def list_trusted_users(self, inter):
-        "List all trusted users in username#discriminator format (takes no arguments)"
-        # await inter.reply(type=5)  # Defer
+        """/list_trusted_users
+        List all trusted users in username#discriminator format (takes no arguments)"""
+        # await inter.send(type=5)  # Defer
         # Deferring might be unnecessary & and cause errors
         # We might not be able to respond in time because of the 100ms delay between user fetching
         # This is to respect the API rate limit.
         if len(self.bot.trusted_users) == 0:
-            await inter.reply("There are no trusted users.")
+            await inter.send("There are no trusted users.")
             return
             # raise Exception("There are no trusted users!")
 
@@ -117,7 +128,7 @@ class MiscCommandsCog(HelperCog):
                 user = await self.bot.fetch_user(user_id)
                 __trusted_users += f"""{user.name}#{user.discriminator}
             """
-            except nextcord.NotFound:
+            except (nextcord.NotFound, disnake.NotFound):
                 # A user with this ID does not exist
                 self.bot.trusted_users.remove(user_id)  # delete the user!
                 try:
@@ -136,70 +147,79 @@ class MiscCommandsCog(HelperCog):
                     raise RuntimeError(
                         "Could not save the files after removing the trusted user with ID that does not exist!"
                     ) from e
-            except nextcord.Forbidden as exc:  # Cannot fetch this user!
+            except (
+                nextcord.Forbidden,
+                disnake.Forbidden,
+            ) as exc:  # Cannot fetch this user!
                 raise RuntimeError("Cannot fetch users") from exc
             else:
                 await asyncio_sleep(
                     0.1
                 )  # 100 ms between fetching to respect the rate limit (and to prevent spam)
 
-        await inter.reply(__trusted_users, ephemeral=True)
+        await inter.send(__trusted_users, ephemeral=True)
 
-    @slash_command(name="ping", description="Prints latency and takes no arguments")
-    async def ping(self, inter):
-        "Ping the bot which returns its latency!"
+    @commands.slash_command(
+        name="ping", description="Prints latency and takes no arguments"
+    )
+    async def ping(self, inter: disnake.ApplicationCommandInteraction):
+        "Ping the bot which returns its latency! This command does not take any arguments."
         await cooldowns.check_for_cooldown(inter, "ping", 5)
-        await inter.reply(
+        await inter.send(
             embed=SuccessEmbed(
                 f"Pong! My latency is {round(self.bot.latency*1000)}ms."
             ),
             ephemeral=True,
         )
 
-    @slash_command(
+    @commands.slash_command(
         name="what_is_vote_threshold",
         description="Prints the vote threshold and takes no arguments",
     )
-    async def what_is_vote_threshold(self, inter: SlashInteraction):
+    async def what_is_vote_threshold(
+        self, inter: disnake.ApplicationCommandInteraction
+    ):
         "Returns the vote threshold"
         await cooldowns.check_for_cooldown(inter, "what_is_vote_threshold", 5)
-        await inter.reply(
+        await inter.send(
             embed=SuccessEmbed(f"The vote threshold is {self.bot.vote_threshold}."),
             ephemeral=True,
         )
 
-    @slash_command(
+    @disnake.slash_command(
         name="generate_invite_link",
         description="Generates a invite link for this bot! Takes no arguments",
     )
-    @dislash.cooldown(1,5,nextcord.ext.commands.BucketType.user)
-    async def generate_invite_link(self, inter):
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def generate_invite_link(self, inter: disnake.ApplicationCommandInteraction):
         "Generate an invite link for the bot. This command has been deprecated."
         await cooldowns.check_for_cooldown(inter, "generateInviteLink", 5)
-        await inter.reply(
+        await inter.send(
             embed=SuccessEmbed(
-                self.bot.constants.SOURCE_CODE_LINK+"\n (This command has been deprecated)"
+                self.bot.constants.SOURCE_CODE_LINK
+                + "\n (This command has been deprecated)"
             ),
             ephemeral=True,
         )
 
-    @slash_command(
+    @commands.slash_command(
         name="github_repo", description="Returns the link to the github repo"
     )
     @commands.cooldown(2, 120, commands.BucketType.user)
-    async def github_repo(self, inter):
+    async def github_repo(self, inter: disnake.ApplicationCommandInteraction):
         """/github_repo
         Gives you the link to the bot's github repo.
         If you are modifying this, because of the GPLv3 license, you must change this to reflect the new location of the bot's source code.
+        There is a 120 second cooldown on this command (after it has been executed 2 times)
         """
-        await inter.reply(
+        await inter.send(
             embed=SuccessEmbed(
                 f"[Repo Link:]{self.bot.constants.GITHUB_REPO_LINK}",
                 successTitle="Here is the Github Repository Link.",
             )
         )
 
-    @slash_command(
+    @commands.slash_command(
         name="set_vote_threshold",
         description="Sets the vote threshold",
         options=[
@@ -213,36 +233,43 @@ class MiscCommandsCog(HelperCog):
     )
     @checks.trusted_users_only()
     @commands.cooldown(
-        1, 50, BucketType.user
+        1, 50, commands.BucketType.user
     )  # Don't overload the bot (although trusted users will probably not)
     @commands.cooldown(
-        15, 500, BucketType.default
+        15, 500, commands.BucketType.default
     )  # To prevent wars! If you want your own version, self host it :-)
-    async def set_vote_threshold(self, inter: dislash.SlashInteraction, threshold: int):
+    async def set_vote_threshold(
+        self, inter: disnake.ApplicationCommandInteraction, threshold: int
+    ):
         """/set_vote_threshold [threshold: int]
-        Set the vote threshold. Only trusted users may do this."""
+        Set the vote threshold. Only trusted users may do this.
+        There is a 50 second cooldown.
+        This might cause a race condition"""
         # try:
         #    threshold = int(threshold)
         # except TypeError:  # Conversion failed!
-        #    await inter.reply(
+        #    await inter.send(
         #        embed=ErrorEmbed(
         #            "Invalid threshold argument! (threshold must be an integer)"
         #        ),
         #        ephemeral=True,
         #    )
         #    return
-        # Unnecessary because the type
+        # Unnecessary because the type is an integer
         if threshold < 1:  # Threshold must be greater than 1!
-            await inter.reply(
+            await inter.send(
                 embed=ErrorEmbed("You can't set the threshold to smaller than 1."),
                 ephemeral=True,
             )
             return
-        vote_threshold = int(threshold)
+        try:
+            vote_threshold = int(threshold)  # Probably unnecessary
+        except:
+            raise
         for problem in await self.bot.cache.get_global_problems():
             if problem.get_num_voters() > vote_threshold:
                 await self.cache.remove_problem(problem.guild_id, problem.id)
-        await inter.reply(
+        await inter.send(
             embed=SuccessEmbed(
                 f"The vote threshold has successfully been changed to {threshold}!"
             ),
@@ -250,13 +277,15 @@ class MiscCommandsCog(HelperCog):
         )
         return
 
-    @slash_command(description="Interact with your user data")
-    async def user_data(self: "MiscCommandsCog", inter: dislash.SlashInteraction):
-        "The base command to interact with your user data. This doesn't do anything (you need to call a subcommand"
+    @commands.slash_command(description="Interact with your user data")
+    async def user_data(
+        self: "MiscCommandsCog", inter: disnake.ApplicationCommandInteraction
+    ):
+        "The base command to interact with your user data. This doesn't do anything (you need to call a subcommand)"
         pass
 
     @nextcord.ext.commands.cooldown(
-        1, 500, nextcord.ext.commands.BucketType.user
+        1, 500, commands.BucketType.user
     )  # To prevent abuse
     @user_data.sub_command(
         name="delete_all",
@@ -284,7 +313,7 @@ class MiscCommandsCog(HelperCog):
     )
     async def delete_all(
         self: "MiscCommandsCog",
-        inter: dislash.SlashInteraction,
+        inter: disnake.ApplicationCommandInteraction,
         save_data_before_deletion: bool = True,
         delete_votes=False,
         delete_solves=False,
@@ -375,7 +404,7 @@ class MiscCommandsCog(HelperCog):
         view = MyView(timeout=30)
         view.add_item(confirmation_button)
         view.add_item(deny_button)
-        return await inter.reply(
+        return await inter.send(
             embed=SimpleEmbed(
                 title="Are you sure?", description="This will delete all your data!"
             ),
@@ -415,6 +444,7 @@ class MiscCommandsCog(HelperCog):
     def _file_version_of_item(self, item: str, file_name) -> nextcord.File:
         assert isinstance(item, str)
         return nextcord.File(BytesIO(bytes(item, "utf-8")), filename=file_name)
+
     @nextcord.ext.commands.cooldown(1, 100, nextcord.ext.commands.BucketType.user)
     @user_data.sub_command(
         name="get_data",
@@ -434,7 +464,7 @@ class MiscCommandsCog(HelperCog):
             ),
             filename="your_data.json",
         )
-        # await inter.reply(
+        # await inter.send(
         #  embed=SuccessEmbed(
         #    "Your json data will be attached in the next message due to API #limitations!"
         #  ),
@@ -452,18 +482,18 @@ class MiscCommandsCog(HelperCog):
             successful = False
             exc_raised = e
         if successful:
-            return await inter.reply(
+            return await inter.send(
                 embed=SuccessEmbed("I have DMed you your data!"), ephemeral=True
             )
         else:
-            await inter.reply(
+            await inter.send(
                 embed=ErrorEmbed(
                     "I was unable to DM you your data. Please check your privacy settings. If this is a bug, please report it!"
                 )
             )
             raise exc_raised
 
-    @slash_command(
+    @commands.slash_command(
         name="submit_a_request",
         description="Submit a request. I will know!",
         options=[
@@ -501,7 +531,7 @@ class MiscCommandsCog(HelperCog):
     )
     async def submit_a_request(
         self,
-        inter: dislash.SlashInteraction,
+        inter: disnake.ApplicationCommandInteraction,
         offending_problem_guild_id: int = None,
         offending_problem_id: int = None,
         extra_info: str = None,
@@ -516,9 +546,9 @@ class MiscCommandsCog(HelperCog):
             and offending_problem_guild_id is None
             and offending_problem_id is None
         ):
-            await inter.reply(embed=ErrorEmbed("You must specify some field."))
+            await inter.send(embed=ErrorEmbed("You must specify some field."))
         if extra_info is None:
-            await inter.reply(embed=ErrorEmbed("Please provide extra information!"))
+            await inter.send(embed=ErrorEmbed("Please provide extra information!"))
         assert len(extra_info) <= 5000
         try:
             channel = await self.bot.fetch_channel(
@@ -558,4 +588,4 @@ class MiscCommandsCog(HelperCog):
             content += f"<@{owner_id}>"
         content += f"<@{self.bot.owner_id}>"
         await channel.send(embed=embed, content=content)
-        await inter.reply("Your request has been submitted!")
+        await inter.send("Your request has been submitted!")

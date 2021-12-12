@@ -427,7 +427,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         if guild_question:
             if inter.guild is None:
                 raise RuntimeError("Uh oh")
-                
+
             guild_id = inter.guild.id
             if guild_id is None:
                 await inter.reply(
