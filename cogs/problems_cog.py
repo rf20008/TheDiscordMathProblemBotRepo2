@@ -344,7 +344,7 @@ NumSolvers: {len(problem.get_solvers())}"""
     )
     @checks.trusted_users_only()
     @nextcord.ext.commands.cooldown(1, 15, nextcord.ext.commands.BucketType.user)
-    async def delallbotproblems(self, inter):
+    async def delallbotproblems(self, inter: dislash.SlashInteraction):
         """/delallbotproblems
         Delete all automatically generated problems."""
         assert inter.author.id in self.bot.trusted_users
@@ -426,7 +426,8 @@ NumSolvers: {len(problem.get_solvers())}"""
             return
         if guild_question:
             if inter.guild is None:
-              raise RuntimeError("You're not allowed to submit guild problems because you're executing this in a DM context, or there is a bug with the library")
+                raise RuntimeError("Uh oh")
+                
             guild_id = inter.guild.id
             if guild_id is None:
                 await inter.reply(
@@ -480,10 +481,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         if guild_question:
             # If this is a guild question, set the guild id
             # to the guild id of the guild this command was ran in
-            if not inter.guild or inter.guild.id is None:
-                raise RuntimeError("You're not allowed to create guild problems unless you execute this command in a guild!")
-
-            guild_id = int(inter.guild.id)
+            guild_id = inter.guild.id
         else:  # But if it's global, make it global
             guild_id = None
         problem = problems_module.BaseProblem(
@@ -491,7 +489,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             answer=answer,
             id=problem_id,
             author=inter.author.id,
-            guild_id=int(guild_id),
+            guild_id=guild_id,
             cache=self.cache,
         )  # Create the problem!
         await self.cache.add_problem(

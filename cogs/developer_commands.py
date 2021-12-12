@@ -4,7 +4,7 @@ import dislash
 import typing
 import nextcord
 import nextcord.ext.commands as nextcord_commands
-from dislash import *
+from disnake import *
 from nextcord.mentions import AllowedMentions
 
 from .helper_cog import HelperCog

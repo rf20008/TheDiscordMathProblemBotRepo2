@@ -7,21 +7,19 @@ requires = ["poetry-core>=1.0.0"]
 authors = ["ay136416 <<>>"]
 description = "An open source discord bot for quizzes!"
 name = "thediscordmathproblembot"
-version = "0.0.3a3"
+version = "0.0.4a1"
 [tool.poetry.dependencies]
 "discord.py" = {git = "https://github.com/Rapptz/discord.py.git"}
-discord-py-slash-command = "^3.0.1"
 "dislash.py" = {git = "https://github.com/EQUENOS/dislash.py.git", rev = "main"}
 nextcord = {git = "https://github.com/nextcord/nextcord.git"}
 python = "^3.8"
 #dislash = {git = "https://github.com/EQUENOS/dislash.py.git#main"}
 typing-extensions = "^3.10.0"
 orjson = "^3.6.3"
-#sqldict = {git = "https://github.com/rf20008/sqldict.git"}
 python-dotenv = "^0.19.1"
-sqldict = {git = "https://github.com/rf20008/sqldict.git", rev = "main"}
 aiosqlite = {git = "https://github.com/omnilib/aiosqlite", rev = "main"}
 discord = "^1.7.3"
 topggpy = {git = "https://github.com/top-gg/python-sdk.git", optional = false}
+disnake = {git = "https://github.com/DisnakeDev/disnake", optional=false}
 mysql-connector-python = "^8.0.27"
 [tool.poetry.dev-dependencies]
