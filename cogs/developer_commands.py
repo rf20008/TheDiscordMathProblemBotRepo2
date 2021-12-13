@@ -9,7 +9,7 @@ import disnake
 from disnake.ext import commands
 from disnake import *
 
-from helper_cog import HelperCog
+from .helper_cog import HelperCog
 from helpful_modules import checks, cooldowns, the_documentation_file_loader
 from helpful_modules.custom_embeds import *
 
@@ -30,7 +30,7 @@ class DeveloperCommands(HelperCog):
         # checks = self.checks
         checks.setup(bot)
 
-    @dislash.cooldown(1, 5)
+    @commands.cooldown(1,5,commands.BucketType.user)
     @commands.slash_command(
         name="force_load_files",
         description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!",
@@ -103,9 +103,9 @@ class DeveloperCommands(HelperCog):
             await inter.send(embed=ErrorEmbed("Something went wrong..."))
             raise exc
 
-    @disnake.is_owner()
+    @commands.is_owner()
     @checks.trusted_users_only()
-    @disnake.cooldown(1, 5, type=disnake.ext.commands.BucketType.user)
+    @commands.cooldown(1, 5, type=disnake.ext.commands.BucketType.user)
     @commands.slash_command(
         name="raise_error",
         description="⚠ This command will raise an error. Useful for testing on_slash_command_error",
@@ -161,7 +161,7 @@ class DeveloperCommands(HelperCog):
         )
         raise error
 
-    @dislash.cooldown(1, 0.1)
+    @commands.cooldown(1, 0.1)
     @commands.slash_command(
         name="documentation",
         description="Returns help!",
@@ -271,7 +271,7 @@ class DeveloperCommands(HelperCog):
                 await inter.send(content="\n".join([str(line) for line in file]))
             return
 
-    @dislash.cooldown(1, 0.1)
+    @commands.cooldown(1,5,commands.BucketType.user)
     @commands.slash_command(
         name="debug",
         description="Helpful for debugging :-)",
@@ -366,7 +366,7 @@ class DeveloperCommands(HelperCog):
             )
         ],
     )
-    @nextcord.ext.commands.cooldown(1, 30, nextcord.ext.commands.BucketType.user)
+    @commands.cooldown(1, 30, nextcord.ext.commands.BucketType.user)
     async def generate_new_problems(
         self,
         inter: disnake.ApplicationCommandInteraction,
@@ -466,7 +466,7 @@ class DeveloperCommands(HelperCog):
         ],
     )
     @checks.trusted_users_only()
-    @nextcord.ext.commands.cooldown(1, 600, nextcord.ext.commands.BucketType.user)
+    @commands.cooldown(1, 600, nextcord.ext.commands.BucketType.user)
     async def add_trusted_user(
         self, inter: dislash.SlashInteraction, user: disnake.Member
     ) -> None:
@@ -504,7 +504,7 @@ class DeveloperCommands(HelperCog):
             )
         ],
     )
-    @nextcord.ext.commands.cooldown(1, 600, nextcord.ext.commands.BucketType.user)
+    @commands.cooldown(1, 600, nextcord.ext.commands.BucketType.user)
     @checks.trusted_users_only()
     async def remove_trusted_user(
         self: "DeveloperCommands", inter: dislash.SlashInteraction, user: nextcord.User

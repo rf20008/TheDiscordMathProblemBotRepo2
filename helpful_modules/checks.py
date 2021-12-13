@@ -1,4 +1,4 @@
-import disnake
+from disnake.ext import commands
 
 bot = None
 
@@ -9,7 +9,7 @@ def setup(_bot):
     return "Success!"
 
 
-class CustomCheckFailure(disnake.CheckFailure):
+class CustomCheckFailure(commands.CheckFailure):
     "Raised when a custom check fails. Some checks raise exceptions inherited from this."
     pass
 
@@ -35,7 +35,7 @@ def custom_check(
             raise exceptionToRaiseIfFailed
         return True
 
-    return disnake.ext.commands.check(predicate)
+    return commands.check(predicate)
 
 
 def trusted_users_only():
@@ -48,7 +48,7 @@ def trusted_users_only():
             f"You aren't a trusted user, {inter.author.mention}. Therefore, you do not have permission to run this command!"
         )
 
-    return disnake.ext.commands.check(predicate)
+    return commands.check(predicate)
 
 
 def administrator_or_trusted_users_only():
@@ -65,7 +65,7 @@ def administrator_or_trusted_users_only():
             "Insufficient permissions (administrator permission or bot trusted user required. If this happens again and you have the administrator permissio, report this)"
         )
 
-    return disnake.ext.commands.check(predicate)
+    return commands.check(predicate)
 
 
 def always_failing_check():
@@ -74,7 +74,7 @@ def always_failing_check():
     def predicate(inter):
         raise CustomCheckFailure("This check (test) will never pass")
 
-    return disnake.ext.commands.check(predicate)
+    return commands.check(predicate)
 
 
 def is_not_blacklisted():
@@ -87,4 +87,4 @@ def is_not_blacklisted():
             )
         return True
 
-    return disnake.ext.commands.check(predicate)
+    return commands.check(predicate)

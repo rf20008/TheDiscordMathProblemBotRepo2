@@ -3,7 +3,7 @@ from helpful_modules.problems_module import *
 from helpful_modules.custom_embeds import SimpleEmbed, SuccessEmbed, ErrorEmbed
 import disnake, nextcord
 from asyncio import run
-from nextcord.ext import commands
+from disnake.ext import commands
 from helpful_modules import checks, cooldowns, problems_module
 import aiosqlite
 from disnake import *
