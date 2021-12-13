@@ -39,7 +39,7 @@ class MiscCommandsCog(HelperCog):
             )
         ],
     )
-    @disnake.cooldown(1, 150, commands.BucketType.user)
+    @commands.cooldown(1, 150, commands.BucketType.user)
     async def info(
         self,
         inter: disnake.ApplicationCommandInteraction,
@@ -100,7 +100,7 @@ class MiscCommandsCog(HelperCog):
 
         await inter.send(embed=embed)
 
-    @disnake.slash_command(
+    @commands.slash_command(
         name="list_trusted_users", description="list all trusted users"
     )
     @commands.cooldown(1, 5, commands.BucketType.user)  # 5 second user cooldown
@@ -185,7 +185,7 @@ class MiscCommandsCog(HelperCog):
             ephemeral=True,
         )
 
-    @disnake.slash_command(
+    @commands.slash_command(
         name="generate_invite_link",
         description="Generates a invite link for this bot! Takes no arguments",
     )

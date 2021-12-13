@@ -15,21 +15,21 @@ class MyView(disnake.ui.View):
         message: disnake.Message = None,
         *,
         timeout: int = 180.0,
-        items: List[nextcord.ui.Item]
+        items: List[disnake.ui.Item]
     ):
         super().__init__(timeout)
         self.message = message
         assert len(items) <= 25  # Discord limitation
         for item in items:
-            assert isinstance(item, nextcord.ui.Item)
+            assert isinstance(item, disnake.ui.Item)
             self.add_item(item)
 
     async def on_error(
-        self, error: Exception, item: nextcord.ui.Item, inter: nextcord.Interaction
+        self, error: Exception, item: disnake.ui.Item, inter: disnake.Interaction
     ):
         return await inter.response.send_message(**base_on_error(inter, error))
 
-    async def reply(Interaction: nextcord.Interaction, *args, **kwargs):
+    async def reply(Interaction: disnake.Interaction, *args, **kwargs):
         "Reply to an interaction"
         return await Interaction.response.send_message(*args, **kwargs)
 
@@ -39,7 +39,7 @@ class MyView(disnake.ui.View):
             self.message
         )  # Create a new view that has the same message
         for item in self.children:
-            if item.__class__ == nextcord.ui.Item:
+            if item.__class__ == disnake.ui.Item:
                 # It's a base item
                 raise RuntimeError("Cannot stop base item")
             new_item_dict = item.__dict__
@@ -55,14 +55,14 @@ class MyView(disnake.ui.View):
         )
 
 
-class BasicButton(nextcord.ui.Button):
+class BasicButton(disnake.ui.Button):
     def __init__(self, check, callback, **kwargs):
         super().__init__(**kwargs)
         self.check = check
         self._callback = callback
         self.user_for = kwargs.pop("user_for").id
 
-    async def callback(self, interaction: nextcord.Interaction) -> Any:
+    async def callback(self, interaction: disnake.Interaction) -> Any:
         if self.check(self, interaction):
             return await self._callback(interaction)
 
@@ -88,9 +88,9 @@ class ConfirmationButton(BasicButton):
         self._extra_data = kwargs.get("_extra_data", {})
 
     async def callback(
-        self: "ConfirmationButton", interaction: nextcord.Interaction
+        self: "ConfirmationButton", interaction: disnake.Interaction
     ) -> Any:
-        def check(inter: nextcord.Interaction):
+        def check(inter: disnake.Interaction):
             return inter.user.id == self.author_for
 
         responder = self.response

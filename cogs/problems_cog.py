@@ -113,13 +113,13 @@ class ProblemsCog(HelperCog):
             Option(
                 name="raw",
                 description="whether to show data as json?",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
             Option(
                 name="is_guild_problem",
                 description="whether the problem you are trying to view is a guild problem",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
         ],
@@ -345,7 +345,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         description="delete all automatically generated problems",
     )
     @checks.trusted_users_only()
-    @disnake.ext.commands.cooldown(1, 15, nextcord.ext.commands.BucketType.user)
+    @disnake.ext.commands.cooldown(1, 15, commands.BucketType.user)
     async def delallbotproblems(self, inter: disnake.ApplicationCommandInteraction):
         """/delallbotproblems
         Delete all automatically generated problems."""
@@ -607,7 +607,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         ],
     )
     @checks.is_not_blacklisted()
-    @nextcord.ext.commands.cooldown(1, 5, nextcord.ext.commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def check_answer(
         self,
         inter: disnake.ApplicationCommandInteraction,
@@ -812,7 +812,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             ),
         ],
     )
-    @nextcord.ext.commands.cooldown(1, 0.5, nextcord.ext.commands.BucketType.user)
+    @commands.cooldown(1, 0.5, commands.BucketType.user)
     async def delete_problem(
         self: "ProblemsCog",
         inter: disnake.ApplicationCommandInteraction,
