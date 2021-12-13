@@ -30,7 +30,11 @@ develop = false
 type = "git"
 url = "https://github.com/omnilib/aiosqlite"
 reference = "main"
+<<<<<<< HEAD
 resolved_reference = "f7537927a73626e4b2e424f220aabd405c75f4d6"
+=======
+resolved_reference = "ab8c7e0e1ee6c337852a0af98eeed062f15ab71a"
+>>>>>>> disnake
 
 [[package]]
 name = "async-timeout"
@@ -74,6 +78,7 @@ python-versions = "*"
 "discord.py" = ">=1.7.3"
 
 [[package]]
+<<<<<<< HEAD
 name = "discord-py-slash-command"
 version = "3.0.1"
 description = "A simple interaction handler for discord.py."
@@ -91,6 +96,8 @@ lint = ["black", "flake8", "isort", "sphinx", "sphinx-rtd-theme"]
 readthedocs = ["sphinx", "sphinx-rtd-theme"]
 
 [[package]]
+=======
+>>>>>>> disnake
 name = "discord.py"
 version = "2.0.0a3575+g45d498c1"
 description = "A Python wrapper for the Discord API"
@@ -132,6 +139,33 @@ reference = "main"
 resolved_reference = "afe19c3ebf0b95a3abdec08f3fde8b455024aabd"
 
 [[package]]
+<<<<<<< HEAD
+=======
+name = "disnake"
+version = "2.2.2"
+description = "A Python wrapper for the Discord API"
+category = "main"
+optional = false
+python-versions = ">=3.8.0"
+develop = false
+
+[package.dependencies]
+aiohttp = ">=3.7.0,<3.8.0"
+
+[package.extras]
+discord = ["discord-disnake"]
+docs = ["sphinx (==4.0.2)", "sphinxcontrib-trio (==1.1.2)", "sphinxcontrib-websupport"]
+speed = ["orjson (>=3.5.4)", "aiodns (>=1.1)", "brotli", "cchardet"]
+voice = ["PyNaCl (>=1.3.0,<1.5)"]
+
+[package.source]
+type = "git"
+url = "https://github.com/DisnakeDev/disnake.git"
+reference = "master"
+resolved_reference = "999887017c59d954beb40eb5fadd565412cc7dfa"
+
+[[package]]
+>>>>>>> disnake
 name = "idna"
 version = "3.3"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -173,7 +207,11 @@ python-versions = ">=3.8.0"
 develop = false
 
 [package.dependencies]
+<<<<<<< HEAD
 aiohttp = ">=3.6.0,<3.8.0"
+=======
+aiohttp = ">=3.6.0,<4.0.0"
+>>>>>>> disnake
 
 [package.extras]
 docs = ["sphinx (==4.0.2)", "sphinxcontrib-trio (==1.1.2)", "sphinxcontrib-websupport"]
@@ -184,11 +222,19 @@ voice = ["PyNaCl (>=1.3.0,<1.5)"]
 type = "git"
 url = "https://github.com/nextcord/nextcord.git"
 reference = "master"
+<<<<<<< HEAD
 resolved_reference = "b11434c063198cf14aff66cf6837f07bccf5ff33"
 
 [[package]]
 name = "orjson"
 version = "3.6.4"
+=======
+resolved_reference = "562bc52f1d6f96a965182525a0ebf902002ef3ac"
+
+[[package]]
+name = "orjson"
+version = "3.6.5"
+>>>>>>> disnake
 description = "Fast, correct Python JSON library supporting dataclasses, datetimes, and numpy"
 category = "main"
 optional = false
@@ -214,6 +260,7 @@ python-versions = ">=3.5"
 cli = ["click (>=5.0)"]
 
 [[package]]
+<<<<<<< HEAD
 name = "sqldict"
 version = "0.2.0"
 description = "A dict-like object that uses a sqlite3 table"
@@ -229,6 +276,8 @@ reference = "main"
 resolved_reference = "80963165fe10fe933053685f75740eb0fd65a72d"
 
 [[package]]
+=======
+>>>>>>> disnake
 name = "topggpy"
 version = "2.0.0a1"
 description = "A simple API wrapper for Top.gg written in Python."
@@ -269,7 +318,11 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
+<<<<<<< HEAD
 content-hash = "e9350e82592164e052c2c692c85c8648a6498cd237fff141384d2962d8808a91"
+=======
+content-hash = "6e07bba5101e30cc811d2fb57ae9698a549f5e7f125e857a353985355c55db51"
+>>>>>>> disnake
 
 [metadata.files]
 aiohttp = [
@@ -328,12 +381,18 @@ discord = [
     {file = "discord-1.7.3-py3-none-any.whl", hash = "sha256:248d728356e149c818a81b94659047a19305ea1623d4810bbb342f6b7df55f36"},
     {file = "discord-1.7.3.tar.gz", hash = "sha256:846dd3d66888c2e0a8bd9120d8778a0fe088c003a7f6451668497f14e322a304"},
 ]
+<<<<<<< HEAD
 discord-py-slash-command = [
     {file = "discord-py-slash-command-3.0.1.tar.gz", hash = "sha256:77aa60095cf0b6bc2e5024ab9e756adda5b0162b98221bf4f2e9259f49697040"},
     {file = "discord_py_slash_command-3.0.1-py3-none-any.whl", hash = "sha256:cccdab25b09777df64fd2bd14dc8ab490c106611da8e16fc76a93e77b2c98401"},
 ]
 "discord.py" = []
 "dislash.py" = []
+=======
+"discord.py" = []
+"dislash.py" = []
+disnake = []
+>>>>>>> disnake
 idna = [
     {file = "idna-3.3-py3-none-any.whl", hash = "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff"},
     {file = "idna-3.3.tar.gz", hash = "sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d"},
@@ -433,6 +492,7 @@ mysql-connector-python = [
 ]
 nextcord = []
 orjson = [
+<<<<<<< HEAD
     {file = "orjson-3.6.4-cp310-cp310-macosx_10_7_x86_64.whl", hash = "sha256:fc01a15f3101628fd619158daec79b30d7461149735e73542ca8c13be6b835be"},
     {file = "orjson-3.6.4-cp310-cp310-macosx_10_9_x86_64.macosx_11_0_arm64.macosx_10_9_universal2.whl", hash = "sha256:c840e6ca222f76e7f13e9ee2f0650c9ee449e5e4aae38c73ab6ecaf3077ea21c"},
     {file = "orjson-3.6.4-cp310-cp310-manylinux_2_24_aarch64.whl", hash = "sha256:48a69fed90f551bf9e9bb7a63e363fed4f67fc7c6e6bfb057054dc78f6721e9e"},
@@ -457,6 +517,32 @@ orjson = [
     {file = "orjson-3.6.4-cp39-cp39-manylinux_2_24_x86_64.whl", hash = "sha256:e236fe94d8a77532f0065870fe265bd53e229012f39af99f79f5f1d4a8b0067c"},
     {file = "orjson-3.6.4-cp39-none-win_amd64.whl", hash = "sha256:5448cc1edd4c4bafc968404f92f0e9a582b4326ca442346bd1d1179a6faf52d9"},
     {file = "orjson-3.6.4.tar.gz", hash = "sha256:f8dbc428fc6d7420f231a7133d8dff4c882e64acb585dcf2fda74bdcfe1a6d9d"},
+=======
+    {file = "orjson-3.6.5-cp310-cp310-macosx_10_7_x86_64.whl", hash = "sha256:6c444edc073eb69cf85b28851a7a957807a41ce9bb3a9c14eefa8b33030cf050"},
+    {file = "orjson-3.6.5-cp310-cp310-macosx_10_9_x86_64.macosx_11_0_arm64.macosx_10_9_universal2.whl", hash = "sha256:432c6da3d8d4630739f5303dcc45e8029d357b7ff8e70b7239be7bd047df6b19"},
+    {file = "orjson-3.6.5-cp310-cp310-manylinux_2_24_aarch64.whl", hash = "sha256:0fa32319072fadf0732d2c1746152f868a1b0f83c8cce2cad4996f5f3ca4e979"},
+    {file = "orjson-3.6.5-cp310-cp310-manylinux_2_24_x86_64.whl", hash = "sha256:0d65cc67f2e358712e33bc53810022ef5181c2378a7603249cd0898aa6cd28d4"},
+    {file = "orjson-3.6.5-cp310-none-win_amd64.whl", hash = "sha256:fa8e3d0f0466b7d771a8f067bd8961bc17ca6ea4c89a91cd34d6648e6b1d1e47"},
+    {file = "orjson-3.6.5-cp37-cp37m-macosx_10_7_x86_64.whl", hash = "sha256:470596fbe300a7350fd7bbcf94d2647156401ab6465decb672a00e201af1813a"},
+    {file = "orjson-3.6.5-cp37-cp37m-macosx_10_9_x86_64.macosx_11_0_arm64.macosx_10_9_universal2.whl", hash = "sha256:d2680d9edc98171b0c59e52c1ed964619be5cb9661289c0dd2e667773fa87f15"},
+    {file = "orjson-3.6.5-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:001962a334e1ab2162d2f695f2770d2383c7ffd2805cec6dbb63ea2ad96bf0ad"},
+    {file = "orjson-3.6.5-cp37-cp37m-manylinux_2_24_aarch64.whl", hash = "sha256:522c088679c69e0dd2c72f43cd26a9e73df4ccf9ed725ac73c151bbe816fe51a"},
+    {file = "orjson-3.6.5-cp37-cp37m-manylinux_2_24_x86_64.whl", hash = "sha256:d2b871a745a64f72631b633271577c99da628a9b63e10bd5c9c20706e19fe282"},
+    {file = "orjson-3.6.5-cp37-none-win_amd64.whl", hash = "sha256:51ab01fed3b3e21561f21386a2f86a0415338541938883b6ca095001a3014a3e"},
+    {file = "orjson-3.6.5-cp38-cp38-macosx_10_7_x86_64.whl", hash = "sha256:fc7e62edbc7ece95779a034d9e206d7ba9e2b638cc548fd3a82dc5225f656625"},
+    {file = "orjson-3.6.5-cp38-cp38-macosx_10_9_x86_64.macosx_11_0_arm64.macosx_10_9_universal2.whl", hash = "sha256:0720d60db3fa25956011a573274a269eb37de98070f3bc186582af1222a2d084"},
+    {file = "orjson-3.6.5-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e169a8876aed7a5bff413c53257ef1fa1d9b68c855eb05d658c4e73ed8dff508"},
+    {file = "orjson-3.6.5-cp38-cp38-manylinux_2_24_aarch64.whl", hash = "sha256:331f9a3bdba30a6913ad1d149df08e4837581e3ce92bf614277d84efccaf796f"},
+    {file = "orjson-3.6.5-cp38-cp38-manylinux_2_24_x86_64.whl", hash = "sha256:ece5dfe346b91b442590a41af7afe61df0af369195fed13a1b29b96b1ba82905"},
+    {file = "orjson-3.6.5-cp38-none-win_amd64.whl", hash = "sha256:6a5e9eb031b44b7a429c705ca48820371d25b9467c9323b6ae7a712daf15fbef"},
+    {file = "orjson-3.6.5-cp39-cp39-macosx_10_7_x86_64.whl", hash = "sha256:206237fa5e45164a678b12acc02aac7c5b50272f7f31116e1e08f8bcaf654f93"},
+    {file = "orjson-3.6.5-cp39-cp39-macosx_10_9_x86_64.macosx_11_0_arm64.macosx_10_9_universal2.whl", hash = "sha256:d5aceeb226b060d11ccb5a84a4cfd760f8024289e3810ec446ef2993a85dbaca"},
+    {file = "orjson-3.6.5-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:80dba3dbc0563c49719e8cc7d1568a5cf738accfcd1aa6ca5e8222b57436e75e"},
+    {file = "orjson-3.6.5-cp39-cp39-manylinux_2_24_aarch64.whl", hash = "sha256:443f39bc5e7966880142430ce091e502aea068b38cb9db5f1ffdcfee682bc2d4"},
+    {file = "orjson-3.6.5-cp39-cp39-manylinux_2_24_x86_64.whl", hash = "sha256:a06f2dd88323a480ac1b14d5829fb6cdd9b0d72d505fabbfbd394da2e2e07f6f"},
+    {file = "orjson-3.6.5-cp39-none-win_amd64.whl", hash = "sha256:82cb42dbd45a3856dbad0a22b54deb5e90b2567cdc2b8ea6708e0c4fe2e12be3"},
+    {file = "orjson-3.6.5.tar.gz", hash = "sha256:eb3a7d92d783c89df26951ef3e5aca9d96c9c6f2284c752aa3382c736f950597"},
+>>>>>>> disnake
 ]
 protobuf = [
     {file = "protobuf-3.19.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:d80f80eb175bf5f1169139c2e0c5ada98b1c098e2b3c3736667f28cbbea39fc8"},
@@ -488,7 +574,10 @@ python-dotenv = [
     {file = "python-dotenv-0.19.2.tar.gz", hash = "sha256:a5de49a31e953b45ff2d2fd434bbc2670e8db5273606c1e737cc6b93eff3655f"},
     {file = "python_dotenv-0.19.2-py2.py3-none-any.whl", hash = "sha256:32b2bdc1873fd3a3c346da1c6db83d0053c3c62f28f1f38516070c4c8971b1d3"},
 ]
+<<<<<<< HEAD
 sqldict = []
+=======
+>>>>>>> disnake
 topggpy = []
 typing-extensions = [
     {file = "typing_extensions-3.10.0.2-py2-none-any.whl", hash = "sha256:d8226d10bc02a29bcc81df19a26e56a9647f8b0a6d4a83924139f4a8b01f17b7"},

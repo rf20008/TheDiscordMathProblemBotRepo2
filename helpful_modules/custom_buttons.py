@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import nextcord
+=======
+import disnake
+>>>>>>> disnake
 from typing import Any, List
 from .custom_embeds import SuccessEmbed, ErrorEmbed
 from .threads_or_useful_funcs import base_on_error
@@ -7,20 +11,32 @@ from copy import deepcopy
 # Licensed under the GNU GPLv3 (or later)
 
 
+<<<<<<< HEAD
 class MyView(nextcord.ui.View):
+=======
+class MyView(disnake.ui.View):
+>>>>>>> disnake
     "A better? view for my bot (which is easier for my bot to work with)"
 
     async def __init__(
         self,
+<<<<<<< HEAD
         message: nextcord.Message = None,
         *,
         timeout: int = 180.0,
         items: List[nextcord.ui.Item]
+=======
+        message: disnake.Message = None,
+        *,
+        timeout: int = 180.0,
+        items: List[disnake.ui.Item]
+>>>>>>> disnake
     ):
         super().__init__(timeout)
         self.message = message
         assert len(items) <= 25  # Discord limitation
         for item in items:
+<<<<<<< HEAD
             assert isinstance(item, nextcord.ui.Item)
             self.add_item(item)
 
@@ -30,6 +46,17 @@ class MyView(nextcord.ui.View):
         return await inter.response.send_message(**base_on_error(inter, error))
 
     async def reply(Interaction: nextcord.Interaction, *args, **kwargs):
+=======
+            assert isinstance(item, disnake.ui.Item)
+            self.add_item(item)
+
+    async def on_error(
+        self, error: Exception, item: disnake.ui.Item, inter: disnake.Interaction
+    ):
+        return await inter.response.send_message(**base_on_error(inter, error))
+
+    async def reply(Interaction: disnake.Interaction, *args, **kwargs):
+>>>>>>> disnake
         "Reply to an interaction"
         return await Interaction.response.send_message(*args, **kwargs)
 
@@ -39,7 +66,11 @@ class MyView(nextcord.ui.View):
             self.message
         )  # Create a new view that has the same message
         for item in self.children:
+<<<<<<< HEAD
             if item.__class__ == nextcord.ui.Item:
+=======
+            if item.__class__ == disnake.ui.Item:
+>>>>>>> disnake
                 # It's a base item
                 raise RuntimeError("Cannot stop base item")
             new_item_dict = item.__dict__
@@ -55,14 +86,22 @@ class MyView(nextcord.ui.View):
         )
 
 
+<<<<<<< HEAD
 class BasicButton(nextcord.ui.Button):
+=======
+class BasicButton(disnake.ui.Button):
+>>>>>>> disnake
     def __init__(self, check, callback, **kwargs):
         super().__init__(**kwargs)
         self.check = check
         self._callback = callback
         self.user_for = kwargs.pop("user_for").id
 
+<<<<<<< HEAD
     async def callback(self, interaction: nextcord.Interaction) -> Any:
+=======
+    async def callback(self, interaction: disnake.Interaction) -> Any:
+>>>>>>> disnake
         if self.check(self, interaction):
             return await self._callback(interaction)
 
@@ -88,9 +127,15 @@ class ConfirmationButton(BasicButton):
         self._extra_data = kwargs.get("_extra_data", {})
 
     async def callback(
+<<<<<<< HEAD
         self: "ConfirmationButton", interaction: nextcord.Interaction
     ) -> Any:
         def check(inter: nextcord.Interaction):
+=======
+        self: "ConfirmationButton", interaction: disnake.Interaction
+    ) -> Any:
+        def check(inter: disnake.Interaction):
+>>>>>>> disnake
             return inter.user.id == self.author_for
 
         responder = self.response

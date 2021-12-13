@@ -1,5 +1,9 @@
 # Written by @rf20008
+<<<<<<< HEAD
 # Licensed under CC-BY-SA 4.0/GPL v3.0
+=======
+# Licensed under GPLv3
+>>>>>>> disnake
 # Feel free to contribute! :-)
 # Python 3.8+ is required.
 # Python 3.10 might not work with the bot, because it can't connect to Discord
@@ -30,6 +34,10 @@ from copy import copy
 # Imports - 3rd party
 import discord
 import dislash  # https://github.com/EQUENOS/dislash.py
+<<<<<<< HEAD
+=======
+import disnake # https://github.com/DisnakeDev/disnake
+>>>>>>> disnake
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 import nextcord  # https://github.com/nextcord/nextcord
 import nextcord.ext.commands as nextcord_commands
@@ -53,7 +61,11 @@ from helpful_modules.checks import is_not_blacklisted, setup
 from helpful_modules.the_documentation_file_loader import *
 from helpful_modules.constants_loader import *
 
+<<<<<<< HEAD
 VERSION = "0.0.3a3"
+=======
+VERSION = "0.0.4a2"
+>>>>>>> disnake
 try:
     import dotenv  # https://pypi.org/project/python-dotenv/
 
@@ -149,6 +161,7 @@ def get_git_revision_hash() -> str:
 # Bot creation
 
 asyncio.set_event_loop(asyncio.new_event_loop())  # Otherwise, weird errors will happen
+<<<<<<< HEAD
 bot = nextcord_commands.Bot(
     command_prefix=" ",
     intents=return_intents.return_intents(),
@@ -157,6 +170,16 @@ bot = nextcord_commands.Bot(
     # activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂") # This didn't work anyway, will set the activity in on_connect
 )
 
+=======
+bot = disnake.ext.commands.Bot(
+    command_prefix=" ",
+    intents=return_intents.return_intents(),
+    application_id=845751152901750824,
+    status=disnake.Status.idle
+    # activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂") # This didn't work anyway, will set the activity in on_connect
+)
+bot._sync_commands_debug=True
+>>>>>>> disnake
 setup(bot)
 bot.cache = main_cache
 bot.constants = bot_constants
@@ -171,7 +194,7 @@ bot._transport_modules = {
 }
 bot.add_check(is_not_blacklisted)
 bot.add_check(
-    nextcord.ext.commands.bot_has_permissions(
+    disnake.ext.commands.bot_has_permissions(
         send_messages=True,
     )
 )
@@ -205,10 +228,10 @@ async def on_connect():
     print("The bot has connected to Discord successfully.")
     await asyncio_sleep(0.5)
     await bot.change_presence(
-        activity=nextcord.CustomActivity(
+        activity=disnake.CustomActivity(
             name="Making sure that the bot works!", emoji="🙂"
         ),
-        status=nextcord.Status.idle,
+        status=disnake.Status.idle,
     )
     bot.log.debug(
         "Deleting data from guilds the bot was kicked from while it was offline"
@@ -253,7 +276,10 @@ async def on_error(event, *args, **kwargs):
 async def on_slash_command_error(inter, error):
     "Function called when a slash command errors, which will inevitably happen. All of the functionality was moved to base_on_error :-)"
     # print the traceback to the file
-    return await inter.reply(**await base_on_error(inter, error))
+    dict_args = await base_on_error(inter_error)
+    print(dict_args)
+    return await inter.send(**dict_args)
+
 
 
 ##@bot.command(help = """Adds a trusted user!
@@ -283,4 +309,11 @@ if __name__ == "__main__":
     print("The bot has finished setting up and will now run.")
     # slash.run(DISCORD_TOKEN)
 
-    bot.run(DISCORD_TOKEN)
+    #print(bot.walk_commands())
+    #for command in bot.global_slash_commands:
+    #    raise
+    #    print(command.name)
+    #    if len(command.name) > 100:
+    #        print('this command is too long')
+    #        raise
+      bot.run(DISCORD_TOKEN)

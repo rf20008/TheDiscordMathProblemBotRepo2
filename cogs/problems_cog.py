@@ -1,6 +1,7 @@
 from .helper_cog import HelperCog
 from helpful_modules.problems_module import *
 from helpful_modules.custom_embeds import SimpleEmbed, SuccessEmbed, ErrorEmbed
+<<<<<<< HEAD
 import dislash, nextcord
 from asyncio import run
 from dislash import Option, OptionType, OptionChoice
@@ -8,6 +9,12 @@ from nextcord.ext import commands
 from helpful_modules import checks, cooldowns, problems_module
 import aiosqlite
 from dislash import *
+import disnake, nextcord
+from asyncio import run
+from disnake.ext import commands
+from helpful_modules import checks, cooldowns, problems_module
+import aiosqlite
+from disnake import *
 import threading
 import typing
 from helpful_modules.threads_or_useful_funcs import generate_new_id
@@ -16,12 +23,12 @@ from helpful_modules.threads_or_useful_funcs import generate_new_id
 class ProblemsCog(HelperCog):
     def __init__(self, bot):
         self.bot = bot
-        self.cache = bot.cache
+        self.cache = gbot.cache
         super().__init__(bot)
         checks.setup(bot)
 
     @checks.is_not_blacklisted()
-    @slash_command(
+    @commands.slash_command(
         name="edit_problem",
         description="edit a problem",
         options=[
@@ -29,50 +36,75 @@ class ProblemsCog(HelperCog):
                 name="problem_id",
                 description="problem_id",
                 type=OptionType.INTEGER,
+                type=OptionType.integer,
                 required=True,
             ),
             Option(
                 name="guild_id",
                 description="the guild id",
+<<<<<<< HEAD
                 type=OptionType.INTEGER,
+=======
+                type=OptionType.integer,
+>>>>>>> disnake
                 required=False,
             ),
             Option(
                 name="new_question",
                 description="the new question",
+<<<<<<< HEAD
                 type=OptionType.STRING,
+=======
+                type=OptionType.string,
+>>>>>>> disnake
                 required=False,
             ),
             Option(
                 name="new_answer",
                 description="the new answer",
+<<<<<<< HEAD
                 type=OptionType.STRING,
+=======
+                type=OptionType.string,
+>>>>>>> disnake
                 required=False,
             ),
         ],
     )
     async def edit_problem(
         self,
+<<<<<<< HEAD
         inter: dislash.SlashInteraction,
+=======
+        inter: disnake.ApplicationCommandInteraction,
+>>>>>>> disnake
         problem_id: int,
         new_question: str = None,
         new_answer: str = None,
         guild_id: int = "null",
+<<<<<<< HEAD
     ) -> typing.Optional[nextcord.Message]:
+=======
+    ) -> typing.Optional[disnake.Message]:
+>>>>>>> disnake
         """/edit_problem problem_id:
         Allows you to edit a math problem."""
         await cooldowns.check_for_cooldown(inter, "edit_problem", 0.5)
         try:
             problem = await self.cache.get_problem(int(guild_id), int(problem_id))
             if not problem.is_author(inter.author):
+<<<<<<< HEAD
                 await inter.reply(
+=======
+                await inter.send(
+>>>>>>> disnake
                     embed=ErrorEmbed(
                         "You are not the author of this problem and therefore can't edit it!"
                     )
                 )
                 return
         except ProblemNotFound:
-            await inter.reply(embed=ErrorEmbed("This problem does not exist."))
+            await inter.send(embed=ErrorEmbed("This problem does not exist."))
             return
         e = "Successfully"
         if new_question is not None:
@@ -91,43 +123,45 @@ class ProblemsCog(HelperCog):
                 #    "*** No new answer or new question provided. Aborting command...***"
                 # )
                 # Return error messages in favor of raising exceptions
-                return await inter.reply("You must provide a ")
 
-        await inter.reply(embed=SuccessEmbed(e), ephemeral=True)
+                return await inter.send("You must provide either a question or answer.")
 
-    @slash_command(
+        await inter.send(embed=SuccessEmbed(e), ephemeral=True)
+
+    @commands.slash_command(
         name="show_problem_info",
         description="Show problem info",
         options=[
             Option(
                 name="problem_id",
                 description="problem id of the problem you want to show",
-                type=OptionType.INTEGER,
+                type=OptionType.integer,
                 required=True,
             ),
             Option(
                 name="show_all_data",
                 description="whether to show all data (only useable by problem authors and trusted users",
-                type=OptionType.BOOLEAN,
+
+                type=OptionType.boolean,
                 required=False,
             ),
             Option(
                 name="raw",
                 description="whether to show data as json?",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
             Option(
                 name="is_guild_problem",
                 description="whether the problem you are trying to view is a guild problem",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
         ],
     )
     async def show_problem_info(
         self,
-        inter: dislash.SlashInteraction,
+        inter: disnake.ApplicationCommandInteraction,
         problem_id: int,
         show_all_data: bool = False,
         raw: bool = False,
@@ -147,7 +181,7 @@ class ProblemsCog(HelperCog):
         try:
             problem = await self.cache.get_problem(real_guild_id, int(problem_id))
         except ProblemNotFound:
-            await inter.reply(embed=ErrorEmbed("Problem not found."))
+            await inter.send(embed=ErrorEmbed("Problem not found."))
             return
 
         if True:
@@ -155,7 +189,7 @@ class ProblemsCog(HelperCog):
                 embed1 = ErrorEmbed(
                     description="Run this command in the Discord server which has this problem, not a DM!"
                 )
-                inter.reply(embed=embed1)
+                await inter.send(embed=embed1)
                 return
             problem = await self.cache.get_problem(
                 int(inter.guild.id) if is_guild_problem else None, int(problem_id)
@@ -176,20 +210,20 @@ NumSolvers: {len(problem.get_solvers())}"""
                         )
                     )
                 ):  # Check for sufficient permissions
-                    await inter.reply(
+                    await inter.send(
                         embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True
                     )
                     return
                 Problem_as_str += f"\nAnswer: {problem.get_answer}"
 
             if raw:
-                await inter.reply(
+                await inter.send(
                     embed=SuccessEmbed(str(problem.to_dict())), ephemeral=True
                 )
                 return
-            await inter.reply(embed=SuccessEmbed(Problem_as_str), ephemeral=True)
+            await inter.send(embed=SuccessEmbed(Problem_as_str), ephemeral=True)
 
-    @slash_command(
+    @commands.slash_command(
         name="list_all_problem_ids",
         description="List all problem ids",
         options=[
@@ -197,17 +231,18 @@ NumSolvers: {len(problem.get_solvers())}"""
                 name="show_only_guild_problems",
                 description="Whether to show guild problem ids",
                 required=False,
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
             )
         ],
     )
     async def list_all_problem_ids(self, inter, show_only_guild_problems=False):
-        "Lists all problem ids."
+        """/list_all_problem_ids [show_only_guild_problems: bool = false]
+        List all problem ids. If show_only_guild_problems is true, then only ids of guild problems will be shown. Otherwise only problem ids of problems that are global will be shown."""
         await cooldowns.check_for_cooldown(inter, "list_all_problem_ids", 2.5)
         if show_only_guild_problems:
             guild_id = inter.guild.id
             if guild_id is None:
-                await inter.reply(
+                await inter.send(
                     "Run this command in a Discord server or set show_only_guild_problems to False!",
                     ephemeral=True,
                 )
@@ -218,7 +253,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             else:
                 guild_problems = await self.bot.cache.get_global_problems()
             thing_to_write = [str(problem) for problem in guild_problems]
-            await inter.reply(
+            await inter.send(
                 embed=SuccessEmbed(
                     "\n".join(thing_to_write)[:1950], successTitle="Problem IDs:"
                 )
@@ -229,26 +264,28 @@ NumSolvers: {len(problem.get_solvers())}"""
         thing_to_write = "\n".join([str(problem.id) for problem in global_problems])
         await inter.send(embed=SuccessEmbed(thing_to_write))
 
-    @slash_command(
+
+    @commands.slash_command(
         name="list_all_problems",
         description="List all problems stored with the bot",
         options=[
             Option(
                 name="show_solved_problems",
                 description="Whether to show solved problems",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
             Option(
                 name="show_guild_problems",
                 description="Whether to show solved problems",
-                type=OptionType.BOOLEAN,
+
+                type=OptionType.boolean,
                 required=False,
             ),
             Option(
                 name="show_only_guild_problems",
                 description="Whether to only show guild problems",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
         ],
@@ -261,10 +298,12 @@ NumSolvers: {len(problem.get_solvers())}"""
         show_guild_problems=True,
         show_only_guild_problems=False,
     ):
-        "List all MathProblems."
+        """/list_all_problems [show_solved_problems: bool = false] [show_guild_problems: bool = true] [show_only_guild_problems: bool = false]
+        List all problems.
+        If show_solved_problems is set to true, """
         await cooldowns.check_for_cooldown(inter, "list_all_problems")
         if inter.guild is None and show_guild_problems:
-            await inter.reply("You must be in a guild to see guild problems!")
+            await inter.send("You must be in a guild to see guild problems!")
             return
         showSolvedProblems = show_solved_problems
         if inter.guild is not None:
@@ -272,11 +311,10 @@ NumSolvers: {len(problem.get_solvers())}"""
         else:
             guild_id = "null"
         # Check for no problems
-        if await self.bot.cache.get_guild_problems(inter.guild) == 0:
-            await inter.reply("No problems currently exist.")
+            await inter.send("No problems currently exist.")
             return
         # if not showSolvedProblems and False not in [inter.author.id in mathProblems[id]["solvers"] for id in mathProblems.keys()] or (show_guild_problems and (show_only_guild_problems and (guildMathProblems[inter.guild.id] == {}) or False not in [inter.author.id in guildMathProblems[guild_id][id]["solvers"] for id in guildMathProblems[guild_id].keys()])) or show_guild_problems and not show_only_guild_problems and False not in [inter.author.id in mathProblems[id]["solvers"] for id in mathProblems.keys()] and False not in [inter.author.id in guildMathProblems[guild_id][id]["solvers"] for id in guildMathProblems[guild_id].keys()]:
-        # await inter.reply("You solved all the problems! You should add a new one.", ephemeral=True)
+        # await inter.send("You solved all the problems! You should add a new one.", ephemeral=True)
         # return
         problem_info_as_str = ""
         problem_info_as_str += "Problem Id \t Question \t numVotes \t numSolvers"
@@ -284,7 +322,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             for problem in await self.cache.get_problems_by_guild_id(guild_id):
                 if len(problem_info_as_str) >= 1930:
                     problem_info_as_str += "The combined length of the questions is too long.... shortening it!"  # May be removed
-                    await inter.reply(embed=SuccessEmbed(problem_info_as_str[:1930]))
+                    await inter.send(embed=SuccessEmbed(problem_info_as_str[:1930]))
                     return
                 if not (showSolvedProblems) and problem.is_solver(
                     inter.author
@@ -304,16 +342,17 @@ NumSolvers: {len(problem.get_solvers())}"""
                 problem_info_as_str += str(len(problem.get_solvers())) + "\t"
                 problem_info_as_str += "(guild)"
         if len(problem_info_as_str) > 1930:
-            await inter.reply(embed=SuccessEmbed(problem_info_as_str[:1930]))
+            await inter.send(embed=SuccessEmbed(problem_info_as_str[:1930]))
             return
         if show_only_guild_problems:
-            await inter.reply(problem_info_as_str[:1930])
+            await inter.send(problem_info_as_str[:1930])
             return
         global_problems = await self.bot.get_global_problems()
         for problem in global_problems:
             if len(problem) >= 1930:
                 problem_info_as_str += "The combined length of the questions is too long.... shortening it!"
-                await inter.reply(embed=SuccessEmbed(problem_info_as_str[:1930]))
+
+                await inter.send(embed=SuccessEmbed(problem_info_as_str[:1930]))
                 return
             if not isinstance(problem, problems_module.BaseProblem):
                 print(list(global_problems))
@@ -336,19 +375,19 @@ NumSolvers: {len(problem.get_solvers())}"""
                 + "\t"
             )
             problem_info_as_str += str(len(problem.get_solvers())) + "\t"
-        await inter.reply(embed=SuccessEmbed(problem_info_as_str[:1930]))
+        await inter.send(embed=SuccessEmbed(problem_info_as_str[:1930]))
 
-    @slash_command(
+    @commands.slash_command(
         name="delallbotproblems",
         description="delete all automatically generated problems",
     )
     @checks.trusted_users_only()
-    @nextcord.ext.commands.cooldown(1, 15, nextcord.ext.commands.BucketType.user)
-    async def delallbotproblems(self, inter):
+    @disnake.ext.commands.cooldown(1, 15, commands.BucketType.user)
+    async def delallbotproblems(self, inter: disnake.ApplicationCommandInteraction):
         """/delallbotproblems
         Delete all automatically generated problems."""
         assert inter.author.id in self.bot.trusted_users
-        await inter.reply(
+        await inter.send(
             embed=SimpleEmbed("", description="Attempting to delete bot problems"),
             ephemeral=True,
         )  # may get rid of later? :)
@@ -359,37 +398,39 @@ NumSolvers: {len(problem.get_solvers())}"""
                 "DELETE FROM problems WHERE user_id = ?", (self.bot.user.id)
             )  # Delete every problem made by the bot!
             await conn.commit()
-        await inter.reply(
+        await inter.send(
             embed=SuccessEmbed(f"Successfully deleted {numDeletedProblems}!")
         )
-
-    @slash_command(
+    
+    @commands.slash_command(
         name="submit_problem",
         description="Create a new problem",
         options=[
             Option(
                 name="answer",
                 description="The answer to this problem",
-                type=OptionType.STRING,
+                type=OptionType.string,
                 required=True,
             ),
             Option(
                 name="question",
-                description="your question",
-                type=OptionType.STRING,
+                description="your question to submit!",
+                type=OptionType.string,
                 required=True,
             ),
             Option(
                 name="guild_question",
                 description="Whether it should be a question for the guild",
-                type=OptionType.BOOLEAN,
+
+                type=OptionType.boolean,
                 required=False,
             ),
         ],
     )
+    @disnake.ext.commands.cooldown(1,5,commands.BucketType.user)
     async def submit_problem(
         self,
-        inter: dislash.SlashInteraction,
+        inter: disnake.ApplicationCommandInteraction,
         answer: str,
         question: str,
         guild_question: bool = False,
@@ -403,7 +444,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         if (
             len(question) > self.cache.max_question_length
         ):  # Check to make sure it's not too long!
-            await inter.reply(
+            await inter.send(
                 embed=ErrorEmbed(
                     f"Your question is too long! Therefore, it cannot be added. The maximum question length is {self.cache.max_question_length} characters.",
                     custom_title="Your question is too long.",
@@ -412,7 +453,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             )
             return
         if len(answer) > self.cache.max_answer_length:
-            await inter.reply(
+            await inter.send(
                 embed=ErrorEmbed(
                     description=f"Your answer is longer than {self.cache.max_answer_length} characters. Therefore, it is too long and cannot be added.",
                     custom_title="Your answer is too long",
@@ -426,10 +467,11 @@ NumSolvers: {len(problem.get_solvers())}"""
             return
         if guild_question:
             if inter.guild is None:
-              raise RuntimeError("You're not allowed to submit guild problems because you're executing this in a DM context, or there is a bug with the library")
+            raise RuntimeError("You're not allowed to submit guild problems because you're executing this in a DM context, or there is a bug with the library")
+
             guild_id = inter.guild.id
             if guild_id is None:
-                await inter.reply(
+                await inter.send(
                     embed=ErrorEmbed(
                         "You need to be in the guild to make a guild question!"
                     )
@@ -442,7 +484,8 @@ NumSolvers: {len(problem.get_solvers())}"""
             ), "This command may not be used in DMs!"
             guild_id = inter.guild.id
         except AssertionError:
-            await inter.reply(
+
+            await inter.send(
                 "In order to submit a problem for your guild, you must not be executing this command in a DM!"
             )
             return
@@ -455,7 +498,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             and len(self.cache.get_guild_problems(inter.guild))
             >= self.cache.max_guild_problems
         ):  # Check to make sure the maximum guild problem limit is not reached
-            await inter.reply(
+            await inter.send(
                 embed=ErrorEmbed(
                     f"You have reached the guild problem limit of {self.cache.max_guild_problems} and therefore cannot create new problems!"
                     + (
@@ -482,8 +525,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             # to the guild id of the guild this command was ran in
             if not inter.guild or inter.guild.id is None:
                 raise RuntimeError("You're not allowed to create guild problems unless you execute this command in a guild!")
-
-            guild_id = int(inter.guild.id)
+            guild_id = inter.guild.id
         else:  # But if it's global, make it global
             guild_id = None
         problem = problems_module.BaseProblem(
@@ -491,14 +533,14 @@ NumSolvers: {len(problem.get_solvers())}"""
             answer=answer,
             id=problem_id,
             author=inter.author.id,
-            guild_id=int(guild_id),
+            guild_id=guild_id,
             cache=self.cache,
         )  # Create the problem!
         await self.cache.add_problem(
             guild_id=guild_id, problem_id=problem_id, Problem=problem
         )  # Add the problem
 
-        await inter.reply(
+        await inter.send(
             embed=SuccessEmbed(
                 "You have successfully made a math problem!",
                 successTitle="Successfully made a new math problem.",
@@ -508,26 +550,26 @@ NumSolvers: {len(problem.get_solvers())}"""
 
         return
 
-    @slash_command(
+    @commands.slash_command(
         name="check_answer",
         description="Check if you are right",
         options=[
             Option(
                 name="problem_id",
                 description="the id of the problem you are trying to check the answer of",
-                type=OptionType.INTEGER,
+                type=OptionType.integer,
                 required=True,
             ),
             Option(
                 name="answer",
                 description="your answer",
-                type=OptionType.STRING,
+                type=OptionType.string,
                 required=True,
             ),
             Option(
                 name="checking_guild_problem",
                 description="whether checking a guild problem",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
         ],
@@ -546,7 +588,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             )
             # Make sure the author didn't already solve this problem
             if problem.is_solver(inter.author):
-                await inter.reply(
+                await inter.send(
                     embed=ErrorEmbed(
                         "You have already solved this problem!",
                         custom_title="Already solved.",
@@ -555,7 +597,7 @@ NumSolvers: {len(problem.get_solvers())}"""
                 )
                 return
         except (KeyError, problems_module.errors.ProblemNotFound):
-            await inter.reply(
+            await inter.send(
                 embed=ErrorEmbed(
                     "This problem doesn't exist!", custom_title="Nonexistant problem."
                 ),
@@ -564,7 +606,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             return
         # Should reverse this
         if not problem.check_answer(answer):
-            await inter.reply(
+            await inter.send(
                 embed=ErrorEmbed(
                     "You didn't answer the problem correctly! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.",
                     custom_title="Sorry, your answer is wrong.",
@@ -572,7 +614,7 @@ NumSolvers: {len(problem.get_solvers())}"""
                 ephemeral=True,
             )
         else:
-            await inter.reply(
+            await inter.send(
                 embed=SuccessEmbed(
                     "", successTitle="You answered this question correctly!"
                 ),
@@ -581,35 +623,35 @@ NumSolvers: {len(problem.get_solvers())}"""
             await problem.add_solver(inter.author)
             return
 
-    @slash_command(
+    @commands.slash_command(
         name="check_answer",
         description="Check if you are right",
         options=[
             Option(
                 name="problem_id",
                 description="the id of the problem you are trying to check the answer of",
-                type=OptionType.INTEGER,
+                type=OptionType.integer,
                 required=True,
             ),
             Option(
                 name="answer",
                 description="your answer",
-                type=OptionType.STRING,
+                type=OptionType.string,
                 required=True,
             ),
             Option(
                 name="checking_guild_problem",
                 description="whether checking a guild problem",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
         ],
     )
     @checks.is_not_blacklisted()
-    @nextcord.ext.commands.cooldown(1, 5, nextcord.ext.commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def check_answer(
         self,
-        inter: dislash.SlashInteraction,
+        inter: disnake.ApplicationCommandInteraction,
         problem_id: int,
         answer: str,
         checking_guild_problem: bool = False,
@@ -622,7 +664,7 @@ NumSolvers: {len(problem.get_solvers())}"""
                 inter.guild.id if checking_guild_problem else None, int(problem_id)
             )
             if problem.is_solver(inter.author):  # If the user solved the problem
-                await inter.reply(
+                await inter.send(
                     embed=ErrorEmbed(
                         "You have already solved this problem!",
                         custom_title="Already solved.",
@@ -631,7 +673,8 @@ NumSolvers: {len(problem.get_solvers())}"""
                 )  # Don't let them re-solve the problem
                 return
         except ProblemNotFound:  # But if the problem wasn't found, then tell them
-            await inter.reply(
+
+            await inter.send(
                 embed=ErrorEmbed(
                     "This problem doesn't exist!", custom_title="Nonexistant problem."
                 ),
@@ -640,7 +683,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             return
 
         if not problem.check_answer(answer):
-            await inter.reply(
+            await inter.send(
                 embed=ErrorEmbed(
                     "Sorry..... but you got it wrong! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.",
                     custom_title="Sorry, your answer is wrong.",
@@ -648,7 +691,8 @@ NumSolvers: {len(problem.get_solvers())}"""
                 ephemeral=True,
             )
         else:
-            await inter.reply(
+            await inter.send(
+
                 embed=SuccessEmbed(
                     "", successTitle="You answered this question correctly!"
                 ),
@@ -657,20 +701,23 @@ NumSolvers: {len(problem.get_solvers())}"""
             await problem.add_solver(inter.author)
             return
 
-    @slash_command(
+
+    @commands.slash_command(
         name="vote",
         description="Vote for the deletion of a problem",
         options=[
             Option(
                 name="problem_id",
                 description="problem id of the problem you are attempting to delete",
-                type=OptionType.INTEGER,
+                type=OptionType.integer,
+
                 required=True,
             ),
             Option(
                 name="is_guild_problem",
                 description="problem id of the problem you are attempting to delete",
-                type=OptionType.BOOLEAN,
+
+                type=OptionType.boolean,
                 required=False,
             ),
         ],
@@ -692,7 +739,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             if problem.is_voter(
                 inter.author
             ):  # You can't vote for a problem you already voted for!
-                await inter.reply(
+                await inter.send(
                     embed=ErrorEmbed(
                         "You have already voted for the deletion of this problem!"
                     ),
@@ -700,7 +747,7 @@ NumSolvers: {len(problem.get_solvers())}"""
                 )
                 return  # Exit the command
         except problems_module.ProblemNotFound:
-            await inter.reply(  # The problem doesn't exist
+            await inter.send(  # The problem doesn't exist
                 embed=ErrorEmbed("This problem doesn't exist!"), ephemeral=True
             )
             return
@@ -709,7 +756,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         )  # Add the voter. Must be awaited because updating it in the cache is a coroutine.
         string_to_print = "You successfully voted for the problem's deletion! As long as this problem is not deleted, you can always un-vote. There are "
         string_to_print += f"{problem.get_num_voters()}/{self.bot.vote_threshold} votes on this problem!"  # Tell the user how many votes there are now
-        await inter.reply(
+        await inter.send(
             embed=SuccessEmbed(string_to_print, title="You Successfully voted"),
             ephemeral=True,
         )
@@ -720,7 +767,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             await self.bot.cache.remove_problem(
                 guild_id=problem.guild_id, problem_id=problem.id
             )  # Remove the problem, after it passes the vote threshold
-            await inter.reply(  # May cause problems in a DM
+            await inter.send(  # May cause problems in a DM
                 embed=SimpleEmbed(
                     "This problem has surpassed the threshold and has been deleted!"
                 ),
@@ -728,20 +775,21 @@ NumSolvers: {len(problem.get_solvers())}"""
             )
             return
 
-    @slash_command(
+    @commands.slash_command(
         name="unvote",
         description="Vote for the deletion of a problem",
         options=[
             Option(
                 name="problem_id",
                 description="problem id of the problem you are attempting to delete",
-                type=OptionType.INTEGER,
+                type=OptionType.boolean,
+
                 required=True,
             ),
             Option(
                 name="is_guild_problem",
                 description="problem id of the problem you are attempting to delete",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
         ],
@@ -749,7 +797,7 @@ NumSolvers: {len(problem.get_solvers())}"""
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def unvote(
         self,
-        inter: dislash.SlashInteraction,
+        inter: disnake.ApplicationCommandInteraction,
         problem_id: int,
         is_guild_problem: bool = False,
     ):
@@ -766,7 +814,8 @@ NumSolvers: {len(problem.get_solvers())}"""
             if not problem.is_voter(
                 inter.author
             ):  # You can't unvote unless you are voting
-                await inter.reply(
+
+                await inter.send(
                     embed=ErrorEmbed(
                         "You can't unvote because you are not voting for the deletion of this problem!"
                     ),
@@ -774,7 +823,7 @@ NumSolvers: {len(problem.get_solvers())}"""
                 )
                 return
         except problems_module.ProblemNotFound:
-            await inter.reply(  # The problem doesn't exist, get_problem will raise ProblemNotFound
+            await inter.send(  # The problem doesn't exist, get_problem will raise ProblemNotFound
                 embed=ErrorEmbed("This problem doesn't exist!"), ephemeral=True
             )
             return
@@ -787,43 +836,58 @@ NumSolvers: {len(problem.get_solvers())}"""
                 "There are {problem.get_num_voters()}/{self.bot.vote_threshold} votes on this problem!"
             )
         )
-
-        await inter.reply(
+        await inter.send(
             embed=SuccessEmbed(successMessage, successTitle="Successfully unvoted!"),
             ephemeral=True,
         )  # Tell the user of the successful unvote.
 
+<<<<<<< HEAD
     @slash_command(
+=======
+    @commands.slash_command(
+>>>>>>> disnake
         name="delete_problem",
         description="Deletes a problem",
         options=[
             Option(
                 name="problem_id",
                 description="Problem ID!",
+<<<<<<< HEAD
                 type=OptionType.INTEGER,
+=======
+                type=OptionType.boolean,
+>>>>>>> disnake
                 required=True,
             ),
             Option(
                 name="is_guild_problem",
+<<<<<<< HEAD
                 description="whether deleting a guild problem",
                 type=OptionType.USER,
+=======
+                description="whether you are deleting a guild problem",
+                type=OptionType.boolean,
+>>>>>>> disnake
                 required=False,
             ),
         ],
     )
-    @nextcord.ext.commands.cooldown(1, 0.5, nextcord.ext.commands.BucketType.user)
+
+    @commands.cooldown(1, 0.5, commands.BucketType.user)
     async def delete_problem(
         self: "ProblemsCog",
-        inter: dislash.SlashInteraction,
+        inter: disnake.ApplicationCommandInteraction,
         problem_id: int,
         is_guild_problem: bool = False,
-    ) -> typing.Optional[nextcord.Message]:
+    ) -> typing.Optional[disnake.Message]:
         """/delete_problem (problem_id: int) [is_guild_problem: bool = False]
         Delete a problem. You must either have the Administrator permission in the guild, and the problem must be a guild problem, or"""
         guild_id = inter.guild.id
         if is_guild_problem:
             if guild_id is None:
-                await inter.reply(
+
+
+                await inter.send(
                     embed=ErrorEmbed(
                         "Run this command in the discord server which has the problem you are trying to delete, or switch is_guild_problem to False."
                     )
@@ -834,7 +898,7 @@ NumSolvers: {len(problem.get_solvers())}"""
                     guild_id if is_guild_problem else None, problem_id
                 )
             except (problems_module.ProblemNotFound, ProblemNotFoundException):
-                return await inter.reply(
+                return await inter.send(
                     embed=ErrorEmbed(
                         description="This problem does not exist!",
                         custom_title="Problem not found",
@@ -848,24 +912,25 @@ NumSolvers: {len(problem.get_solvers())}"""
                     inter.author.guild_permissions.administrator and is_guild_problem
                 )  # Users with the 'adminstrator' permission can delete problems
             ):
-                await inter.reply(
+                await inter.send(
                     embed=ErrorEmbed("Insufficient permissions"), ephemeral=True
                 )
                 return
             await self.cache.remove_problem(guild_id, problem_id)
-            await inter.reply(
+            await inter.send(
                 embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!"),
                 ephemeral=True,
             )
         if guild_id is None:
-            await inter.reply(
+            await inter.send(
                 embed=ErrorEmbed(
                     "Run this command in the discord server which has the problem, or switch is_guild_problem to False."
                 )
             )
             return
         if problem_id not in (await self.cache.get_guild_problems(inter.guild)).keys():
-            await inter.reply(
+
+            await inter.send(
                 embed=ErrorEmbed("That problem doesn't exist."), ephemeral=True
             )
             return
@@ -874,12 +939,15 @@ NumSolvers: {len(problem.get_solvers())}"""
             or not (self.cache.get_problem(guild_id, problem_id).is_author())
             or (inter.author.guild_permissions.administrator and is_guild_problem)
         ):  # Not
-            await inter.reply(
+
+            await inter.send(
+
                 embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True
             )
             return
         await self.cache.remove_problem(None, problem_id)
-        await inter.reply(
+        await inter.send(
+
             embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!"),
             ephemeral=True,
         )

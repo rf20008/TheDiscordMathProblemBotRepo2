@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import dislash, nextcord
+=======
+from disnake.ext import commands
+>>>>>>> disnake
 
 bot = None
 
@@ -9,7 +13,11 @@ def setup(_bot):
     return "Success!"
 
 
+<<<<<<< HEAD
 class CustomCheckFailure(dislash.InteractionCheckFailure):
+=======
+class CustomCheckFailure(commands.CheckFailure):
+>>>>>>> disnake
     "Raised when a custom check fails. Some checks raise exceptions inherited from this."
     pass
 
@@ -35,7 +43,11 @@ def custom_check(
             raise exceptionToRaiseIfFailed
         return True
 
+<<<<<<< HEAD
     return dislash.check(predicate)
+=======
+    return commands.check(predicate)
+>>>>>>> disnake
 
 
 def trusted_users_only():
@@ -48,7 +60,11 @@ def trusted_users_only():
             f"You aren't a trusted user, {inter.author.mention}. Therefore, you do not have permission to run this command!"
         )
 
+<<<<<<< HEAD
     return dislash.check(predicate)
+=======
+    return commands.check(predicate)
+>>>>>>> disnake
 
 
 def administrator_or_trusted_users_only():
@@ -62,10 +78,17 @@ def administrator_or_trusted_users_only():
         ):
             return True
         raise CustomCheckFailure(
+<<<<<<< HEAD
             "Insufficient permissions (administrator permission or bot trusted user required. If this happens again and you have the administrator permissio, report this)"
         )
 
     return dislash.check(predicate)
+=======
+            "Insufficient permissions (administrator permission or bot trusted user required. If this happens again and you have the administrator permission, report this)"
+        )
+
+    return commands.check(predicate)
+>>>>>>> disnake
 
 
 def always_failing_check():
@@ -74,7 +97,11 @@ def always_failing_check():
     def predicate(inter):
         raise CustomCheckFailure("This check (test) will never pass")
 
+<<<<<<< HEAD
     return dislash.check(predicate)
+=======
+    return commands.check(predicate)
+>>>>>>> disnake
 
 
 def is_not_blacklisted():
@@ -87,4 +114,8 @@ def is_not_blacklisted():
             )
         return True
 
+<<<<<<< HEAD
     return dislash.check(predicate)
+=======
+    return commands.check(predicate)
+>>>>>>> disnake

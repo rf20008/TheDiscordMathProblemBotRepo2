@@ -1,11 +1,17 @@
 from dislash.interactions.interaction import BaseInteraction
+<<<<<<< HEAD
 import nextcord, dislash
+=======
+import nextcord, disnake
+import helpful_modules
+>>>>>>> disnake
 from copy import deepcopy
 from warnings import warn
 from helpful_modules import checks, problems_module
 
 
-class HelperCog(nextcord.ext.commands.Cog):
+
+class HelperCog(disnake.ext.commands.Cog):
     "A helper cog :-) However, by itself, it does not implement any commands."
 
     def __init__(self, bot):
@@ -24,8 +30,7 @@ class HelperCog(nextcord.ext.commands.Cog):
             self.b["the_documentation_file_loader"],
         )
         self.cache: problems_module.MathProblemCache = bot.cache
-        self.slash: dislash.InteractionClient = bot.slash
-        self.bot: nextcord.ext.commands.Bot = bot
+        self.bot: disnake.ext.commands.Bot = bot
         self.check_for_cooldown = self.bot._transport_modules["check_for_cooldown"]
         self.custom_embeds = self.bot._transport_modules["custom_embeds"]
         self.checks = self.bot._transport_modules["checks"]
@@ -51,7 +56,8 @@ class HelperCog(nextcord.ext.commands.Cog):
         "A helper method that will change the vote_threshold to the one specified"
         if not bypass_ctx_check:
             assert isinstance(
-                ctx, (nextcord.ext.commands.Context, dislash.BaseInteraction)
+                ctx,
+                (nextcord.ext.commands.Context, disnake.ApplicationCommandInteraction),
             )
             if ctx.author.id not in self.trusted_users:
                 raise RuntimeError(
@@ -77,7 +83,9 @@ class HelperCog(nextcord.ext.commands.Cog):
         "A helper method that will change the trusted_users. This will replace the trusted users with the one given!"
         if not bypass_ctx_check:
             assert isinstance(
-                ctx, (nextcord.ext.commands.Context, dislash.BaseInteraction)
+
+                ctx,
+                (nextcord.ext.commands.Context, disnake.ApplicationCommandInteraction),
             )
             if ctx.author.id not in self.trusted_users:
                 raise RuntimeError(
