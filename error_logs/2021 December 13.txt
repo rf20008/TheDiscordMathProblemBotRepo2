@@ -12,3 +12,50 @@ Traceback (most recent call last):
 disnake.errors.InvalidArgument: activity must derive from BaseActivity.
 
 
+Mon Dec 13 02:35:05 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/disnake/client.py", line 515, in _run_event
+    await coro(*args, **kwargs)
+  File "main.py", line 257, in on_slash_command_error
+    return await inter.reply(**await base_on_error(inter, error))
+AttributeError: 'ApplicationCommandInteraction' object has no attribute 'reply'
+
+
+Mon Dec 13 02:45:48 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/disnake/ext/commands/slash_core.py", line 585, in invoke
+    await call_param_func(self.callback, inter, self.cog, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/disnake/ext/commands/params.py", line 678, in call_param_func
+    return await maybe_coroutine(safe_call, function, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/disnake/utils.py", line 555, in maybe_coroutine
+    return await value
+  File "/home/runner/TheDiscordMathProblemBot/cogs/misc_commands_cog.py", line 79, in info
+    name="Nextcord version", value=str(nextcord.__version__)
+NameError: name 'nextcord' is not defined
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/disnake/ext/commands/interaction_bot_base.py", line 1340, in process_application_commands
+    await app_command.invoke(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/disnake/ext/commands/slash_core.py", line 594, in invoke
+    raise CommandInvokeError(exc) from exc
+disnake.ext.commands.errors.CommandInvokeError: Command raised an exception: NameError: name 'nextcord' is not defined
+
+
+Mon Dec 13 02:45:48 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/disnake/client.py", line 515, in _run_event
+    await coro(*args, **kwargs)
+  File "main.py", line 257, in on_slash_command_error
+    return await inter.send(**await base_on_error(inter, error))
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/disnake/interactions/base.py", line 540, in send
+    await sender(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/disnake/interactions/base.py", line 735, in send_message
+    if embed._files:
+AttributeError: 'Embed' object has no attribute '_files'
+
+
