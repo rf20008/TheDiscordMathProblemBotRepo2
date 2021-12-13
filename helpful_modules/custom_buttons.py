@@ -1,4 +1,4 @@
-import nextcord
+import disnake
 from typing import Any, List
 from .custom_embeds import SuccessEmbed, ErrorEmbed
 from .threads_or_useful_funcs import base_on_error
@@ -7,12 +7,12 @@ from copy import deepcopy
 # Licensed under the GNU GPLv3 (or later)
 
 
-class MyView(nextcord.ui.View):
+class MyView(disnake.ui.View):
     "A better? view for my bot (which is easier for my bot to work with)"
 
     async def __init__(
         self,
-        message: nextcord.Message = None,
+        message: disnake.Message = None,
         *,
         timeout: int = 180.0,
         items: List[nextcord.ui.Item]

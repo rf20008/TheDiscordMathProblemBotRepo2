@@ -1,13 +1,13 @@
-import nextcord, dislash
+import disnake
 
 
-class TheDiscordMathProblemBot(nextcord.ext.commands.Bot):
+class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.tasks = kwargs.pop("tasks")
         assert isinstance(self.tasks, dict)
         for task in self.tasks.values():
-            assert isinstance(task, nextcord.ext.tasks.Loop)
+            assert isinstance(task, disnake.ext.tasks.Loop)
             task.start()
 
     def get_task(self, task_name):

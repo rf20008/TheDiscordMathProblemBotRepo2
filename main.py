@@ -1,5 +1,5 @@
 # Written by @rf20008
-# Licensed under CC-BY-SA 4.0/GPL v3.0
+# Licensed under GPLv3
 # Feel free to contribute! :-)
 # Python 3.8+ is required.
 # Python 3.10 might not work with the bot, because it can't connect to Discord
