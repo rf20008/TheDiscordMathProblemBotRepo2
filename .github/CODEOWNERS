@@ -1,0 +1,20 @@
+# Contribute a lot? I'll make you a codeowner.
+
+* @rf20008
+**/*.md 
+/docs/
+/docs/documentation.json @rf20008
+pylint/
+poetry.lock
+*.txt
+*.rtf
+sql_to_dict/ @rf20008
+__pycache__/
+.github/ @rf20008
+.github/workflows
+.replit @rf20008
+poetry.lock @rf20008
+LICENSE
+error_logs/
+
+README.md @duck-master @rf20008

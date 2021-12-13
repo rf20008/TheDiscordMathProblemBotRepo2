@@ -94,6 +94,9 @@ source_code_link: link to the place that contains the bot's source code (if modi
 
 MySQL: https://pypi.org/project/mysql-connector-python/#files
 GPLv3 simplified: https://tldrlegal.com/license/gnu-general-public-license-v3-(gpl-3)
-@duck-master helped me revise the privacy policy.
+@duck-master helped me revise the privacy policy. Thanks so much!
 (get_git_revision_hash)[https://stackoverflow.com/a/21901260]
 Disabling buttons: https://stackoverflow.com/questions/68842747/how-to-disable-button-once-it-is-clicked-in-discord-js-13 & help from @umairshasheen78 (through Discord)
+
+
+

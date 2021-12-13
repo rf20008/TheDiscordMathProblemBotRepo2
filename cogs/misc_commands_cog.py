@@ -1,6 +1,5 @@
 from disnake import *
 from disnake.ext import commands
-import nextcord
 import disnake
 from .helper_cog import HelperCog
 from sys import version_info, version
@@ -477,13 +476,14 @@ class MiscCommandsCog(HelperCog):
                 embed=SuccessEmbed("Your data has been attached in this message!"),
                 file=file,
             )
+            # TODO: when discord api allows sending files in interaction replies, send them the file
             successful = True
-        except BaseException as e:
+        except BaseException as e:  # We can't send
             successful = False
             exc_raised = e
         if successful:
             return await inter.send(
-                embed=SuccessEmbed("I have DMed you your data!"), ephemeral=True
+                embed=SuccessEmbed(":) I have DMed you your data!"), ephemeral=True
             )
         else:
             await inter.send(
