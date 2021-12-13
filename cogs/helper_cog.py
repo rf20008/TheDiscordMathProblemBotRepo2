@@ -1,10 +1,6 @@
 from dislash.interactions.interaction import BaseInteraction
-<<<<<<< HEAD
-import nextcord, dislash
-=======
 import nextcord, disnake
 import helpful_modules
->>>>>>> disnake
 from copy import deepcopy
 from warnings import warn
 from helpful_modules import checks, problems_module

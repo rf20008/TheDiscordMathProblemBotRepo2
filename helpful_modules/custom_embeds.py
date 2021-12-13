@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-from discord import Embed, Color
-=======
 from disnake import Embed, Color
->>>>>>> disnake
 from random import randint
 
 

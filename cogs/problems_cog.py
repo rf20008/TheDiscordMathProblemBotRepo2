@@ -1,7 +1,6 @@
 from .helper_cog import HelperCog
 from helpful_modules.problems_module import *
 from helpful_modules.custom_embeds import SimpleEmbed, SuccessEmbed, ErrorEmbed
-<<<<<<< HEAD
 import dislash, nextcord
 from asyncio import run
 from dislash import Option, OptionType, OptionChoice
@@ -35,69 +34,49 @@ class ProblemsCog(HelperCog):
             Option(
                 name="problem_id",
                 description="problem_id",
-                type=OptionType.INTEGER,
                 type=OptionType.integer,
                 required=True,
             ),
             Option(
                 name="guild_id",
                 description="the guild id",
-<<<<<<< HEAD
-                type=OptionType.INTEGER,
-=======
                 type=OptionType.integer,
->>>>>>> disnake
                 required=False,
             ),
             Option(
                 name="new_question",
                 description="the new question",
-<<<<<<< HEAD
-                type=OptionType.STRING,
-=======
+
                 type=OptionType.string,
->>>>>>> disnake
                 required=False,
             ),
             Option(
                 name="new_answer",
                 description="the new answer",
-<<<<<<< HEAD
-                type=OptionType.STRING,
-=======
                 type=OptionType.string,
->>>>>>> disnake
                 required=False,
             ),
         ],
     )
     async def edit_problem(
         self,
-<<<<<<< HEAD
-        inter: dislash.SlashInteraction,
-=======
+
         inter: disnake.ApplicationCommandInteraction,
->>>>>>> disnake
+
         problem_id: int,
         new_question: str = None,
         new_answer: str = None,
         guild_id: int = "null",
-<<<<<<< HEAD
-    ) -> typing.Optional[nextcord.Message]:
-=======
+
     ) -> typing.Optional[disnake.Message]:
->>>>>>> disnake
         """/edit_problem problem_id:
         Allows you to edit a math problem."""
         await cooldowns.check_for_cooldown(inter, "edit_problem", 0.5)
         try:
             problem = await self.cache.get_problem(int(guild_id), int(problem_id))
             if not problem.is_author(inter.author):
-<<<<<<< HEAD
-                await inter.reply(
-=======
+
                 await inter.send(
->>>>>>> disnake
                     embed=ErrorEmbed(
                         "You are not the author of this problem and therefore can't edit it!"
                     )
@@ -467,7 +446,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             return
         if guild_question:
             if inter.guild is None:
-            raise RuntimeError("You're not allowed to submit guild problems because you're executing this in a DM context, or there is a bug with the library")
+                raise RuntimeError("You're not allowed to submit guild problems because you're executing this in a DM context, or there is a bug with the library")
 
             guild_id = inter.guild.id
             if guild_id is None:
@@ -841,33 +820,23 @@ NumSolvers: {len(problem.get_solvers())}"""
             ephemeral=True,
         )  # Tell the user of the successful unvote.
 
-<<<<<<< HEAD
-    @slash_command(
-=======
+
     @commands.slash_command(
->>>>>>> disnake
         name="delete_problem",
         description="Deletes a problem",
         options=[
             Option(
                 name="problem_id",
                 description="Problem ID!",
-<<<<<<< HEAD
-                type=OptionType.INTEGER,
-=======
+
                 type=OptionType.boolean,
->>>>>>> disnake
+
                 required=True,
             ),
             Option(
                 name="is_guild_problem",
-<<<<<<< HEAD
-                description="whether deleting a guild problem",
-                type=OptionType.USER,
-=======
                 description="whether you are deleting a guild problem",
                 type=OptionType.boolean,
->>>>>>> disnake
                 required=False,
             ),
         ],

@@ -1,8 +1,6 @@
 "Admin-related commands. Licensed under GPLv3"
-<<<<<<< HEAD
-=======
 from copy import copy
->>>>>>> disnake
+
 import random
 import dislash
 import typing
@@ -72,9 +70,6 @@ class DeveloperCommands(HelperCog):
             await inter.send(embed=ErrorEmbed("Something went wrong..."))
             # return
             raise  # I actually want to fix this bug!
-
-    @dislash.cooldown(1, 5)
-    @slash_command(
 
     @commands.cooldown(1, 5)
     @commands.slash_command(
@@ -278,11 +273,7 @@ class DeveloperCommands(HelperCog):
                 return None
             await inter.reply(_documentation)
         elif documentation_type == "privacy_policy":
-            with open("/PRIVACY_POLICY.md") as file:  # Replace this with
-                await inter.reply(content="\n".join([str(line) for line in file]))
-            return
-
-
+            with open("/PRIVACY_POLICY.md") as file:  # Replace this with the path to the file
                 await inter.send(embed=ErrorEmbed(str(e)))
                 return None
             await inter.send(_documentation)
@@ -302,7 +293,6 @@ class DeveloperCommands(HelperCog):
             Option(
                 name="send_ephermally",
                 description="Send the debug message ephermally?",
-                type=OptionType.BOOLEAN,
                 type=OptionType.boolean,
                 required=False,
             ),
@@ -396,7 +386,7 @@ class DeveloperCommands(HelperCog):
             inter, "generate_new_problems", 30
         )  # 30 second cooldown!
         await inter.create_response(type=5)
-
+        if inter.author.id not in self.bot.trusted_users:
             await inter.send(embed=ErrorEmbed("You aren't trusted!", ephemeral=True))
             return
         if num_new_problems_to_generate > 200:
@@ -463,7 +453,6 @@ class DeveloperCommands(HelperCog):
             )
             await self.cache.add_problem(None, problem_id, Problem)
         await inter.send(
->>>>>>> disnake
             embed=SuccessEmbed(
                 f"Successfully created {str(num_new_problems_to_generate)} new problems!"
             ),
