@@ -1,6 +1,7 @@
 from disnake import *
 from disnake.ext import commands
 import disnake
+import nextcord
 from .helper_cog import HelperCog
 from sys import version_info, version
 from os import cpu_count
