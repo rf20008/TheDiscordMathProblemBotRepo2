@@ -93,6 +93,7 @@ class MiscCommandsCog(HelperCog):
                 name="CPU count (which may not necessarily be the amount of CPU avaliable to the bot due to a Python limitation)",
                 value=str(cpu_count()),
             )
+            embed = embed.add_field(
                 name="License",
                 value="This bot is licensed under GPLv3. Please see [the official GPLv3 website](https://www.gnu.org/licenses/gpl-3.0.en.html) for more details.",
             )
@@ -129,11 +130,7 @@ class MiscCommandsCog(HelperCog):
                 user = await self.bot.fetch_user(user_id)
                 __trusted_users += f"""{user.name}#{user.discriminator}
             """
-<<<<<<< HEAD
-            except nextcord.NotFound:
-=======
             except (nextcord.NotFound, disnake.NotFound):
->>>>>>> disnake
                 # A user with this ID does not exist
                 self.bot.trusted_users.remove(user_id)  # delete the user!
                 try:
@@ -231,19 +228,8 @@ class MiscCommandsCog(HelperCog):
     )
     @checks.trusted_users_only()
     @commands.cooldown(
-        1, 50, BucketType.user
+        1, 50, commands.BucketType.user
     )  # Don't overload the bot (although trusted users will probably not)
-    @commands.cooldown(
-        15, 500, BucketType.default
-    )  # To prevent wars! If you want your own version, self host it :-)
-    async def set_vote_threshold(self, inter: dislash.SlashInteraction, threshold: int):
-        """/set_vote_threshold [threshold: int]
-        Set the vote threshold. Only trusted users may do this."""
-        # try:
-        #    threshold = int(threshold)
-        # except TypeError:  # Conversion failed!
-        #    await inter.reply(
-
     @commands.cooldown(
         15, 500, commands.BucketType.default
     )  # To prevent wars! If you want your own version, self host it :-)
@@ -608,7 +594,7 @@ class MiscCommandsCog(HelperCog):
         ):  # Mentioning owners: may be removed (you can also remove it as well)
             content += f"<@{owner_id}>"
         content += f"<@{self.bot.owner_id}>"
-        await channel.send(embed=embed, content=content))
+        await channel.send(embed=embed, content=content)
         await inter.send("Your request has been submitted!")
 
 

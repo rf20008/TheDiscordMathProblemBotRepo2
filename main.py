@@ -286,4 +286,4 @@ async def on_guild_remove(guild):
 
 if __name__ == "__main__":
     print("The bot has finished setting up and will now run.")
-    bobot.run(DISCORD_TOKEN)
+    bot.run(DISCORD_TOKEN)

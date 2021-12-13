@@ -22,7 +22,7 @@ from helpful_modules.threads_or_useful_funcs import generate_new_id
 class ProblemsCog(HelperCog):
     def __init__(self, bot):
         self.bot = bot
-        self.cache = gbot.cache
+        self.cache = bot.cache
         super().__init__(bot)
         checks.setup(bot)
 
