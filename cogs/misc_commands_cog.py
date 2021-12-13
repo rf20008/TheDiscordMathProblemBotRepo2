@@ -39,7 +39,7 @@ class MiscCommandsCog(HelperCog):
             )
         ],
     )
-    @disnake.cooldown(1, 150, commands.BucketType.user)
+    @commands.cooldown(1, 150, commands.BucketType.user)
     async def info(
         self,
         inter: disnake.ApplicationCommandInteraction,
@@ -100,7 +100,7 @@ class MiscCommandsCog(HelperCog):
 
         await inter.send(embed=embed)
 
-    @disnake.slash_command(
+    @commands.slash_command(
         name="list_trusted_users", description="list all trusted users"
     )
     @commands.cooldown(1, 5, commands.BucketType.user)  # 5 second user cooldown
@@ -185,7 +185,7 @@ class MiscCommandsCog(HelperCog):
             ephemeral=True,
         )
 
-    @disnake.slash_command(
+    @commands.slash_command(
         name="generate_invite_link",
         description="Generates a invite link for this bot! Takes no arguments",
     )
@@ -278,10 +278,10 @@ class MiscCommandsCog(HelperCog):
 
     @commands.slash_command(description="Interact with your user data")
     async def user_data(
-        self: "MiscCommandsCog", inter: disnake.ApplicationCommandInteraction
+        self, inter: disnake.ApplicationCommandInteraction
     ):
         "The base command to interact with your user data. This doesn't do anything (you need to call a subcommand)"
-        pass
+        print("The user_data command has been invoked!")
 
     @disnake.ext.commands.cooldown(
         1, 500, commands.BucketType.user
@@ -500,32 +500,32 @@ class MiscCommandsCog(HelperCog):
             Option(
                 name="offending_problem_guild_id",
                 description="The guild id of the problem you are trying to remove. The guild id of a global problem is null",
-                type=OptionType.INTEGER,
+                type=OptionType.integer,
                 required=False,
             ),
             Option(
                 name="offending_problem_id",
                 description="The problem id of the problem. Very important (so I know which problem to check)",
-                type=OptionType.INTEGER,
+                type=OptionType.integer,
                 required=False,
             ),
             Option(
                 name="extra_info",
                 description="A up to 5000 character description (about 2 pages) Use this wisely!",
-                type=OptionType.STRING,
+                type=OptionType.string,
                 required=False,
             ),
             Option(
                 name="copyrighted_thing",
                 description="The copyrighted thing that this problem is violating",
-                type=OptionType.STRING,
+                type=OptionType.string,
                 required=False,
             ),
             Option(
                 name="type",
                 description="Request type",
                 required=False,
-                type=OptionType.BOOLEAN,
+                type=OptionType.string,
             ),
         ],
     )
