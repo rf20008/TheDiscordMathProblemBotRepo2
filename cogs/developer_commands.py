@@ -42,7 +42,7 @@ class DeveloperCommands(HelperCog):
         """Forcefully load files. You must be a trusted user to do this command. This command does not take any arguments other than the category and the interaction."""
 
         if inter.author.id not in self.bot.trusted_users:
-            await inter.reply(
+            await inter.send(
                 ErrorEmbed(
                     """You aren't a trusted user.
                     Therefore, you don't have permission to force-load files."""
@@ -59,12 +59,12 @@ class DeveloperCommands(HelperCog):
             )
             FileSaver3.goodbye()
             del guildMathProblems
-            await inter.reply(
+            await inter.send(
                 embed=SuccessEmbed("Successfully forcefully loaded files!")
             )
             return
         except RuntimeError:
-            await inter.reply(embed=ErrorEmbed("Something went wrong..."))
+            await inter.send(embed=ErrorEmbed("Something went wrong..."))
             # return
             raise  # I actually want to fix this bug!
 
@@ -257,7 +257,7 @@ class DeveloperCommands(HelperCog):
                 if isinstance(
                     e, the_documentation_file_loader.DocumentationFileNotFound
                 ):
-                    await inter.reply(
+                    await inter.send(
                         embed=ErrorEmbed(
                             "Documentation file was not found. Please report this error!"
                         )
@@ -268,7 +268,7 @@ class DeveloperCommands(HelperCog):
             await inter.send(_documentation)
         elif documentation_type == "privacy_policy":
             with open("/PRIVACY_POLICY.md") as file:  # Replace this with the path
-                await inter.reply(content="\n".join([str(line) for line in file]))
+                await inter.send(content="\n".join([str(line) for line in file]))
             return
 
     @dislash.cooldown(1, 0.1)
@@ -380,10 +380,10 @@ class DeveloperCommands(HelperCog):
         await inter.create_response(type=5)
 
         if inter.author.id not in self.bot.trusted_users:
-            await inter.reply(embed=ErrorEmbed("You aren't trusted!", ephemeral=True))
+            await inter.send(embed=ErrorEmbed("You aren't trusted!", ephemeral=True))
             return
         if num_new_problems_to_generate > 200:
-            return await inter.reply(
+            return await inter.send(
                 embed=ErrorEmbed(
                     "You are trying to create too many problems. Try something smaller than or equal to 200."
                 ),
@@ -475,18 +475,18 @@ class DeveloperCommands(HelperCog):
         You must be a trusted user to add a trusted user, and the user you are trying to make a trusted user must not be a trusted user.
         You must also share a server with the new trusted user."""
         if inter.author.id not in self.bot.trusted_users:
-            await inter.reply(
+            await inter.send(
                 embed=ErrorEmbed("You aren't a trusted user!"), ephemeral=True
             )
             return
         if user.id in self.bot.trusted_users:
-            await inter.reply(
+            await inter.send(
                 embed=ErrorEmbed(f"{user.name} is already a trusted user!"),
                 ephemeral=True,
             )
             return
         self.bot.trusted_users.append(user.id)
-        await inter.reply(
+        await inter.send(
             embed=ErrorEmbed(f"Successfully made {user.nick} a trusted user!"),
             ephemeral=True,
         )
@@ -513,17 +513,17 @@ class DeveloperCommands(HelperCog):
         Remove a trusted user. You must be a trusted user to do this.
         There is also a 10 minute cooldown to prevent raids!"""
         if inter.author.id not in self.bot.trusted_users:
-            await inter.reply(
+            await inter.send(
                 embed=ErrorEmbed("You aren't a trusted user!"), ephemeral=True
             )
             return
         if user.id not in self.bot.trusted_users:
-            await inter.reply(
+            await inter.send(
                 embed=ErrorEmbed(f"{user.name} isn't a trusted user!", ephemeral=True)
             )
             return
         self.bot.trusted_users.pop(user.id)
-        await inter.reply(
+        await inter.send(
             embed=ErrorEmbed(
                 f"Successfully made {user.nick} no longer a trusted user!"
             ),
