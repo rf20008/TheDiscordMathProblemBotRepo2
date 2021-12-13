@@ -276,14 +276,16 @@ class MiscCommandsCog(HelperCog):
         )
         return
 
-    @commands.slash_command(description="Interact with your user data")
+    @commands.slash_command(
+        name="user_data", description="Interact with your user data"
+        )
     async def user_data(
-        self: "MiscCommandsCog", inter: disnake.ApplicationCommandInteraction
+        self, inter: disnake.ApplicationCommandInteraction
     ):
         "The base command to interact with your user data. This doesn't do anything (you need to call a subcommand)"
-        pass
+        print('user_data command invoked!')
 
-    @nextcord.ext.commands.cooldown(
+    @commands.cooldown(
         1, 500, commands.BucketType.user
     )  # To prevent abuse
     @user_data.sub_command(
@@ -370,7 +372,7 @@ class MiscCommandsCog(HelperCog):
             self.view.stop()
             return
 
-        async def deny_callback(self: BasicButton, interaction: nextcord.Interaction):
+        async def deny_callback(self: BasicButton, interaction: disnake.Interaction):
             "A function that runs when the"
             await interaction.response.reply(
                 "Your data is safe! It has not been deleted."
@@ -411,7 +413,7 @@ class MiscCommandsCog(HelperCog):
         )
 
     async def _get_json_data_by_user(
-        self, author: Union[nextcord.User, nextcord.Member]
+        self, author: Union[disnake.User, disnake.Member]
     ) -> dict:
         "A helper function to obtain a user's stored data and return the dictionarified version of it."
         raw_data = await self.cache.get_all_by_author_id(author.id)
@@ -440,11 +442,11 @@ class MiscCommandsCog(HelperCog):
         }
         return new_data
 
-    def _file_version_of_item(self, item: str, file_name) -> nextcord.File:
+    def _file_version_of_item(self, item: str, file_name) -> disnake.File:
         assert isinstance(item, str)
-        return nextcord.File(BytesIO(bytes(item, "utf-8")), filename=file_name)
+        return disnake.File(BytesIO(bytes(item, "utf-8")), filename=file_name)
 
-    @nextcord.ext.commands.cooldown(1, 100, nextcord.ext.commands.BucketType.user)
+    @commands.cooldown(1, 100, commands.BucketType.user)
     @user_data.sub_command(
         name="get_data",
         description="Get a jsonified version of the data stored with this application!",
@@ -500,32 +502,32 @@ class MiscCommandsCog(HelperCog):
             Option(
                 name="offending_problem_guild_id",
                 description="The guild id of the problem you are trying to remove. The guild id of a global problem is null",
-                type=OptionType.INTEGER,
+                type=OptionType.integer,
                 required=False,
             ),
             Option(
                 name="offending_problem_id",
                 description="The problem id of the problem. Very important (so I know which problem to check)",
-                type=OptionType.INTEGER,
+                type=OptionType.integer,
                 required=False,
             ),
             Option(
                 name="extra_info",
                 description="A up to 5000 character description (about 2 pages) Use this wisely!",
-                type=OptionType.STRING,
+                type=OptionType.string,
                 required=False,
             ),
             Option(
                 name="copyrighted_thing",
                 description="The copyrighted thing that this problem is violating",
-                type=OptionType.STRING,
+                type=OptionType.string,
                 required=False,
             ),
             Option(
                 name="type",
                 description="Request type",
                 required=False,
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
             ),
         ],
     )
@@ -554,7 +556,7 @@ class MiscCommandsCog(HelperCog):
             channel = await self.bot.fetch_channel(
                 901464948604039209
             )  # CHANGE THIS IF YOU HAVE A DIFFERENT REQUESTS CHANNEL! (the part after id)
-        except (nextcord.ext.commands.ChannelNotReadable, nextcord.Forbidden):
+        except (commands.ChannelNotReadable, disnake.Forbidden):
             raise RuntimeError("The bot cannot send messages to the channel!")
         try:
             Problem = await self.bot.cache.get_problem(

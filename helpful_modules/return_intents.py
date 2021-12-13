@@ -1,4 +1,4 @@
-from nextcord import Intents
+from disnake import Intents
 
 
 def return_intents():
@@ -6,5 +6,6 @@ def return_intents():
     i.typing = False
     i.presences = False
     i.members = False
-
+    i.reactions = False
+    i.bans = False
     return i

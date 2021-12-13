@@ -366,7 +366,7 @@ class DeveloperCommands(HelperCog):
             )
         ],
     )
-    @commands.cooldown(1, 30, nextcord.ext.commands.BucketType.user)
+    @commands.cooldown(1, 30, commands.BucketType.user)
     async def generate_new_problems(
         self,
         inter: disnake.ApplicationCommandInteraction,
@@ -504,7 +504,7 @@ class DeveloperCommands(HelperCog):
             )
         ],
     )
-    @commands.cooldown(1, 600, nextcord.ext.commands.BucketType.user)
+    @commands.cooldown(1, 600, commands.BucketType.user)
     @checks.trusted_users_only()
     async def remove_trusted_user(
         self: "DeveloperCommands", inter: dislash.SlashInteraction, user: nextcord.User
@@ -531,7 +531,7 @@ class DeveloperCommands(HelperCog):
         )
 
 
-def setup(bot: nextcord.ext.commands.Bot):
+def setup(bot: commands.Bot):
     bot.add_cog(DeveloperCommands(bot))
 
 

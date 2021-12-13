@@ -1,0 +1,14 @@
+Mon Dec 13 01:52:52 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/disnake/client.py", line 515, in _run_event
+    await coro(*args, **kwargs)
+  File "main.py", line 208, in on_connect
+    await bot.change_presence(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/disnake/client.py", line 1428, in change_presence
+    await self.ws.change_presence(activity=activity, status=status_str)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/disnake/gateway.py", line 645, in change_presence
+    raise InvalidArgument("activity must derive from BaseActivity.")
+disnake.errors.InvalidArgument: activity must derive from BaseActivity.
+
+

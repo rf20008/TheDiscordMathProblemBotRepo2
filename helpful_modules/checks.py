@@ -62,7 +62,7 @@ def administrator_or_trusted_users_only():
         ):
             return True
         raise CustomCheckFailure(
-            "Insufficient permissions (administrator permission or bot trusted user required. If this happens again and you have the administrator permissio, report this)"
+            "Insufficient permissions (administrator permission or bot trusted user required. If this happens again and you have the administrator permission, report this)"
         )
 
     return commands.check(predicate)

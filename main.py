@@ -30,6 +30,7 @@ from copy import copy
 # Imports - 3rd party
 import discord
 import dislash  # https://github.com/EQUENOS/dislash.py
+import disnake # https://github.com/DisnakeDev/disnake
 from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
 import nextcord  # https://github.com/nextcord/nextcord
 import nextcord.ext.commands as nextcord_commands
@@ -149,14 +150,14 @@ def get_git_revision_hash() -> str:
 # Bot creation
 
 asyncio.set_event_loop(asyncio.new_event_loop())  # Otherwise, weird errors will happen
-bot = nextcord_commands.Bot(
+bot = disnake.ext.commands.Bot(
     command_prefix=" ",
     intents=return_intents.return_intents(),
     application_id=845751152901750824,
-    status=nextcord.Status.idle,
+    status=disnake.Status.idle
     # activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂") # This didn't work anyway, will set the activity in on_connect
 )
-
+bot._sync_commands_debug=True
 setup(bot)
 bot.cache = main_cache
 bot.constants = bot_constants
@@ -171,7 +172,7 @@ bot._transport_modules = {
 }
 bot.add_check(is_not_blacklisted)
 bot.add_check(
-    nextcord.ext.commands.bot_has_permissions(
+    disnake.ext.commands.bot_has_permissions(
         send_messages=True,
     )
 )
@@ -205,10 +206,10 @@ async def on_connect():
     print("The bot has connected to Discord successfully.")
     await asyncio_sleep(0.5)
     await bot.change_presence(
-        activity=nextcord.CustomActivity(
+        activity=disnake.CustomActivity(
             name="Making sure that the bot works!", emoji="🙂"
         ),
-        status=nextcord.Status.idle,
+        status=disnake.Status.idle,
     )
     bot.log.debug(
         "Deleting data from guilds the bot was kicked from while it was offline"
@@ -282,5 +283,11 @@ async def on_guild_remove(guild):
 if __name__ == "__main__":
     print("The bot has finished setting up and will now run.")
     # slash.run(DISCORD_TOKEN)
-
+    print(bot.walk_commands())
+    for command in bot.global_slash_commands:
+        raise
+        print(command.name)
+        if len(command.name) > 100:
+            print('this command is too long')
+            raise
     bot.run(DISCORD_TOKEN)
