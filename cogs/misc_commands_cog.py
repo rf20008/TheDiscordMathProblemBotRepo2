@@ -224,18 +224,13 @@ class MiscCommandsCog(HelperCog):
             Option(
                 name="threshold",
                 description="the threshold you want to change it to",
-<<<<<<< HEAD
-                type=OptionType.INTEGER,
-=======
                 type=OptionType.integer,
->>>>>>> disnake
                 required=True,
             )
         ],
     )
     @checks.trusted_users_only()
     @commands.cooldown(
-<<<<<<< HEAD
         1, 50, BucketType.user
     )  # Don't overload the bot (although trusted users will probably not)
     @commands.cooldown(
@@ -248,9 +243,7 @@ class MiscCommandsCog(HelperCog):
         #    threshold = int(threshold)
         # except TypeError:  # Conversion failed!
         #    await inter.reply(
-=======
-        1, 50, commands.BucketType.user
-    )  # Don't overload the bot (although trusted users will probably not)
+
     @commands.cooldown(
         15, 500, commands.BucketType.default
     )  # To prevent wars! If you want your own version, self host it :-)
@@ -265,42 +258,28 @@ class MiscCommandsCog(HelperCog):
         #    threshold = int(threshold)
         # except TypeError:  # Conversion failed!
         #    await inter.send(
->>>>>>> disnake
         #        embed=ErrorEmbed(
         #            "Invalid threshold argument! (threshold must be an integer)"
         #        ),
         #        ephemeral=True,
         #    )
         #    return
-<<<<<<< HEAD
-        # Unnecessary because the type
-        if threshold < 1:  # Threshold must be greater than 1!
-            await inter.reply(
-=======
         # Unnecessary because the type is an integer
         if threshold < 1:  # Threshold must be greater than 1!
             await inter.send(
->>>>>>> disnake
                 embed=ErrorEmbed("You can't set the threshold to smaller than 1."),
                 ephemeral=True,
             )
             return
-<<<<<<< HEAD
-        vote_threshold = int(threshold)
-        for problem in await self.bot.cache.get_global_problems():
-            if problem.get_num_voters() > vote_threshold:
-                await self.cache.remove_problem(problem.guild_id, problem.id)
-        await inter.reply(
-=======
         try:
             vote_threshold = int(threshold)  # Probably unnecessary
         except:
+            #TODO: block the user
             raise
         for problem in await self.bot.cache.get_global_problems():
             if problem.get_num_voters() > vote_threshold:
                 await self.cache.remove_problem(problem.guild_id, problem.id)
         await inter.send(
->>>>>>> disnake
             embed=SuccessEmbed(
                 f"The vote threshold has successfully been changed to {threshold}!"
             ),
