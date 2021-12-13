@@ -8,14 +8,10 @@ import dislash
 import typing
 import nextcord
 import nextcord.ext.commands as nextcord_commands
-<<<<<<< HEAD
-from dislash import *
-from nextcord.mentions import AllowedMentions
-=======
+
 import disnake
 from disnake.ext import commands
 from disnake import *
->>>>>>> disnake
 
 from .helper_cog import HelperCog
 from helpful_modules import checks, cooldowns, the_documentation_file_loader
