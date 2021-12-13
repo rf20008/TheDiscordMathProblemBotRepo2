@@ -6,6 +6,12 @@ from asyncio import run
 from disnake.ext import commands
 from helpful_modules import checks, cooldowns, problems_module
 import aiosqlite
+from dislash import *
+import disnake, nextcord
+from asyncio import run
+from disnake.ext import commands
+from helpful_modules import checks, cooldowns, problems_module
+import aiosqlite
 from disnake import *
 import threading
 import typing
@@ -90,7 +96,8 @@ class ProblemsCog(HelperCog):
                 #    "*** No new answer or new question provided. Aborting command...***"
                 # )
                 # Return error messages in favor of raising exceptions
-                return await inter.send("You must provide a ")
+
+                return await inter.send("You must provide either a question or answer.")
 
         await inter.send(embed=SuccessEmbed(e), ephemeral=True)
 
@@ -107,7 +114,8 @@ class ProblemsCog(HelperCog):
             Option(
                 name="show_all_data",
                 description="whether to show all data (only useable by problem authors and trusted users",
-                type=OptionType.integer,
+
+                type=OptionType.boolean,
                 required=False,
             ),
             Option(
@@ -154,7 +162,7 @@ class ProblemsCog(HelperCog):
                 embed1 = ErrorEmbed(
                     description="Run this command in the Discord server which has this problem, not a DM!"
                 )
-                inter.send(embed=embed1)
+                await inter.send(embed=embed1)
                 return
             problem = await self.cache.get_problem(
                 int(inter.guild.id) if is_guild_problem else None, int(problem_id)
@@ -429,7 +437,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             return
         if guild_question:
             if inter.guild is None:
-                raise RuntimeError("Uh oh")
+                raise RuntimeError("You're not allowed to submit guild problems because you're executing this in a DM context, or there is a bug with the library")
 
             guild_id = inter.guild.id
             if guild_id is None:
@@ -788,7 +796,6 @@ NumSolvers: {len(problem.get_solvers())}"""
                 "There are {problem.get_num_voters()}/{self.bot.vote_threshold} votes on this problem!"
             )
         )
-
         await inter.send(
             embed=SuccessEmbed(successMessage, successTitle="Successfully unvoted!"),
             ephemeral=True,

@@ -1,7 +1,6 @@
 from disnake import *
 from disnake.ext import commands
 import disnake
-import nextcord
 from .helper_cog import HelperCog
 from sys import version_info, version
 from os import cpu_count
@@ -40,7 +39,7 @@ class MiscCommandsCog(HelperCog):
             )
         ],
     )
-    @commands.cooldown(1, 150, commands.BucketType.user)
+    @disnake.cooldown(1, 150, commands.BucketType.user)
     async def info(
         self,
         inter: disnake.ApplicationCommandInteraction,
@@ -77,7 +76,7 @@ class MiscCommandsCog(HelperCog):
             )
 
             embed = embed.add_field(
-                name="Nextcord version", value=str(nextcord.__version__)
+                name="Nextcord version", value=str(disnake.__version__)
             )
             embed = embed.add_field(
                 name="Disnake version", value=str(disnake.__version__)
@@ -101,7 +100,7 @@ class MiscCommandsCog(HelperCog):
 
         await inter.send(embed=embed)
 
-    @commands.slash_command(
+    @disnake.slash_command(
         name="list_trusted_users", description="list all trusted users"
     )
     @commands.cooldown(1, 5, commands.BucketType.user)  # 5 second user cooldown
@@ -128,7 +127,7 @@ class MiscCommandsCog(HelperCog):
                 user = await self.bot.fetch_user(user_id)
                 __trusted_users += f"""{user.name}#{user.discriminator}
             """
-            except (nextcord.NotFound, disnake.NotFound):
+            except (disnake.NotFound, disnake.NotFound):
                 # A user with this ID does not exist
                 self.bot.trusted_users.remove(user_id)  # delete the user!
                 try:
@@ -148,7 +147,7 @@ class MiscCommandsCog(HelperCog):
                         "Could not save the files after removing the trusted user with ID that does not exist!"
                     ) from e
             except (
-                nextcord.Forbidden,
+                disnake.Forbidden,
                 disnake.Forbidden,
             ) as exc:  # Cannot fetch this user!
                 raise RuntimeError("Cannot fetch users") from exc
@@ -186,7 +185,7 @@ class MiscCommandsCog(HelperCog):
             ephemeral=True,
         )
 
-    @commands.slash_command(
+    @disnake.slash_command(
         name="generate_invite_link",
         description="Generates a invite link for this bot! Takes no arguments",
     )
@@ -277,16 +276,14 @@ class MiscCommandsCog(HelperCog):
         )
         return
 
-    @commands.slash_command(
-        name="user_data", description="Interact with your user data"
-        )
+    @commands.slash_command(description="Interact with your user data")
     async def user_data(
-        self, inter: disnake.ApplicationCommandInteraction
+        self: "MiscCommandsCog", inter: disnake.ApplicationCommandInteraction
     ):
         "The base command to interact with your user data. This doesn't do anything (you need to call a subcommand)"
-        print('user_data command invoked!')
+        pass
 
-    @commands.cooldown(
+    @disnake.ext.commands.cooldown(
         1, 500, commands.BucketType.user
     )  # To prevent abuse
     @user_data.sub_command(
@@ -334,7 +331,7 @@ class MiscCommandsCog(HelperCog):
 
         async def confirm_callback(
             self: ConfirmationButton,
-            interaction: nextcord.Interaction,
+            interaction: disnake.Interaction,
             _extra_data: dict,
         ):
             "The function that runs when the button gets pressed. This actually deletes the data"
@@ -391,7 +388,7 @@ class MiscCommandsCog(HelperCog):
             _extra_data["file"] = file_version
         confirmation_button = ConfirmationButton(
             callback=confirm_callback,
-            style=nextcord.ButtonStyle.danger,
+            style=disnake.ButtonStyle.danger,
             label="I'm 100\% \sure I want to delete my data!",
             disabled=False,
             _extra_data=_extra_data,
@@ -399,7 +396,7 @@ class MiscCommandsCog(HelperCog):
         deny_button = BasicButton(
             check=lambda self, inter: inter.user.id == self.user_for,
             callback=deny_callback,
-            style=nextcord.ButtonStyle.green,
+            style=disnake.ButtonStyle.green,
             disabled=False,
             label="Never mind....",
         )
@@ -447,7 +444,7 @@ class MiscCommandsCog(HelperCog):
         assert isinstance(item, str)
         return disnake.File(BytesIO(bytes(item, "utf-8")), filename=file_name)
 
-    @commands.cooldown(1, 100, commands.BucketType.user)
+    @disnake.ext.commands.cooldown(1, 100, disnake.ext.commands.BucketType.user)
     @user_data.sub_command(
         name="get_data",
         description="Get a jsonified version of the data stored with this application!",
@@ -457,7 +454,7 @@ class MiscCommandsCog(HelperCog):
         Get all the data the bot stores about you.
         Due to a Discord limitation, the bot cannot send the file in the interaction response, so you will be DMed instead.
         To prevent spam and getting ratelimited, there is a 100 second cooldown."""
-        file = nextcord.File(
+        file = disnake.File(
             BytesIO(
                 orjson.dumps(
                     await self._get_json_data_by_user(inter.author),
@@ -503,32 +500,32 @@ class MiscCommandsCog(HelperCog):
             Option(
                 name="offending_problem_guild_id",
                 description="The guild id of the problem you are trying to remove. The guild id of a global problem is null",
-                type=OptionType.integer,
+                type=OptionType.INTEGER,
                 required=False,
             ),
             Option(
                 name="offending_problem_id",
                 description="The problem id of the problem. Very important (so I know which problem to check)",
-                type=OptionType.integer,
+                type=OptionType.INTEGER,
                 required=False,
             ),
             Option(
                 name="extra_info",
                 description="A up to 5000 character description (about 2 pages) Use this wisely!",
-                type=OptionType.string,
+                type=OptionType.STRING,
                 required=False,
             ),
             Option(
                 name="copyrighted_thing",
                 description="The copyrighted thing that this problem is violating",
-                type=OptionType.string,
+                type=OptionType.STRING,
                 required=False,
             ),
             Option(
                 name="type",
                 description="Request type",
                 required=False,
-                type=OptionType.boolean,
+                type=OptionType.BOOLEAN,
             ),
         ],
     )
@@ -557,7 +554,7 @@ class MiscCommandsCog(HelperCog):
             channel = await self.bot.fetch_channel(
                 901464948604039209
             )  # CHANGE THIS IF YOU HAVE A DIFFERENT REQUESTS CHANNEL! (the part after id)
-        except (commands.ChannelNotReadable, disnake.Forbidden):
+        except (disnake.ext.commands.ChannelNotReadable, disnake.Forbidden):
             raise RuntimeError("The bot cannot send messages to the channel!")
         try:
             Problem = await self.bot.cache.get_problem(
@@ -568,7 +565,7 @@ class MiscCommandsCog(HelperCog):
             # Problem not found
             problem_found = False
         content = self.bot.owner_id
-        embed = nextcord.Embed(
+        embed = disnake.Embed(
             title=f"A new {type} request has been recieved from {inter.author.name}#{inter.author.discriminator}!",
             description="",
         )

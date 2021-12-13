@@ -254,7 +254,10 @@ async def on_error(event, *args, **kwargs):
 async def on_slash_command_error(inter, error):
     "Function called when a slash command errors, which will inevitably happen. All of the functionality was moved to base_on_error :-)"
     # print the traceback to the file
-    return await inter.reply(**await base_on_error(inter, error))
+    dict_args = await base_on_error(inter,error)
+    print(dict_args)
+    return await inter.send(**dict_args)
+
 
 
 ##@bot.command(help = """Adds a trusted user!
@@ -277,15 +280,14 @@ async def on_guild_join(guild):
 
 @bot.event
 async def on_guild_remove(guild):
-    await bot.cache.remove_all_by_guild_id(guild.id)  # Remove all guild-related stuff
-
+    return await bot.cache.remove_all_by_guild_id(guild.id)  # Remove all guild-related stuff
 
 if __name__ == "__main__":
     print("The bot has finished setting up and will now run.")
     # slash.run(DISCORD_TOKEN)
     print(bot.walk_commands())
     for command in bot.global_slash_commands:
-        raise
+        #raise
         print(command.name)
         if len(command.name) > 100:
             print('this command is too long')

@@ -267,7 +267,7 @@ class DeveloperCommands(HelperCog):
                 return None
             await inter.send(_documentation)
         elif documentation_type == "privacy_policy":
-            with open("/PRIVACY_POLICY.md") as file:  # Replace this with the path
+            with open("/PRIVACY_POLICY.md") as file:  # Replace this with the path to the file
                 await inter.send(content="\n".join([str(line) for line in file]))
             return
 
@@ -378,7 +378,6 @@ class DeveloperCommands(HelperCog):
             inter, "generate_new_problems", 30
         )  # 30 second cooldown!
         await inter.create_response(type=5)
-
         if inter.author.id not in self.bot.trusted_users:
             await inter.send(embed=ErrorEmbed("You aren't trusted!", ephemeral=True))
             return
@@ -480,6 +479,7 @@ class DeveloperCommands(HelperCog):
             )
             return
         if user.id in self.bot.trusted_users:
+
             await inter.send(
                 embed=ErrorEmbed(f"{user.name} is already a trusted user!"),
                 ephemeral=True,

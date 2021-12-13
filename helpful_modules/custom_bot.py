@@ -12,3 +12,6 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
 
     def get_task(self, task_name):
         return self.tasks[task_name]
+    def start_tasks(self):
+        for task in self.tasks.values():
+            task.start()
