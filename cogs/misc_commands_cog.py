@@ -287,15 +287,6 @@ class MiscCommandsCog(HelperCog):
         )
         return
 
-<<<<<<< HEAD
-    @slash_command(description="Interact with your user data")
-    async def user_data(self: "MiscCommandsCog", inter: dislash.SlashInteraction):
-        "The base command to interact with your user data. This doesn't do anything (you need to call a subcommand"
-        pass
-
-    @nextcord.ext.commands.cooldown(
-        1, 500, nextcord.ext.commands.BucketType.user
-=======
     @commands.slash_command(
         name="user_data", description="Interact with your user data"
         )
@@ -307,7 +298,6 @@ class MiscCommandsCog(HelperCog):
 
     @commands.cooldown(
         1, 500, commands.BucketType.user
->>>>>>> disnake
     )  # To prevent abuse
     @user_data.sub_command(
         name="delete_all",
@@ -316,42 +306,26 @@ class MiscCommandsCog(HelperCog):
             Option(
                 name="save_data_before_deletion",
                 description="Whether to give you your problems or submissions, in JSON format! Defaults to True",
-<<<<<<< HEAD
-                type=OptionType.BOOLEAN,
-=======
                 type=OptionType.boolean,
->>>>>>> disnake
                 required=False,
             ),
             Option(
                 name="delete_votes",
                 description="Whether to delete your votes. ",
-<<<<<<< HEAD
-                type=OptionType.BOOLEAN,
-=======
                 type=OptionType.boolean,
->>>>>>> disnake
                 required=False,
             ),
             Option(
                 name="delete_solves",
                 description="Whether to erase whether you have solved a problem or not",
-<<<<<<< HEAD
-                type=OptionType.BOOLEAN,
-=======
                 type=OptionType.boolean,
->>>>>>> disnake
                 required=False,
             ),
         ],
     )
     async def delete_all(
         self: "MiscCommandsCog",
-<<<<<<< HEAD
-        inter: dislash.SlashInteraction,
-=======
         inter: disnake.ApplicationCommandInteraction,
->>>>>>> disnake
         save_data_before_deletion: bool = True,
         delete_votes=False,
         delete_solves=False,
@@ -409,11 +383,7 @@ class MiscCommandsCog(HelperCog):
             self.view.stop()
             return
 
-<<<<<<< HEAD
-        async def deny_callback(self: BasicButton, interaction: nextcord.Interaction):
-=======
         async def deny_callback(self: BasicButton, interaction: disnake.Interaction):
->>>>>>> disnake
             "A function that runs when the"
             await interaction.response.reply(
                 "Your data is safe! It has not been deleted."
@@ -446,11 +416,7 @@ class MiscCommandsCog(HelperCog):
         view = MyView(timeout=30)
         view.add_item(confirmation_button)
         view.add_item(deny_button)
-<<<<<<< HEAD
-        return await inter.reply(
-=======
         return await inter.send(
->>>>>>> disnake
             embed=SimpleEmbed(
                 title="Are you sure?", description="This will delete all your data!"
             ),
@@ -458,11 +424,7 @@ class MiscCommandsCog(HelperCog):
         )
 
     async def _get_json_data_by_user(
-<<<<<<< HEAD
-        self, author: Union[nextcord.User, nextcord.Member]
-=======
         self, author: Union[disnake.User, disnake.Member]
->>>>>>> disnake
     ) -> dict:
         "A helper function to obtain a user's stored data and return the dictionarified version of it."
         raw_data = await self.cache.get_all_by_author_id(author.id)
@@ -491,18 +453,12 @@ class MiscCommandsCog(HelperCog):
         }
         return new_data
 
-<<<<<<< HEAD
-    def _file_version_of_item(self, item: str, file_name) -> nextcord.File:
-        assert isinstance(item, str)
-        return nextcord.File(BytesIO(bytes(item, "utf-8")), filename=file_name)
-    @nextcord.ext.commands.cooldown(1, 100, nextcord.ext.commands.BucketType.user)
-=======
+
     def _file_version_of_item(self, item: str, file_name) -> disnake.File:
         assert isinstance(item, str)
         return disnake.File(BytesIO(bytes(item, "utf-8")), filename=file_name)
 
     @commands.cooldown(1, 100, commands.BucketType.user)
->>>>>>> disnake
     @user_data.sub_command(
         name="get_data",
         description="Get a jsonified version of the data stored with this application!",
@@ -521,11 +477,8 @@ class MiscCommandsCog(HelperCog):
             ),
             filename="your_data.json",
         )
-<<<<<<< HEAD
         # await inter.reply(
-=======
         # await inter.send(
->>>>>>> disnake
         #  embed=SuccessEmbed(
         #    "Your json data will be attached in the next message due to API #limitations!"
         #  ),
@@ -538,18 +491,6 @@ class MiscCommandsCog(HelperCog):
                 embed=SuccessEmbed("Your data has been attached in this message!"),
                 file=file,
             )
-<<<<<<< HEAD
-            successful = True
-        except BaseException as e:
-            successful = False
-            exc_raised = e
-        if successful:
-            return await inter.reply(
-                embed=SuccessEmbed("I have DMed you your data!"), ephemeral=True
-            )
-        else:
-            await inter.reply(
-=======
             # TODO: when discord api allows sending files in interaction replies, send them the file
             successful = True
         except BaseException as e:  # We can't send
@@ -561,47 +502,33 @@ class MiscCommandsCog(HelperCog):
             )
         else:
             await inter.send(
->>>>>>> disnake
+
                 embed=ErrorEmbed(
                     "I was unable to DM you your data. Please check your privacy settings. If this is a bug, please report it!"
                 )
             )
             raise exc_raised
 
-<<<<<<< HEAD
-    @slash_command(
-=======
     @commands.slash_command(
->>>>>>> disnake
         name="submit_a_request",
         description="Submit a request. I will know!",
         options=[
             Option(
                 name="offending_problem_guild_id",
                 description="The guild id of the problem you are trying to remove. The guild id of a global problem is null",
-<<<<<<< HEAD
-                type=OptionType.INTEGER,
-=======
                 type=OptionType.integer,
->>>>>>> disnake
                 required=False,
             ),
             Option(
                 name="offending_problem_id",
                 description="The problem id of the problem. Very important (so I know which problem to check)",
-<<<<<<< HEAD
-                type=OptionType.INTEGER,
-=======
                 type=OptionType.integer,
->>>>>>> disnake
                 required=False,
             ),
             Option(
                 name="extra_info",
                 description="A up to 5000 character description (about 2 pages) Use this wisely!",
-<<<<<<< HEAD
-                type=OptionType.STRING,
-=======
+
                 type=OptionType.string,
 >>>>>>> disnake
                 required=False,
