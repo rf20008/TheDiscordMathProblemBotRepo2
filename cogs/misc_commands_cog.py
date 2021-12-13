@@ -530,38 +530,28 @@ class MiscCommandsCog(HelperCog):
                 description="A up to 5000 character description (about 2 pages) Use this wisely!",
 
                 type=OptionType.string,
->>>>>>> disnake
                 required=False,
             ),
             Option(
                 name="copyrighted_thing",
                 description="The copyrighted thing that this problem is violating",
-<<<<<<< HEAD
-                type=OptionType.STRING,
-=======
+
                 type=OptionType.string,
->>>>>>> disnake
                 required=False,
             ),
             Option(
                 name="type",
                 description="Request type",
                 required=False,
-<<<<<<< HEAD
-                type=OptionType.BOOLEAN,
-=======
+
                 type=OptionType.boolean,
->>>>>>> disnake
             ),
         ],
     )
     async def submit_a_request(
         self,
-<<<<<<< HEAD
-        inter: dislash.SlashInteraction,
-=======
+
         inter: disnake.ApplicationCommandInteraction,
->>>>>>> disnake
         offending_problem_guild_id: int = None,
         offending_problem_id: int = None,
         extra_info: str = None,
@@ -576,25 +566,16 @@ class MiscCommandsCog(HelperCog):
             and offending_problem_guild_id is None
             and offending_problem_id is None
         ):
-<<<<<<< HEAD
-            await inter.reply(embed=ErrorEmbed("You must specify some field."))
+            return await inter.send(embed=ErrorEmbed("You must specify some field."))
         if extra_info is None:
-            await inter.reply(embed=ErrorEmbed("Please provide extra information!"))
-=======
-            await inter.send(embed=ErrorEmbed("You must specify some field."))
-        if extra_info is None:
-            await inter.send(embed=ErrorEmbed("Please provide extra information!"))
->>>>>>> disnake
+            return await inter.send(embed=ErrorEmbed("Please provide extra information!"))
         assert len(extra_info) <= 5000
         try:
             channel = await self.bot.fetch_channel(
                 901464948604039209
             )  # CHANGE THIS IF YOU HAVE A DIFFERENT REQUESTS CHANNEL! (the part after id)
-<<<<<<< HEAD
-        except (nextcord.ext.commands.ChannelNotReadable, nextcord.Forbidden):
-=======
+
         except (commands.ChannelNotReadable, disnake.Forbidden):
->>>>>>> disnake
             raise RuntimeError("The bot cannot send messages to the channel!")
         try:
             Problem = await self.bot.cache.get_problem(
@@ -627,9 +608,12 @@ class MiscCommandsCog(HelperCog):
         ):  # Mentioning owners: may be removed (you can also remove it as well)
             content += f"<@{owner_id}>"
         content += f"<@{self.bot.owner_id}>"
-        await channel.send(embed=embed, content=content)
-<<<<<<< HEAD
-        await inter.reply("Your request has been submitted!")
-=======
+        await channel.send(embed=embed, content=content))
         await inter.send("Your request has been submitted!")
->>>>>>> disnake
+
+
+def setup(bot):
+    bot.add_cog(MiscCommandsCog(bot))
+
+def teardown(bot):
+    bot.remove_cog("MiscCommandsCog")
