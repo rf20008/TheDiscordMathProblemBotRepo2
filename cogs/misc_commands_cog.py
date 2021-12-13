@@ -35,7 +35,7 @@ class MiscCommandsCog(HelperCog):
                 name="include_extra_info",
                 description="Whether to include extra, technical info",
                 required=False,
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
             )
         ],
     )
@@ -225,7 +225,7 @@ class MiscCommandsCog(HelperCog):
             Option(
                 name="threshold",
                 description="the threshold you want to change it to",
-                type=OptionType.INTEGER,
+                type=OptionType.integer,
                 required=True,
             )
         ],
@@ -293,19 +293,19 @@ class MiscCommandsCog(HelperCog):
             Option(
                 name="save_data_before_deletion",
                 description="Whether to give you your problems or submissions, in JSON format! Defaults to True",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
             Option(
                 name="delete_votes",
                 description="Whether to delete your votes. ",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
             Option(
                 name="delete_solves",
                 description="Whether to erase whether you have solved a problem or not",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
         ],

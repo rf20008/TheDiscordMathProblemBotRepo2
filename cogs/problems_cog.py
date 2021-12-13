@@ -3,7 +3,6 @@ from helpful_modules.problems_module import *
 from helpful_modules.custom_embeds import SimpleEmbed, SuccessEmbed, ErrorEmbed
 import disnake, nextcord
 from asyncio import run
-from disnake import Option, OptionType, OptionChoice
 from nextcord.ext import commands
 from helpful_modules import checks, cooldowns, problems_module
 import aiosqlite
@@ -28,25 +27,25 @@ class ProblemsCog(HelperCog):
             Option(
                 name="problem_id",
                 description="problem_id",
-                type=OptionType.INTEGER,
+                type=OptionType.integer,
                 required=True,
             ),
             Option(
                 name="guild_id",
                 description="the guild id",
-                type=OptionType.INTEGER,
+                type=OptionType.integer,
                 required=False,
             ),
             Option(
                 name="new_question",
                 description="the new question",
-                type=OptionType.STRING,
+                type=OptionType.string,
                 required=False,
             ),
             Option(
                 name="new_answer",
                 description="the new answer",
-                type=OptionType.STRING,
+                type=OptionType.string,
                 required=False,
             ),
         ],
@@ -102,13 +101,13 @@ class ProblemsCog(HelperCog):
             Option(
                 name="problem_id",
                 description="problem id of the problem you want to show",
-                type=OptionType.INTEGER,
+                type=OptionType.integer,
                 required=True,
             ),
             Option(
                 name="show_all_data",
                 description="whether to show all data (only useable by problem authors and trusted users",
-                type=OptionType.BOOLEAN,
+                type=OptionType.integer,
                 required=False,
             ),
             Option(
@@ -197,12 +196,13 @@ NumSolvers: {len(problem.get_solvers())}"""
                 name="show_only_guild_problems",
                 description="Whether to show guild problem ids",
                 required=False,
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
             )
         ],
     )
     async def list_all_problem_ids(self, inter, show_only_guild_problems=False):
-        "Lists all problem ids."
+        """/list_all_problem_ids [show_only_guild_problems: bool = false]
+        List all problem ids. If show_only_guild_problems is true, then only ids of guild problems will be shown. Otherwise only problem ids of problems that are global will be shown."""
         await cooldowns.check_for_cooldown(inter, "list_all_problem_ids", 2.5)
         if show_only_guild_problems:
             guild_id = inter.guild.id
@@ -236,19 +236,19 @@ NumSolvers: {len(problem.get_solvers())}"""
             Option(
                 name="show_solved_problems",
                 description="Whether to show solved problems",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
             Option(
                 name="show_guild_problems",
                 description="Whether to show solved problems",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
             Option(
                 name="show_only_guild_problems",
                 description="Whether to only show guild problems",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
         ],
@@ -261,7 +261,9 @@ NumSolvers: {len(problem.get_solvers())}"""
         show_guild_problems=True,
         show_only_guild_problems=False,
     ):
-        "List all MathProblems."
+        """/list_all_problems [show_solved_problems: bool = false] [show_guild_problems: bool = true] [show_only_guild_problems: bool = false]
+        List all problems.
+        If show_solved_problems is set to true, """
         await cooldowns.check_for_cooldown(inter, "list_all_problems")
         if inter.guild is None and show_guild_problems:
             await inter.send("You must be in a guild to see guild problems!")
@@ -343,7 +345,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         description="delete all automatically generated problems",
     )
     @checks.trusted_users_only()
-    @nextcord.ext.commands.cooldown(1, 15, nextcord.ext.commands.BucketType.user)
+    @disnake.ext.commands.cooldown(1, 15, nextcord.ext.commands.BucketType.user)
     async def delallbotproblems(self, inter: disnake.ApplicationCommandInteraction):
         """/delallbotproblems
         Delete all automatically generated problems."""
@@ -362,7 +364,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         await inter.send(
             embed=SuccessEmbed(f"Successfully deleted {numDeletedProblems}!")
         )
-
+    
     @commands.slash_command(
         name="submit_problem",
         description="Create a new problem",
@@ -370,23 +372,24 @@ NumSolvers: {len(problem.get_solvers())}"""
             Option(
                 name="answer",
                 description="The answer to this problem",
-                type=OptionType.STRING,
+                type=OptionType.string,
                 required=True,
             ),
             Option(
                 name="question",
-                description="your question",
-                type=OptionType.STRING,
+                description="your question to submit!",
+                type=OptionType.string,
                 required=True,
             ),
             Option(
                 name="guild_question",
                 description="Whether it should be a question for the guild",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
         ],
     )
+    @disnake.ext.commands.cooldown(1,5,commands.BucketType.user)
     async def submit_problem(
         self,
         inter: disnake.ApplicationCommandInteraction,
@@ -519,13 +522,13 @@ NumSolvers: {len(problem.get_solvers())}"""
             Option(
                 name="answer",
                 description="your answer",
-                type=OptionType.STRING,
+                type=OptionType.string,
                 required=True,
             ),
             Option(
                 name="checking_guild_problem",
                 description="whether checking a guild problem",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
         ],
@@ -592,13 +595,13 @@ NumSolvers: {len(problem.get_solvers())}"""
             Option(
                 name="answer",
                 description="your answer",
-                type=OptionType.STRING,
+                type=OptionType.string,
                 required=True,
             ),
             Option(
                 name="checking_guild_problem",
                 description="whether checking a guild problem",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
         ],
@@ -668,7 +671,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             Option(
                 name="is_guild_problem",
                 description="problem id of the problem you are attempting to delete",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
         ],
@@ -733,13 +736,13 @@ NumSolvers: {len(problem.get_solvers())}"""
             Option(
                 name="problem_id",
                 description="problem id of the problem you are attempting to delete",
-                type=OptionType.INTEGER,
+                type=OptionType.boolean,
                 required=True,
             ),
             Option(
                 name="is_guild_problem",
                 description="problem id of the problem you are attempting to delete",
-                type=OptionType.BOOLEAN,
+                type=OptionType.boolean,
                 required=False,
             ),
         ],
@@ -798,13 +801,13 @@ NumSolvers: {len(problem.get_solvers())}"""
             Option(
                 name="problem_id",
                 description="Problem ID!",
-                type=OptionType.INTEGER,
+                type=OptionType.boolean,
                 required=True,
             ),
             Option(
                 name="is_guild_problem",
-                description="whether deleting a guild problem",
-                type=OptionType.USER,
+                description="whether you are deleting a guild problem",
+                type=OptionType.boolean,
                 required=False,
             ),
         ],
