@@ -256,7 +256,10 @@ async def on_slash_command_error(inter, error):
     # print the traceback to the file
     dict_args = await base_on_error(inter, error)
     print(dict_args)
-    return await inter.send(**dict_args)
+    try:
+        return await inter.send(**dict_args)
+    except AttributeError:
+        return await inter.send()
 
 
 ##@bot.command(help = """Adds a trusted user!

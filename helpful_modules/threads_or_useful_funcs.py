@@ -70,7 +70,7 @@ async def base_on_error(inter, error):
     # Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
 
     try:
-        embed = nextcord.Embed(
+        embed = disnake.Embed(
             colour=nextcord.Colour.red(),
             description=nextcord.utils.escape_markdown(error_traceback),
             title="Oh, no! An error occurred!",

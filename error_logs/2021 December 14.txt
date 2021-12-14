@@ -1,0 +1,44 @@
+Tue Dec 14 01:18:51 2021
+
+Traceback (most recent call last):
+  File "/home/runner/TheDiscordMathProblemBot/cogs/problems_cog.py", line 146, in show_problem_info
+    guild_id = inter.guild.id
+AttributeError: 'NoneType' object has no attribute 'id'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/disnake/ext/commands/slash_core.py", line 585, in invoke
+    await call_param_func(self.callback, inter, self.cog, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/disnake/ext/commands/params.py", line 678, in call_param_func
+    return await maybe_coroutine(safe_call, function, **kwargs)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/disnake/utils.py", line 555, in maybe_coroutine
+    return await value
+  File "/home/runner/TheDiscordMathProblemBot/cogs/problems_cog.py", line 148, in show_problem_info
+    raise Exception(
+Exception: *** AttributeError: guild.id was not found! Please report this error or refrain from using it here***
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/disnake/ext/commands/interaction_bot_base.py", line 1340, in process_application_commands
+    await app_command.invoke(interaction)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/disnake/ext/commands/slash_core.py", line 594, in invoke
+    raise CommandInvokeError(exc) from exc
+disnake.ext.commands.errors.CommandInvokeError: Command raised an exception: Exception: *** AttributeError: guild.id was not found! Please report this error or refrain from using it here***
+
+
+Tue Dec 14 01:18:51 2021
+
+Traceback (most recent call last):
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/disnake/client.py", line 515, in _run_event
+    await coro(*args, **kwargs)
+  File "main.py", line 259, in on_slash_command_error
+    return await inter.send(**dict_args)
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/disnake/interactions/base.py", line 540, in send
+    await sender(
+  File "/opt/virtualenvs/python3/lib/python3.8/site-packages/disnake/interactions/base.py", line 735, in send_message
+    if embed._files:
+AttributeError: 'Embed' object has no attribute '_files'
+
+
