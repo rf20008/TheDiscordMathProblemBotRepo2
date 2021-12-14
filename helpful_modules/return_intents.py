@@ -1,5 +1,6 @@
 from disnake import Intents
 
+
 def return_intents():
     i = Intents.default()
     i.typing = False

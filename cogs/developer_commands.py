@@ -30,7 +30,7 @@ class DeveloperCommands(HelperCog):
         # checks = self.checks
         checks.setup(bot)
 
-    @commands.cooldown(1,5,commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.slash_command(
         name="force_load_files",
         description="Force loads files to replace dictionaries. THIS WILL DELETE OLD DICTS!",
@@ -267,11 +267,13 @@ class DeveloperCommands(HelperCog):
                 return None
             await inter.send(_documentation)
         elif documentation_type == "privacy_policy":
-            with open("/PRIVACY_POLICY.md") as file:  # Replace this with the path to the file
+            with open(
+                "/PRIVACY_POLICY.md"
+            ) as file:  # Replace this with the path to the file
                 await inter.send(content="\n".join([str(line) for line in file]))
             return
 
-    @commands.cooldown(1,5,commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.slash_command(
         name="debug",
         description="Helpful for debugging :-)",

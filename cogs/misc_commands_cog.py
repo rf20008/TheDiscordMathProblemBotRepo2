@@ -277,15 +277,11 @@ class MiscCommandsCog(HelperCog):
         return
 
     @commands.slash_command(description="Interact with your user data")
-    async def user_data(
-        self, inter: disnake.ApplicationCommandInteraction
-    ):
+    async def user_data(self, inter: disnake.ApplicationCommandInteraction):
         "The base command to interact with your user data. This doesn't do anything (you need to call a subcommand)"
         print("The user_data command has been invoked!")
 
-    @disnake.ext.commands.cooldown(
-        1, 500, commands.BucketType.user
-    )  # To prevent abuse
+    @disnake.ext.commands.cooldown(1, 500, commands.BucketType.user)  # To prevent abuse
     @user_data.sub_command(
         name="delete_all",
         description="Delete all problems, quizzes, and quiz submissions you created!",

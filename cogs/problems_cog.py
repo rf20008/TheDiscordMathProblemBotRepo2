@@ -114,7 +114,6 @@ class ProblemsCog(HelperCog):
             Option(
                 name="show_all_data",
                 description="whether to show all data (only useable by problem authors and trusted users",
-
                 type=OptionType.boolean,
                 required=False,
             ),
@@ -271,7 +270,7 @@ NumSolvers: {len(problem.get_solvers())}"""
     ):
         """/list_all_problems [show_solved_problems: bool = false] [show_guild_problems: bool = true] [show_only_guild_problems: bool = false]
         List all problems.
-        If show_solved_problems is set to true, """
+        If show_solved_problems is set to true,"""
         await cooldowns.check_for_cooldown(inter, "list_all_problems")
         if inter.guild is None and show_guild_problems:
             await inter.send("You must be in a guild to see guild problems!")
@@ -372,7 +371,8 @@ NumSolvers: {len(problem.get_solvers())}"""
         await inter.send(
             embed=SuccessEmbed(f"Successfully deleted {numDeletedProblems}!")
         )
-    
+
+    # @disnake.ext.commands.cooldown(1,5,commands.BucketType.user)
     @commands.slash_command(
         name="submit_problem",
         description="Create a new problem",
@@ -397,7 +397,6 @@ NumSolvers: {len(problem.get_solvers())}"""
             ),
         ],
     )
-    @disnake.ext.commands.cooldown(1,5,commands.BucketType.user)
     async def submit_problem(
         self,
         inter: disnake.ApplicationCommandInteraction,
@@ -437,7 +436,9 @@ NumSolvers: {len(problem.get_solvers())}"""
             return
         if guild_question:
             if inter.guild is None:
-                raise RuntimeError("You're not allowed to submit guild problems because you're executing this in a DM context, or there is a bug with the library")
+                raise RuntimeError(
+                    "You're not allowed to submit guild problems because you're executing this in a DM context, or there is a bug with the library"
+                )
 
             guild_id = inter.guild.id
             if guild_id is None:
