@@ -54,7 +54,7 @@ from helpful_modules.checks import is_not_blacklisted, setup
 from helpful_modules.the_documentation_file_loader import *
 from helpful_modules.constants_loader import *
 
-VERSION = "0.0.4a2"
+VERSION = "0.0.5a1"
 try:
     import dotenv  # https://pypi.org/project/python-dotenv/
 
@@ -191,10 +191,11 @@ bot.log = logging.getLogger(__name__)
 slash = InteractionClient(client=bot, sync_commands=True)
 bot.slash = slash
 # Add the commands
-bot.add_cog(DeveloperCommands(bot))
-bot.add_cog(ProblemsCog(bot))
-bot.add_cog(QuizCog(bot))
-bot.add_cog(MiscCommandsCog(bot))
+#bot.add_cog(DeveloperCommands(bot))
+#bot.add_cog(ProblemsCog(bot))
+#bot.add_cog(QuizCog(bot))
+#bot.add_cog(MiscCommandsCog(bot))
+bot.add_cog(TestCog(bot))
 bot.CONSTANTS = bot_constants
 print("Bots successfully created.")
 

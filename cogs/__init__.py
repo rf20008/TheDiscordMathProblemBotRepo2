@@ -5,3 +5,4 @@ from .helper_cog import HelperCog
 from .problems_cog import ProblemsCog
 from .quiz_cog import QuizCog
 from .misc_commands_cog import MiscCommandsCog
+from .test_cog import TestCog
