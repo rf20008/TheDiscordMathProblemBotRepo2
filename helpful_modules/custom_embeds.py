@@ -18,7 +18,7 @@ class ErrorEmbed(SimpleEmbed):
     def __init__(
         self,
         description="",
-        color=Color.red(),
+        color=Color.from_rgb(r=240,g=0,b=0),
         custom_title="Error",
         footer=Embed.Empty,
     ):
