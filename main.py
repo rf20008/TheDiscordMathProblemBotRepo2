@@ -157,6 +157,7 @@ bot = disnake.ext.commands.Bot(
     status=disnake.Status.idle
     # activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂") # This didn't work anyway, will set the activity in on_connect
 )
+#TODO: move bot events + initializing to custom_bot.py
 bot._sync_commands_debug = True
 setup(bot)
 bot.cache = main_cache
@@ -282,9 +283,10 @@ async def on_guild_join(guild):
 
 @bot.event
 async def on_guild_remove(guild):
-    return await bot.cache.remove_all_by_guild_id(
+    await bot.cache.remove_all_by_guild_id(
         guild.id
     )  # Remove all guild-related stuff
+    #uh oh?
 
 
 if __name__ == "__main__":

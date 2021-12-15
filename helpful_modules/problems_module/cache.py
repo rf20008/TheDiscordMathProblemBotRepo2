@@ -1112,3 +1112,6 @@ class MathProblemCache:
                 "DELETE FROM quiz_submissions WHERE guild_id = ?", (guild_id)
             )  # Delete all quiz submissions from the guild!
             await conn.commit()  # Otherwise, nothing happens!
+    def __bool__(self):
+        "Return bool(self)"
+        return True

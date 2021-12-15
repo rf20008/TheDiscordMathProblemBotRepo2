@@ -362,7 +362,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             ephemeral=True,
         )  # may get rid of later? :)
         numDeletedProblems = 0
-        async with aiosqlite.connect(self.bot.cache.db_name) as conn:
+        async with aiosqlite.connect(self.bot.cache.db_name) as conn: #TODO: fix before v0.1
             cursor = conn.cursor()
             await cursor.execute(
                 "DELETE FROM problems WHERE user_id = ?", (self.bot.user.id)

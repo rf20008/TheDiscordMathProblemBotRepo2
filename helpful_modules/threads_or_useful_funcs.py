@@ -1,4 +1,5 @@
 from . import save_files
+import disnake
 from time import sleep
 import subprocess, random
 from .the_documentation_file_loader import DocumentationFileLoader
@@ -40,7 +41,7 @@ async def base_on_error(inter, error):
     print(
         "\n".join(
             traceback.format_exception(
-                etype=type(error), value=error, tb=error.__traceback__
+                exc=error
             )
         ),
         file=stderr,
@@ -48,7 +49,7 @@ async def base_on_error(inter, error):
     log_error(error)  # Log the error
     error_traceback = "\n".join(
         traceback.format_exception(
-            etype=type(error), value=error, tb=error.__traceback__
+            exc=error
         )
     )
     if isinstance(error, BaseException) and not isinstance(error, Exception):

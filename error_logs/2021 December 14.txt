@@ -42,3 +42,15 @@ Traceback (most recent call last):
 AttributeError: 'Embed' object has no attribute '_files'
 
 
+Tue Dec 14 17:35:16 2021
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/client.py", line 505, in _run_event
+    await coro(*args, **kwargs)
+  File "/Users/Samuel/Desktop/github-repos/TheDiscordMathProblemBotRepo/main.py", line 257, in on_slash_command_error
+    dict_args = await base_on_error(inter, error)
+  File "/Users/Samuel/Desktop/github-repos/TheDiscordMathProblemBotRepo/helpful_modules/threads_or_useful_funcs.py", line 42, in base_on_error
+    traceback.format_exception(
+TypeError: format_exception() got an unexpected keyword argument 'etype'
+
+
