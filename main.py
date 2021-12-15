@@ -1,8 +1,7 @@
 # Written by @rf20008
 # Licensed under GPLv3
 # Feel free to contribute! :-)
-# Python 3.8+ is required.
-# Python 3.10 might not work with the bot, because it can't connect to Discord
+# Python 3.10+ is required.
 from sys import exit
 
 from helpful_modules import constants_loader
@@ -54,7 +53,7 @@ from helpful_modules.checks import is_not_blacklisted, setup
 from helpful_modules.the_documentation_file_loader import *
 from helpful_modules.constants_loader import *
 
-VERSION = "0.0.5a1"
+VERSION = "0.0.5a2"
 try:
     import dotenv  # https://pypi.org/project/python-dotenv/
 

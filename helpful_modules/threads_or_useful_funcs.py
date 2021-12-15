@@ -41,16 +41,16 @@ async def base_on_error(inter, error):
     print(
         "\n".join(
             traceback.format_exception(
-                exc=error
-            )
+                error
+            ) #python 3.10 only!
         ),
         file=stderr,
     )
     log_error(error)  # Log the error
     error_traceback = "\n".join(
         traceback.format_exception(
-            exc=error
-        )
+            error
+        ) #
     )
     if isinstance(error, BaseException) and not isinstance(error, Exception):
         # Errors that do not inherit from Exception are not meant to be caught
