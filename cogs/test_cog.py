@@ -14,7 +14,7 @@ class TestCog(HelperCog):
     async def _test(self,inter: disnake.ApplicationCommandInteraction):
         """/_test
         This makes the """
-        return await inter.reply('Test')
+        return await inter.send('Test')
     
     @disnake.ext.commands.command(
         name='_test'

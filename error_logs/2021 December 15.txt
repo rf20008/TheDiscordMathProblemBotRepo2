@@ -36,3 +36,24 @@ Traceback (most recent call last):
 TypeError: is_not_blacklisted() takes 0 positional arguments but 1 was given
 
 
+Wed Dec 15 15:48:17 2021
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/slash_core.py", line 569, in invoke
+    await self(inter, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/base_core.py", line 187, in __call__
+    return await self.callback(self.cog, interaction, *args, **kwargs)
+  File "/Users/Samuel/Desktop/github-repos/TheDiscordMathProblemBotRepo/cogs/test_cog.py", line 17, in _test
+    return await inter.reply('Test')
+AttributeError: 'ApplicationCommandInteraction' object has no attribute 'reply'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/interaction_bot_base.py", line 1297, in process_application_commands
+    await app_command.invoke(interaction)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/slash_core.py", line 578, in invoke
+    raise CommandInvokeError(exc) from exc
+disnake.ext.commands.errors.CommandInvokeError: Command raised an exception: AttributeError: 'ApplicationCommandInteraction' object has no attribute 'reply'
+
+

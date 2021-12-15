@@ -167,7 +167,15 @@ pylint/**
 pylint/*.txt
 **/.DS_Store # This is a macOS folder design file which is not necessary for this file
 **/config.json
+
+#Security
 .env # I would like to keep my secrets safe. :-)
+
+#:(
+
+/error_logs/**/
+/error_logs/*
+# I'm willing to un-gitignore error_logs (for debugging purposes)
 
 #Whitelists
 !**/*.py #never ignore any python file :)
