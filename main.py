@@ -36,9 +36,9 @@ import nextcord.ext.commands as nextcord_commands
 import aiosqlite  # https://github.com/omnilib/aiosqlite
 
 
-from nextcord.ext.commands.cooldowns import BucketType
 
 # Imports - My own files
+from disnake.ext import commands
 from helpful_modules import _error_logging, checks, cooldowns
 from helpful_modules import custom_embeds, problems_module
 from helpful_modules import save_files, the_documentation_file_loader, return_intents
@@ -150,7 +150,7 @@ def get_git_revision_hash() -> str:
 
 asyncio.set_event_loop(asyncio.new_event_loop())  # Otherwise, weird errors will happen
 bot = disnake.ext.commands.Bot(
-    command_prefix=" ",
+    command_prefix=commands.when_mentioned,
     intents=return_intents.return_intents(),
     application_id=845751152901750824,
     status=disnake.Status.idle
@@ -170,7 +170,6 @@ bot._transport_modules = {
     "custom_embeds": custom_embeds,
     "checks": checks,
 }
-bot.add_check(is_not_blacklisted)
 bot.add_check(
     disnake.ext.commands.bot_has_permissions(
         send_messages=True,

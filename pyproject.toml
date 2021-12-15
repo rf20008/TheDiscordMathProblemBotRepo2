@@ -7,7 +7,7 @@ requires = ["poetry-core>=1.0.0"]
 authors = ["ay136416 <<>>"]
 description = "An open source discord bot for quizzes!"
 name = "thediscordmathproblembot"
-version = "0.0.4a2"
+version = "0.0.5a2"
 [tool.poetry.dependencies]
 #"discord.py" = {git = "https://github.com/Rapptz/discord.py.git"}
 #"dislash.py" = {git = "https://github.com/EQUENOS/dislash.py.git", rev = "main"}

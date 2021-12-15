@@ -10,3 +10,29 @@ Traceback (most recent call last):
 TypeError: format_exception() got some positional-only arguments passed as keyword arguments: 'exc'
 
 
+Wed Dec 15 15:44:05 2021
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/client.py", line 505, in _run_event
+    await coro(*args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/bot_base.py", line 600, in on_message
+    await self.process_commands(message)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/bot_base.py", line 597, in process_commands
+    await self.invoke(ctx)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/bot_base.py", line 560, in invoke
+    await ctx.command.invoke(ctx)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/core.py", line 921, in invoke
+    await self.prepare(ctx)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/core.py", line 842, in prepare
+    if not await self.can_run(ctx):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/core.py", line 1150, in can_run
+    if not await ctx.bot.can_run(ctx):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/bot_base.py", line 320, in can_run
+    return await disnake.utils.async_all(f(ctx) for f in data)  # type: ignore
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/utils.py", line 554, in async_all
+    for elem in gen:
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/bot_base.py", line 320, in <genexpr>
+    return await disnake.utils.async_all(f(ctx) for f in data)  # type: ignore
+TypeError: is_not_blacklisted() takes 0 positional arguments but 1 was given
+
+
