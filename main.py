@@ -274,6 +274,7 @@ async def on_slash_command_error(inter, error):
 async def on_guild_join(guild):
     "Ran when the bot joins a guild!"
     if guild.id == None:  # Should never happen
+        raise Exception("Uh oh!") # This is probably causing the bot to do stuff
         await guild.leave()  # This will mess up stuff
         print("Oh no")
         raise RuntimeError(
@@ -292,11 +293,8 @@ async def on_guild_remove(guild):
 if __name__ == "__main__":
     print("The bot has finished setting up and will now run.")
     # slash.run(DISCORD_TOKEN)
-    print(bot.walk_commands())
     for command in bot.global_slash_commands:
         # raise
-        print(command.name)
         if len(command.name) > 100:
-            print("this command is too long")
-            raise
+            raise Exception(f"This command: {command.name} is too long")
     bot.run(DISCORD_TOKEN)
