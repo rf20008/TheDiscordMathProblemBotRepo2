@@ -189,10 +189,10 @@ bot.log = logging.getLogger(__name__)
 slash = InteractionClient(client=bot, sync_commands=True)
 bot.slash = slash
 # Add the commands
-#bot.add_cog(DeveloperCommands(bot))
-#bot.add_cog(ProblemsCog(bot))
-#bot.add_cog(QuizCog(bot))
-#bot.add_cog(MiscCommandsCog(bot))
+bot.add_cog(DeveloperCommands(bot))
+bot.add_cog(ProblemsCog(bot))
+bot.add_cog(QuizCog(bot))
+bot.add_cog(MiscCommandsCog(bot))
 bot.add_cog(TestCog(bot))
 bot.CONSTANTS = bot_constants
 print("Bots successfully created.")
