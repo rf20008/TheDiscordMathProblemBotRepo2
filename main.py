@@ -161,7 +161,7 @@ bot = TheDiscordMathProblemBot(
     cache = main_cache,
     constants = bot_constants,
     trusted_users = copy(trusted_users),
-    tasks = [],
+    tasks = {},
     on_ready_func=on_ready
     # activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂") # This didn't work anyway, will set the activity in on_connect
 )

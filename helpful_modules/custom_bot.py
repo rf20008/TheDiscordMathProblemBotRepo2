@@ -26,8 +26,8 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
         if self.constants is False:
             raise TypeError('Constants is not a BotConstants object')
         self.trusted_users = kwargs.get('trusted_users', None)
-        if not self.trusted_users:
-            raise TypeError('trusted_users is not found')
+        if not self.trusted_users and self.trusted_users != []:
+            raise TypeError('trusted_users was not found')
         
         
     def get_task(self, task_name):
