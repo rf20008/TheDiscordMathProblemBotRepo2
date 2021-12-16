@@ -187,3 +187,15 @@ Traceback (most recent call last):
 disnake.ext.commands.errors.CheckFailure: The check functions for command 'raise_error' failed.
 
 
+Wed Dec 15 21:48:12 2021
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/interaction_bot_base.py", line 1297, in process_application_commands
+    await app_command.invoke(interaction)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/slash_core.py", line 557, in invoke
+    await self.prepare(inter)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/base_core.py", line 205, in prepare
+    raise CheckFailure(f"The check functions for command {self.qualified_name!r} failed.")
+disnake.ext.commands.errors.CheckFailure: The check functions for command 'raise_error' failed.
+
+
