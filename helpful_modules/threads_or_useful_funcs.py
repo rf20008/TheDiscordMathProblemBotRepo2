@@ -38,19 +38,11 @@ def loading_documentation_thread():
 async def base_on_error(inter, error):
     "The base on_error event. Call this and use the dictionary as keyword arguments to print to the user"
     print(
-        "\n".join(
-            traceback.format_exception(
-                error
-            ) #python 3.10 only!
-        ),
+        "\n".join(traceback.format_exception(error)),  # python 3.10 only!
         file=stderr,
     )
     log_error(error)  # Log the error
-    error_traceback = "\n".join(
-        traceback.format_exception(
-            error
-        ) #
-    )
+    error_traceback = "\n".join(traceback.format_exception(error))  #
     if isinstance(error, BaseException) and not isinstance(error, Exception):
         # Errors that do not inherit from Exception are not meant to be caught
         raise
@@ -68,7 +60,7 @@ async def base_on_error(inter, error):
     if isinstance(error, NotOwner):
         return {"embed": ErrorEmbed("You are not the owner of this bot.")}
     if isinstance(error, disnake.ext.commands.errors.CheckFailure):
-        return {'embed': ErrorEmbed(str(error))}
+        return {"embed": ErrorEmbed(str(error))}
     # Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
 
     try:

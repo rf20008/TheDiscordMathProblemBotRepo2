@@ -36,7 +36,6 @@ import nextcord.ext.commands as nextcord_commands
 import aiosqlite  # https://github.com/omnilib/aiosqlite
 
 
-
 # Imports - My own files
 from disnake.ext import commands
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
@@ -145,10 +144,13 @@ def get_git_revision_hash() -> str:
         .decode("ascii")
         .strip()[:7]
     )  # [7:] is here because of the commit hash, the rest of this function is from stack overflow
-#@bot.event
+
+
+# @bot.event
 async def on_ready(bot):
     "Ran when the disnake library detects that the bot is ready"
     print("The bot is now ready!")
+
 
 # Bot creation
 
@@ -158,16 +160,16 @@ bot = TheDiscordMathProblemBot(
     intents=return_intents.return_intents(),
     application_id=845751152901750824,
     status=disnake.Status.idle,
-    cache = main_cache,
-    constants = bot_constants,
-    trusted_users = copy(trusted_users),
-    tasks = {},
+    cache=main_cache,
+    constants=bot_constants,
+    trusted_users=copy(trusted_users),
+    tasks={},
     on_ready_func=on_ready
     # activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂") # This didn't work anyway, will set the activity in on_connect
 )
-#TODO: move bot events + initializing to custom_bot.py
+# TODO: move bot events + initializing to custom_bot.py
 bot._sync_commands_debug = True
-#setup(bot)
+# setup(bot)
 bot._transport_modules = {
     "problems_module": problems_module,
     "save_files": save_files,
@@ -180,11 +182,10 @@ bot.add_check(
     disnake.ext.commands.bot_has_permissions(
         send_messages=True,
         read_messages=True,
-        embed_links = True,
-
+        embed_links=True,
     )
 )
-bot.blacklisted_users = [] #TODO: user_status dict
+bot.blacklisted_users = []  # TODO: user_status dict
 _the_daemon_file_saver = threading.Thread(
     target=the_daemon_file_saver,
     name="The File Saver",
@@ -193,8 +194,8 @@ _the_daemon_file_saver = threading.Thread(
 _the_daemon_file_saver.start()
 # bot.load_extension("jishaku")
 
-#slash = InteractionClient(client=bot, sync_commands=True)
-#bot.slash = slash
+# slash = InteractionClient(client=bot, sync_commands=True)
+# bot.slash = slash
 # Add the commands
 bot.add_cog(DeveloperCommands(bot))
 bot.add_cog(ProblemsCog(bot))
@@ -230,9 +231,6 @@ async def on_connect():
         if guild_id not in bot_guild_ids:  # It's not in!
             bot.log.debug("The bot is deleting data from a guild it has left.")
             await bot.cache.remove_all_by_guild_id(guild_id)  # Delete the data
-
-
-
 
 
 @bot.event
@@ -277,7 +275,7 @@ async def on_slash_command_error(inter, error):
 async def on_guild_join(guild):
     "Ran when the bot joins a guild!"
     if guild.id == None:  # Should never happen
-        raise Exception("Uh oh!") # This is probably causing the bot to do stuff
+        raise Exception("Uh oh!")  # This is probably causing the bot to do stuff
         await guild.leave()  # This will mess up stuff
         print("Oh no")
         raise RuntimeError(
@@ -287,10 +285,8 @@ async def on_guild_join(guild):
 
 @bot.event
 async def on_guild_remove(guild):
-    await bot.cache.remove_all_by_guild_id(
-        guild.id
-    )  # Remove all guild-related stuff
-    #uh oh?
+    await bot.cache.remove_all_by_guild_id(guild.id)  # Remove all guild-related stuff
+    # uh oh?
 
 
 if __name__ == "__main__":

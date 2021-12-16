@@ -17,6 +17,8 @@ import threading
 import typing
 from helpful_modules.threads_or_useful_funcs import generate_new_id
 
+# Licensed under GPLv3
+
 
 class ProblemsCog(HelperCog):
     def __init__(self, bot):
@@ -364,14 +366,16 @@ NumSolvers: {len(problem.get_solvers())}"""
         numDeletedProblems = 0
 
         await self.cache.delete_all_by_user_id(self.bot.user.id)
-        #async with aiosqlite.connect(self.bot.cache.db_name) as conn: #TODO: fix before v0.1 (add MYSQl support)
+        # async with aiosqlite.connect(self.bot.cache.db_name) as conn: #TODO: fix before v0.1 (add MYSQl support)
         #    cursor = conn.cursor()
         #    await cursor.execute(
         #        "DELETE FROM problems WHERE user_id = ?", (self.bot.user.id)
         #    )  # Delete every problem made by the bot!
         #    await conn.commit()
         await inter.send(
-            embed=SuccessEmbed(f"Successfully deleted all automatically generated problems!")
+            embed=SuccessEmbed(
+                f"Successfully deleted all automatically generated problems!"
+            )
         )
 
     # @disnake.ext.commands.cooldown(1,5,commands.BucketType.user)
@@ -550,11 +554,14 @@ NumSolvers: {len(problem.get_solvers())}"""
     ):
         """/check_answer {problem_id} {answer_id} [checking_guild_problem = False]
         Check your answer to the problem with the given id.
-        The bot will tell you whether you got a problem wrong"""
+        The bot will tell you whether you got a problem wrong."""
+        if not inter.guild:
+            checking_guild_problem = False
+
         await cooldowns.check_for_cooldown(inter, "check_answer", 5)
         try:
             problem = await self.cache.get_problem(
-                inter.guild.id if checking_guild_problem else "null", int(problem_id)
+                inter.guild.id if checking_guild_problem else None, int(problem_id)
             )
             # Make sure the author didn't already solve this problem
             if problem.is_solver(inter.author):
@@ -628,7 +635,7 @@ NumSolvers: {len(problem.get_solvers())}"""
     ):
         """/check_answer {problem_id: int} {answer: str} [checking_guild_problem: bool = false]
         Check your answer to the problem with the given id. If the problem is"""
-
+        print(inter.guild.id.__class__.__name__)
         try:
             problem = await self.bot.cache.get_problem(
                 int(inter.guild.id) if checking_guild_problem else None, int(problem_id)
@@ -642,7 +649,10 @@ NumSolvers: {len(problem.get_solvers())}"""
                     ephemeral=True,
                 )  # Don't let them re-solve the problem
                 return
-        except (ProblemNotFound, ProblemNotFoundException):  # But if the problem wasn't found, then tell them
+        except (
+            ProblemNotFound,
+            ProblemNotFoundException,
+        ):  # But if the problem wasn't found, then tell them
             await inter.send(
                 embed=ErrorEmbed(
                     "This problem doesn't exist!", custom_title="Nonexistant problem."

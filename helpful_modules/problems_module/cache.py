@@ -359,7 +359,7 @@ class MathProblemCache:
     async def get_problem(self, guild_id: int, problem_id: int) -> BaseProblem:
         "Gets the problem with this guild id and problem id. If the problem is not found, a ProblemNotFound exception will be raised."
 
-        if not isinstance(guild_id, int):
+        if not isinstance(guild_id, int) and guild_id is not None:
             if self.warnings:
                 warnings.warn("guild_id is not a integer!", category=RuntimeWarning)
             else:
@@ -452,7 +452,9 @@ class MathProblemCache:
             return {}
 
     async def get_problems_by_guild_id(self, id: int) -> typing.List[BaseProblem]:
-        assert isinstance(id, int)
+        if not isinstance(id, int) and id is not None:
+            raise AssertionError
+
         if id == None:
             return await self.get_global_problems()
         try:
@@ -597,7 +599,7 @@ class MathProblemCache:
         self, guild_id: int, problem_id: int
     ) -> None:
         "Remove a problem without returning! Saves time."
-        if not isinstance(guild_id, int):
+        if not isinstance(guild_id, int) and guild_id is not None:
             if self.warnings:
                 warnings.warn(
                     "guild_id is not a integer. There might be an error...", Warning
@@ -889,8 +891,8 @@ class MathProblemCache:
         self, guild_id: int, problem_id: int, new: BaseProblem
     ) -> None:
         "Update the problem stored with the given guild id and problem id"
-        assert isinstance(guild_id, str)
-        assert isinstance(problem_id, str)
+        assert isinstance(guild_id, int)
+        assert isinstance(problem_id, int)
         assert isinstance(new, BaseProblem) and not isinstance(new, QuizProblem)
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
@@ -1112,6 +1114,7 @@ class MathProblemCache:
                 "DELETE FROM quiz_submissions WHERE guild_id = ?", (guild_id)
             )  # Delete all quiz submissions from the guild!
             await conn.commit()  # Otherwise, nothing happens!
+
     def __bool__(self):
         "Return bool(self)"
         return True

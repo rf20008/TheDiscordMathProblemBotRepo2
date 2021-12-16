@@ -234,3 +234,75 @@ Traceback (most recent call last):
 disnake.ext.commands.errors.CommandInvokeError: Command raised an exception: TypeError: guild_id isn't an integer and this will cause issues in SQL!
 
 
+Wed Dec 15 21:57:07 2021
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/slash_core.py", line 569, in invoke
+    await self(inter, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/base_core.py", line 187, in __call__
+    return await self.callback(self.cog, interaction, *args, **kwargs)
+  File "/Users/Samuel/Desktop/github-repos/TheDiscordMathProblemBotRepo/cogs/problems_cog.py", line 633, in check_answer
+    problem = await self.bot.cache.get_problem(
+  File "/Users/Samuel/Desktop/github-repos/TheDiscordMathProblemBotRepo/helpful_modules/problems_module/cache.py", line 366, in get_problem
+    raise TypeError(
+TypeError: guild_id isn't an integer and this will cause issues in SQL!
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/interaction_bot_base.py", line 1297, in process_application_commands
+    await app_command.invoke(interaction)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/slash_core.py", line 578, in invoke
+    raise CommandInvokeError(exc) from exc
+disnake.ext.commands.errors.CommandInvokeError: Command raised an exception: TypeError: guild_id isn't an integer and this will cause issues in SQL!
+
+
+Wed Dec 15 21:59:23 2021
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/interaction_bot_base.py", line 1297, in process_application_commands
+    await app_command.invoke(interaction)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/slash_core.py", line 557, in invoke
+    await self.prepare(inter)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/base_core.py", line 211, in prepare
+    self._prepare_cooldowns(inter)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/base_core.py", line 199, in _prepare_cooldowns
+    raise CommandOnCooldown(bucket, retry_after, self._buckets.type)  # type: ignore
+disnake.ext.commands.errors.CommandOnCooldown: You are on cooldown. Try again in 146.16s
+
+
+Wed Dec 15 21:59:27 2021
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/interaction_bot_base.py", line 1297, in process_application_commands
+    await app_command.invoke(interaction)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/slash_core.py", line 557, in invoke
+    await self.prepare(inter)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/base_core.py", line 211, in prepare
+    self._prepare_cooldowns(inter)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/base_core.py", line 199, in _prepare_cooldowns
+    raise CommandOnCooldown(bucket, retry_after, self._buckets.type)  # type: ignore
+disnake.ext.commands.errors.CommandOnCooldown: You are on cooldown. Try again in 142.19s
+
+
+Wed Dec 15 22:04:54 2021
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/slash_core.py", line 569, in invoke
+    await self(inter, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/base_core.py", line 187, in __call__
+    return await self.callback(self.cog, interaction, *args, **kwargs)
+  File "/Users/Samuel/Desktop/github-repos/TheDiscordMathProblemBotRepo/cogs/problems_cog.py", line 632, in check_answer
+    print(inter.guild.id.__class__.__name__)
+AttributeError: 'NoneType' object has no attribute 'id'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/interaction_bot_base.py", line 1297, in process_application_commands
+    await app_command.invoke(interaction)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/slash_core.py", line 578, in invoke
+    raise CommandInvokeError(exc) from exc
+disnake.ext.commands.errors.CommandInvokeError: Command raised an exception: AttributeError: 'NoneType' object has no attribute 'id'
+
+

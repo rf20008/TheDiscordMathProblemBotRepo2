@@ -7,11 +7,7 @@ class SimpleEmbed(Embed):
         self,
         title="",
         description="",
-        color=Color.from_rgb(
-            r=randint(0,255),
-            g=randint(0,255),
-            b=randint(0,255)
-        ),
+        color=Color.from_rgb(r=randint(0, 255), g=randint(0, 255), b=randint(0, 255)),
         footer=Embed.Empty,
     ):
         super().__init__(title=title, description=description, color=color)
@@ -22,7 +18,7 @@ class ErrorEmbed(SimpleEmbed):
     def __init__(
         self,
         description="",
-        color=Color.from_rgb(r=240,g=0,b=0),
+        color=Color.from_rgb(r=240, g=0, b=0),
         custom_title="Error",
         footer=Embed.Empty,
     ):
@@ -34,7 +30,7 @@ class SuccessEmbed(SimpleEmbed):
     def __init__(
         self,
         description="",
-        color=Color.from_rgb(r=0,g=256,b=0),
+        color=Color.from_rgb(r=0, g=256, b=0),
         successTitle="Success!",
         footer=Embed.Empty,
     ):
