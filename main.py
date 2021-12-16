@@ -146,7 +146,7 @@ def get_git_revision_hash() -> str:
         .strip()[:7]
     )  # [7:] is here because of the commit hash, the rest of this function is from stack overflow
 #@bot.event
-async def on_ready():
+async def on_ready(bot):
     "Ran when the nextcord library detects that the bot is ready"
     print("The bot is now ready!")
 

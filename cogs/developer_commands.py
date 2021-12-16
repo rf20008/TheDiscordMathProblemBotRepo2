@@ -26,7 +26,6 @@ class DeveloperCommands(HelperCog):
 
         super().__init__(bot)
         self.bot = bot
-        self.slash = bot.slash
         # checks = self.checks
         checks.setup(bot)
 

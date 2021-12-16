@@ -57,3 +57,13 @@ Traceback (most recent call last):
 disnake.ext.commands.errors.CommandInvokeError: Command raised an exception: AttributeError: 'ApplicationCommandInteraction' object has no attribute 'reply'
 
 
+Wed Dec 15 20:16:16 2021
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/client.py", line 505, in _run_event
+    await coro(*args, **kwargs)
+  File "/Users/Samuel/Desktop/github-repos/TheDiscordMathProblemBotRepo/helpful_modules/custom_bot.py", line 47, in on_ready
+    await self._on_ready_func(self)
+TypeError: on_ready() takes 0 positional arguments but 1 was given
+
+

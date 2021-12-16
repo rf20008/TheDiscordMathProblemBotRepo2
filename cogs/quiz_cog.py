@@ -11,4 +11,3 @@ class QuizCog(HelperCog):
         super().__init__(bot)
         self.bot = bot
         self.cache: MathProblemCache = bot.cache
-        self.slash = bot.slash
