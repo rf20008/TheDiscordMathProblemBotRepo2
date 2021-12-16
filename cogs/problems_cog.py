@@ -362,14 +362,16 @@ NumSolvers: {len(problem.get_solvers())}"""
             ephemeral=True,
         )  # may get rid of later? :)
         numDeletedProblems = 0
-        async with aiosqlite.connect(self.bot.cache.db_name) as conn: #TODO: fix before v0.1
-            cursor = conn.cursor()
-            await cursor.execute(
-                "DELETE FROM problems WHERE user_id = ?", (self.bot.user.id)
-            )  # Delete every problem made by the bot!
-            await conn.commit()
+
+        await self.cache.delete_all_by_user_id(self.bot.user.id)
+        #async with aiosqlite.connect(self.bot.cache.db_name) as conn: #TODO: fix before v0.1 (add MYSQl support)
+        #    cursor = conn.cursor()
+        #    await cursor.execute(
+        #        "DELETE FROM problems WHERE user_id = ?", (self.bot.user.id)
+        #    )  # Delete every problem made by the bot!
+        #    await conn.commit()
         await inter.send(
-            embed=SuccessEmbed(f"Successfully deleted {numDeletedProblems}!")
+            embed=SuccessEmbed(f"Successfully deleted all automatically generated problems!")
         )
 
     # @disnake.ext.commands.cooldown(1,5,commands.BucketType.user)
@@ -629,7 +631,7 @@ NumSolvers: {len(problem.get_solvers())}"""
 
         try:
             problem = await self.bot.cache.get_problem(
-                inter.guild.id if checking_guild_problem else None, int(problem_id)
+                int(inter.guild.id) if checking_guild_problem else None, int(problem_id)
             )
             if problem.is_solver(inter.author):  # If the user solved the problem
                 await inter.send(
@@ -640,7 +642,7 @@ NumSolvers: {len(problem.get_solvers())}"""
                     ephemeral=True,
                 )  # Don't let them re-solve the problem
                 return
-        except ProblemNotFound:  # But if the problem wasn't found, then tell them
+        except (ProblemNotFound, ProblemNotFoundException):  # But if the problem wasn't found, then tell them
             await inter.send(
                 embed=ErrorEmbed(
                     "This problem doesn't exist!", custom_title="Nonexistant problem."

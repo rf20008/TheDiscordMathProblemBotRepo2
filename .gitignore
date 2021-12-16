@@ -184,3 +184,4 @@ pylint/*.txt
 !docs/** # The documentation needs to be not git-ignored
 !**/__init__.py
 .env.save
+error_logs/2021 December 15.txt

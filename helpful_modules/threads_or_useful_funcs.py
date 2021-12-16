@@ -76,13 +76,16 @@ async def base_on_error(inter, error):
             description=nextcord.utils.escape_markdown(error_traceback),
             title="Oh, no! An error occurred!",
         )
-    except TypeError:
+    except TypeError as e:
+
         # send as plain text
         plain_text = (
-            "__**Oh no! An Exception occured! And it couldn't be sent as an embed!\n```"
+            "Oh no! An Exception occured! And it couldn't be sent as an embed!```"
         )
-        plain_text += nextcord.utils.escape_markdown(error_traceback)
+        plain_text += error_traceback
         plain_text += f"```Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
+
+        plain_text += f"Error that occured while attempting to send it as an embed: {'\n'.join(traceback.format_exception(e))}"
         return {"content": plain_text}
     footer = f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
     embed.set_footer(text=footer)
