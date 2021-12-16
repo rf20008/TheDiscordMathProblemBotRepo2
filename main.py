@@ -145,7 +145,10 @@ def get_git_revision_hash() -> str:
         .decode("ascii")
         .strip()[:7]
     )  # [7:] is here because of the commit hash, the rest of this function is from stack overflow
-
+#@bot.event
+async def on_ready():
+    "Ran when the nextcord library detects that the bot is ready"
+    print("The bot is now ready!")
 
 # Bot creation
 
@@ -158,7 +161,8 @@ bot = TheDiscordMathProblemBot(
     cache = main_cache,
     constants = bot_constants,
     trusted_users = copy(trusted_users),
-    tasks = []
+    tasks = [],
+    on_ready_func=on_ready
     # activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂") # This didn't work anyway, will set the activity in on_connect
 )
 #TODO: move bot events + initializing to custom_bot.py
@@ -228,10 +232,7 @@ async def on_connect():
             await bot.cache.remove_all_by_guild_id(guild_id)  # Delete the data
 
 
-@bot.event
-async def on_ready():
-    "Ran when the nextcord library detects that the bot is ready"
-    print("The bot is now ready!")
+
 
 
 @bot.event
