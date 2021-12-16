@@ -85,7 +85,7 @@ async def base_on_error(inter, error):
         plain_text += error_traceback
         plain_text += f"```Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
 
-        plain_text += f"Error that occured while attempting to send it as an embed: {'\n'.join(traceback.format_exception(e))}"
+        plain_text += f"Error that occured while attempting to send it as an embed: {''.join(traceback.format_exception(e))}"
         return {"content": plain_text}
     footer = f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
     embed.set_footer(text=footer)
