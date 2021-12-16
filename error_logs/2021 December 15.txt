@@ -199,3 +199,38 @@ Traceback (most recent call last):
 disnake.ext.commands.errors.CheckFailure: The check functions for command 'raise_error' failed.
 
 
+Wed Dec 15 21:49:38 2021
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/interaction_bot_base.py", line 1297, in process_application_commands
+    await app_command.invoke(interaction)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/slash_core.py", line 557, in invoke
+    await self.prepare(inter)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/base_core.py", line 205, in prepare
+    raise CheckFailure(f"The check functions for command {self.qualified_name!r} failed.")
+disnake.ext.commands.errors.CheckFailure: The check functions for command 'raise_error' failed.
+
+
+Wed Dec 15 21:52:13 2021
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/slash_core.py", line 569, in invoke
+    await self(inter, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/base_core.py", line 187, in __call__
+    return await self.callback(self.cog, interaction, *args, **kwargs)
+  File "/Users/Samuel/Desktop/github-repos/TheDiscordMathProblemBotRepo/cogs/problems_cog.py", line 633, in check_answer
+    problem = await self.bot.cache.get_problem(
+  File "/Users/Samuel/Desktop/github-repos/TheDiscordMathProblemBotRepo/helpful_modules/problems_module/cache.py", line 366, in get_problem
+    raise TypeError(
+TypeError: guild_id isn't an integer and this will cause issues in SQL!
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/interaction_bot_base.py", line 1297, in process_application_commands
+    await app_command.invoke(interaction)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/slash_core.py", line 578, in invoke
+    raise CommandInvokeError(exc) from exc
+disnake.ext.commands.errors.CommandInvokeError: Command raised an exception: TypeError: guild_id isn't an integer and this will cause issues in SQL!
+
+

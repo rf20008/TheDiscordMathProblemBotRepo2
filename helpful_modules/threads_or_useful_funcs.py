@@ -3,7 +3,6 @@ import disnake
 from time import sleep
 import subprocess, random
 from .the_documentation_file_loader import DocumentationFileLoader
-import nextcord
 import traceback
 from .custom_embeds import *
 from dislash import *
@@ -55,10 +54,10 @@ async def base_on_error(inter, error):
     if isinstance(error, BaseException) and not isinstance(error, Exception):
         # Errors that do not inherit from Exception are not meant to be caught
         raise
-    if isinstance(error, (OnCooldown, nextcord.ext.commands.CommandOnCooldown)):
+    if isinstance(error, (OnCooldown, disnake.ext.commands.CommandOnCooldown)):
         # This is a cooldown exception
         return {"content": str(error)}
-    if isinstance(error, (nextcord.Forbidden,)):
+    if isinstance(error, (disnake.Forbidden,)):
         extra_content = """There was a 403 error. This means either
         1) You didn't give me enough permissions to function correctly, or
         2) There's a bug! If so, please report it!
@@ -68,12 +67,14 @@ async def base_on_error(inter, error):
 
     if isinstance(error, NotOwner):
         return {"embed": ErrorEmbed("You are not the owner of this bot.")}
+    if isinstance(error, disnake.ext.commands.errors.CheckFailure):
+        return {'embed': ErrorEmbed(str(error))}
     # Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
 
     try:
         embed = disnake.Embed(
             colour=disnake.Colour.red(),
-            description=nextcord.utils.escape_markdown(error_traceback),
+            description=disnake.utils.escape_markdown(error_traceback),
             title="Oh, no! An error occurred!",
         )
     except TypeError as e:
