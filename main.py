@@ -39,6 +39,7 @@ import aiosqlite  # https://github.com/omnilib/aiosqlite
 
 # Imports - My own files
 from disnake.ext import commands
+from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules import _error_logging, checks, cooldowns
 from helpful_modules import custom_embeds, problems_module
 from helpful_modules import save_files, the_documentation_file_loader, return_intents
@@ -149,19 +150,19 @@ def get_git_revision_hash() -> str:
 # Bot creation
 
 asyncio.set_event_loop(asyncio.new_event_loop())  # Otherwise, weird errors will happen
-bot = disnake.ext.commands.Bot(
+bot = TheDiscordMathProblemBot(
     command_prefix=commands.when_mentioned,
     intents=return_intents.return_intents(),
     application_id=845751152901750824,
-    status=disnake.Status.idle
+    status=disnake.Status.idle,
+    cache = main_cache,
+    constants = bot_constants,
+    trusted_users = copy(trusted_users)
     # activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂") # This didn't work anyway, will set the activity in on_connect
 )
 #TODO: move bot events + initializing to custom_bot.py
 bot._sync_commands_debug = True
-setup(bot)
-bot.cache = main_cache
-bot.constants = bot_constants
-bot.trusted_users = copy(trusted_users)
+#setup(bot)
 bot._transport_modules = {
     "problems_module": problems_module,
     "save_files": save_files,
@@ -173,10 +174,12 @@ bot._transport_modules = {
 bot.add_check(
     disnake.ext.commands.bot_has_permissions(
         send_messages=True,
+        read_messages=True,
+        embed_links = True,
+
     )
 )
-bot.vote_threshold = copy(vote_threshold)
-bot.blacklisted_users = []
+bot.blacklisted_users = [] #TODO: user_status dict
 _the_daemon_file_saver = threading.Thread(
     target=the_daemon_file_saver,
     name="The File Saver",
@@ -184,10 +187,9 @@ _the_daemon_file_saver = threading.Thread(
 )
 _the_daemon_file_saver.start()
 # bot.load_extension("jishaku")
-bot.log = logging.getLogger(__name__)
 
-slash = InteractionClient(client=bot, sync_commands=True)
-bot.slash = slash
+#slash = InteractionClient(client=bot, sync_commands=True)
+#bot.slash = slash
 # Add the commands
 bot.add_cog(DeveloperCommands(bot))
 bot.add_cog(ProblemsCog(bot))
