@@ -135,3 +135,55 @@ Traceback (most recent call last):
 disnake.ext.commands.errors.CommandInvokeError: Command raised an exception: TypeError: guild_id isn't an integer and this will cause issues in SQL!
 
 
+Wed Dec 15 21:42:31 2021
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/slash_core.py", line 569, in invoke
+    await self(inter, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/base_core.py", line 187, in __call__
+    return await self.callback(self.cog, interaction, *args, **kwargs)
+  File "/Users/Samuel/Desktop/github-repos/TheDiscordMathProblemBotRepo/cogs/problems_cog.py", line 633, in check_answer
+    problem = await self.bot.cache.get_problem(
+  File "/Users/Samuel/Desktop/github-repos/TheDiscordMathProblemBotRepo/helpful_modules/problems_module/cache.py", line 366, in get_problem
+    raise TypeError(
+TypeError: guild_id isn't an integer and this will cause issues in SQL!
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/interaction_bot_base.py", line 1297, in process_application_commands
+    await app_command.invoke(interaction)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/slash_core.py", line 578, in invoke
+    raise CommandInvokeError(exc) from exc
+disnake.ext.commands.errors.CommandInvokeError: Command raised an exception: TypeError: guild_id isn't an integer and this will cause issues in SQL!
+
+
+Wed Dec 15 21:42:31 2021
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/client.py", line 505, in _run_event
+    await coro(*args, **kwargs)
+  File "/Users/Samuel/Desktop/github-repos/TheDiscordMathProblemBotRepo/main.py", line 264, in on_slash_command_error
+    return await inter.send(**dict_args)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/interactions/base.py", line 507, in send
+    await sender(  # type: ignore
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/interactions/base.py", line 730, in send_message
+    await adapter.create_interaction_response(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/webhook/async_.py", line 211, in request
+    raise HTTPException(response, data)
+disnake.errors.HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body
+In data.content: Must be 2000 or fewer in length.
+
+
+Wed Dec 15 21:44:44 2021
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/interaction_bot_base.py", line 1297, in process_application_commands
+    await app_command.invoke(interaction)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/slash_core.py", line 557, in invoke
+    await self.prepare(inter)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/disnake/ext/commands/base_core.py", line 205, in prepare
+    raise CheckFailure(f"The check functions for command {self.qualified_name!r} failed.")
+disnake.ext.commands.errors.CheckFailure: The check functions for command 'raise_error' failed.
+
+
