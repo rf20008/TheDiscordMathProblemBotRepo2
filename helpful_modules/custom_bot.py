@@ -9,7 +9,10 @@ from helpful_modules.problems_module.cache import MathProblemCache
 class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.tasks = kwargs.pop("tasks")
+        try:
+            self.tasks = kwargs.pop("tasks")
+        except:
+            raise KeyError("Uh oh")
         self._on_ready_func = kwargs.pop('on_ready_func') # Will be called when the bot is ready (with an argument of itself)
         assert isinstance(self.tasks, dict)
         for task in self.tasks.values():
@@ -46,4 +49,3 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
         if not hasattr(self, 'owner_id') or not self.owner_id or self.owner_id == None:
             return False
         return user.id in self.trusted_users and user.id == self.owner_id
-        

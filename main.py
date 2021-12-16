@@ -157,7 +157,8 @@ bot = TheDiscordMathProblemBot(
     status=disnake.Status.idle,
     cache = main_cache,
     constants = bot_constants,
-    trusted_users = copy(trusted_users)
+    trusted_users = copy(trusted_users),
+    tasks = []
     # activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂") # This didn't work anyway, will set the activity in on_connect
 )
 #TODO: move bot events + initializing to custom_bot.py
