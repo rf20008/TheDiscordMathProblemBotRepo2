@@ -4,7 +4,7 @@
 		"contents": [{
 			"heading_level": 1,
 			"title": "Hello Reader!",
-			"contents": "\nHello! I'm a 13 year old who wanted to code a discord bot. \nI made a reminder bot (on replit), but I realized many other bots (giselle, dyno, and sesh, and others) made one.\nI wanted to be unique, so I decided to make this bot. :)\nFeel free to contribute to my project with issues/pull requests! :)"
+			"contents": "\nHello! I'm a 13 year old who wanted to code a discord bot. \nI made a reminder bot (on replit), but I realized many other bots (giselle, dyno, and sesh, and others) made one.\nI wanted to be unique, so I decided to make this bot. :)\nFeel free to contribute to my project with issues/pull requests! :) \n Eventually, I'll want someone to continue maintaining my project because I won't have time because of high school."
 		}]
 	},
 	{
@@ -217,7 +217,8 @@
 				"heading_level": 3,
 				"title": "MathProblemModuleException",
 				"contents": "Base exception for problems_module."
-			}, {
+			},
+			{
 				"heading_level": 3,
 				"title": "TooLongArgument",
 				"contents": "Raised when an argument passed into MathProblem() is too long."
@@ -417,8 +418,7 @@
 				"contents": "Generates a random number from 1 to 10,000,000,000 and returns it. Used for generating problem id's. Takes no arguments."
 			}
 		]
-	},
-	{
+	}, {
 		"file_name": "docs/commands-documentation.md",
 		"contains_legend": "true",
 		"contents": [{
@@ -434,7 +434,7 @@
 			{
 				"heading_level": 1,
 				"title": "Math Problem Related",
-				"contents": ""
+				"contents": "\n"
 			},
 			{
 				"heading_level": 2,
@@ -444,7 +444,7 @@
 			{
 				"heading_level": 2,
 				"title": "list_all_problem_ids",
-				"contents": "List all the problem ids of the problems stored withthe bot. Takes a few arguments (show_only_guild_problems: whether to show only guild problems. Otherwise shows only global math problems)"
+				"contents": "List all the problem ids of the problems stored with the bot. Takes a few arguments (show_only_guild_problems: whether to show only guild problems. Otherwise shows only global math problems)"
 			},
 			{
 				"heading_level": 2,
@@ -490,6 +490,11 @@
 				"heading_level": 1,
 				"title": "Miscellaneous Commands",
 				"contents": "\n\nMiscellaneous commands I added for testing/fun/things that might be necessary. Most of them are restricted to trusted users.\n"
+			},
+			{
+				"heading_level": 2,
+				"title": "test_embeds",
+				"contents": "Prints some test embeds. Will be removed soon."
 			},
 			{
 				"heading_level": 2,

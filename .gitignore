@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## GITHUB's python gitignore template
 
 # Byte-compiled / optimized / DLL files
@@ -170,7 +171,8 @@ pylint/*.txt
 
 #Security
 .env # I would like to keep my secrets safe. :-)
-
+.env.save
+*.json # Don't show the actual problems
 #:(
 
 /error_logs/**/
@@ -184,4 +186,4 @@ error_logs/
 !.gitignore
 !docs/** # The documentation needs to be not git-ignored
 !**/__init__.py
-.env.save
+

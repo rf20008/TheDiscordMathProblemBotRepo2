@@ -1,4 +1,4 @@
-[![Powered by Nextcord](https://custom-icon-badges.herokuapp.com/badge/-Powered%20by%20Nextcord-0d1620?logo=nextcord)](https://github.com/nextcord/nextcord "Powered by Nextcord Python API Wrapper")
+[![Number of source lines of code](https://img.shields.io/tokei/lines/github/rf20008/TheDiscordMathProblemBotRepo)](https://img.shields.io)
 
 # If you run into issues
 If you run into any issues create an issue or DM me (ay136416#2707)). 
@@ -26,6 +26,17 @@ A few guidelines:
 7) You should lint your code. (this uses [python-black](https://pypi.org/project/black/)) <br>
 8) Follow common sense <br>
 9) Make sure to follow GPLv3! (You'll need to include the link to the modified version of my code and make it somehow __***easily***__ accessible through the bot (or if you're just fixing a bug the 'forked from' label should be enough attribution), state signifigant changes made to the software, include the license (which is already done for you, don't modify LICENSE. Treat it as read-only.) You must state if )
+# If you run into issues
+If you run into any issues create an issue or DM me (ay136416#2707)). 
+
+# Contribute to this project!
+
+Open a pull request or issue and I will be sure to look at it.
+
+# If you see an error
+
+As soon as you see them, contact me as soon as possible!
+
 # Invite my bot!
 
 Recommended invite: https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147568640&scope=bot%20applications.commands
@@ -97,6 +108,5 @@ GPLv3 simplified: https://tldrlegal.com/license/gnu-general-public-license-v3-(g
 @duck-master helped me revise the privacy policy. Thanks so much!
 (get_git_revision_hash)[https://stackoverflow.com/a/21901260]
 Disabling buttons: https://stackoverflow.com/questions/68842747/how-to-disable-button-once-it-is-clicked-in-discord-js-13 & help from @umairshasheen78 (through Discord)
-
 
 

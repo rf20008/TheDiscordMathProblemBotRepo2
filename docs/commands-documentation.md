@@ -17,6 +17,7 @@ This bot  utilizes embeds for its messages. If you deny that permission, most me
 This is to prevent spam. Some commands have longer cooldowns.
 # Math Problem Related
 
+
 ## show_problem_info
 Shows the problem info of a problem, excluding its answer (unless the user is a global trusted user/ has the Administrator permission in the guild and the problem is a guild problem  and the show_all_data option is set to True).
 
@@ -24,7 +25,7 @@ Raw: Whether to send it as a dictionary.
 
 
 ## list_all_problem_ids
-List all the problem ids of the problems stored withthe bot. Takes a few arguments (show_only_guild_problems: whether to show only guild problems. Otherwise shows only global math problems)
+List all the problem ids of the problems stored with the bot. Takes a few arguments (show_only_guild_problems: whether to show only guild problems. Otherwise shows only global math problems)
 ## generate_new_problems ⚠
 Generates new 4 function math problems (up to 200 at a time)
 ## delallbotproblems ⚠
@@ -56,6 +57,8 @@ Deletes a problem. You must be a global trusted user or have the Administrator p
 
 Miscellaneous commands I added for testing/fun/things that might be necessary. Most of them are restricted to trusted users.
 
+## test_embeds
+Prints some test embeds. Will be removed soon.
 ## force_load_files ⚠
 Forcefully loads the dictionary of math problems, the dictionary of guild math problems, the list of trusted users, and the vote threshold from the files. Useful for debugging. Restricted to global trusted users. Runs by creating a FileSaver object and calling its load_files function, saving the result to the variables.
 ## force_save_files ⚠

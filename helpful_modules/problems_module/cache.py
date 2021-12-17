@@ -2,7 +2,7 @@ import asyncio
 from types import FunctionType as function
 import typing
 from mysql.connector import connect
-from nextcord import guild
+import disnake
 import sqldict
 import aiosqlite
 from copy import deepcopy, copy
@@ -700,8 +700,8 @@ class MathProblemCache:
                     )  # Delete the problem
 
     async def get_guilds(
-        self, bot: nextcord.ext.commands.Bot = None
-    ) -> List[Union[int, Optional[nextcord.Guild]]]:
+        self, bot: disnake.ext.commands.Bot = None
+    ) -> List[Union[int, Optional[disnake.Guild]]]:
         "Get the guilds (due to using sql, it must return the guild id, bot is needed to return guilds. takes O(n) time"
         try:
             assert bot == None or isinstance(bot, nextcord.ext.commands.Bot)

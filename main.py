@@ -27,12 +27,8 @@ from asyncio import sleep as asyncio_sleep
 from copy import copy
 
 # Imports - 3rd party
-import discord
-import dislash  # https://github.com/EQUENOS/dislash.py
+
 import disnake  # https://github.com/DisnakeDev/disnake
-from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
-import nextcord  # https://github.com/nextcord/nextcord
-import nextcord.ext.commands as nextcord_commands
 import aiosqlite  # https://github.com/omnilib/aiosqlite
 
 
