@@ -196,17 +196,18 @@ class MiscCommandsCog(HelperCog):
         await inter.send(
             embed=SuccessEmbed(            
                 disnake.utils.oauth_url(
-                client_id=self.bot.application_id,
-                permissions = disnake.Permissions(
-                    send_messages=True,
-                    read_messages=True,
-                    embed_links=True,
-                    use_application_commands=True,
-                    attach_files=True
-                ),  
-                scopes=['bot', 'applications.commands')
-            ),
+                    client_id=self.bot.application_id,
+                    permissions = disnake.Permissions(
+                        send_messages=True,
+                        read_messages=True,
+                        embed_links=True,
+                        use_application_commands=True,
+                        attach_files=True
+                    ),  
+                    scopes=['bot', 'applications.commands']
+                ),
             ephemeral=True,
+        )
         )
 
     @commands.slash_command(
