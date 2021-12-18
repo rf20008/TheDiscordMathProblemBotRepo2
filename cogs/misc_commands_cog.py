@@ -178,7 +178,7 @@ class MiscCommandsCog(HelperCog):
     async def what_is_vote_threshold(
         self, inter: disnake.ApplicationCommandInteraction
     ):
-        "Returns the vote threshold"
+        "Returns the vote threshold. Takes no arguments."
         await cooldowns.check_for_cooldown(inter, "what_is_vote_threshold", 5)
         await inter.send(
             embed=SuccessEmbed(f"The vote threshold is {self.bot.vote_threshold}."),
@@ -194,9 +194,17 @@ class MiscCommandsCog(HelperCog):
         "Generate an invite link for the bot. This command has been deprecated."
         await cooldowns.check_for_cooldown(inter, "generateInviteLink", 5)
         await inter.send(
-            embed=SuccessEmbed(
-                self.bot.constants.SOURCE_CODE_LINK
-                + "\n (This command has been deprecated)"
+            embed=SuccessEmbed(            
+                disnake.utils.oauth_url(
+                client_id=self.bot.application_id,
+                permissions = disnake.Permissions(
+                    send_messages=True,
+                    read_messages=True,
+                    embed_links=True,
+                    use_application_commands=True,
+                    attach_files=True
+                ),  
+                scopes=['bot', 'applications.commands')
             ),
             ephemeral=True,
         )
@@ -213,7 +221,7 @@ class MiscCommandsCog(HelperCog):
         """
         await inter.send(
             embed=SuccessEmbed(
-                f"[Repo Link:]{self.bot.constants.GITHUB_REPO_LINK}",
+                f"[Repo Link:]{self.bot.constants.SOURCE_CODE_LINK}",
                 successTitle="Here is the Github Repository Link.",
             )
         )

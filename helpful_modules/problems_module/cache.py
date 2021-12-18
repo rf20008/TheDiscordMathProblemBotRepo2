@@ -401,7 +401,7 @@ class MathProblemCache:
                             pass
                         else:
                             raise  # Re-raise the exception
-                    cursor = conn.cursor()
+                    cursor = await conn.cursor()
                     await cursor.execute(
                         "SELECT * from problems WHERE guild_id = ? AND problem_id = ?",
                         (guild_id, problem_id),
