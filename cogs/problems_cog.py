@@ -634,8 +634,16 @@ NumSolvers: {len(problem.get_solvers())}"""
         checking_guild_problem: bool = False,
     ):
         """/check_answer {problem_id: int} {answer: str} [checking_guild_problem: bool = false]
-        Check your answer to the problem with the given id. If the problem is"""
-        print(inter.guild.id.__class__.__name__)
+        Check your answer to the problem with the given id.
+        If this command is executed in a DM, then you must set checking_guild_problem to False or the bot will error."""
+        if not inter.guild or not hasattr(inter.guild, 'id'):
+            if checking_guild_problem:
+                return await inter.send(
+                    embed = ErrorEmbed(
+                        "You must run the command with checking_guild_problem set to False! If you set it to True I don't know which guild the problem is in!"
+                    )
+                )
+            checking_guild_problem = False
         try:
             problem = await self.bot.cache.get_problem(
                 int(inter.guild.id) if checking_guild_problem else None, int(problem_id)
