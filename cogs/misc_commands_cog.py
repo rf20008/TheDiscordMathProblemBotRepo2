@@ -75,9 +75,9 @@ class MiscCommandsCog(HelperCog):
                 name="Python version given by sys.version", value=str(version)
             )
 
-            embed = embed.add_field(
-                name="Nextcord version", value=str(disnake.__version__)
-            )
+            #embed = embed.add_field(
+            #    name="Nextcord version", value=str(disnake.__version__)
+            #)
             embed = embed.add_field(
                 name="Disnake version", value=str(disnake.__version__)
             )

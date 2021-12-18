@@ -21,11 +21,11 @@ slash = None
 
 
 class DeveloperCommands(HelperCog):
-    def __init__(self, bot: nextcord.ext.commands.Bot):
+    def __init__(self, bot: disnake.ext.commands.Bot):
         global checks
 
         super().__init__(bot)
-        self.bot = bot
+        self.bot: disnake.ext.commands.Bot = bot
         # checks = self.checks
         checks.setup(bot)
 
@@ -220,23 +220,23 @@ class DeveloperCommands(HelperCog):
             )
             return None
         if documentation_type == "command_help":
-            # Might fail
             try:
-                command_func = commands[help_obj]
-                command_docstring = command_func.func.__doc__
-                if command_docstring is None:
+                
+                command = self.bot.get_global_command_named(help_obj, cmd_type=disnake.ApplicationCommandType.chat_input) #Get the command
+                if command is None: # command not found
                     return await inter.send(
-                        "Either there is a bug in the bot... or in the dislash library... or your command does not have documentation... or all 3. Anyway, if this happens, please report it!"
-                    )
-                return await inter.send(
-                    embed=SuccessEmbed(description=str(command_docstring))
-                )
-            except KeyError:
-                return await inter.send(
                     embed=ErrorEmbed(
                         custom_title="I couldn't find your command!",
                         description=":x: Could not find the command specified. ",
                     )
+                )
+                command_docstring = command.func.__doc__
+                if command_docstring is None:
+                    return await inter.send(
+                        "Oh no! This command does not have documentation! Please report this bug."
+                    )
+                return await inter.send(
+                    embed=SuccessEmbed(description=str(command_docstring))
                 )
             except AttributeError as exc:
                 # My experiment failed
@@ -375,6 +375,7 @@ class DeveloperCommands(HelperCog):
     ) -> typing.Optional[disnake.Message]:
         """/generate_new_problems [num_new_problems_to_generate: int]
         Generate new Problems."""
+        #TODO: problem_generator class (and use formulas :-))
         await cooldowns.check_for_cooldown(
             inter, "generate_new_problems", 30
         )  # 30 second cooldown!
@@ -468,7 +469,7 @@ class DeveloperCommands(HelperCog):
     @checks.trusted_users_only()
     @commands.cooldown(1, 600, nextcord.ext.commands.BucketType.user)
     async def add_trusted_user(
-        self, inter: dislash.SlashInteraction, user: disnake.Member
+        self, inter: disnake.ApplicationCommandInteraction, user: typing.Union[disnake.Member, disnake.User]
     ) -> None:
         """/add_trusted_user [user: User]
         This slash commands adds a trusted user!
