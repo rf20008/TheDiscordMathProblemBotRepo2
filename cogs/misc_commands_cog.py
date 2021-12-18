@@ -201,13 +201,13 @@ class MiscCommandsCog(HelperCog):
                         send_messages=True,
                         read_messages=True,
                         embed_links=True,
-                        use_application_commands=True,
+                        use_slash_commands=True,
                         attach_files=True
                     ),  
                     scopes=['bot', 'applications.commands']
-                ),
-            ephemeral=True,
-        )
+                )
+            ),
+            ephemeral=True
         )
 
     @commands.slash_command(
@@ -222,7 +222,7 @@ class MiscCommandsCog(HelperCog):
         """
         await inter.send(
             embed=SuccessEmbed(
-                f"[Repo Link:]{self.bot.constants.SOURCE_CODE_LINK}",
+                f"[Repo Link:]({self.bot.constants.SOURCE_CODE_LINK})",
                 successTitle="Here is the Github Repository Link.",
             )
         )
