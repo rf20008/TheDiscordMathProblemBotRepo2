@@ -550,7 +550,7 @@ NumSolvers: {len(problem.get_solvers())}"""
     )
     @checks.is_not_blacklisted()
     async def check_answer(
-        self, inter, problem_id, answer, checking_guild_problem=False
+        self, inter: disnake.ApplicationCommandInteraction, problem_id: int, answer: str, checking_guild_problem: bool =False
     ):
         """/check_answer {problem_id} {answer_id} [checking_guild_problem = False]
         Check your answer to the problem with the given id.
@@ -561,7 +561,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         await cooldowns.check_for_cooldown(inter, "check_answer", 5)
         try:
             problem = await self.cache.get_problem(
-                inter.guild.id if checking_guild_problem else None, int(problem_id)
+                int(inter.guild.id) if checking_guild_problem else None, int(problem_id)
             )
             # Make sure the author didn't already solve this problem
             if problem.is_solver(inter.author):

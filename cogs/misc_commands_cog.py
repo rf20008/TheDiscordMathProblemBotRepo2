@@ -16,7 +16,7 @@ from time import asctime
 import resource
 from typing import Union
 from copy import copy
-import orjson
+import json
 from io import BytesIO  # For file submitting!
 
 
@@ -452,9 +452,9 @@ class MiscCommandsCog(HelperCog):
         To prevent spam and getting ratelimited, there is a 100 second cooldown."""
         file = disnake.File(
             BytesIO(
-                orjson.dumps(
+                json.dumps(
                     await self._get_json_data_by_user(inter.author),
-                    option=orjson.OPT_INDENT_2,
+                    indent = 2
                 )
             ),
             filename="your_data.json",
