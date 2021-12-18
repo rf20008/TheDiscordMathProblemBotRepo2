@@ -12,34 +12,28 @@
       {
         "id": "9f8c961f-dafa-403d-b9cc-bc096b1114ea",
         "line": 2,
-        "version": 217,
+        "version": 235,
         "index": 25
       }
     ],
     "main.py": [
       {
-        "id": "fb990c77-3e9a-44d7-ad7c-a28ba407f806",
-        "line": 1,
-        "version": 69730,
-        "index": 0
-      },
-      {
         "id": "143247e7-b731-4ee6-8038-ab2c78a58ed7",
         "line": 1,
-        "version": 69730,
+        "version": 70698,
         "index": 0
       },
       {
         "id": "36ed38cc-d6b6-445b-bbec-f727e7e7c4a3",
         "line": 1,
-        "version": 69730,
+        "version": 70698,
         "index": 0
       },
       {
         "id": "71017470-b1c3-40fa-a4d8-45b607405c61",
-        "line": 278,
-        "version": 69730,
-        "index": 9094
+        "line": 1,
+        "version": 70698,
+        "index": 0
       }
     ],
     "pylint-1.rtf": [

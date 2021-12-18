@@ -1,8 +1,7 @@
-# Written by @rf20008
-# Licensed under CC-BY-SA 4.0/GPL v3.0
+chec# Written by @rf20008
+# Licensed under GPLv3
 # Feel free to contribute! :-)
-# Python 3.8+ is required.
-# Python 3.10 might not work with the bot, because it can't connect to Discord
+# Python 3.10+ is required.
 from sys import exit
 
 from helpful_modules import constants_loader
@@ -28,17 +27,14 @@ from asyncio import sleep as asyncio_sleep
 from copy import copy
 
 # Imports - 3rd party
-import discord
-import dislash  # https://github.com/EQUENOS/dislash.py
-from dislash import InteractionClient, Option, OptionType, NotOwner, OptionChoice
-import nextcord  # https://github.com/nextcord/nextcord
-import nextcord.ext.commands as nextcord_commands
+
+import disnake  # https://github.com/DisnakeDev/disnake
 import aiosqlite  # https://github.com/omnilib/aiosqlite
 
 
-from nextcord.ext.commands.cooldowns import BucketType
-
 # Imports - My own files
+from disnake.ext import commands
+from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules import _error_logging, checks, cooldowns
 from helpful_modules import custom_embeds, problems_module
 from helpful_modules import save_files, the_documentation_file_loader, return_intents
@@ -53,7 +49,7 @@ from helpful_modules.checks import is_not_blacklisted, setup
 from helpful_modules.the_documentation_file_loader import *
 from helpful_modules.constants_loader import *
 
-VERSION = "0.0.3a3"
+VERSION = "0.0.5a2"
 try:
     import dotenv  # https://pypi.org/project/python-dotenv/
 
@@ -146,21 +142,30 @@ def get_git_revision_hash() -> str:
     )  # [7:] is here because of the commit hash, the rest of this function is from stack overflow
 
 
+# @bot.event
+async def on_ready(bot):
+    "Ran when the disnake library detects that the bot is ready"
+    print("The bot is now ready!")
+
+
 # Bot creation
 
 asyncio.set_event_loop(asyncio.new_event_loop())  # Otherwise, weird errors will happen
-bot = nextcord_commands.Bot(
-    command_prefix=" ",
+bot = TheDiscordMathProblemBot(
+    command_prefix=commands.when_mentioned,
     intents=return_intents.return_intents(),
     application_id=845751152901750824,
-    status=nextcord.Status.idle,
+    status=disnake.Status.idle,
+    cache=main_cache,
+    constants=bot_constants,
+    trusted_users=copy(trusted_users),
+    tasks={},
+    on_ready_func=on_ready
     # activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂") # This didn't work anyway, will set the activity in on_connect
 )
-
-setup(bot)
-bot.cache = main_cache
-bot.constants = bot_constants
-bot.trusted_users = copy(trusted_users)
+# TODO: move bot events + initializing to custom_bot.py
+bot._sync_commands_debug = True
+# setup(bot)
 bot._transport_modules = {
     "problems_module": problems_module,
     "save_files": save_files,
@@ -169,13 +174,14 @@ bot._transport_modules = {
     "custom_embeds": custom_embeds,
     "checks": checks,
 }
-bot.add_check(is_not_blacklisted)
-bot.add_check(nextcord.ext.commands.bot_has_permissions(
-    send_messages=True,
-    
-))
-bot.vote_threshold = copy(vote_threshold)
-bot.blacklisted_users = []
+bot.add_check(
+    disnake.ext.commands.bot_has_permissions(
+        send_messages=True,
+        read_messages=True,
+        embed_links=True,
+    )
+)
+bot.blacklisted_users = []  # TODO: user_status dict
 _the_daemon_file_saver = threading.Thread(
     target=the_daemon_file_saver,
     name="The File Saver",
@@ -183,15 +189,15 @@ _the_daemon_file_saver = threading.Thread(
 )
 _the_daemon_file_saver.start()
 # bot.load_extension("jishaku")
-bot.log = logging.getLogger(__name__)
 
-slash = InteractionClient(client=bot, sync_commands=True)
-bot.slash = slash
+# slash = InteractionClient(client=bot, sync_commands=True)
+# bot.slash = slash
 # Add the commands
 bot.add_cog(DeveloperCommands(bot))
 bot.add_cog(ProblemsCog(bot))
 bot.add_cog(QuizCog(bot))
 bot.add_cog(MiscCommandsCog(bot))
+bot.add_cog(TestCog(bot))
 bot.CONSTANTS = bot_constants
 print("Bots successfully created.")
 
@@ -204,10 +210,10 @@ async def on_connect():
     print("The bot has connected to Discord successfully.")
     await asyncio_sleep(0.5)
     await bot.change_presence(
-        activity=nextcord.CustomActivity(
+        activity=disnake.CustomActivity(
             name="Making sure that the bot works!", emoji="🙂"
         ),
-        status=nextcord.Status.idle,
+        status=disnake.Status.idle,
     )
     bot.log.debug(
         "Deleting data from guilds the bot was kicked from while it was offline"
@@ -221,12 +227,6 @@ async def on_connect():
         if guild_id not in bot_guild_ids:  # It's not in!
             bot.log.debug("The bot is deleting data from a guild it has left.")
             await bot.cache.remove_all_by_guild_id(guild_id)  # Delete the data
-
-
-@bot.event
-async def on_ready():
-    "Ran when the nextcord library detects that the bot is ready"
-    print("The bot is now ready!")
 
 
 @bot.event
@@ -252,7 +252,12 @@ async def on_error(event, *args, **kwargs):
 async def on_slash_command_error(inter, error):
     "Function called when a slash command errors, which will inevitably happen. All of the functionality was moved to base_on_error :-)"
     # print the traceback to the file
-    return await inter.reply(**await base_on_error(inter, error))
+    dict_args = await base_on_error(inter, error)
+    print(dict_args)
+    try:
+        return await inter.send(**dict_args)
+    except AttributeError:
+        return await inter.send()
 
 
 ##@bot.command(help = """Adds a trusted user!
@@ -266,6 +271,7 @@ async def on_slash_command_error(inter, error):
 async def on_guild_join(guild):
     "Ran when the bot joins a guild!"
     if guild.id == None:  # Should never happen
+        raise Exception("Uh oh!")  # This is probably causing the bot to do stuff
         await guild.leave()  # This will mess up stuff
         print("Oh no")
         raise RuntimeError(
@@ -276,10 +282,14 @@ async def on_guild_join(guild):
 @bot.event
 async def on_guild_remove(guild):
     await bot.cache.remove_all_by_guild_id(guild.id)  # Remove all guild-related stuff
+    # uh oh?
 
 
 if __name__ == "__main__":
     print("The bot has finished setting up and will now run.")
     # slash.run(DISCORD_TOKEN)
-
+    for command in bot.global_slash_commands:
+        # raise
+        if len(command.name) > 100:
+            raise Exception(f"This command: {command.name} is too long")
     bot.run(DISCORD_TOKEN)
