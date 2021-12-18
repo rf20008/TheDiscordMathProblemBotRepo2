@@ -185,7 +185,7 @@ bot.add_check(
         embed_links=True,
     )
 )
-bot.blacklisted_users = []  # TODO: user_status dict
+bot.blacklisted_users = []  # TODO: store user status in MYSQL
 _the_daemon_file_saver = threading.Thread(
     target=the_daemon_file_saver,
     name="The File Saver",
