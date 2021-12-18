@@ -15,8 +15,8 @@ from sys import stderr
 
 
 def generate_new_id():
-    "Generate a random number from 0 to 10^14"
-    return random.randint(0, 10 ** 14)
+    "Generate a random number from 0 to 2**63-1"
+    return random.randint(0, 2**63-1)
 
 
 def get_git_revision_hash() -> str:
@@ -37,12 +37,7 @@ def loading_documentation_thread():
 
 async def base_on_error(inter, error):
     "The base on_error event. Call this and use the dictionary as keyword arguments to print to the user"
-    print(
-        "\n".join(traceback.format_exception(error)),  # python 3.10 only!
-        file=stderr,
-    )
-    log_error(error)  # Log the error
-    error_traceback = "\n".join(traceback.format_exception(error))  #
+    error_traceback = "\n".join(traceback.format_exception(error))  
     if isinstance(error, BaseException) and not isinstance(error, Exception):
         # Errors that do not inherit from Exception are not meant to be caught
         raise
@@ -62,7 +57,11 @@ async def base_on_error(inter, error):
     if isinstance(error, disnake.ext.commands.errors.CheckFailure):
         return {"embed": ErrorEmbed(str(error))}
     # Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
-
+    print(
+        "\n".join(traceback.format_exception(error)),  # python 3.10 only!
+        file=stderr,
+    )
+    log_error(error)  # Log the error
     try:
         embed = disnake.Embed(
             colour=disnake.Colour.red(),

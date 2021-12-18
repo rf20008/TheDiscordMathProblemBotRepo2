@@ -218,7 +218,7 @@ async def on_connect():
     bot.log.debug(
         "Deleting data from guilds the bot was kicked from while it was offline"
     )
-    bot_guild_ids = [guild.id for guild in bot.guilds]
+    bot_guild_ids = [guild.id for guild in bot.guilds] # The guild_ids of the guilds that the bot is in
     for (
         guild_id
     ) in (
@@ -232,12 +232,11 @@ async def on_connect():
 @bot.event
 async def on_error(event, *args, **kwargs):
     error = exc_info()
-    if True:
-        # print the traceback to the file
-        print(
-            "\n".join(traceback.format_exception(*error)),
-            file=stderr,
-        )
+    # print the traceback to the file
+    print(
+        "\n".join(traceback.format_exception(*error)),
+        file=stderr,
+    )
 
     error_traceback_as_obj = "\n".join(traceback.format_exception(*error))
     # Log the error?
@@ -253,7 +252,6 @@ async def on_slash_command_error(inter, error):
     "Function called when a slash command errors, which will inevitably happen. All of the functionality was moved to base_on_error :-)"
     # print the traceback to the file
     dict_args = await base_on_error(inter, error)
-    print(dict_args)
     try:
         return await inter.send(**dict_args)
     except AttributeError:
