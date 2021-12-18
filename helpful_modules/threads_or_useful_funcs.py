@@ -55,7 +55,7 @@ async def base_on_error(inter, error):
     if isinstance(error, NotOwner):
         return {"embed": ErrorEmbed("You are not the owner of this bot.")}
     if isinstance(error, disnake.ext.commands.errors.CheckFailure):
-        return {"embed": ErrorEmbed(str(error))}
+        return {"embed": ErrorEmbed(str(error) + " You probably aren't allowed to run this command. If this is a bug, please report it :-)")}
     # Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
     print(
         "\n".join(traceback.format_exception(error)),  # python 3.10 only!

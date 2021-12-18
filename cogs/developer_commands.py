@@ -267,9 +267,9 @@ class DeveloperCommands(HelperCog):
             await inter.send(_documentation)
         elif documentation_type == "privacy_policy":
             with open(
-                "/PRIVACY_POLICY.md"
+                "PRIVACY_POLICY.md"
             ) as file:  # Replace this with the path to the file
-                await inter.send(content="\n".join([str(line) for line in file]))
+                await inter.send(embed=SuccessEmbed("".join([str(line) for line in file]))) #Concatenate the lines in the file and send them
             return
 
     @commands.cooldown(1, 5, commands.BucketType.user)
