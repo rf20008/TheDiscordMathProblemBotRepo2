@@ -1,7 +1,6 @@
 git+git://github.com/Rapptz/discord.py
 git+git://github.com/nextcord/nextcord.git@master
 git+git://github.com/EQUENOS/dislash.py.git@main
-orjson >= 3.6.3
 python-dotenv>=0.19.1
 git+git://github.com/rf20008/sqldict.git@main
 mysql-connector-python>=8.0.27
@@ -9,3 +8,4 @@ aiohttp>=3.7.3, <3.8
 git+git://github.com/top-gg/python-sdk.git@master
 git+git://github.com/omnilib/aiosqlite.git@main
 git+git://github.com/DisnakeDev/disnake.git
+git+git://github.com/ijl/orjson.git
