@@ -39,7 +39,7 @@ class MiscCommandsCog(HelperCog):
             )
         ],
     )
-    @commands.cooldown(1, 150, commands.BucketType.user)
+    @commands.cooldown(1, 15, commands.BucketType.user)
     async def info(
         self,
         inter: disnake.ApplicationCommandInteraction,
@@ -95,7 +95,11 @@ class MiscCommandsCog(HelperCog):
             )
             embed = embed.add_field(
                 name="License",
-                value="This bot is licensed under GPLv3. Please see [the official GPLv3 website](https://www.gnu.org/licenses/gpl-3.0.en.html) for more details.",
+                value="This bot is licensed under GPLv3. Please see [the official GPLv3 website that explains the GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html) for more details.",
+            )
+            embed = embed.add_field(
+                name = 'Uptime',
+                value = f"The bot started at {disnake.utils.format_dt(self.bot.timeStarted)} and has been up for {round(self.bot.uptime)} seconds."
             )
 
         await inter.send(embed=embed)

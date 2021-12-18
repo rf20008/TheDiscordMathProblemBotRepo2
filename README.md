@@ -39,7 +39,9 @@ As soon as you see them, contact me as soon as possible!
 
 # Invite my bot!
 
-Recommended invite: https://discord.com/api/oauth2/authorize?client_id=845751152901750824&permissions=2147568640&scope=bot%20applications.commands
+Recommended invite: https://discord.com/oauth2/authorize?client_id=845751152901750824&scope=bot+applications.commands&permissions=2147535872
+
+(However, the bot is in a alpha phase. I do not make any guarantees that it will work right now)
 
 # Documentation
 
