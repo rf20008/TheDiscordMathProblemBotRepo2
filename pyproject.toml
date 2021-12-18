@@ -12,9 +12,9 @@ version = "0.0.5a2"
 discord = "^1.7.3"
 discord-py-slash-command = "^3.0.1"
 nextcord = "^2.0.0-alpha.1"
-disnake= { git="https://github.com/DisnakeDev/disnake.git" }
+disnake= {git="https://github.com/DisnakeDev/disnake.git"}
 python = "^3.8"
 typing-extensions = "^3.10.0"
-orjson = "^3.6.5"
+orjson = {git = "https://github.com/ijl/orjson"}
 python-dotenv = "^0.19.2"
 aiosqlite = "^0.17.0"
