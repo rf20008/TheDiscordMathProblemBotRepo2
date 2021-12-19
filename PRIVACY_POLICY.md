@@ -1,10 +1,16 @@
 # Privacy policy
+Disclaimer: I am not a lawyer.
 
 Most of the content in this privacy policy should be self-explanatory. (Write to me if it isn't!)
 If you use this application (the Discord Math Problem Bot), (I assume that) you (would) agree to this policy. If you do not agree, don't use this application! The only data we'll store about you without your consent is whether you're blacklisted or not. By using this bot, you agree to us storing data about you in accordance with my Privacy Policy!
 
+# Definitions
+"the bot" means The Discord Math Problem Bot.
+"you" means the user / the person who is reading this Policy.
+"me/I" means @rf20008 (however, when there are other maintainers, this will change)
 
-## Why we store your data
+
+## Why I store your data
 
 Storing data you voluntarily submit to the bot, and data from the Discord API, is required for this bot to work.
 
@@ -23,9 +29,7 @@ If other kinds of data are disclosed, then either I intend this (and will notify
 
 You can see *all* of your data using the command /user_data get_data.
 
-As of right now, quizzes do not have a user interface, but problems you submit can still be deleted via ``/delete_problem``. Due to Discord limitations, you are not able to delete individual problems that are part of Discord servers are not a part of. There is also a ``/delete_all_my_data`` command, which will delete *all* your problems, quizzes, quiz submissions, and grades you submitted (including guilds you are not part of). However, due to security reasons, we won't delete the data we store about you about whether you're blacklisted / trusted. 
-
-There are options to delete your votes & your solves.
+As of right now, quizzes do not have a user interface, but problems you submit can still be deleted via ``/delete_problem``. Due to Discord limitations, you are not able to delete individual problems that are part of Discord servers are not a part of. There is also a ``/delete_all_my_data`` command, which will delete *all* your problems, quizzes, quiz submissions, and grades you submitted (including guilds you are not part of). However, due to security reasons, we won't delete the data we store about you about whether you're blacklisted / trusted.  It is possible to delete data about whether you voted or solved problems.
 
 ## Updates and notification
 

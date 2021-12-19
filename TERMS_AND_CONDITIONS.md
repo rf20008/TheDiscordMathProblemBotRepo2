@@ -1,10 +1,18 @@
-# TAC (Terms & Conditions)-like stuff
+# Terms & Conditions
+Disclaimer: I am not a lawyer.
 
 Most of this language should be self-explanatory. Please create an issue if it isn't!
+
+By using the application (The Discord Math Problem Bot), you agree to these Terms
 
 ## Definitions
 "us/we" means the people who develop/maintain The Discord Math Problem Bot (on the official instance, it's @rf20008)
 "trusted users": people who have the trusted user status in the bot.
+"the bot" means The Discord Math Problem Bot.
+"me" means @rf20008.
+"guild administrators" means people who have the 'administrator' permission in the guild.
+s
+
 
 ## Rules/things I have the right to do.
 
