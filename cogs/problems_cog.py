@@ -6,7 +6,6 @@ from asyncio import run
 from disnake.ext import commands
 from helpful_modules import checks, cooldowns, problems_module
 import aiosqlite
-from dislash import *
 import disnake, nextcord
 from asyncio import run
 from disnake.ext import commands

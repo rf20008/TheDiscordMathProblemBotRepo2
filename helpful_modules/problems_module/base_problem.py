@@ -1,5 +1,5 @@
 import warnings
-import nextcord, dislash
+import disnake
 from sqlite3 import Row
 from .errors import *
 import pickle
@@ -260,9 +260,9 @@ class BaseProblem:
         return _dict
 
     def add_voter(self, voter):
-        """Adds a voter. Voter must be a nextcord.User object or nextcord.Member object."""
-        if not isinstance(voter, nextcord.User) and not isinstance(
-            voter, nextcord.Member
+        """Adds a voter. Voter must be a disnake.User object or disnake.Member object."""
+        if not isinstance(voter, disnake.User) and not isinstance(
+            voter, disnake.Member
         ):
             raise TypeError("User is not a User object")
         if not self.is_voter(voter):
@@ -270,9 +270,9 @@ class BaseProblem:
         self.update_self()
 
     def add_solver(self, solver):
-        """Adds a solver. Solver must be a nextcord.User object or nextcord.Member object."""
-        if not isinstance(solver, nextcord.User) and not isinstance(
-            solver, nextcord.Member
+        """Adds a solver. Solver must be a disnake.User object or disnake.Member object."""
+        if not isinstance(solver, disnake.User) and not isinstance(
+            solver, disnake.Member
         ):
             raise TypeError("Solver is not a User object")
         if not self.is_solver(solver):
@@ -293,8 +293,8 @@ class BaseProblem:
 
     def check_answer_and_add_checker(self, answer, potentialSolver):
         "Checks the answer. If it's correct, it adds potentialSolver to the solvers."
-        if not isinstance(potentialSolver, nextcord.User) and not isinstance(
-            potentialSolver, nextcord.Member
+        if not isinstance(potentialSolver, disnake.User) and not isinstance(
+            potentialSolver, disnake.Member
         ):
             raise TypeError("potentialSolver is not a User object")
         if self.check_answer(answer):
@@ -317,9 +317,9 @@ class BaseProblem:
         return len(self.get_voters())
 
     def is_voter(self, User):
-        "Returns True if user is a voter. False otherwise. User must be a nextcord.User or nextcord.Member object."
-        if not isinstance(User, nextcord.User) and not isinstance(
-            User, nextcord.Member
+        "Returns True if user is a voter. False otherwise. User must be a disnake.User or disnake.Member object."
+        if not isinstance(User, disnake.User) and not isinstance(
+            User, disnake.Member
         ):
             raise TypeError("User is not actually a User")
         return User.id in self.get_voters()
@@ -329,9 +329,9 @@ class BaseProblem:
         return self.solvers
 
     def is_solver(self, User):
-        "Returns True if user is a solver. False otherwise. User must be a nextcord.User or nextcord.Member object."
-        if not isinstance(User, nextcord.User) and not isinstance(
-            User, nextcord.Member
+        "Returns True if user is a solver. False otherwise. User must be a disnake.User or disnake.Member object."
+        if not isinstance(User, disnake.User) and not isinstance(
+            User, disnake.Member
         ):
             raise TypeError("User is not actually a User")
         return User.id in self.get_solvers()
@@ -342,8 +342,8 @@ class BaseProblem:
 
     def is_author(self, User):
         "Returns if the user is the author"
-        if not isinstance(User, nextcord.User) and not isinstance(
-            User, nextcord.Member
+        if not isinstance(User, disnake.User) and not isinstance(
+            User, disnake.Member
         ):
             raise TypeError("User is not actually a User")
         return User.id == self.get_author()

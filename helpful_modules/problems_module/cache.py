@@ -13,7 +13,7 @@ from typing import *
 from .errors import *
 from helpful_modules.dict_factory import dict_factory
 from .base_problem import BaseProblem
-from .quizzes import *
+from .quizzes import Quiz, QuizProblem, QuizSubmission
 from .mysql_connector_with_stmt import *
 
 
@@ -440,10 +440,10 @@ class MathProblemCache:
                     return BaseProblem.from_row(cache=copy(self), row=rows[0])
 
     async def get_guild_problems(
-        self, Guild: nextcord.Guild
+        self, Guild: disnake.Guild
     ) -> typing.List[BaseProblem]:
         """Gets the guild problems! Guild must be a Guild object. If you are trying to get global problems, use get_global_problems."""
-        assert isinstance(Guild, nextcord.Guild)
+        assert isinstance(Guild, disnake.Guild)
         if self.update_cache_by_default_when_requesting:
             await self.update_cache()
         try:
@@ -469,10 +469,10 @@ class MathProblemCache:
         return self.global_problems
 
     def add_empty_guild(self, Guild) -> None:
-        "Adds an dictionary that is empty for the guild. Guild must be a nextcord.Guild object"
+        "Adds an dictionary that is empty for the guild. Guild must be a disnake.Guild object"
         warnings.warn("Deprecated method: add_empty_guild", DeprecationWarning)
         pass  # No longer needed
-        # if not isinstance(Guild, nextcord.Guild):
+        # if not isinstance(Guild, disnake.Guild):
         #    raise TypeError("Guild is not actually a Guild")
         # try:
         #    if self._dict[str(Guild.id)] != {}:
@@ -704,7 +704,7 @@ class MathProblemCache:
     ) -> List[Union[int, Optional[disnake.Guild]]]:
         "Get the guilds (due to using sql, it must return the guild id, bot is needed to return guilds. takes O(n) time"
         try:
-            assert bot == None or isinstance(bot, nextcord.ext.commands.Bot)
+            assert bot == None or isinstance(bot, disnake.ext.commands.Bot)
         except:
             raise AssertionError("bot isn't a bot!")
 

@@ -4,7 +4,7 @@ import sys
 import traceback
 import sqlite3
 
-import nextcord
+import disnake
 
 from .errors import *
 from .base_problem import BaseProblem
