@@ -1,5 +1,5 @@
-from . import save_files
 import disnake
+from disnake.ext import commands 
 from time import sleep
 import subprocess, random
 from .the_documentation_file_loader import DocumentationFileLoader
@@ -51,7 +51,7 @@ async def base_on_error(inter, error):
         The error traceback is below."""
         return {"content": extra_content + error_traceback}
 
-    if isinstance(error, NotOwner):
+    if isinstance(error, commands.NotOwner):
         return {"embed": ErrorEmbed("You are not the owner of this bot.")}
     if isinstance(error, disnake.ext.commands.errors.CheckFailure):
         return {"embed": ErrorEmbed(str(error) + " You probably aren't allowed to run this command. If this is a bug, please report it :-)")}
