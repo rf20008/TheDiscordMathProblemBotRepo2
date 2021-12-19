@@ -170,6 +170,9 @@ class DeveloperCommands(HelperCog):
                     OptionChoice(name="command_help", value="command_help"),
                     OptionChoice(name="function_help", value="function_help"),
                     OptionChoice(name="privacy_policy", value="privacy_policy"),
+                    OptionChoice(
+                        name="terms_of_service", 
+                        value="terms_of_service")
                 ],
                 required=True,
             ),
@@ -186,7 +189,7 @@ class DeveloperCommands(HelperCog):
         self,
         inter: disnake.ApplicationCommandInteraction,
         documentation_type: typing.Literal[
-            "documentation_link", "command_help", "function_help", "privacy_policy"
+            "documentation_link", "command_help", "function_help", "privacy_policy", "terms_of_service"
         ],
         help_obj: str = None,
     ) -> typing.Optional[disnake.Message]:
@@ -218,8 +221,7 @@ class DeveloperCommands(HelperCog):
             return None
         if documentation_type == "command_help":
             try:
-                
-                command = self.bot.get_global_command_named(help_obj, cmd_type=disnake.ApplicationCommandType.chat_input) #Get the command
+                command = self.bot.get_slash_command(help_obj) #Get the command
                 if command is None: # command not found
                     return await inter.send(
                     embed=ErrorEmbed(
@@ -265,9 +267,19 @@ class DeveloperCommands(HelperCog):
         elif documentation_type == "privacy_policy":
             with open(
                 "PRIVACY_POLICY.md"
-            ) as file:  # Replace this with the path to the file
+            ) as file:  
                 await inter.send(embed=SuccessEmbed("".join([str(line) for line in file]))) #Concatenate the lines in the file and send them
             return
+        elif documentation_type == "terms_of_service":
+            with open("TERMS_AND_CONDITIONS.md") as file:
+                await inter.send(
+                    embed=SuccessEmbed(
+                        "".join([line for line in file])
+                    )
+                ) # Concatenate the lines in the file + send them
+        else:
+            raise NotImplementedError("This hasn't been implemented yet. Please contribute something!")
+                
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.slash_command(
