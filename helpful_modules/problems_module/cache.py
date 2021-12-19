@@ -3,7 +3,6 @@ from types import FunctionType as function
 import typing
 from mysql.connector import connect
 import disnake
-import sqldict
 import aiosqlite
 from copy import deepcopy, copy
 import sqlite3
@@ -64,13 +63,7 @@ class MathProblemCache:
             update_cache_by_default_when_requesting
         )
 
-    def _initialize_sql_dict(self):
-        self._sql_dict = sqldict.SqlDict(
-            name=f"MathProblemCache1.db", table_name="kv_store"
-        )
-        self.quizzes_sql_dict = sqldict.SqlDict(
-            name="TheQuizStorer", table_name="quizzes_kv_store"
-        )
+
 
     async def initialize_sql_table(self):
         if self.use_sqlite:

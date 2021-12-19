@@ -5,7 +5,6 @@ import subprocess, random
 from .the_documentation_file_loader import DocumentationFileLoader
 import traceback
 from .custom_embeds import *
-from dislash import *
 from time import asctime
 from ._error_logging import log_error
 from .cooldowns import OnCooldown

@@ -1,10 +1,7 @@
 "Admin-related commands. Licensed under GPLv3"
 from copy import copy
 import random
-import dislash
 import typing
-import nextcord
-import nextcord.ext.commands as nextcord_commands
 import disnake
 from disnake.ext import commands
 from disnake import *
@@ -141,7 +138,7 @@ class DeveloperCommands(HelperCog):
                     f"⚠ {inter.author.mention}, you do not have permission to intentionally raise errors for debugging purposes.",
                     custom_title="Insufficient permission to raise errors.",
                 ),
-                allowed_mentions=nextcord.AllowedMentions(
+                allowed_mentions=disnake.AllowedMentions(
                     everyone=False, users=[], roles=[], replied_user=False
                 ),
             )
@@ -467,7 +464,7 @@ class DeveloperCommands(HelperCog):
         ],
     )
     @checks.trusted_users_only()
-    @commands.cooldown(1, 600, nextcord.ext.commands.BucketType.user)
+    @commands.cooldown(1, 600, commands.BucketType.user)
     async def add_trusted_user(
         self, inter: disnake.ApplicationCommandInteraction, user: typing.Union[disnake.Member, disnake.User]
     ) -> None:
@@ -509,7 +506,7 @@ class DeveloperCommands(HelperCog):
     @commands.cooldown(1, 600, commands.BucketType.user)
     @checks.trusted_users_only()
     async def remove_trusted_user(
-        self: "DeveloperCommands", inter: dislash.SlashInteraction, user: nextcord.User
+        self: "DeveloperCommands", inter: disnake.ApplicationCommandInteraction, user: disnake.User
     ) -> typing.Optional[disnake.InteractionMessage]:
         """/remove_trusted_user [user: User]
         Remove a trusted user. You must be a trusted user to do this.

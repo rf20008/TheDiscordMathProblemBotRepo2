@@ -1,5 +1,5 @@
-from dislash.interactions.interaction import BaseInteraction
-import nextcord, disnake
+
+import disnake
 import helpful_modules
 from copy import deepcopy
 from warnings import warn
@@ -52,8 +52,7 @@ class HelperCog(disnake.ext.commands.Cog):
         if not bypass_ctx_check:
             assert isinstance(
                 ctx,
-                (nextcord.ext.commands.Context, disnake.ApplicationCommandInteraction),
-            )
+                (disnake.ext.commands.Context, disnake.ApplicationCommandInteraction))
             if ctx.author.id not in self.trusted_users:
                 raise RuntimeError(
                     f"Sadly, you're not allowed to do this, {ctx.author.mention} ☹️"
@@ -79,7 +78,7 @@ class HelperCog(disnake.ext.commands.Cog):
         if not bypass_ctx_check:
             assert isinstance(
                 ctx,
-                (nextcord.ext.commands.Context, disnake.ApplicationCommandInteraction),
+                (disnake.ext.commands.Context, disnake.ApplicationCommandInteraction),
             )
             if ctx.author.id not in self.trusted_users:
                 raise RuntimeError(
