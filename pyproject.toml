@@ -20,3 +20,8 @@ typing-extensions = "^3.10.0"
 "mysql-connector-python" = "^8.0.27"
 [tool.poetry.dependencies.disnake]
 git = "https://github.com/DisnakeDev/disnake.git"
+<<<<<<< HEAD
+=======
+#[tool.poetry.dependencies.orjson]
+#git = "https://github.com/ijl/orjson.git"
+>>>>>>> 4226a46529e13e185e3570653228b891f3640434

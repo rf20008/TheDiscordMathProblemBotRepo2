@@ -174,6 +174,7 @@ speed = ["orjson (>=3.5.4)", "aiodns (>=1.1)", "brotli", "cchardet"]
 voice = ["PyNaCl (>=1.3.0,<1.5)"]
 
 [[package]]
+<<<<<<< HEAD
 name = "orjson"
 version = "0.0.0"
 description = ""
@@ -189,6 +190,8 @@ reference = "master"
 resolved_reference = "71a7601e265a5c11f02f267befe6d3a6c223d5de"
 
 [[package]]
+=======
+>>>>>>> 4226a46529e13e185e3570653228b891f3640434
 name = "protobuf"
 version = "3.19.1"
 description = "Protocol Buffers"
@@ -230,7 +233,11 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
+<<<<<<< HEAD
 content-hash = "4ceeeffc53fed69ec8d1836a2d9ff7b450846ebcd0b7e7222b4c3b3094a3a948"
+=======
+content-hash = "3d6c754aa575f8c5c60b5479c7449e5393cb9018b013cd9527bd4b393682ac91"
+>>>>>>> 4226a46529e13e185e3570653228b891f3640434
 
 [metadata.files]
 aiohttp = [
@@ -417,7 +424,6 @@ mysql-connector-python = [
 nextcord = [
     {file = "nextcord-2.0.0a4.tar.gz", hash = "sha256:dbe36137573cfe9368771d9155c411b3be398fbe4476477ef3b400d80e5c7e83"},
 ]
-orjson = []
 protobuf = [
     {file = "protobuf-3.19.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:d80f80eb175bf5f1169139c2e0c5ada98b1c098e2b3c3736667f28cbbea39fc8"},
     {file = "protobuf-3.19.1-cp310-cp310-manylinux2014_aarch64.whl", hash = "sha256:a529e7df52204565bcd33738a7a5f288f3d2d37d86caa5d78c458fa5fabbd54d"},
