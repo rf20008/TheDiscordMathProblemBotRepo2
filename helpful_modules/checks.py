@@ -41,7 +41,7 @@ def custom_check(
 def trusted_users_only():
     def predicate(inter):
         if bot == None or bot.trusted_users == []:
-            return False
+            raise CustomCheckFailure("You aren't a trusted user!")
         if inter.author.id in bot.trusted_users:
             return True
         raise NotTrustedUser(
@@ -81,9 +81,9 @@ def is_not_blacklisted():
     "Check to make sure the user is not blacklisted"
 
     def predicate(inter):
-        if inter.author.id in bot.blacklisted_users:
+        if inter.author.id in bot.blacklisted_users: #TODO: use a SQL database
             raise BlacklistedException(
-                "You are blacklisted from the bot. This should not happen (as there is no way to blacklist people at runtime, and the blacklisted users list clears upon restarts. Please report this with a Github Issue! )"
+                "You are blacklisted from the bot!"
             )
         return True
 

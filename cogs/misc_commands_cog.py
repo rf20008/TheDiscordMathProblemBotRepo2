@@ -431,6 +431,9 @@ class MiscCommandsCog(HelperCog):
         problems_user_solved = await self.cache.get_problems_by_func(
             func=lambda problem, user_id: user_id in problem.solvers, args=(author,)
         )
+        is_trusted_user = author.id in self.bot.trusted_users #TODO: replace when SQL is being used to store user status
+        is_blacklisted = author.id in self.bot.blacklisted_users
+        
         new_data = {
             "Problems": [problem.to_dict() for problem in raw_data["problems"]],
             "Quiz Problems": [
@@ -446,6 +449,10 @@ class MiscCommandsCog(HelperCog):
             "Problems the user solved": [
                 problem.to_dict() for problem in problems_user_solved
             ],
+            "User status": {
+                "trusted_user": is_trusted_user,
+                "blacklisted": is_blacklisted
+            }
         }
         return new_data
 
@@ -465,9 +472,12 @@ class MiscCommandsCog(HelperCog):
         To prevent spam and getting ratelimited, there is a 100 second cooldown."""
         file = disnake.File(
             BytesIO(
-                json.dumps(
-                    await self._get_json_data_by_user(inter.author),
-                    indent = 2
+                bytes(
+                    json.dumps(
+                        await self._get_json_data_by_user(inter.author),
+                        indent = 2
+                    ),
+                    'utf-8'
                 )
             ),
             filename="your_data.json",
