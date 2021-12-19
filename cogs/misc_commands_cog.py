@@ -502,7 +502,7 @@ class MiscCommandsCog(HelperCog):
             exc_raised = e
         if successful:
             return await inter.send(
-                embed=SuccessEmbed(":) I have DMed you your data!"), ephemeral=True
+                embed=SuccessEmbed("I have DMed you your data!"), ephemeral=True
             )
         else:
             await inter.send(
