@@ -1,13 +1,11 @@
-from typing import List
 import pickle
+import sqlite3
 import sys
 import traceback
-import sqlite3
+from typing import List
 
-import disnake
-
-from .errors import *
 from .base_problem import BaseProblem
+from .errors import *
 
 
 class QuizSubmissionAnswer:
@@ -23,7 +21,7 @@ class QuizSubmissionAnswer:
         self.grade = grade
 
     def __str__(self):
-        return str(self.answer)
+        return f"<QuizSubmission quiz_id = {self.quiz_id} answer = {self.answer} grade = {self.grade}>"
 
 
 class QuizSubmission:
@@ -34,7 +32,7 @@ class QuizSubmission:
         self.quiz_id = quiz_id
         self.mutable = True
         self.answers = [
-            QuizSubmissionAnswer(problem=question, quiz_id=quiz_id)
+            QuizSubmissionAnswer(problem_id=question.id, quiz_id=quiz_id)
             for question in self.get_my_quiz()
         ]
         self.cache = cache
@@ -98,7 +96,7 @@ class QuizProblem(BaseProblem):
         id,
         author,
         guild_id=None,
-        voters=[],
+        voters=None,
         solvers=[],
         cache=None,
         answers=[],
@@ -108,11 +106,12 @@ class QuizProblem(BaseProblem):
         quiz=None,
     ):
         "A method that allows the creation of new QuizMathProblems"
-        if not isinstance(quiz.Quiz):
+        if not isinstance(Quiz):
             raise TypeError(
                 f"quiz is of type {quiz.__class.__name}, not Quiz"
             )  # Here to help me debug
-
+        if voters is None:
+            voters = []
         super().__init__(
             question, answer, id, author, guild_id, voters, solvers, cache, answers
         )  #
@@ -152,7 +151,8 @@ class QuizProblem(BaseProblem):
             raise TypeError(
                 f"quiz is of type {quiz.__class.__name}, not Quiz"
             )  # Here to help me debug
-        self.quiz = Quiz
+        if self.cache:
+            self.cache.update_quiz(self.quiz_id, quiz)
         if not isinstance(is_written, bool):
             raise TypeError("is_written is not of type bool")
         self.update_self()
@@ -205,7 +205,7 @@ class QuizProblem(BaseProblem):
 
 
 class Quiz(list):
-    "Essentially a list, so it implements everything that a list does, but it has an additional attribute submissions which is a list of QuizSubmissions"
+    """Essentially a list, so it implements everything that a list does, but it has an additional attribute submissions which is a list of QuizSubmissions"""
 
     def __init__(
         self,
@@ -222,7 +222,7 @@ class Quiz(list):
         self._submissions = submissions
         self._id = id
 
-    async def add_submission(self, submission):
+    async def add_submission(self, submission: QuizSubmission):
         assert isinstance(submission, QuizSubmission)
         submission.mutable = False
         self._submissions.append(submission)
@@ -231,7 +231,9 @@ class Quiz(list):
     @property
     def submissions(self):
         return self._submissions
-
+    @property
+    def id(self):
+        return self._id
     @classmethod
     def from_dict(cls, _dict: dict):
         problemsAsType = []
@@ -251,10 +253,10 @@ class Quiz(list):
 
     def to_dict(self):
         "Convert this instance into a Dictionary to be stored in SQL"
-        Problems = [problem.to_dict() for problem in self]
-        Submissions = [submission.to_dict for submission in self.submissions]
-        return {"problems": Problems, "submissions": Submissions, "id": self._id}
+        problems = [problem.to_dict() for problem in self]
+        submissions = [submission.to_dict for submission in self.submissions]
+        return {"problems": problems, "submissions": submissions, "id": self._id}
 
     async def update_self(self):
-        "Update myself in the sqldict"
+        "Update myself!"
         await self._cache.update_quiz(self._id, self)

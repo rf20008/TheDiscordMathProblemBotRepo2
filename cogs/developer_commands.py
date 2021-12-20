@@ -1,28 +1,29 @@
 "Admin-related commands. Licensed under GPLv3"
-from copy import copy
 import random
 import typing
+from copy import copy
+
 import disnake
-from disnake.ext import commands
 from disnake import *
+from disnake.ext import commands
 
-from .helper_cog import HelperCog
-from helpful_modules import checks, cooldowns, the_documentation_file_loader
-from helpful_modules.custom_embeds import *
-
-from helpful_modules.save_files import FileSaver
+from helpful_modules import cooldowns, the_documentation_file_loader
 from helpful_modules import problems_module
+from helpful_modules.custom_bot import TheDiscordMathProblemBot
+from helpful_modules.custom_embeds import *
+from helpful_modules.save_files import FileSaver
 from helpful_modules.threads_or_useful_funcs import generate_new_id
+from .helper_cog import HelperCog
 
 slash = None
 
 
 class DeveloperCommands(HelperCog):
-    def __init__(self, bot: disnake.ext.commands.Bot):
+    def __init__(self, bot: TheDiscordMathProblemBot):
         global checks
 
         super().__init__(bot)
-        self.bot: disnake.ext.commands.Bot = bot
+        self.bot: TheDiscordMathProblemBot = bot
         # checks = self.checks
         checks.setup(bot)
 
@@ -170,9 +171,7 @@ class DeveloperCommands(HelperCog):
                     OptionChoice(name="command_help", value="command_help"),
                     OptionChoice(name="function_help", value="function_help"),
                     OptionChoice(name="privacy_policy", value="privacy_policy"),
-                    OptionChoice(
-                        name="terms_of_service", 
-                        value="terms_of_service")
+                    OptionChoice(name="terms_of_service", value="terms_of_service"),
                 ],
                 required=True,
             ),
@@ -189,7 +188,11 @@ class DeveloperCommands(HelperCog):
         self,
         inter: disnake.ApplicationCommandInteraction,
         documentation_type: typing.Literal[
-            "documentation_link", "command_help", "function_help", "privacy_policy", "terms_of_service"
+            "documentation_link",
+            "command_help",
+            "function_help",
+            "privacy_policy",
+            "terms_of_service",
         ],
         help_obj: str = None,
     ) -> typing.Optional[disnake.Message]:
@@ -221,14 +224,14 @@ class DeveloperCommands(HelperCog):
             return None
         if documentation_type == "command_help":
             try:
-                command = self.bot.get_slash_command(help_obj) #Get the command
-                if command is None: # command not found
+                command = self.bot.get_slash_command(help_obj)  # Get the command
+                if command is None:  # command not found
                     return await inter.send(
-                    embed=ErrorEmbed(
-                        custom_title="I couldn't find your command!",
-                        description=":x: Could not find the command specified. ",
+                        embed=ErrorEmbed(
+                            custom_title="I couldn't find your command!",
+                            description=":x: Could not find the command specified. ",
+                        )
                     )
-                )
                 command_docstring = command.func.__doc__
                 if command_docstring is None:
                     return await inter.send(
@@ -265,21 +268,20 @@ class DeveloperCommands(HelperCog):
                 return None
             await inter.send(_documentation)
         elif documentation_type == "privacy_policy":
-            with open(
-                "PRIVACY_POLICY.md"
-            ) as file:  
-                await inter.send(embed=SuccessEmbed("".join([str(line) for line in file]))) #Concatenate the lines in the file and send them
+            with open("PRIVACY_POLICY.md") as file:
+                await inter.send(
+                    embed=SuccessEmbed("".join([str(line) for line in file]))
+                )  # Concatenate the lines in the file and send them
             return
         elif documentation_type == "terms_of_service":
             with open("TERMS_AND_CONDITIONS.md") as file:
                 await inter.send(
-                    embed=SuccessEmbed(
-                        "".join([line for line in file])
-                    )
-                ) # Concatenate the lines in the file + send them
+                    embed=SuccessEmbed("".join([line for line in file]))
+                )  # Concatenate the lines in the file + send them
         else:
-            raise NotImplementedError("This hasn't been implemented yet. Please contribute something!")
-                
+            raise NotImplementedError(
+                "This hasn't been implemented yet. Please contribute something!"
+            )
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.slash_command(
@@ -384,7 +386,7 @@ class DeveloperCommands(HelperCog):
     ) -> typing.Optional[disnake.Message]:
         """/generate_new_problems [num_new_problems_to_generate: int]
         Generate new Problems."""
-        #TODO: problem_generator class (and use formulas :-))
+        # TODO: problem_generator class (and use formulas :-))
         await cooldowns.check_for_cooldown(
             inter, "generate_new_problems", 30
         )  # 30 second cooldown!
@@ -478,7 +480,9 @@ class DeveloperCommands(HelperCog):
     @checks.trusted_users_only()
     @commands.cooldown(1, 600, commands.BucketType.user)
     async def add_trusted_user(
-        self, inter: disnake.ApplicationCommandInteraction, user: typing.Union[disnake.Member, disnake.User]
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        user: typing.Union[disnake.Member, disnake.User],
     ) -> None:
         """/add_trusted_user [user: User]
         This slash commands adds a trusted user!
@@ -518,7 +522,9 @@ class DeveloperCommands(HelperCog):
     @commands.cooldown(1, 600, commands.BucketType.user)
     @checks.trusted_users_only()
     async def remove_trusted_user(
-        self: "DeveloperCommands", inter: disnake.ApplicationCommandInteraction, user: disnake.User
+        self: "DeveloperCommands",
+        inter: disnake.ApplicationCommandInteraction,
+        user: disnake.User,
     ) -> typing.Optional[disnake.InteractionMessage]:
         """/remove_trusted_user [user: User]
         Remove a trusted user. You must be a trusted user to do this.

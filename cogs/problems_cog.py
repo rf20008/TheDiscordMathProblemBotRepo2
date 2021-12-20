@@ -542,7 +542,11 @@ NumSolvers: {len(problem.get_solvers())}"""
     )
     @checks.is_not_blacklisted()
     async def check_answer(
-        self, inter: disnake.ApplicationCommandInteraction, problem_id: int, answer: str, checking_guild_problem: bool =False
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        problem_id: int,
+        answer: str,
+        checking_guild_problem: bool = False,
     ):
         """/check_answer {problem_id} {answer_id} [checking_guild_problem = False]
         Check your answer to the problem with the given id.
@@ -628,10 +632,10 @@ NumSolvers: {len(problem.get_solvers())}"""
         """/check_answer {problem_id: int} {answer: str} [checking_guild_problem: bool = false]
         Check your answer to the problem with the given id.
         If this command is executed in a DM, then you must set checking_guild_problem to False or the bot will error."""
-        if not inter.guild or not hasattr(inter.guild, 'id'):
+        if not inter.guild or not hasattr(inter.guild, "id"):
             if checking_guild_problem:
                 return await inter.send(
-                    embed = ErrorEmbed(
+                    embed=ErrorEmbed(
                         "You must run the command with checking_guild_problem set to False! If you set it to True I don't know which guild the problem is in!"
                     )
                 )

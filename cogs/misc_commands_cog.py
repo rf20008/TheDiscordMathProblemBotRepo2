@@ -1,30 +1,33 @@
+import json
+import resource
+import typing
+from asyncio import sleep as asyncio_sleep
+from copy import copy
+from io import BytesIO  # For file submitting!
+from os import cpu_count
+from sys import version_info, version
+from time import asctime
+from typing import Union
+
 from disnake import *
 from disnake.ext import commands
-import disnake
-from .helper_cog import HelperCog
-from sys import version_info, version
-from os import cpu_count
-from helpful_modules import cooldowns
+
 from helpful_modules import checks
-from helpful_modules.custom_embeds import SimpleEmbed, ErrorEmbed, SuccessEmbed
-from helpful_modules.save_files import FileSaver
+from helpful_modules import cooldowns
 from helpful_modules import problems_module
 from helpful_modules.custom_buttons import *
+from helpful_modules.custom_embeds import SimpleEmbed
+from helpful_modules.save_files import FileSaver
+from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.threads_or_useful_funcs import get_git_revision_hash
-from asyncio import sleep as asyncio_sleep
-from time import asctime
-import resource
-from typing import Union
-from copy import copy
-import json
-from io import BytesIO  # For file submitting!
+from .helper_cog import HelperCog
 
 
 class MiscCommandsCog(HelperCog):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: TheDiscordMathProblemBot):
         super().__init__(bot)
         checks.setup(bot)  # Sadly, Interactions do not have a bot parameter
-        self.bot: commands.Bot = bot
+        self.bot: TheDiscordMathProblemBot = bot
         self.cache: problems_module.MathProblemCache = bot.cache
 
     @commands.slash_command(
@@ -75,9 +78,9 @@ class MiscCommandsCog(HelperCog):
                 name="Python version given by sys.version", value=str(version)
             )
 
-            #embed = embed.add_field(
+            # embed = embed.add_field(
             #    name="Nextcord version", value=str(disnake.__version__)
-            #)
+            # )
             embed = embed.add_field(
                 name="Disnake version", value=str(disnake.__version__)
             )
@@ -90,16 +93,17 @@ class MiscCommandsCog(HelperCog):
                 value=f"{round((current_usage[3]/memory_limit)*1000)/100}%",
             )
             embed = embed.add_field(
-                name="CPU count (which may not necessarily be the amount of CPU avaliable to the bot due to a Python limitation)",
+                name="CPU count (which may not necessarily be the amount of CPU available to the bot due to a Python limitation)",
                 value=str(cpu_count()),
             )
             embed = embed.add_field(
                 name="License",
-                value="This bot is licensed under GPLv3. Please see [the official GPLv3 website that explains the GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html) for more details.",
+                value="""This bot is licensed under GPLv3. 
+                Please see [the official GPLv3 website that explains the GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html) for more details.""",
             )
             embed = embed.add_field(
-                name = 'Uptime',
-                value = f"The bot started at {disnake.utils.format_dt(self.bot.timeStarted)} and has been up for {round(self.bot.uptime)} seconds."
+                name="Uptime",
+                value=f"The bot started at {disnake.utils.format_dt(self.bot.timeStarted)} and has been up for {round(self.bot.uptime)} seconds.",
             )
 
         await inter.send(embed=embed)
@@ -166,7 +170,7 @@ class MiscCommandsCog(HelperCog):
         name="ping", description="Prints latency and takes no arguments"
     )
     async def ping(self, inter: disnake.ApplicationCommandInteraction):
-        "Ping the bot which returns its latency! This command does not take any arguments."
+        """Ping the bot which returns its latency! This command does not take any arguments."""
         await cooldowns.check_for_cooldown(inter, "ping", 5)
         await inter.send(
             embed=SuccessEmbed(
@@ -182,7 +186,7 @@ class MiscCommandsCog(HelperCog):
     async def what_is_vote_threshold(
         self, inter: disnake.ApplicationCommandInteraction
     ):
-        "Returns the vote threshold. Takes no arguments."
+        """Returns the vote threshold. Takes no arguments."""
         await cooldowns.check_for_cooldown(inter, "what_is_vote_threshold", 5)
         await inter.send(
             embed=SuccessEmbed(f"The vote threshold is {self.bot.vote_threshold}."),
@@ -195,23 +199,23 @@ class MiscCommandsCog(HelperCog):
     )
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def generate_invite_link(self, inter: disnake.ApplicationCommandInteraction):
-        "Generate an invite link for the bot. This command has been deprecated."
+        """Generate an invite link for the bot. This command has been deprecated."""
         await cooldowns.check_for_cooldown(inter, "generateInviteLink", 5)
         await inter.send(
-            embed=SuccessEmbed(            
+            embed=SuccessEmbed(
                 disnake.utils.oauth_url(
                     client_id=self.bot.application_id,
-                    permissions = disnake.Permissions(
+                    permissions=disnake.Permissions(
                         send_messages=True,
                         read_messages=True,
                         embed_links=True,
                         use_slash_commands=True,
-                        attach_files=True
-                    ),  
-                    scopes=['bot', 'applications.commands']
+                        attach_files=True,
+                    ),
+                    scopes=["bot", "applications.commands"],
                 )
             ),
-            ephemeral=True
+            ephemeral=True,
         )
 
     @commands.slash_command(
@@ -220,9 +224,9 @@ class MiscCommandsCog(HelperCog):
     @commands.cooldown(2, 120, commands.BucketType.user)
     async def github_repo(self, inter: disnake.ApplicationCommandInteraction):
         """/github_repo
-        Gives you the link to the bot's github repo.
+        Gives you the link to the bot's GitHub repo.
         If you are modifying this, because of the GPLv3 license, you must change this to reflect the new location of the bot's source code.
-        There is a 120 second cooldown on this command (after it has been executed 2 times)
+        There is a 2-minute cooldown on this command (after it has been executed 2 times)
         """
         await inter.send(
             embed=SuccessEmbed(
@@ -255,7 +259,7 @@ class MiscCommandsCog(HelperCog):
     ):
         """/set_vote_threshold [threshold: int]
         Set the vote threshold. Only trusted users may do this.
-        There is a 50 second cooldown.
+        There is a 50-second cooldown.
         This might cause a race condition"""
         # try:
         #    threshold = int(threshold)
@@ -274,10 +278,7 @@ class MiscCommandsCog(HelperCog):
                 ephemeral=True,
             )
             return
-        try:
-            vote_threshold = int(threshold)  # Probably unnecessary
-        except:
-            raise
+        vote_threshold = int(threshold)  # Probably unnecessary
         for problem in await self.bot.cache.get_global_problems():
             if problem.get_num_voters() > vote_threshold:
                 await self.cache.remove_problem(problem.guild_id, problem.id)
@@ -291,7 +292,7 @@ class MiscCommandsCog(HelperCog):
 
     @commands.slash_command(description="Interact with your user data")
     async def user_data(self, inter: disnake.ApplicationCommandInteraction):
-        "The base command to interact with your user data. This doesn't do anything (you need to call a subcommand)"
+        """The base command to interact with your user data. This doesn't do anything (you need to call a subcommand)"""
         print("The user_data command has been invoked!")
 
     @disnake.ext.commands.cooldown(1, 500, commands.BucketType.user)  # To prevent abuse
@@ -339,12 +340,12 @@ class MiscCommandsCog(HelperCog):
             )  # Turn it into a dictionary
 
         async def confirm_callback(
-            self: ConfirmationButton,
+            Self: ConfirmationButton,
             interaction: disnake.Interaction,
             _extra_data: dict,
         ):
             "The function that runs when the button gets pressed. This actually deletes the data"
-            assert self.check(interaction)
+            assert Self.check(interaction)
             kwargs = {
                 "content": "Successfully deleted your data! Your data should now be cleared now."
             }
@@ -374,13 +375,15 @@ class MiscCommandsCog(HelperCog):
                     problem.solvers.remove(interaction.user.id)
                     await problem.update_self()
 
-            await interaction.responder.send_message(**kwargs)
-            self.disable()
-            self.view.stop()
+            await interaction.send(**kwargs)
+            Self.disable()
+            Self.view.stop()
             return
 
-        async def deny_callback(self: BasicButton, interaction: disnake.Interaction):
-            "A function that runs when the"
+        async def deny_callback(
+            self: BasicButton, interaction: disnake.MessageInteraction
+        ):
+            """A function that runs when the deny button is pressed"""
             await interaction.response.reply(
                 "Your data is safe! It has not been deleted."
             )
@@ -403,15 +406,13 @@ class MiscCommandsCog(HelperCog):
             _extra_data=_extra_data,
         )
         deny_button = BasicButton(
-            check=lambda self, inter: inter.user.id == self.user_for,
+            check=lambda self, interaction: interaction.user.id == self.user_for,
             callback=deny_callback,
             style=disnake.ButtonStyle.green,
             disabled=False,
             label="Never mind....",
         )
-        view = MyView(timeout=30)
-        view.add_item(confirmation_button)
-        view.add_item(deny_button)
+        view = MyView(timeout=30, items=[confirmation_button, deny_button])
         return await inter.send(
             embed=SimpleEmbed(
                 title="Are you sure?", description="This will delete all your data!"
@@ -421,19 +422,21 @@ class MiscCommandsCog(HelperCog):
 
     async def _get_json_data_by_user(
         self, author: Union[disnake.User, disnake.Member]
-    ) -> dict:
-        "A helper function to obtain a user's stored data and return the dictionarified version of it."
+    ) -> typing.Dict[str, typing.Any]:
+        """A helper function to obtain a user's stored data and return a version of it that is a dictionary."""
         raw_data = await self.cache.get_all_by_author_id(author.id)
         problems_user_voted_for = await self.cache.get_problems_by_func(
             func=lambda problem, user_id: user_id in problem.voters, args=(author,)
         )
-        print(problems_user_voted_for)
+        self.bot.log.trace("getting problems user voted & solved")
         problems_user_solved = await self.cache.get_problems_by_func(
             func=lambda problem, user_id: user_id in problem.solvers, args=(author,)
         )
-        is_trusted_user = author.id in self.bot.trusted_users #TODO: replace when SQL is being used to store user status
+        is_trusted_user = (
+            author.id in self.bot.trusted_users
+        )  # TODO: replace when SQL is being used to store user status
         is_blacklisted = author.id in self.bot.blacklisted_users
-        
+
         new_data = {
             "Problems": [problem.to_dict() for problem in raw_data["problems"]],
             "Quiz Problems": [
@@ -451,12 +454,13 @@ class MiscCommandsCog(HelperCog):
             ],
             "User status": {
                 "trusted_user": is_trusted_user,
-                "blacklisted": is_blacklisted
-            }
+                "blacklisted": is_blacklisted,
+            },
         }
         return new_data
 
-    def _file_version_of_item(self, item: str, file_name) -> disnake.File:
+    @staticmethod
+    def _file_version_of_item(item: str, file_name) -> disnake.File:
         assert isinstance(item, str)
         return disnake.File(BytesIO(bytes(item, "utf-8")), filename=file_name)
 
@@ -469,15 +473,14 @@ class MiscCommandsCog(HelperCog):
         """/user_data get_data
         Get all the data the bot stores about you.
         Due to a Discord limitation, the bot cannot send the file in the interaction response, so you will be DMed instead.
-        To prevent spam and getting ratelimited, there is a 100 second cooldown."""
+        To prevent spam and getting rate limited, there is a 100-second cooldown."""
         file = disnake.File(
             BytesIO(
                 bytes(
                     json.dumps(
-                        await self._get_json_data_by_user(inter.author),
-                        indent = 2
+                        await self._get_json_data_by_user(inter.author), indent=2
                     ),
-                    'utf-8'
+                    "utf-8",
                 )
             ),
             filename="your_data.json",
@@ -583,9 +586,8 @@ class MiscCommandsCog(HelperCog):
         except (TypeError, KeyError, problems_module.ProblemNotFound):
             # Problem not found
             problem_found = False
-        content = self.bot.owner_id
         embed = disnake.Embed(
-            title=f"A new {type} request has been recieved from {inter.author.name}#{inter.author.discriminator}!",
+            title=f"A new {type} request has been received from {inter.author.name}#{inter.author.discriminator}!",
             description="",
         )
 

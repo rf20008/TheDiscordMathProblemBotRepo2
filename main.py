@@ -218,7 +218,9 @@ async def on_connect():
     bot.log.debug(
         "Deleting data from guilds the bot was kicked from while it was offline"
     )
-    bot_guild_ids = [guild.id for guild in bot.guilds] # The guild_ids of the guilds that the bot is in
+    bot_guild_ids = [
+        guild.id for guild in bot.guilds
+    ]  # The guild_ids of the guilds that the bot is in
     for (
         guild_id
     ) in (

@@ -1,16 +1,18 @@
+import typing
+from warnings import warn
 
 import disnake
-import helpful_modules
-from copy import deepcopy
-from warnings import warn
+from disnake import ext
+
 from helpful_modules import checks, problems_module
+from helpful_modules.custom_bot import TheDiscordMathProblemBot
 
 
-class HelperCog(disnake.ext.commands.Cog):
-    "A helper cog :-) However, by itself, it does not implement any commands."
+class HelperCog(ext.commands.Cog):
+    """A helper cog :-) However, by itself, it does not implement any commands."""
 
-    def __init__(self, bot):
-        "Helpful __init__, the entire reason I decided to make this so I could transfer modules"
+    def __init__(self, bot: TheDiscordMathProblemBot):
+        """Helpful __init__, the entire reason I decided to make this, so I could transfer modules"""
         self.b = bot._transport_modules
         checks.setup(bot)
         (
@@ -32,12 +34,12 @@ class HelperCog(disnake.ext.commands.Cog):
 
     @property
     def trusted_users(self):
-        "Syntactic sugar? A shorthand for self.bot.trusted_users"
+        """Syntactic sugar? A shorthand for self.bot.trusted_users"""
         return self.bot.trusted_users
 
     @property
     def vote_threshold(self):
-        "A shorthand for self.bot.vote_threshold"
+        """A shorthand for self.bot.vote_threshold"""
         return self.bot.vote_threshold
 
     def _change_vote_threshold(
@@ -48,11 +50,12 @@ class HelperCog(disnake.ext.commands.Cog):
         bypass_ctx_check=False,
         bypass_argument_checks=False,
     ):
-        "A helper method that will change the vote_threshold to the one specified"
+        """A helper method that will change the vote_threshold to the one specified"""
         if not bypass_ctx_check:
             assert isinstance(
                 ctx,
-                (disnake.ext.commands.Context, disnake.ApplicationCommandInteraction))
+                (disnake.ext.commands.Context, disnake.ApplicationCommandInteraction),
+            )
             if ctx.author.id not in self.trusted_users:
                 raise RuntimeError(
                     f"Sadly, you're not allowed to do this, {ctx.author.mention} ☹️"
@@ -68,13 +71,14 @@ class HelperCog(disnake.ext.commands.Cog):
 
     def _change_trusted_users(
         self,
-        new_trusted_users,
+        new_trusted_users: typing.List[int],
         ctx=None,
         *,
         bypass_ctx_check=False,
         bypass_argument_checks=False,
     ):
-        "A helper method that will change the trusted_users. This will replace the trusted users with the one given!"
+        """A helper method that will change the trusted_users.
+        This will replace the trusted users with the one given!"""
         if not bypass_ctx_check:
             assert isinstance(
                 ctx,

@@ -81,10 +81,8 @@ def is_not_blacklisted():
     "Check to make sure the user is not blacklisted"
 
     def predicate(inter):
-        if inter.author.id in bot.blacklisted_users: #TODO: use a SQL database
-            raise BlacklistedException(
-                "You are blacklisted from the bot!"
-            )
+        if inter.author.id in bot.blacklisted_users:  # TODO: use a SQL database
+            raise BlacklistedException("You are blacklisted from the bot!")
         return True
 
     return commands.check(predicate)

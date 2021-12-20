@@ -1,5 +1,5 @@
 import disnake
-from disnake.ext import commands 
+from disnake.ext import commands
 from time import sleep
 import subprocess, random
 from .the_documentation_file_loader import DocumentationFileLoader
@@ -15,7 +15,7 @@ from sys import stderr
 
 def generate_new_id():
     "Generate a random number from 0 to 2**63-1"
-    return random.randint(0, 2**63-1)
+    return random.randint(0, 2 ** 63 - 1)
 
 
 def get_git_revision_hash() -> str:
@@ -36,7 +36,7 @@ def loading_documentation_thread():
 
 async def base_on_error(inter, error):
     "The base on_error event. Call this and use the dictionary as keyword arguments to print to the user"
-    error_traceback = "\n".join(traceback.format_exception(error))  
+    error_traceback = "\n".join(traceback.format_exception(error))
     if isinstance(error, BaseException) and not isinstance(error, Exception):
         # Errors that do not inherit from Exception are not meant to be caught
         raise
@@ -54,7 +54,12 @@ async def base_on_error(inter, error):
     if isinstance(error, commands.NotOwner):
         return {"embed": ErrorEmbed("You are not the owner of this bot.")}
     if isinstance(error, disnake.ext.commands.errors.CheckFailure):
-        return {"embed": ErrorEmbed(str(error) + " You probably aren't allowed to run this command. If this is a bug, please report it :-)")}
+        return {
+            "embed": ErrorEmbed(
+                str(error)
+                + " You probably aren't allowed to run this command. If this is a bug, please report it :-)"
+            )
+        }
     # Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
     print(
         "\n".join(traceback.format_exception(error)),  # python 3.10 only!

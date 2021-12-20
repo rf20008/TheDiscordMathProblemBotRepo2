@@ -10,21 +10,21 @@ import typing
 
 
 class BaseProblem:
-    "For readability purposes :) This also isn't an ABC."
+    """For readability purposes :) This also isn't an ABC."""
 
     def __init__(
         self,
-        question,
-        answer,
-        id,
-        author,
-        guild_id=None,
-        voters=[],
-        solvers=[],
+        question: str,
+        answer: str,
+        id: int,
+        author: int,
+        guild_id: typing.Optional[int] = None,
+        voters: list= None,
+        solvers: list = None,
         cache=None,
-        answers=[],
+        answers: list=None,
     ):
-        if guild_id != None and not isinstance(guild_id, str):
+        if guild_id is not None and not isinstance(guild_id, str):
             raise TypeError("guild_id is not an string")
         if not isinstance(id, int):
             raise TypeError("id is not an integer")
@@ -47,7 +47,7 @@ class BaseProblem:
         #    raise TypeError("_cache is not a MathProblemCache.")
         if len(question) > 250:
             raise TooLongQuestion(
-                f"Your question is {len(question) - 250} characters too long. Questions may be up to 250 characters long."
+                f"Your question is {len(question)-250} characters too long. Questions may be up to 250 characters long."
             )
         self.question = question
         if len(answer) > 100:
@@ -64,18 +64,18 @@ class BaseProblem:
         self.answers = answers
 
     async def edit(
-        self,
-        question: str = None,
-        answer: str = None,
-        id: int = None,
-        guild_id: int = None,
-        voters: typing.Optional[typing.List[int]] = None,
-        solvers: typing.Optional[typing.List[int]] = None,
-        author: typing.Optional[int] = None,
-        answers: typing.Optional[typing.Union[int, str, bool]] = None,
+            self,
+            question: str = None,
+            answer: str = None,
+            id: int = None,
+            guild_id: int = None,
+            voters: typing.Optional[typing.List[str]] = None,
+            solvers: typing.Optional[typing.List[str]] = None,
+            author: typing.Optional[int] = None,
+            answers: typing.Optional[typing.Union[int, str, bool]] = None,
     ) -> None:
-        """Edit a math problem. The edit is in place"""
-        if answers != None and not isinstance(answers, list):
+        """Edit a problem. The edit is in place."""
+        if answers is not None and not isinstance(answers, list):
             raise TypeError("Answers is not a list!")
         else:
             for item in range(len(answers)):
@@ -99,11 +99,11 @@ class BaseProblem:
         if not isinstance(solvers, list) and solvers is not None:
             raise TypeError("solvers is not a list")
         if (
-            id is not None
-            or guild_id is not None
-            or voters is not None
-            or solvers is not None
-            or author is not None
+                id is not None
+                or guild_id is not None
+                or voters is not None
+                or solvers is not None
+                or author is not None
         ):
             warnings.warn(
                 "You are changing one of the attributes that you should not be changing.",
@@ -111,8 +111,8 @@ class BaseProblem:
             )
         if question is not None:
             if (
-                self._cache is not None
-                and len(question) > self._cache.max_question_length
+                    self._cache is not None
+                    and len(question) > self._cache.max_question_length
             ) or (len(question) > 250 and self._cache is None):
                 if self._cache is not None:
                     raise TooLongQuestion(
@@ -123,8 +123,8 @@ class BaseProblem:
                         f"Your question is {len(question) - 250} characters too long. Questions may be up to 250 characters long."
                     )
             self.question = question
-        if (
-            self._cache is not None and len(question) > self._cache.max_question_length
+        if answer is not None and (
+                self._cache is not None and len(answer) > self._cache.max_question_length
         ) or (len(answer) > 100 and self._cache is None):
             if self._cache is not None:
                 raise TooLongAnswer(
@@ -138,7 +138,7 @@ class BaseProblem:
             if self._cache is not None:
                 if len(answer) > 100:
                     raise TooLongAnswer(
-                        f"Answer #{answer} is {len(answers[answer])-100} characters too long. Answers can be up to a 100 characters long"
+                        f"Answer #{answer} is {len(answers[answer]) - 100} characters too long. Answers can be up to a 100 characters long"
                     )
             else:
                 if len(answer) > self._cache.max_answer_length:
@@ -161,15 +161,15 @@ class BaseProblem:
         await self.update_self()
 
     async def update_self(self):
-        "A helper method to update the cache with my version"
+        """A helper method to update the cache with my version"""
         if self._cache is not None:
             await self._cache.update_problem(self.guild_id, self, id, self)
 
     @classmethod
-    def from_row(cls, row, cache=None):
-        "Convert a dictionary-ified row into a MathProblem"
+    def from_row(cls, row: dict, cache=None):
+        """Convert a dictionary-ified row into a MathProblem"""
         if not isinstance(row, dict):
-            raise MathProblemsModuleException(
+            raise TypeError(
                 "The problem has not been dictionary-ified"
             )
 
@@ -199,7 +199,7 @@ class BaseProblem:
 
     @classmethod
     def from_dict(cls, _dict, cache=None):
-        "Convert a dictionary to a math problem. cache must be a valid MathProblemCache"
+        """Convert a dictionary to a math problem. cache must be a valid MathProblemCache"""
         assert isinstance(_dict, (dict, Row))
         if isinstance(_dict, Row):
             _dict = dict_factory(_dict)  # Dict-ification :-)
@@ -208,10 +208,9 @@ class BaseProblem:
         if guild_id == None:
             guild_id = None
         elif (
-            guild_id == "null"
-        ):  # Remove the guild_id null (used for global problems), which is not used anymore because of conflicts with SQL
-
-            Problem = cls(
+                guild_id == "null"
+        ):  # Remove the guild_id null (used for global problems), which is not used any more because of conflicts with sql.
+            problem = cls(
                 question=problem["question"],
                 answer=problem["answer"],
                 id=int(problem["id"]),
@@ -223,11 +222,11 @@ class BaseProblem:
             )  # Problem-ify the problem, but set the guild_id to _global
             # Then remove the problem from SQL, because it says the guild_id is null
             cache.remove_problem_without_returning(
-                Problem.guild_id, Problem.id
+                problem.guild_id, problem.id
             )  # There will be a recursion error if I normally delete a problem
             # Add the problem again
-            cache.add_problem(Problem.guild_id, Problem.id, Problem)
-            return Problem
+            cache.add_problem(problem.guild_id, problem.id, problem)
+            return problem
         problem2 = cls(
             question=problem["question"],
             answer=problem["answer"],
@@ -241,7 +240,7 @@ class BaseProblem:
         return problem2
 
     def to_dict(self, show_answer=True):
-        "An alias for convert_to_dict"
+        """An alias for convert_to_dict"""
         return self.convert_to_dict(show_answer)
 
     def convert_to_dict(self, show_answer=True):
@@ -262,17 +261,17 @@ class BaseProblem:
     def add_voter(self, voter):
         """Adds a voter. Voter must be a disnake.User object or disnake.Member object."""
         if not isinstance(voter, disnake.User) and not isinstance(
-            voter, disnake.Member
+                voter, disnake.Member
         ):
             raise TypeError("User is not a User object")
         if not self.is_voter(voter):
             self.voters.append(voter.id)
         self.update_self()
 
-    def add_solver(self, solver):
+    def add_solver(self, solver: typing.Union[disnake.User, disnake.Member]):
         """Adds a solver. Solver must be a disnake.User object or disnake.Member object."""
         if not isinstance(solver, disnake.User) and not isinstance(
-            solver, disnake.Member
+                solver, disnake.Member
         ):
             raise TypeError("Solver is not a User object")
         if not self.is_solver(solver):
@@ -280,61 +279,57 @@ class BaseProblem:
         self.update_self()
 
     def get_answer(self):
-        "Return my answer. This has been deprecated"
+        """Return my answer. This has been deprecated"""
         return self.answer
 
     def get_answers(self):
-        "Return my possible answers"
+        """Return my possible answers"""
         return [self.answer, *self.answers]
 
     def get_question(self):
-        "Return my question."
+        """Return my question."""
         return self.question
 
-    def check_answer_and_add_checker(self, answer, potentialSolver):
-        "Checks the answer. If it's correct, it adds potentialSolver to the solvers."
-        if not isinstance(potentialSolver, disnake.User) and not isinstance(
-            potentialSolver, disnake.Member
+    def check_answer_and_add_checker(self, answer, potential_solver):
+        """Checks the answer. If it's correct, it adds potentialSolver to the solvers."""
+        if not isinstance(potential_solver, disnake.User) and not isinstance(
+                potential_solver, disnake.Member
         ):
             raise TypeError("potentialSolver is not a User object")
         if self.check_answer(answer):
-            self.add_solver(potentialSolver)
+            self.add_solver(potential_solver)
 
     def check_answer(self, answer):
-        "Checks the answer. Returns True if it's correct and False otherwise."
+        """Checks the answer. Returns True if it's correct and False otherwise."""
         return answer in self.get_answers()
 
     def my_id(self):
-        "Returns id & guild_id in a list. id is first and guild_id is second."
+        """Returns id & guild_id in a list. id is first and guild_id is second."""
         return [self.id, self.guild_id]
 
     def get_voters(self):
-        "Returns self.voters"
+        """Returns self.voters"""
         return self.voters
 
     def get_num_voters(self):
-        "Returns the number of solvers."
+        """Returns the number of solvers."""
         return len(self.get_voters())
 
-    def is_voter(self, User):
-        "Returns True if user is a voter. False otherwise. User must be a disnake.User or disnake.Member object."
-        if not isinstance(User, disnake.User) and not isinstance(
-            User, disnake.Member
-        ):
+    def is_voter(self, user: disnake.User):
+        """Returns True if user is a voter. False otherwise. User must be a disnake.User or disnake.Member object."""
+        if not isinstance(user, disnake.User) and not isinstance(user, disnake.Member):
             raise TypeError("User is not actually a User")
-        return User.id in self.get_voters()
+        return user.id in self.get_voters()
 
     def get_solvers(self):
-        "Returns self.solvers"
+        """Returns self.solvers"""
         return self.solvers
 
-    def is_solver(self, User):
-        "Returns True if user is a solver. False otherwise. User must be a disnake.User or disnake.Member object."
-        if not isinstance(User, disnake.User) and not isinstance(
-            User, disnake.Member
-        ):
+    def is_solver(self, user: disnake.User):
+        """Returns True if user is a solver. False otherwise. User must be a disnake.User or disnake.Member object."""
+        if not isinstance(user, disnake.User) and not isinstance(user, disnake.Member):
             raise TypeError("User is not actually a User")
-        return User.id in self.get_solvers()
+        return user.id in self.get_solvers()
 
     def get_author(self):
         "Returns self.author"
@@ -342,14 +337,12 @@ class BaseProblem:
 
     def is_author(self, User):
         "Returns if the user is the author"
-        if not isinstance(User, disnake.User) and not isinstance(
-            User, disnake.Member
-        ):
+        if not isinstance(User, disnake.User) and not isinstance(User, disnake.Member):
             raise TypeError("User is not actually a User")
         return User.id == self.get_author()
 
     def __eq__(self, other):
-        "Return self==other"
+        """Return self==other"""
         if not isinstance(self, type(other)):
             return False
         try:
@@ -358,13 +351,13 @@ class BaseProblem:
             return False
 
     def __repr__(self):
-        "A method that when called, returns a string, that when executed, returns an object that is equal to this one. Also implements repr(self)"
+        """A method that when called, returns a string, that when executed, returns an object that is equal to this one. Also implements repr(self)"""
         return f"""problems_module.MathProblem(question={self.question},
         answer = {self.answer}, id = {self.id}, guild_id={self.guild_id},
         voters={self.voters},solvers={self.solvers},author={self.author},cache={None})"""  # If I stored the problems, then there would be an infinite loop
 
     def __str__(self, include_answer=False):
-        "Implement str(self)"
+        """Implement str(self)"""
         _str = f"""Question: {self.question}, 
         id: {self.id}, 
         guild_id: {self.guild_id}, 
