@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ## GITHUB's python gitignore template
 
 # Byte-compiled / optimized / DLL files
@@ -145,6 +144,8 @@ dmypy.json
 .history/
 
 ## me
+.ideas/**
+venv/**
 
 vote_threshold.txt # Use /what_is_vote_threshold to use. This may be outdated... (Also to help self-hosting the bot)
 trusted_users.txt # /list_trusted_users to list trusted users. 
@@ -161,6 +162,8 @@ pylint-1.rtf
 
 # SQL, I don't want to show my problems
 **/*.db
+*.db
+
 **/*.sqlite3
 
 #Don't show pylint
