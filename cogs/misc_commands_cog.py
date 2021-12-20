@@ -1,5 +1,4 @@
 import json
-import resource
 import typing
 from asyncio import sleep as asyncio_sleep
 from copy import copy
@@ -85,13 +84,6 @@ class MiscCommandsCog(HelperCog):
                 name="Disnake version", value=str(disnake.__version__)
             )
 
-            memory_limit = resource.getrlimit(resource.RUSAGE_SELF)[0]
-            current_usage = resource.getrusage(resource.RUSAGE_SELF)
-
-            embed = embed.add_field(
-                name="Memory Usage",
-                value=f"{round((current_usage[3]/memory_limit)*1000)/100}%",
-            )
             embed = embed.add_field(
                 name="CPU count (which may not necessarily be the amount of CPU available to the bot due to a Python limitation)",
                 value=str(cpu_count()),
@@ -293,7 +285,7 @@ class MiscCommandsCog(HelperCog):
     @commands.slash_command(description="Interact with your user data")
     async def user_data(self, inter: disnake.ApplicationCommandInteraction):
         """The base command to interact with your user data. This doesn't do anything (you need to call a subcommand)"""
-        print("The user_data command has been invoked!")
+        print(f"The user_data command has been invoked by {inter.author.name}#{inter.author.discriminator}")
 
     @disnake.ext.commands.cooldown(1, 500, commands.BucketType.user)  # To prevent abuse
     @user_data.sub_command(
@@ -344,7 +336,7 @@ class MiscCommandsCog(HelperCog):
             interaction: disnake.Interaction,
             _extra_data: dict,
         ):
-            "The function that runs when the button gets pressed. This actually deletes the data"
+            """The function that runs when the button gets pressed. This actually deletes the data"""
             assert Self.check(interaction)
             kwargs = {
                 "content": "Successfully deleted your data! Your data should now be cleared now."
@@ -381,14 +373,14 @@ class MiscCommandsCog(HelperCog):
             return
 
         async def deny_callback(
-            self: BasicButton, interaction: disnake.MessageInteraction
+            _self: BasicButton, interaction: disnake.MessageInteraction
         ):
             """A function that runs when the deny button is pressed"""
             await interaction.response.reply(
                 "Your data is safe! It has not been deleted."
             )
-            self.disable()
-            self.view.stop()
+            _self.disable()
+            _self.view.stop()
             return
 
         _extra_data = {
@@ -406,7 +398,7 @@ class MiscCommandsCog(HelperCog):
             _extra_data=_extra_data,
         )
         deny_button = BasicButton(
-            check=lambda self, interaction: interaction.user.id == self.user_for,
+            check=lambda Self, interaction: interaction.user.id == Self.user_for,
             callback=deny_callback,
             style=disnake.ButtonStyle.green,
             disabled=False,
@@ -446,7 +438,7 @@ class MiscCommandsCog(HelperCog):
                 submission.to_dict() for submission in raw_data["quiz_submissions"]
             ],
             "Problems the user voted for": [
-                problem.to_dict(show_answers=False)
+                problem.to_dict(show_answer=False)
                 for problem in problems_user_voted_for
             ],
             "Problems the user solved": [
@@ -491,7 +483,6 @@ class MiscCommandsCog(HelperCog):
         #  ),
         #  ephemeral = True
         # )
-        successful = None
         exc_raised = None
         try:
             await inter.author.send(
@@ -560,7 +551,7 @@ class MiscCommandsCog(HelperCog):
         copyrighted_thing: str = Exception,
         type: str = "",
     ):
-        "Submit a request! I will know! It uses a channel in my discord server and posts an embed"
+        """Submit a request! I will know! It uses a channel in my discord server and posts an embed"""
         if (
             extra_info is None
             and type == ""

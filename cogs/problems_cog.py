@@ -1,13 +1,17 @@
-from .helper_cog import HelperCog
-from helpful_modules.problems_module import *
-from helpful_modules.custom_embeds import SimpleEmbed, SuccessEmbed, ErrorEmbed
-from asyncio import run
-from helpful_modules import checks, cooldowns, problems_module
-from disnake.ext import commands
-from disnake import *
 import threading
 import typing
+from asyncio import run
+
+import disnake
+from disnake import *
+from disnake.ext import commands
+
+from helpful_modules import checks, cooldowns, problems_module
+from helpful_modules.custom_embeds import SimpleEmbed, SuccessEmbed, ErrorEmbed
+from helpful_modules.problems_module import *
 from helpful_modules.threads_or_useful_funcs import generate_new_id
+from .helper_cog import HelperCog
+
 
 # Licensed under GPLv3
 
@@ -358,7 +362,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         numDeletedProblems = 0
 
         await self.cache.delete_all_by_user_id(self.bot.user.id)
-        # async with aiosqlite.connect(self.bot.cache.db_name) as conn: #TODO: fix before v0.1 (add MYSQl support)
+        # async with aiosqlite.connect(self.bot.cache.db_name) as conn: #
         #    cursor = conn.cursor()
         #    await cursor.execute(
         #        "DELETE FROM problems WHERE user_id = ?", (self.bot.user.id)

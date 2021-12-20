@@ -203,7 +203,7 @@ print("Bots successfully created.")
 
 # Events
 
-
+#TODO: (general) add changelog.json
 @bot.event
 async def on_connect():
     "Run when the bot connects"
