@@ -1,4 +1,3 @@
-import pickle
 import sqlite3
 import sys
 import traceback
@@ -9,7 +8,7 @@ from .errors import *
 
 
 class QuizSubmissionAnswer:
-    "A class that represents an answer for a singular problem"
+    """A class that represents an answer for a singular problem"""
 
     def __init__(self, answer: str = "", problem_id: int = None, quiz_id: int = 10):
         self.answer = answer
@@ -25,7 +24,7 @@ class QuizSubmissionAnswer:
 
 
 class QuizSubmission:
-    "A class that represents someone's submission to a graded quiz"
+    """A class that represents someone's submission to a graded quiz"""
 
     def __init__(self, user_id, quiz_id, cache):
         self.user_id = user_id
@@ -39,19 +38,19 @@ class QuizSubmission:
 
     @property
     def quiz(self):
-        "Return my quiz!"
+        """Return my quiz!"""
         return self.get_my_quiz()
 
     def get_my_quiz(self):
-        "Return my Quiz!"
+        """Return my Quiz!"""
         return self.cache.get_quiz(self.quiz_id)
 
-    def set_answer(self, problem_id, Answer) -> None:
-        "Set the answer of a quiz problem"
+    def set_answer(self, problem_id: int, Answer: str) -> None:
+        """Set the answer of a quiz problem"""
         if not self.mutable:
             raise RuntimeError("This instance is not mutable")
         for answer in self.answers:
-            if answer.problem.id == problem_id:
+            if answer.problem_id == problem_id:
                 answer.answer = Answer
 
     def to_dict(self):
@@ -63,13 +62,13 @@ class QuizSubmission:
         }
         for answer in self.answers:
             t["answer"].append(
-                {"problem_id": answer.problem.id, "answer": answer.answer}
+                {"problem_id": answer.problem_id, "answer": answer.answer}
             )
         return t
 
     @classmethod
-    def from_dict(cls, dict_, cache) -> "Quiz":
-        "Convert a dictionary into a QuizSubmission"
+    def from_dict(cls, dict_, cache) -> "QuizSubmission":
+        """Convert a dictionary into a QuizSubmission"""
         c = cls(user_id=dict_["user_id"], quiz_id="quiz_id", cache=cache)
         for answer in dict_["answers"]:
             c.answers.append(
@@ -87,65 +86,69 @@ class QuizSubmission:
 
 
 class QuizProblem(BaseProblem):
-    "A class that represents a Quiz Math Problem"
+    """A class that represents a Quiz Math Problem"""
 
     def __init__(
-        self,
-        question,
-        answer,
-        id,
-        author,
-        guild_id=None,
-        voters=None,
-        solvers=[],
-        cache=None,
-        answers=[],
-        is_written=False,
-        quiz_id=None,
-        max_score=-1,
-        quiz=None,
+            self,
+            question,
+            answer,
+            id,
+            author,
+            guild_id=None,
+            voters=None,
+            solvers=None,
+            cache=None,
+            answers=None,
+            is_written=False,
+            quiz_id=None,
+            max_score=-1,
+            quiz=None,
     ):
-        "A method that allows the creation of new QuizMathProblems"
-        if not isinstance(Quiz):
+        """A method that allows the creation of new QuizMathProblems"""
+        if not isinstance(quiz, Quiz):
             raise TypeError(
                 f"quiz is of type {quiz.__class.__name}, not Quiz"
             )  # Here to help me debug
         if voters is None:
-            voters = []
+            voters = self.voters
+        if solvers is None:
+            solvers = self.solvers
+        if answers is None:
+            answers = self.answers
         super().__init__(
             question, answer, id, author, guild_id, voters, solvers, cache, answers
         )  #
-        self.is_written = False
+        self.is_written = is_written
         if quiz is not None:
             self.quiz_id = quiz.id
         else:
             self.quiz_id = quiz_id
         self.max_score = max_score
         self.min_score = 0
-
+        self.cache = cache
     @property
     def quiz(self):
-        "Return my quiz"
+        """Return my quiz"""
         if self.cache is None:
             return None  # I don't have a cache to get my quiz from!
         else:
             return self.cache.get_quiz(self.quiz_id)
 
     def edit(
-        self,
-        question=None,
-        answer=None,
-        id=None,
-        guild_id=None,
-        voters=None,
-        solvers=None,
-        author=None,
-        answers=None,
-        is_written=None,
-        quiz=None,
-        max_score: int = -1,
+            self,
+            question=None,
+            answer=None,
+            id=None,
+            guild_id=None,
+            voters=None,
+            solvers=None,
+            author=None,
+            answers=None,
+            is_written=None,
+            quiz=None,
+            max_score: int = -1,
     ):
-        "Edit a problem!"
+        """Edit a problem!"""
         super().edit(question, answer, id, guild_id, voters, solvers, author, answers)
         if not isinstance(quiz, Quiz):
             raise TypeError(
@@ -173,17 +176,16 @@ class QuizProblem(BaseProblem):
         }
 
     @classmethod
-    def from_dict(cls, Dict, cache=None):
-        "Convert a dictionary to a QuizProblem. Even though the bot uses SQL, this is used in the from_row method"
-        Dict.pop("type")
-        return cls(*Dict, cache=cache)
+    def from_dict(cls, _dict: dict, cache=None):
+        """Convert a dictionary to a QuizProblem. Even though the bot uses SQL, this is used in the from_row method"""
+        _dict.pop("type")
+        return cls(**_dict, cache=cache)
 
     @classmethod
-    def from_row(cls, row, cache=None):
+    def from_row(cls, row: dict, cache=None):
         if isinstance(row, sqlite3.Row):
-            raise
+            raise TypeError("Oh no.")
         try:
-            voters = pickle.loads(row["voters"])
             _dict = {
                 "quiz_id": row["quiz_id"],
                 "guild_id": row["guild_id"],
@@ -192,29 +194,32 @@ class QuizProblem(BaseProblem):
             return cls.from_dict(_dict, cache=cache)
         except BaseException as e:
             traceback.print_exception(
-                type(e), e, e.__traceback, file=sys.stderr
+                type(e), e, e.__traceback__, file=sys.stderr
             )  # Log to stderr
             raise MathProblemsModuleException(
                 "Oh no... conversion from row failed"
             ) from e  # Re-raise (which wil log)
 
     def update_self(self):
-        "Update myself"
+        """Update myself"""
         if self.cache is not None:
             self.quiz.update_self()
 
 
 class Quiz(list):
-    """Essentially a list, so it implements everything that a list does, but it has an additional attribute submissions which is a list of QuizSubmissions"""
+    """Essentially a list, so it implements everything that a list does,
+    but it has an additional attribute submissions which is a list of QuizSubmissions"""
 
     def __init__(
-        self,
-        id: int,
-        iter: List[QuizProblem],
-        submissions: List[QuizSubmission] = [],
-        cache=None,
-    ) -> "Quiz":
+            self,
+            id: int,
+            iter: List[QuizProblem],
+            submissions: List[QuizSubmission] = None,
+            cache=None,
+    ) -> None:
         """Create a new quiz. id is the quiz id and iter is an iterable of QuizMathProblems"""
+        if not submissions:
+            submissions=[]
         super().__init__(iter)
         self.sort(key=lambda problem: problem.id)
 
@@ -231,32 +236,34 @@ class Quiz(list):
     @property
     def submissions(self):
         return self._submissions
+
     @property
     def id(self):
         return self._id
+
     @classmethod
     def from_dict(cls, _dict: dict):
-        problemsAsType = []
+        problems_as_type = []
         submissions = []
         Problems = _dict["problems"]
         for p in Problems:
-            problemsAsType.append(QuizProblem.from_dict(p))
-        problemsAsType.sort(key=lambda problem: problem.id)
+            problems_as_type.append(QuizProblem.from_dict(p))
+        problems_as_type.sort(key=lambda problem: problem.id)
 
         for s in _dict["submissions"]:
             submissions.append(QuizSubmission.from_dict(s))
-        c = cls([])
-        c.extend(problemsAsType)
+        c = cls(iter=[], id=_dict['id'])
+        c.extend(problems_as_type)
         c._submissions = submissions
         c._id = _dict["id"]
         return c
 
     def to_dict(self):
-        "Convert this instance into a Dictionary to be stored in SQL"
+        """Convert this instance into a Dictionary to be stored in SQL"""
         problems = [problem.to_dict() for problem in self]
         submissions = [submission.to_dict for submission in self.submissions]
         return {"problems": problems, "submissions": submissions, "id": self._id}
 
     async def update_self(self):
-        "Update myself!"
+        """Update myself!"""
         await self._cache.update_quiz(self._id, self)
