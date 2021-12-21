@@ -2,53 +2,35 @@
 # Licensed under GPLv3 (or later)
 # Feel free to contribute! :-)
 # Python 3.10+ is required.
-from sys import exit
 
-from helpful_modules import constants_loader
-
-if (
-    not __debug__
-):  # __debug__ must be true for the bot to run (because assert statements)
-    exit("__debug__ must be True for the bot to run! (Don't run with -o or -OO)")
-del exit
 # imports - standard library
 import asyncio
-import copy
-import os
-import logging
-import typing
-import warnings
-from time import sleep, time, asctime
-import subprocess
-import traceback
 import threading
-from sys import stderr, exc_info, stdout
+import warnings
 from asyncio import sleep as asyncio_sleep
 from copy import copy
-
-# Imports - 3rd party
-
-import disnake  # https://github.com/DisnakeDev/disnake
-import aiosqlite  # https://github.com/omnilib/aiosqlite
-
+from sys import exc_info, stdout
+from sys import exit
 
 # Imports - My own files
 from disnake.ext import commands
-from helpful_modules.custom_bot import TheDiscordMathProblemBot
-from helpful_modules import _error_logging, checks, cooldowns
-from helpful_modules import custom_embeds, problems_module
-from helpful_modules import save_files, the_documentation_file_loader, return_intents
-from helpful_modules.problems_module.errors import *
-from helpful_modules.threads_or_useful_funcs import *
 
 from cogs import *
-from helpful_modules.cooldowns import check_for_cooldown, OnCooldown
-from helpful_modules._error_logging import log_error
-from helpful_modules.custom_embeds import *
-from helpful_modules.checks import is_not_blacklisted, setup
-from helpful_modules.the_documentation_file_loader import *
+from helpful_modules import checks
+from helpful_modules import custom_embeds, problems_module
+from helpful_modules import save_files, the_documentation_file_loader, return_intents
 from helpful_modules.constants_loader import *
+from helpful_modules.cooldowns import check_for_cooldown
+from helpful_modules.custom_bot import TheDiscordMathProblemBot
+from helpful_modules.threads_or_useful_funcs import *
 
+# Imports - 3rd party
+
+if (
+        not __debug__
+):  # __debug__ must be true for the bot to run (because assert statements)
+    exit("__debug__ must be True for the bot to run! (Don't run with -o or -OO)")
+del exit
 VERSION = "0.0.5a3"
 try:
     import dotenv  # https://pypi.org/project/python-dotenv/
@@ -64,9 +46,9 @@ if DISCORD_TOKEN is None:
 
 
 def the_daemon_file_saver():
-    "Auto-save files!"
+    """Auto-save files!"""
     global bot, guildMathProblems, trusted_users, vote_threshold
-    print("Initializing the filesaver")
+    print("Initializing the File Saver")
     FileSaverObj = save_files.FileSaver(
         name="The Daemon File Saver", enabled=True, printSuccessMessagesByDefault=True
     )
@@ -119,11 +101,10 @@ vote_threshold = 0  # default
 mathProblems = {}
 guildMathProblems = {}
 guild_maximum_problem_limit = 125
-erroredInMainCode = False
 
 
 def loading_documentation_thread():
-    "This thread reloads the documentation."
+    """This thread reloads the documentation."""
     d = DocumentationFileLoader()
     d.load_documentation_into_readable_files()
     del d
@@ -134,18 +115,18 @@ loader.start()
 
 
 def get_git_revision_hash() -> str:
-    "A method that gets the git revision hash. Credit to https://stackoverflow.com/a/21901260 for the code :-)"
+    """A method that gets the git revision hash. Credit to https://stackoverflow.com/a/21901260 for the code :-)"""
     return (
         subprocess.check_output(["git", "rev-parse", "HEAD"])
-        .decode("ascii")
-        .strip()[:7]
+            .decode("ascii")
+            .strip()[:7]
     )  # [7:] is here because of the commit hash, the rest of this function is from stack overflow
 
 
 # @bot.event
-async def on_ready(bot):
-    "Ran when the disnake library detects that the bot is ready"
-    print("The bot is now ready!")
+async def on_ready(Bot):
+    """Ran when the disnake library detects that the bot is ready"""
+    print("The bot is now ready! It")
 
 
 # Bot creation
@@ -185,7 +166,8 @@ bot.blacklisted_users = []  # TODO: store user status in MYSQL
 _the_daemon_file_saver = threading.Thread(
     target=the_daemon_file_saver,
     name="The File Saver",
-    daemon=True,  # Make sure that the bot object passed to the_daemon_file_saver is the same one used by the rest of the program
+    daemon=True,
+    # Make sure that the bot object passed to the_daemon_file_saver is the same one used by the rest of the program
 )
 _the_daemon_file_saver.start()
 # bot.load_extension("jishaku")
@@ -201,17 +183,19 @@ bot.add_cog(TestCog(bot))
 bot.CONSTANTS = bot_constants
 print("Bots successfully created.")
 
+
 # Events
 
-#TODO: (general) add changelog.json
+# TODO: (general) add changelog.json
 @bot.event
 async def on_connect():
-    "Run when the bot connects"
+    """Run when the bot connects"""
     print("The bot has connected to Discord successfully.")
     await asyncio_sleep(0.5)
     await bot.change_presence(
-        activity=disnake.CustomActivity(
-            name="Making sure that the bot works!", emoji="🙂"
+        activity=disnake.Activity(
+            name="IDK (but I'm being tested. Also see the privacy policy!)",
+            emoji=disnake.PartialEmoji.from_str(value="🙂")
         ),
         status=disnake.Status.idle,
     )
@@ -222,9 +206,9 @@ async def on_connect():
         guild.id for guild in bot.guilds
     ]  # The guild_ids of the guilds that the bot is in
     for (
-        guild_id
+            guild_id
     ) in (
-        await bot.cache.get_guilds()
+            await bot.cache.get_guilds()
     ):  # Obtain all guilds the cache stores data (will need to be upgraded.)
         if guild_id not in bot_guild_ids:  # It's not in!
             bot.log.debug("The bot is deleting data from a guild it has left.")
@@ -244,14 +228,14 @@ async def on_error(event, *args, **kwargs):
     # Log the error?
     log_error(error[1])
     # We don't have an interaction/context, so I can't tell the user that an error happened
-    print("Oh no! An exception occured!", flush=True, file=stdout)
+    print("Oh no! An exception occurred!", flush=True, file=stdout)
 
     print(error_traceback_as_obj, flush=True, file=stdout)
 
 
 @bot.event
 async def on_slash_command_error(inter, error):
-    "Function called when a slash command errors, which will inevitably happen. All of the functionality was moved to base_on_error :-)"
+    """Function called when a slash command errors, which will inevitably happen. All the functionality was moved to base_on_error :-)"""
     # print the traceback to the file
     dict_args = await base_on_error(inter, error)
     try:
@@ -260,23 +244,23 @@ async def on_slash_command_error(inter, error):
         return await inter.send()
 
 
-##@bot.command(help = """Adds a trusted user!
-##math_problems.add_trusted_user <user_id>
-##adds the user's id to the trusted users list
-##(can only be used by trusted users)""",
-##brief = "Adds a trusted user")
+# @bot.command(help = """Adds a trusted user!
+# math_problems.add_trusted_user <user_id>
+# adds the user's id to the trusted users list
+# (can only be used by trusted users)""",
+# brief = "Adds a trusted user")
 
 
 @bot.event
 async def on_guild_join(guild):
-    "Ran when the bot joins a guild!"
-    if guild.id == None:  # Should never happen
+    """Ran when the bot joins a guild!"""
+    if guild.id is None:  # Should never happen
         raise Exception("Uh oh!")  # This is probably causing the bot to do stuff
-        await guild.leave()  # This will mess up stuff
-        print("Oh no")
-        raise RuntimeError(
-            "Oh no..... there is a guild with id None... this will mess up the bot!"
-        )  # Make sure that a guild with id _global doesn't mess up stuff
+        # await guild.leave()  # This will mess up stuff
+        # print("Oh no")
+        # raise RuntimeError(
+        #     "Oh no..... there is a guild with id None... this will mess up the bot!"
+        # )  # Make sure that a guild with id _global doesn't mess up stuff
 
 
 @bot.event

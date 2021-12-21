@@ -1,29 +1,35 @@
-import warnings
-import disnake
-from sqlite3 import Row
-from .errors import *
 import pickle
-import traceback
 import sys
-from helpful_modules.dict_factory import dict_factory
+import traceback
 import typing
+import warnings
+
+import disnake
+
+from .errors import *
 
 
 class BaseProblem:
     """For readability purposes :) This also isn't an ABC."""
 
     def __init__(
-        self,
-        question: str,
-        answer: str,
-        id: int,
-        author: int,
-        guild_id: typing.Optional[int] = None,
-        voters: list= None,
-        solvers: list = None,
-        cache=None,
-        answers: list=None,
+            self,
+            question: str,
+            answer: str,
+            id: int,
+            author: int,
+            guild_id: typing.Optional[int] = None,
+            voters: list = None,
+            solvers: list = None,
+            cache=None,
+            answers: list = None,
     ):
+        if voters is None:
+            voters = []
+        if solvers is None:
+            solvers = []
+        if answers is None:
+            answers = []
         if guild_id is not None and not isinstance(guild_id, str):
             raise TypeError("guild_id is not an string")
         if not isinstance(id, int):
@@ -47,7 +53,7 @@ class BaseProblem:
         #    raise TypeError("_cache is not a MathProblemCache.")
         if len(question) > 250:
             raise TooLongQuestion(
-                f"Your question is {len(question)-250} characters too long. Questions may be up to 250 characters long."
+                f"Your question is {len(question) - 250} characters too long. Questions may be up to 250 characters long."
             )
         self.question = question
         if len(answer) > 100:
@@ -135,6 +141,8 @@ class BaseProblem:
                     f"Your answer is {len(question) - 100} characters too long. Answers may be up to 100 characters long."
                 )
         for answer in answers:
+            if answer is None:
+                raise TypeError("Uh oh!")
             if self._cache is not None:
                 if len(answer) > 100:
                     raise TooLongAnswer(
@@ -195,19 +203,15 @@ class BaseProblem:
             )  # Log to stderr
             raise SQLException(
                 "Uh oh..."
-            ) from e  # Re-raise the exception to the user (so that they can help me debug (error_logs/** is gitignored))
+            ) from e  # Re-raise the exception to the user (so that they can help me debug (error_logs/** is git-ignored))
 
     @classmethod
-    def from_dict(cls, _dict, cache=None):
+    def from_dict(cls, _dict: dict, cache=None):
         """Convert a dictionary to a math problem. cache must be a valid MathProblemCache"""
-        assert isinstance(_dict, (dict, Row))
-        if isinstance(_dict, Row):
-            _dict = dict_factory(_dict)  # Dict-ification :-)
+        assert isinstance(_dict, dict)
         problem = _dict
         guild_id = problem["guild_id"]
-        if guild_id == None:
-            guild_id = None
-        elif (
+        if (
                 guild_id == "null"
         ):  # Remove the guild_id null (used for global problems), which is not used any more because of conflicts with sql.
             problem = cls(
@@ -239,12 +243,8 @@ class BaseProblem:
         )
         return problem2
 
-    def to_dict(self, show_answer=True):
-        """An alias for convert_to_dict"""
-        return self.convert_to_dict(show_answer)
-
-    def convert_to_dict(self, show_answer=True):
-        """Convert self to a dictionary"""
+    def to_dict(self, show_answer: bool = True):
+        """Convert myself to a dictionary"""
         _dict = {
             "type": "MathProblem",
             "question": self.question,
@@ -258,7 +258,11 @@ class BaseProblem:
             _dict["answers"] = self.get_answers()
         return _dict
 
-    def add_voter(self, voter):
+    def convert_to_dict(self, show_answer: bool = True):
+        """Convert self to a dictionary. Alias for to_dict"""
+        return self.to_dict(show_answer)
+
+    def add_voter(self, voter: typing.Union[disnake.User, disnake.Member]):
         """Adds a voter. Voter must be a disnake.User object or disnake.Member object."""
         if not isinstance(voter, disnake.User) and not isinstance(
                 voter, disnake.Member
@@ -315,7 +319,7 @@ class BaseProblem:
         """Returns the number of solvers."""
         return len(self.get_voters())
 
-    def is_voter(self, user: disnake.User):
+    def is_voter(self, user: typing.Union[disnake.User, disnake.Member]):
         """Returns True if user is a voter. False otherwise. User must be a disnake.User or disnake.Member object."""
         if not isinstance(user, disnake.User) and not isinstance(user, disnake.Member):
             raise TypeError("User is not actually a User")
@@ -325,18 +329,18 @@ class BaseProblem:
         """Returns self.solvers"""
         return self.solvers
 
-    def is_solver(self, user: disnake.User):
+    def is_solver(self, user: typing.Union[disnake.User, disnake.Member]):
         """Returns True if user is a solver. False otherwise. User must be a disnake.User or disnake.Member object."""
         if not isinstance(user, disnake.User) and not isinstance(user, disnake.Member):
             raise TypeError("User is not actually a User")
         return user.id in self.get_solvers()
 
     def get_author(self):
-        "Returns self.author"
+        """Returns self.author"""
         return self.author
 
-    def is_author(self, User):
-        "Returns if the user is the author"
+    def is_author(self, User: typing.Optional[disnake.User, disnake.Member]):
+        """Returns if the user is the author"""
         if not isinstance(User, disnake.User) and not isinstance(User, disnake.Member):
             raise TypeError("User is not actually a User")
         return User.id == self.get_author()

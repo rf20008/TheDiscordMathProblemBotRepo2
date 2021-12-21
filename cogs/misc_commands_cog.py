@@ -71,7 +71,7 @@ class MiscCommandsCog(HelperCog):
 
         embed = embed.add_field(
             name="Python version", value=python_version_as_str, inline=False
-        )
+        ) #uh oh
         if include_extra_info:
             embed = embed.add_field(
                 name="Python version given by sys.version", value=str(version)
