@@ -554,10 +554,10 @@ class MathProblemCache:
                 cursor = await conn.cursor()
                 # We will raise if the problem already exists!
                 await cursor.execute(
-                    """INSERT INTO problems (guild_id, problem_id, question, answer, voters, solvers, author)
+                    """INSERT INTO problems (guild_id, problem_id, question, answers, voters, solvers, author)
                 VALUES (?,?,?,?,?,?,?)""",
                     (
-                        int(Problem.guild_id),
+                        Problem.guild_id, # We expect the problem's guild id to be either an integer or None
                         int(Problem.id),
                         Problem.get_question(),
                         pickle.dumps(Problem.get_answers()),

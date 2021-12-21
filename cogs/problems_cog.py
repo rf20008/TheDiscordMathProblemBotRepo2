@@ -498,6 +498,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             guild_id = inter.guild.id
         else:  # But if it's global, make it global
             guild_id = None
+        
         problem = problems_module.BaseProblem(
             question=question,
             answer=answer,
