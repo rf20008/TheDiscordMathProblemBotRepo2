@@ -157,9 +157,6 @@ pylint-1.rtf
 .DS_Store
 **/__pycache__/**
 
-.DS_Store
-**/__pycache__/**
-
 # SQL, I don't want to show my problems
 **/*.db
 *.db
@@ -182,7 +179,7 @@ pylint/*.txt
 /error_logs/*
 error_logs/
 # I'm willing to un-gitignore error_logs (for debugging purposes)
-.idea/**
+
 
 #Whitelists
 !**/*.py #never ignore any python file :)
@@ -190,3 +187,4 @@ error_logs/
 !.gitignore
 !docs/** # The documentation needs to be not git-ignored
 !**/__init__.py
+.idea/**
