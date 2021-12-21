@@ -300,14 +300,15 @@ class MathProblemCache:
         try:
             global_problems = deepcopy(
                 guild_problems[None]
-            )  # contention deep copying more :-)
+            )  #Must deepcopy (but lists of baseproblems are not deepcopy-able)
+            #TODO: fix this so this doesn't lead to errors
         except KeyError:  # No global problems yet
             global_problems = {}
-        self.guild_problems = deepcopy(
-            guild_problems
-        )  # More deep-copying (so it refers to a different object)
-        self.guild_ids = deepcopy(guild_ids)
-        self.global_problems = deepcopy(global_problems)
+        self.guild_problems = deepcopy(guild_problems)
+        #For some reason, List[BaseProblem]'s are not deepcopy-able
+        #TODO: make base problems deep-copyable
+        self.guild_ids = guild_ids
+        self.global_problems = global_problems
         self.cached_quizzes = [
             Quiz(_id, quiz_problems_dict[_id], submissions=quiz_submissions_dict[_id])
             for _id in quiz_problems_dict.keys()
