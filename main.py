@@ -126,7 +126,7 @@ def get_git_revision_hash() -> str:
 # @bot.event
 async def on_ready(Bot):
     """Ran when the disnake library detects that the bot is ready"""
-    print("The bot is now ready! It")
+    print("The bot is now ready!")
 
 
 # Bot creation
@@ -193,10 +193,7 @@ async def on_connect():
     print("The bot has connected to Discord successfully.")
     await asyncio_sleep(0.5)
     await bot.change_presence(
-        activity=disnake.Activity(
-            name="IDK (but I'm being tested. Also see the privacy policy!)",
-            emoji=disnake.PartialEmoji.from_str(value="🙂")
-        ),
+        
         status=disnake.Status.idle,
     )
     bot.log.debug(

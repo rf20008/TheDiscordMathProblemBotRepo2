@@ -339,7 +339,7 @@ class BaseProblem:
         """Returns self.author"""
         return self.author
 
-    def is_author(self, User: typing.Optional[disnake.User, disnake.Member]):
+    def is_author(self, User: typing.Union[disnake.User, disnake.Member]):
         """Returns if the user is the author"""
         if not isinstance(User, disnake.User) and not isinstance(User, disnake.Member):
             raise TypeError("User is not actually a User")
