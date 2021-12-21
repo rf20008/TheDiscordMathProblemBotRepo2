@@ -15,9 +15,9 @@ class BaseProblem:
     def __init__(
             self,
             question: str,
-            answer: str,
             id: int,
             author: int,
+            answer: str=None,
             guild_id: typing.Optional[int] = None,
             voters: list = None,
             solvers: list = None,
@@ -36,7 +36,7 @@ class BaseProblem:
             raise TypeError("id is not an integer")
         if not isinstance(question, str):
             raise TypeError("question is not a string")
-        if not isinstance(answer, str):
+        if not isinstance(answer, str) and answer is not None: #answer is None because of answers
             raise TypeError("answer is not a string")
         if not isinstance(author, int):
             raise TypeError("author is not an integer")
@@ -56,11 +56,12 @@ class BaseProblem:
                 f"Your question is {len(question) - 250} characters too long. Questions may be up to 250 characters long."
             )
         self.question = question
-        if len(answer) > 100:
-            raise TooLongAnswer(
-                f"Your answer is {len(question) - 100} characters too long. Answers may be up to 100 characters long."
-            )
-        self.answer = answer
+        if answer is not None:
+            if len(answer) > 100:
+                raise TooLongAnswer(
+                        f"Your answer is {len(question) - 100} characters too long. Answers may be up to 100 characters long."
+                )
+            self.answer = answer
         self.id = id
         self.guild_id = guild_id
         self.voters = voters
@@ -189,12 +190,14 @@ class BaseProblem:
             solvers = pickle.loads(row["voters"])
             _Row = {
                 "guild_id": row["guild_id"],  # Could be None
-                "problem_id": row["guild_id"],
+                "problem_id": row['problem_id'],
                 "answer": Exception,  # Placeholder,
                 "answers": answers,
                 "voters": voters,
                 "solvers": solvers,
                 "author": row["author"],
+                "question": row['question'],
+                'id': row['problem_id']
             }
             return cls.from_dict(_Row, cache=cache)
         except BaseException as e:
@@ -209,33 +212,28 @@ class BaseProblem:
     def from_dict(cls, _dict: dict, cache=None):
         """Convert a dictionary to a math problem. cache must be a valid MathProblemCache"""
         assert isinstance(_dict, dict)
+        assert _dict['guild_id'] is None or isinstance(_dict['guild_id'], int)
         problem = _dict
         guild_id = problem["guild_id"]
         if (
-                guild_id == "null"
+                guild_id is None
         ):  # Remove the guild_id null (used for global problems), which is not used any more because of conflicts with sql.
             problem = cls(
                 question=problem["question"],
-                answer=problem["answer"],
+                answers=problem["answers"],
                 id=int(problem["id"]),
                 guild_id=None,
                 voters=problem["voters"],
                 solvers=problem["solvers"],
                 author=problem["author"],
                 cache=cache,
-            )  # Problem-ify the problem, but set the guild_id to _global
-            # Then remove the problem from SQL, because it says the guild_id is null
-            cache.remove_problem_without_returning(
-                problem.guild_id, problem.id
-            )  # There will be a recursion error if I normally delete a problem
-            # Add the problem again
-            cache.add_problem(problem.guild_id, problem.id, problem)
+            )  # Problem-ify the problem, but set the guild_id to None and return it
             return problem
         problem2 = cls(
             question=problem["question"],
             answer=problem["answer"],
             id=int(problem["id"]),
-            guild_id=int(guild_id),
+            guild_id=guild_id,
             voters=problem["voters"],
             solvers=problem["solvers"],
             author=problem["author"],

@@ -213,9 +213,12 @@ class MathProblemCache:
                 await cursor.execute("SELECT * FROM problems")  # Get all problems
 
                 for row in await cursor.fetchall(): # For each problem:
-                    problem = BaseProblem.from_row(
-                        pickle.loads(row), cache=copy(self)
-                    )  # Convert the problems to problem objects
+                    if not isinstance(row, dict):
+                        problem = BaseProblem.from_row(
+                            pickle.loads(row), cache=copy(self)
+                        )  # Convert the problems to problem objects 
+                    else:
+                        problem = BaseProblem.from_row(row=row,cache=copy(self))
                     if (
                             problem.guild_id not in guild_ids
                     ):  # Similar logic: Make sure it's there!

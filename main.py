@@ -208,8 +208,10 @@ async def on_connect():
             await bot.cache.get_guilds()
     ):  # Obtain all guilds the cache stores data (will need to be upgraded.)
         if guild_id not in bot_guild_ids:  # It's not in!
+            if guild_id is None: # Don't delete global problems
+                continue
             bot.log.debug("The bot is deleting data from a guild it has left.")
-            await bot.cache.remove_all_by_guild_id(guild_id)  # Delete the data
+            await bot.cache.delete_all_by_guild_id(guild_id)  # Delete the data
 
 
 @bot.event
