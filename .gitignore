@@ -182,6 +182,7 @@ pylint/*.txt
 /error_logs/*
 error_logs/
 # I'm willing to un-gitignore error_logs (for debugging purposes)
+.idea/**
 
 #Whitelists
 !**/*.py #never ignore any python file :)
@@ -189,4 +190,3 @@ error_logs/
 !.gitignore
 !docs/** # The documentation needs to be not git-ignored
 !**/__init__.py
-
