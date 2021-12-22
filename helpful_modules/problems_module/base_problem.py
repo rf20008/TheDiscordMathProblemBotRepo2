@@ -376,7 +376,6 @@ class BaseProblem:
         return BaseProblem(
             question=deepcopy(self.question),
             voters=deepcopy(self.voters),
-            answer=deepcopy(self.answer),
             answers=deepcopy(self.answers),
             solvers=deepcopy(self.solvers),
             author=deepcopy(self.author),
