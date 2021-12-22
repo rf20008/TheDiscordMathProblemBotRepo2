@@ -14,8 +14,8 @@ from sys import stderr
 
 
 def generate_new_id():
-    "Generate a random number from 0 to 2**63-1"
-    return random.randint(0, 2 ** 63 - 1)
+    "Generate a random number from 0 to 2**53-1"
+    return random.randint(0, 2 ** 53 - 1)
 
 
 def get_git_revision_hash() -> str:
