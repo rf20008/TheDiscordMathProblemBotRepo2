@@ -137,8 +137,13 @@ class ProblemsCog(HelperCog):
         raw: bool = False,
         is_guild_problem: bool = False,
     ):
-        "Show the info of a problem."
-        await cooldowns.check_for_cooldown(inter, "edit_problem", 0.5)
+        """Show the info of a problem."""
+        if is_guild_problem and inter.guild is None or not inter.guild.id:
+            embed1 = ErrorEmbed(
+                description="Run this command in the Discord server which has this problem, not a DM!"
+            )
+            await inter.send(embed=embed1)
+            return
         problem_id = int(problem_id)
         try:
             guild_id = inter.guild.id
@@ -149,42 +154,35 @@ class ProblemsCog(HelperCog):
 
         real_guild_id = int(inter.guild.id) if is_guild_problem else None
         try:
-            problem = await self.cache.get_problem(real_guild_id, int(problem_id))
-        except ProblemNotFound:
+            await self.cache.get_problem(real_guild_id, int(problem_id))
+        except ProblemNotFound:  # Problem not found
             await inter.send(embed=ErrorEmbed("Problem not found."))
             return
 
-        if True:
-            if is_guild_problem and guild_id is None:
-                embed1 = ErrorEmbed(
-                    description="Run this command in the Discord server which has this problem, not a DM!"
-                )
-                await inter.send(embed=embed1)
-                return
-            problem = await self.cache.get_problem(
-                int(inter.guild.id) if is_guild_problem else None, int(problem_id)
-            )
-            Problem_as_str = f"""Question: {problem.get_question()}
+        problem = await self.cache.get_problem(
+            int(inter.guild.id) if is_guild_problem else None, int(problem_id)
+        )
+        Problem_as_str = f"""Question: {problem.get_question()}
 Author: {str(problem.get_author())}
 NumVoters/Vote Threshold: {problem.get_num_voters()}/{self.bot.vote_threshold}
 NumSolvers: {len(problem.get_solvers())}"""
 
-            if show_all_data:
-                if not (
-                    (
-                        problem.is_author(inter.author)
-                        or inter.author.id not in self.bot.trusted_users
-                        or (
-                            is_guild_problem
-                            and inter.author.guild_permissions.administrator
-                        )
+        if show_all_data:
+            if not (
+                (
+                    problem.is_author(inter.author)
+                    or inter.author.id not in self.bot.trusted_users
+                    or (
+                        is_guild_problem
+                        and inter.author.guild_permissions.administrator
                     )
-                ):  # Check for sufficient permissions
-                    await inter.send(
-                        embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True
-                    )
-                    return
-                Problem_as_str += f"\nAnswer: {problem.get_answer}"
+                )
+            ):  # Check for sufficient permissions
+                await inter.send(
+                    embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True
+                )
+                return
+            Problem_as_str += f"\nAnswer: {problem.get_answer}"
 
             if raw:
                 await inter.send(
@@ -207,7 +205,7 @@ NumSolvers: {len(problem.get_solvers())}"""
     )
     async def list_all_problem_ids(self, inter, show_only_guild_problems=False):
         """/list_all_problem_ids [show_only_guild_problems: bool = false]
-        List all problem ids. If show_only_guild_problems is true, then only ids of guild problems will be shown. Otherwise only problem ids of problems that are global will be shown."""
+        List all problem ids. If show_only_guild_problems is true, then only ids of guild problems will be shown. Otherwise, only problem ids of problems that are global will be shown."""
         await cooldowns.check_for_cooldown(inter, "list_all_problem_ids", 2.5)
         if show_only_guild_problems:
             guild_id = inter.guild.id
@@ -293,7 +291,7 @@ NumSolvers: {len(problem.get_solvers())}"""
                     problem_info_as_str += "The combined length of the questions is too long.... shortening it!"  # May be removed
                     await inter.send(embed=SuccessEmbed(problem_info_as_str[:1930]))
                     return
-                if not (showSolvedProblems) and problem.is_solver(
+                if not showSolvedProblems and problem.is_solver(
                     inter.author
                 ):  # If the user solved the problem, don't show the problem
                     continue
@@ -325,10 +323,10 @@ NumSolvers: {len(problem.get_solvers())}"""
             if not isinstance(problem, problems_module.BaseProblem):
                 print(list(global_problems))
                 raise RuntimeError(
-                    "Uhhhhhhh..... the problem is not a MathProblem! Please help :-)"
-                )  # For some reason..... the problem is an Integer, not a MathProblem...
+                    "Uh... the problem is not a BaseProblem! Please help :-)")
+                # If
                 # solved?
-            if not (showSolvedProblems) and problem.is_solver(inter.author):
+            if not showSolvedProblems and problem.is_solver(inter.author):
                 continue  # Don't show solved problems if the user doesn't want to see solved problems
             # Probably will be overhauled with str(problem)
             problem_info_as_str += "\n"
@@ -359,7 +357,6 @@ NumSolvers: {len(problem.get_solvers())}"""
             embed=SimpleEmbed("", description="Attempting to delete bot problems"),
             ephemeral=True,
         )  # may get rid of later? :)
-        numDeletedProblems = 0
 
         await self.cache.delete_all_by_user_id(self.bot.user.id)
         # async with aiosqlite.connect(self.bot.cache.db_name) as conn: #
@@ -432,7 +429,7 @@ NumSolvers: {len(problem.get_solvers())}"""
                 ephemeral=True,
             )
             remover = threading.Thread(
-                target=run, args=(self.cache.remove_duplicate_problems)
+                target=run, args=(self.cache.remove_duplicate_problems,)
             )
             remover.start()
             return
@@ -455,7 +452,6 @@ NumSolvers: {len(problem.get_solvers())}"""
                 guild_question
                 and (inter.guild is None or not hasattr(inter.guild, "id"))
             ), "This command may not be used in DMs!"
-            guild_id = inter.guild.id
         except AssertionError:
             await inter.send(
                 "In order to submit a problem for your guild, you must not be executing this command in a DM!"
@@ -577,7 +573,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         except (KeyError, problems_module.errors.ProblemNotFound):
             await inter.send(
                 embed=ErrorEmbed(
-                    "This problem doesn't exist!", custom_title="Nonexistant problem."
+                    "This problem doesn't exist!", custom_title="Nonexistent problem."
                 ),
                 ephemeral=True,
             )
@@ -664,7 +660,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         ):  # But if the problem wasn't found, then tell them
             await inter.send(
                 embed=ErrorEmbed(
-                    "This problem doesn't exist!", custom_title="Nonexistant problem."
+                    "This problem doesn't exist!", custom_title="Nonexistent problem."
                 ),
                 ephemeral=True,
             )
@@ -712,7 +708,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         Vote for the deletion of the problem with the given problem_id.
         if is_guild_problem is true, then the bot looks for the problem with the given problem id and guild id, and makes you vote for it.
         Otherwise, the bot looks for the global problem with given problem id (the guild id is None).
-        There is a 5 second cooldown on this command, to prevent spam."""
+        There is a 5-second cooldown on this command, to prevent spam."""
         try:
             problem = await self.bot.cache.get_problem(
                 inter.guild.id
@@ -778,6 +774,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         ],
     )
     @commands.cooldown(1, 5, commands.BucketType.user)
+    @checks.is_not_blacklisted()
     async def unvote(
         self,
         inter: disnake.ApplicationCommandInteraction,
@@ -788,7 +785,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         Searches for the problem with the given id. If is_guild_problem is True, the guild id of the problem that it searches for will be the guild id of the context.
         Otherwise, it will look for the global problem with the given id.
         After searching for the problem, it removes your vote for deletion of that problem.
-        There is a 5 second cooldown on this command."""
+        There is a 5-second cooldown on this command."""
         try:
             problem = await self.bot.cache.get_problem(
                 inter.guild.id if is_guild_problem else None,
@@ -796,10 +793,10 @@ NumSolvers: {len(problem.get_solvers())}"""
             )  # Get the problem!
             if not problem.is_voter(
                 inter.author
-            ):  # You can't unvote unless you are voting
+            ):  # You can't un-vote unless you are voting
                 await inter.send(
                     embed=ErrorEmbed(
-                        "You can't unvote because you are not voting for the deletion of this problem!"
+                        "You can't un-vote because you are not voting for the deletion of this problem!"
                     ),
                     ephemeral=True,
                 )
@@ -812,16 +809,16 @@ NumSolvers: {len(problem.get_solvers())}"""
         problem.voters.remove(inter.author.id)  # Remove the user id from problem
         await problem.update_self()  # Save the changes to the database.
 
-        successMessage = f"You successfully unvoted for the problem's deletion!" + (
+        successMessage = f"You successfully un-voted for the problem's deletion!" + (
             "As long as this problem is not deleted, you can always un-vote."
             + (
                 "There are {problem.get_num_voters()}/{self.bot.vote_threshold} votes on this problem!"
             )
         )
         await inter.send(
-            embed=SuccessEmbed(successMessage, successTitle="Successfully unvoted!"),
+            embed=SuccessEmbed(successMessage, successTitle="Successfully un-voted!"),
             ephemeral=True,
-        )  # Tell the user of the successful unvote.
+        )  # Tell the user of the successful un-vote.
 
     @commands.slash_command(
         name="delete_problem",
@@ -876,7 +873,7 @@ NumSolvers: {len(problem.get_solvers())}"""
                 or not problem.is_author()  # Authors can delete
                 or (
                     inter.author.guild_permissions.administrator and is_guild_problem
-                )  # Users with the 'adminstrator' permission can delete problems
+                )  # Users with the 'administrator' permission can delete problems
             ):
                 await inter.send(
                     embed=ErrorEmbed("Insufficient permissions"), ephemeral=True

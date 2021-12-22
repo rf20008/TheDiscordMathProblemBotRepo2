@@ -4,7 +4,7 @@ import sqlite3
 import typing
 import warnings
 from copy import deepcopy, copy
-from types import FunctionType as function
+from types import FunctionType
 from typing import *
 
 import aiosqlite
@@ -18,7 +18,7 @@ from .quizzes import Quiz, QuizProblem, QuizSubmission
 
 
 class MathProblemCache:
-    "A class that stores math problems/quizzes :-)"
+    """A class that stores math problems/quizzes :-). This makes my code much more readable."""
 
     def __init__(
             self,
@@ -33,7 +33,6 @@ class MathProblemCache:
             max_guild_problems: int = 125,
             warnings_or_errors: Union[Literal["warnings"], Literal["errors"]] = "warnings",
             db_name: str = "problems_module.db",
-            name: str = "1",
             update_cache_by_default_when_requesting: bool = True,
             use_cached_problems: bool = False,
     ):
@@ -64,6 +63,13 @@ class MathProblemCache:
         self.update_cache_by_default_when_requesting = (
             update_cache_by_default_when_requesting
         )
+        self.guild_ids = []
+        self.global_problems = {}
+        self.cached_submissions = []
+        self.cached_quizzes = []
+        self.guild_problems = {}
+        self._guilds: typing.List[disnake.Guild] = []
+        asyncio.run(self.update_cache())
 
     async def initialize_sql_table(self):
         if self.use_sqlite:
@@ -180,7 +186,7 @@ class MathProblemCache:
         if use_from_dict:
             return BaseProblem.from_dict(
                 problem, cache=self
-            )  # Return the base problem.from_dict method
+            )  # Use the base problem.from_dict method
         try:
             assert isinstance(problem, dict)
         except AssertionError:
@@ -212,13 +218,13 @@ class MathProblemCache:
                 cursor = await conn.cursor()
                 await cursor.execute("SELECT * FROM problems")  # Get all problems
 
-                for row in await cursor.fetchall(): # For each problem:
+                for row in await cursor.fetchall():  # For each problem:
                     if not isinstance(row, dict):
                         problem = BaseProblem.from_row(
                             pickle.loads(row), cache=copy(self)
                         )  # Convert the problems to problem objects 
                     else:
-                        problem = BaseProblem.from_row(row=row,cache=copy(self))
+                        problem = BaseProblem.from_row(row=row, cache=copy(self))
                     if (
                             problem.guild_id not in guild_ids
                     ):  # Similar logic: Make sure it's there!
@@ -300,13 +306,13 @@ class MathProblemCache:
         try:
             global_problems = deepcopy(
                 guild_problems[None]
-            )  #Must deepcopy (but lists of baseproblems are not deepcopy-able)
-            #TODO: fix this so this doesn't lead to errors
+            )  # Must deepcopy or weird warnings will occur
+            # TODO: fix this so this doesn't lead to errors
         except KeyError:  # No global problems yet
             global_problems = {}
         self.guild_problems = deepcopy(guild_problems)
-        #For some reason, List[BaseProblem]'s are not deepcopy-able
-        #TODO: make base problems deep-copyable
+        # For some reason, List[BaseProblem]'s are not deepcopy-able
+        # TODO: make base problems deep-copyable
         self.guild_ids = guild_ids
         self.global_problems = global_problems
         self.cached_quizzes = [
@@ -333,11 +339,11 @@ class MathProblemCache:
 
     async def get_problems_by_func(
             self: "MathProblemCache",
-            func: function = lambda problem: False,
+            func: FunctionType = lambda problem: False,
             args: typing.Union[tuple, list] = None,
             kwargs: dict = None,
     ) -> typing.List[BaseProblem]:
-        """Returns the list of all problems that match the given function"""
+        """Returns the list of all problems that match the given function. args and kwargs are extra parameters to give to the function"""
         if args is None:
             args = []
         if kwargs is None:
@@ -444,14 +450,14 @@ class MathProblemCache:
                     return BaseProblem.from_row(cache=copy(self), row=rows[0])
 
     async def get_guild_problems(
-            self, Guild: disnake.Guild
+            self, guild: disnake.Guild
     ) -> typing.Dict[int, BaseProblem]:
         """Gets the guild problems! Guild must be a Guild object. If you are trying to get global problems, use get_global_problems."""
-        assert isinstance(Guild, disnake.Guild)
+        assert isinstance(guild, disnake.Guild)
         if self.update_cache_by_default_when_requesting:
             await self.update_cache()
         try:
-            return self.guild_problems[Guild.id]
+            return self.guild_problems[guild.id]
         except KeyError:
             return {}
 
@@ -466,13 +472,13 @@ class MathProblemCache:
         except KeyError:
             return {}
 
-    async def get_global_problems(self: "MathProblemCache"):
+    async def get_global_problems(self: "MathProblemCache") -> typing.List[BaseProblem]:
         """Returns global problems"""
         if self.update_cache_by_default_when_requesting:
             await self.update_cache()
         return self.global_problems
 
-    def add_empty_guild(self, Guild) -> typing.NoReturn:
+    def add_empty_guild(self, guild) -> typing.NoReturn:
         """Adds a dictionary that is empty for the guild. Guild must be a disnake.Guild object"""
         raise MathProblemsModuleException(
             "This method has been removed and you should not use it! It doesn't have a purpose anyway!"
@@ -489,7 +495,7 @@ class MathProblemCache:
         # self._dict[Guild.id] = {}
 
     async def add_problem(
-            self, guild_id: typing.Optional[int], problem_id: int, Problem: BaseProblem
+            self, guild_id: typing.Optional[int], problem_id: int, problem: BaseProblem
     ) -> Optional[BaseProblem]:
         """Adds a problem and returns the added MathProblem"""
         # Preliminary checks -otherwise SQL bugs
@@ -522,7 +528,7 @@ class MathProblemCache:
             await self.update_cache()
         try:
             if (
-                    guild_id == None
+                    guild_id is None
             ):  # There is no limit for global problems (which could be exploited!)
                 pass
             elif (
@@ -561,13 +567,13 @@ class MathProblemCache:
                     """INSERT INTO problems (guild_id, problem_id, question, answers, voters, solvers, author)
                 VALUES (?,?,?,?,?,?,?)""",
                     (
-                        Problem.guild_id, # We expect the problem's guild id to be either an integer or None
-                        int(Problem.id),
-                        Problem.get_question(),
-                        pickle.dumps(Problem.get_answers()),
-                        pickle.dumps(Problem.get_voters()),
-                        pickle.dumps(Problem.get_solvers()),
-                        int(Problem.author),
+                        problem.guild_id,  # We expect the problem's guild id to be either an integer or None
+                        int(problem.id),
+                        problem.get_question(),
+                        pickle.dumps(problem.get_answers()),
+                        pickle.dumps(problem.get_voters()),
+                        pickle.dumps(problem.get_solvers()),
+                        int(problem.author),
                     ),
                 )
 
@@ -585,13 +591,13 @@ class MathProblemCache:
                     """INSERT INTO problems (guild_id, problem_id, question, answer, voters, solvers, author)
                 VALUES (%i,%i,%s,%b,%b,%b,%i)""",
                     (
-                        int(Problem.guild_id),
-                        int(Problem.id),
-                        Problem.get_question(),
-                        pickle.dumps(Problem.get_answers()),
-                        pickle.dumps(Problem.get_voters()),
-                        pickle.dumps(Problem.get_solvers()),
-                        int(Problem.author),
+                        int(problem.guild_id),
+                        int(problem.id),
+                        problem.get_question(),
+                        pickle.dumps(problem.get_answers()),
+                        pickle.dumps(problem.get_voters()),
+                        pickle.dumps(problem.get_solvers()),
+                        int(problem.author),
                     ),
                 )
 
@@ -711,7 +717,7 @@ class MathProblemCache:
         """Get the guilds (due to using sql, it must return the guild id, bot is needed to return guilds. takes O(n) time)"""
         try:
             assert bot is None or isinstance(bot, disnake.ext.commands.Bot)
-        except:
+        except AssertionError:
             raise AssertionError("bot isn't a bot!")
 
         if self.update_cache_by_default_when_requesting:
@@ -738,7 +744,7 @@ class MathProblemCache:
         """Add a quiz"""
         assert isinstance(quiz, Quiz)
         try:
-            await self.get_quiz(quiz._id)
+            await self.get_quiz(quiz.id)
             raise MathProblemsModuleException(
                 "Quiz already exists! Use update_quiz instead"
             )
@@ -763,7 +769,7 @@ class MathProblemCache:
                         raise  # Re-raise the exception
 
                 cursor = await conn.cursor()
-                for item in quiz:
+                for item in quiz.problems:
                     await cursor.execute(
                         """INSERT INTO quizzes (guild_id, quiz_id, problem_id, question, answer, voters, solvers, author)
                     VALUES (?,?,?,?,?,?,?,?)""",
@@ -799,9 +805,7 @@ class MathProblemCache:
                     database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
-
-                cursor = connection.cursor(dictionaries=True)
-                for item in quiz:
+                for item in quiz.problems:
                     cursor.execute(
                         """INSERT INTO quizzes (guild_id, quiz_id, problem_id, question, answer, voters, solvers, author)
                     VALUES ('%i','%i','%i',%s,%b,%b,%b,'%i')""",
@@ -1022,7 +1026,7 @@ class MathProblemCache:
                 )  # Get the submissions
                 # Convert them to QuizSubmissions!
                 quiz_submissions = [
-                    QuizSubmission.from_dict(pickle.loads(item[0]), cache = copy(self))
+                    QuizSubmission.from_dict(pickle.loads(item[0]), cache=copy(self))
                     for item in await cursor.fetchall()
                 ]  # For each item: load it from bytes into a dictionary and
                 # convert the dictionary into a QuizSubmission! However, I should just pickle it directly.

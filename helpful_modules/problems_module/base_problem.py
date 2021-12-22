@@ -1,10 +1,10 @@
+import disnake
 import pickle
 import sys
 import traceback
 import typing
 import warnings
-
-import disnake
+from copy import deepcopy
 
 from .errors import *
 
@@ -17,7 +17,7 @@ class BaseProblem:
             question: str,
             id: int,
             author: int,
-            answer: str=None,
+            answer: str = None,
             guild_id: typing.Optional[int] = None,
             voters: list = None,
             solvers: list = None,
@@ -36,7 +36,7 @@ class BaseProblem:
             raise TypeError("id is not an integer")
         if not isinstance(question, str):
             raise TypeError("question is not a string")
-        if not isinstance(answer, str) and answer is not None: #answer is None because of answers
+        if not isinstance(answer, str) and answer is not None:  # answer is None because of answers
             raise TypeError("answer is not a string")
         if not isinstance(author, int):
             raise TypeError("author is not an integer")
@@ -59,7 +59,7 @@ class BaseProblem:
         if answer is not None:
             if len(answer) > 100:
                 raise TooLongAnswer(
-                        f"Your answer is {len(question) - 100} characters too long. Answers may be up to 100 characters long."
+                    f"Your answer is {len(question) - 100} characters too long. Answers may be up to 100 characters long."
                 )
             self.answer = answer
         self.id = id
@@ -337,11 +337,11 @@ class BaseProblem:
         """Returns self.author"""
         return self.author
 
-    def is_author(self, User: typing.Union[disnake.User, disnake.Member]):
+    def is_author(self, user: typing.Union[disnake.User, disnake.Member]):
         """Returns if the user is the author"""
-        if not isinstance(User, disnake.User) and not isinstance(User, disnake.Member):
+        if not isinstance(user, disnake.User) and not isinstance(user, disnake.Member):
             raise TypeError("User is not actually a User")
-        return User.id == self.get_author()
+        return user.id == self.get_author()
 
     def __eq__(self, other):
         """Return self==other"""
@@ -368,3 +368,19 @@ class BaseProblem:
         if include_answer:
             _str += f"\nAnswer: {self.answer}"
         return str(_str)
+
+    def __deepcopy__(self: "BaseProblem", memo: typing.Any):
+        """Deepcopy myself. Required for MathProblemCache.update_cache() to work.
+        Time complexity: O(V^2+S^2) (uh oh)
+        """
+        return BaseProblem(
+            question=deepcopy(self.question),
+            voters=deepcopy(self.voters),
+            answer=deepcopy(self.answer),
+            answers=deepcopy(self.answers),
+            solvers=deepcopy(self.solvers),
+            author=deepcopy(self.author),
+            id=deepcopy(self.id),
+            guild_id=deepcopy(self.guild_id)
+
+        )

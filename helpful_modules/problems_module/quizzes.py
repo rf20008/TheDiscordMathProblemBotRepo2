@@ -45,13 +45,13 @@ class QuizSubmission:
         """Return my Quiz!"""
         return self.cache.get_quiz(self.quiz_id)
 
-    def set_answer(self, problem_id: int, Answer: str) -> None:
+    def set_answer(self, problem_id: int, answer: str) -> None:
         """Set the answer of a quiz problem"""
         if not self.mutable:
             raise RuntimeError("This instance is not mutable")
-        for answer in self.answers:
-            if answer.problem_id == problem_id:
-                answer.answer = Answer
+        for problem_answer in self.answers:
+            if problem_answer.problem_id == problem_id:
+                problem_answer.answer = answer
 
     def to_dict(self):
         t = {
@@ -126,6 +126,7 @@ class QuizProblem(BaseProblem):
         self.max_score = max_score
         self.min_score = 0
         self.cache = cache
+
     @property
     def quiz(self):
         """Return my quiz"""
@@ -160,11 +161,10 @@ class QuizProblem(BaseProblem):
             raise TypeError("is_written is not of type bool")
         self.update_self()
 
-    def to_dict(self):
-        return {
+    def to_dict(self, show_answer: bool = False):
+        d = {
             "type": "QuizMathProblem",
             "question": self.question,
-            "answer": self.answer,
             "id": str(self.id),
             "guild_id": str(self.guild_id),
             "voters": self.voters,
@@ -174,6 +174,9 @@ class QuizProblem(BaseProblem):
             "is_written": self.is_written,
             "max_score": self.max_score,
         }
+        if show_answer:
+            d['answer'] = self.answers
+        return d
 
     @classmethod
     def from_dict(cls, _dict: dict, cache=None):
@@ -207,20 +210,20 @@ class QuizProblem(BaseProblem):
 
 
 class Quiz(list):
-    """Essentially a list, so it implements everything that a list does,
+    """Represents a quiz.
     but it has an additional attribute submissions which is a list of QuizSubmissions"""
 
     def __init__(
             self,
             id: int,
-            iter: List[QuizProblem],
+            quiz_problems: List[QuizProblem],
             submissions: List[QuizSubmission] = None,
             cache=None,
     ) -> None:
         """Create a new quiz. id is the quiz id and iter is an iterable of QuizMathProblems"""
         if not submissions:
-            submissions=[]
-        super().__init__(iter)
+            submissions = []
+        self.problems = quiz_problems
         self.sort(key=lambda problem: problem.id)
 
         self._cache = cache
@@ -252,15 +255,14 @@ class Quiz(list):
 
         for s in _dict["submissions"]:
             submissions.append(QuizSubmission.from_dict(s))
-        c = cls(iter=[], id=_dict['id'])
-        c.extend(problems_as_type)
+        c = cls(quiz_problems=problems_as_type, id=_dict['id'])
         c._submissions = submissions
         c._id = _dict["id"]
         return c
 
     def to_dict(self):
         """Convert this instance into a Dictionary to be stored in SQL"""
-        problems = [problem.to_dict() for problem in self]
+        problems = [problem.to_dict() for problem in self.problems]
         submissions = [submission.to_dict for submission in self.submissions]
         return {"problems": problems, "submissions": submissions, "id": self._id}
 
