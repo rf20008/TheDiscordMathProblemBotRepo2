@@ -327,7 +327,7 @@ class BaseProblem:
         """Returns self.solvers"""
         return self.solvers
 
-    def is_solver(self, user: typing.Union[disnake.User, disnake.Member]):
+    def is_solver(self, user: typing.Union[disnake.User, disnake.Member]) -> bool:
         """Returns True if user is a solver. False otherwise. User must be a disnake.User or disnake.Member object."""
         if not isinstance(user, disnake.User) and not isinstance(user, disnake.Member):
             raise TypeError("User is not actually a User")
@@ -343,7 +343,7 @@ class BaseProblem:
             raise TypeError("User is not actually a User")
         return user.id == self.get_author()
 
-    def __eq__(self, other):
+    def __eq__(self, other: typing.Any) -> bool:
         """Return self==other"""
         if not isinstance(self, type(other)):
             return False
@@ -352,14 +352,13 @@ class BaseProblem:
         except AttributeError:
             return False
 
-    def __repr__(self):
+    def __repr__(self: "BaseProblem") -> str:
         """A method that when called, returns a string, that when executed, returns an object that is equal to this one. Also implements repr(self)"""
-        return f"""problems_module.MathProblem(question={self.question},
+        return f"""problems_module.BaseProblem(question={self.question},
         answers = {self.answers}, id = {self.id}, guild_id={self.guild_id},
         voters={self.voters},solvers={self.solvers},author={self.author},cache={None})"""  # If I stored the problems, then there would be an infinite loop
 
-    def __str__(self, include_answer=False):
-        """Implement str(self)"""
+    def __str__(self, include_answer: bool =False) -> str:
         _str = f"""Question: '{self.question}', 
         id: {self.id}, 
         guild_id: {self.guild_id}, 
@@ -380,6 +379,7 @@ class BaseProblem:
             solvers=deepcopy(self.solvers),
             author=deepcopy(self.author),
             id=deepcopy(self.id),
-            guild_id=deepcopy(self.guild_id)
+            guild_id=deepcopy(self.guild_id),
+            cache = self._cache
 
         )
