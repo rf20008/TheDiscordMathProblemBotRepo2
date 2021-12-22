@@ -216,10 +216,13 @@ NumSolvers: {len(problem.get_solvers())}"""
                 )
                 return
             if show_only_guild_problems:
-                guild_problems = await self.bot.cache.get_guild_problems(inter.guild)
+                guild_problems = await self.bot.cache.get_guild_problems(inter.guild) #TODO: could be lists
 
             else:
-                guild_problems = await self.bot.cache.get_global_problems()
+                guild_problems = await self.bot.cache.get_problems_by_func(
+                    func = lambda problem, guild_id: problem.guild_id == guild_id,
+                args = [inter.guild.id]
+                )
             thing_to_write = [str(problem) for problem in guild_problems]
             await inter.send(
                 embed=SuccessEmbed(
@@ -228,7 +231,9 @@ NumSolvers: {len(problem.get_solvers())}"""
             )
             return
 
-        global_problems = await self.bot.cache.get_global_problems()
+        global_problems = (await self.bot.cache.get_global_problems())
+        if isinstance(global_problems, dict):
+            global_problems = global_problems.values()
         thing_to_write = "\n".join([str(problem.id) for problem in global_problems])
         await inter.send(embed=SuccessEmbed(thing_to_write))
 
@@ -277,7 +282,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         else:
             guild_id = "null"
         # Check for no problems
-        if await self.bot.cache.get_guild_problems(inter.guild) == 0:
+        if len(await self.bot.cache.get_guild_problems(inter.guild)) == 0:
             await inter.send("No problems currently exist.")
             return
         # if not showSolvedProblems and False not in [inter.author.id in mathProblems[id]["solvers"] for id in mathProblems.keys()] or (show_guild_problems and (show_only_guild_problems and (guildMathProblems[inter.guild.id] == {}) or False not in [inter.author.id in guildMathProblems[guild_id][id]["solvers"] for id in guildMathProblems[guild_id].keys()])) or show_guild_problems and not show_only_guild_problems and False not in [inter.author.id in mathProblems[id]["solvers"] for id in mathProblems.keys()] and False not in [inter.author.id in guildMathProblems[guild_id][id]["solvers"] for id in guildMathProblems[guild_id].keys()]:
@@ -314,7 +319,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         if show_only_guild_problems:
             await inter.send(problem_info_as_str[:1930])
             return
-        global_problems = await self.bot.get_global_problems()
+        global_problems = (await self.bot.get_global_problems()).values()
         for problem in global_problems:
             if len(problem) >= 1930:
                 problem_info_as_str += "The combined length of the questions is too long.... shortening it!"
@@ -827,7 +832,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             Option(
                 name="problem_id",
                 description="Problem ID!",
-                type=OptionType.boolean,
+                type=OptionType.integer,
                 required=True,
             ),
             Option(
