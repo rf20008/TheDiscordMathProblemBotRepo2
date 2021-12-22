@@ -310,7 +310,7 @@ class MathProblemCache:
             # TODO: fix this so this doesn't lead to errors
         except KeyError:  # No global problems yet
             global_problems = {}
-        print(guild_problems)
+
         self.guild_problems = deepcopy(guild_problems)
         # For some reason, List[BaseProblem]'s are not deepcopy-able
         # TODO: make base problems deep-copyable
