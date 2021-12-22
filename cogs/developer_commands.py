@@ -34,7 +34,7 @@ class DeveloperCommands(HelperCog):
     )
     @checks.trusted_users_only()
     async def force_load_files(
-            self, inter: disnake.ApplicationCommandInteraction
+        self, inter: disnake.ApplicationCommandInteraction
     ) -> None:
         """Forcefully load files. You must be a trusted user to do this command.
         This command does not take any user-provided arguments."""
@@ -123,17 +123,17 @@ class DeveloperCommands(HelperCog):
         ],
     )
     async def raise_error(
-            self,
-            inter: disnake.ApplicationCommandInteraction,
-            error_type: typing.Literal["Exception"],
-            error_description: str = None,
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        error_type: typing.Literal["Exception"],
+        error_description: str = None,
     ) -> None:
         """/raise_error {error_type: str|Exception} [error_description: str = None]
         This command raises an error (of type error_type) that has the description of the error_description.
         You must be a trusted user and the bot owner to run this command!
         The purpose of this command is to test the bot's on_slash_command_error event!"""
         if (
-                inter.author.id not in self.bot.trusted_users
+            inter.author.id not in self.bot.trusted_users
         ):  # Check that the user is a trusted user
             await inter.send(
                 embed=ErrorEmbed(
@@ -186,16 +186,16 @@ class DeveloperCommands(HelperCog):
     )
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def documentation(
-            self,
-            inter: disnake.ApplicationCommandInteraction,
-            documentation_type: typing.Literal[
-                "documentation_link",
-                "command_help",
-                "function_help",
-                "privacy_policy",
-                "terms_of_service",
-            ],
-            help_obj: str = None,
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        documentation_type: typing.Literal[
+            "documentation_link",
+            "command_help",
+            "function_help",
+            "privacy_policy",
+            "terms_of_service",
+        ],
+        help_obj: str = None,
     ) -> typing.Optional[disnake.Message]:
         """/documentation {documentation_type: str|documentation_link|command_help|function_help} {help_obj}
 
@@ -257,7 +257,7 @@ class DeveloperCommands(HelperCog):
                 )
             except the_documentation_file_loader.DocumentationNotFound as e:
                 if isinstance(
-                        e, the_documentation_file_loader.DocumentationFileNotFound
+                    e, the_documentation_file_loader.DocumentationFileNotFound
                 ):
                     await inter.send(
                         embed=ErrorEmbed(
@@ -304,10 +304,10 @@ class DeveloperCommands(HelperCog):
         ],
     )
     async def debug(
-            self,
-            inter: disnake.ApplicationCommandInteraction,
-            raw: bool = False,
-            send_ephermally: bool = True,
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        raw: bool = False,
+        send_ephermally: bool = True,
     ):
         """/debug [raw: bool = False] [send_ephermally: bool = False]
         Provides helpful debug information :-)"""
@@ -318,12 +318,16 @@ class DeveloperCommands(HelperCog):
         me = guild.me
         my_permissions = me.guild_permissions
         debug_dict = {
-            'guild_id': inter.guild.id,
-            'author_id': inter.author.id,
-            'problem_limit': self.bot.cache.max_guild_problems,
-            'reached_max_problems': "✅" if len(await self.bot.cache.get_guild_problems(inter.guild)
-                                               ) >= self.bot.cache.max_guild_problems else "❌",
-            'num_guild-problems': len(await self.bot.cache.get_guild_problems(inter.guild))
+            "guild_id": inter.guild.id,
+            "author_id": inter.author.id,
+            "problem_limit": self.bot.cache.max_guild_problems,
+            "reached_max_problems": "✅"
+            if len(await self.bot.cache.get_guild_problems(inter.guild))
+            >= self.bot.cache.max_guild_problems
+            else "❌",
+            "num_guild-problems": len(
+                await self.bot.cache.get_guild_problems(inter.guild)
+            ),
         }
         correct_permissions = {
             "read_message_history": "✅" if my_permissions.read_messages else "❌",
@@ -374,9 +378,9 @@ class DeveloperCommands(HelperCog):
     )
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def generate_new_problems(
-            self,
-            inter: disnake.ApplicationCommandInteraction,
-            num_new_problems_to_generate: int,
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        num_new_problems_to_generate: int,
     ) -> typing.Optional[disnake.Message]:
         """/generate_new_problems [num_new_problems_to_generate: int]
         Generate new Problems."""
@@ -433,15 +437,15 @@ class DeveloperCommands(HelperCog):
                 ]:  # All problem_ids
                     break
             question = (
-                    f"What is {num1} "
-                    + {
-                        "*": "times",
-                        "+": "times",
-                        "-": "minus",
-                        "/": "divided by",
-                        "^": "to the power of",
-                    }[operation]
-                    + f" {str(num2)}?"
+                f"What is {num1} "
+                + {
+                    "*": "times",
+                    "+": "times",
+                    "-": "minus",
+                    "/": "divided by",
+                    "^": "to the power of",
+                }[operation]
+                + f" {str(num2)}?"
             )
             Problem = problems_module.BaseProblem(
                 question=question,
@@ -474,9 +478,9 @@ class DeveloperCommands(HelperCog):
     @checks.trusted_users_only()
     @commands.cooldown(1, 600, commands.BucketType.user)
     async def add_trusted_user(
-            self,
-            inter: disnake.ApplicationCommandInteraction,
-            user: typing.Union[disnake.Member, disnake.User],
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        user: typing.Union[disnake.Member, disnake.User],
     ) -> None:
         """/add_trusted_user [user: User]
         This slash commands adds a trusted user!
@@ -515,9 +519,9 @@ class DeveloperCommands(HelperCog):
     @commands.cooldown(1, 600, commands.BucketType.user)
     @checks.trusted_users_only()
     async def remove_trusted_user(
-            self: "DeveloperCommands",
-            inter: disnake.ApplicationCommandInteraction,
-            user: disnake.User,
+        self: "DeveloperCommands",
+        inter: disnake.ApplicationCommandInteraction,
+        user: disnake.User,
     ) -> typing.Optional[disnake.InteractionMessage]:
         """/remove_trusted_user [user: User]
         Remove a trusted user. You must be a trusted user to do this.
@@ -529,8 +533,7 @@ class DeveloperCommands(HelperCog):
             return
         if user.id not in self.bot.trusted_users:
             await inter.send(
-                embed=ErrorEmbed(f"{user.name} isn't a trusted user!"),
-                ephemeral=True
+                embed=ErrorEmbed(f"{user.name} isn't a trusted user!"), ephemeral=True
             )
             return
         self.bot.trusted_users.pop(user.id)

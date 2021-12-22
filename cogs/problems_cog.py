@@ -111,7 +111,7 @@ class ProblemsCog(HelperCog):
             ),
             Option(
                 name="show_all_data",
-                description="whether to show all data (only useable by problem authors and trusted users",
+                description="whether to show all data (only usable by problem authors and trusted users",
                 type=OptionType.boolean,
                 required=False,
             ),
@@ -216,12 +216,14 @@ NumSolvers: {len(problem.get_solvers())}"""
                 )
                 return
             if show_only_guild_problems:
-                guild_problems = await self.bot.cache.get_guild_problems(inter.guild) #TODO: could be lists
+                guild_problems = await self.bot.cache.get_guild_problems(
+                    inter.guild
+                )  # TODO: could be lists
 
             else:
                 guild_problems = await self.bot.cache.get_problems_by_func(
-                    func = lambda problem, guild_id: problem.guild_id == guild_id,
-                args = [inter.guild.id]
+                    func=lambda problem, guild_id: problem.guild_id == guild_id,
+                    args=[inter.guild.id],
                 )
             thing_to_write = [str(problem) for problem in guild_problems]
             await inter.send(
@@ -231,7 +233,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             )
             return
 
-        global_problems = (await self.bot.cache.get_global_problems())
+        global_problems = await self.bot.cache.get_global_problems()
         if isinstance(global_problems, dict):
             global_problems = global_problems.values()
         thing_to_write = "\n".join([str(problem.id) for problem in global_problems])
@@ -328,7 +330,8 @@ NumSolvers: {len(problem.get_solvers())}"""
             if not isinstance(problem, problems_module.BaseProblem):
                 print(list(global_problems))
                 raise RuntimeError(
-                    "Uh... the problem is not a BaseProblem! Please help :-)")
+                    "Uh... the problem is not a BaseProblem! Please help :-)"
+                )
                 # If
                 # solved?
             if not showSolvedProblems and problem.is_solver(inter.author):
@@ -495,11 +498,11 @@ NumSolvers: {len(problem.get_solvers())}"""
 
         if guild_question:
             # If this is a guild question, set the guild id
-            # to the guild id of the guild this command was ran in
+            # to the guild id of the guild this command was run in
             guild_id = inter.guild.id
         else:  # But if it's global, make it global
             guild_id = None
-        
+
         problem = problems_module.BaseProblem(
             question=question,
             answer=answer,
@@ -522,86 +525,88 @@ NumSolvers: {len(problem.get_solvers())}"""
 
         return
 
-    @commands.slash_command(
-        name="check_answer",
-        description="Check if you are right",
-        options=[
-            Option(
-                name="problem_id",
-                description="the id of the problem you are trying to check the answer of",
-                type=OptionType.integer,
-                required=True,
-            ),
-            Option(
-                name="answer",
-                description="your answer",
-                type=OptionType.string,
-                required=True,
-            ),
-            Option(
-                name="checking_guild_problem",
-                description="whether checking a guild problem",
-                type=OptionType.boolean,
-                required=False,
-            ),
-        ],
-    )
-    @checks.is_not_blacklisted()
-    async def check_answer(
-        self,
-        inter: disnake.ApplicationCommandInteraction,
-        problem_id: int,
-        answer: str,
-        checking_guild_problem: bool = False,
-    ):
-        """/check_answer {problem_id} {answer_id} [checking_guild_problem = False]
-        Check your answer to the problem with the given id.
-        The bot will tell you whether you got a problem wrong."""
-        if not inter.guild:
-            checking_guild_problem = False
+    # @commands.slash_command(
+    #     name="check_answer",
+    #     description="Check your answer to a problem that was submitted",
+    #     options=[
+    #         Option(
+    #             name="problem_id",
+    #             description="the id of the problem you are trying to check the answer of",
+    #             type=OptionType.integer,
+    #             required=True,
+    #         ),
+    #         Option(
+    #             name="answer",
+    #             description="your answer",
+    #             type=OptionType.string,
+    #             required=True,
+    #         ),
+    #         Option(
+    #             name="checking_guild_problem",
+    #             description="whether checking a guild problem",
+    #             type=OptionType.boolean,
+    #             required=False,
+    #         ),
+    #     ],
+    # )
+    # @checks.is_not_blacklisted()
+    # async def check_answer(
+    #         self,
+    #         inter: disnake.ApplicationCommandInteraction,
+    #         problem_id: int,
+    #         answer: str,
+    #         checking_guild_problem: bool = False,
+    # ):
+    #     """/check_answer {problem_id: int} {answer: str} [checking_guild_problem: bool = False]
+    #     Check your answer to the problem with the given id.
+    #     The bot will tell you whether you got a problem wrong."""
+    #     if not inter.guild:
+    #         checking_guild_problem = False
+    #
+    #     await cooldowns.check_for_cooldown(inter, "check_answer", 5)
+    #     try:
+    #         problem = await self.cache.get_problem(
+    #             int(inter.guild.id) if checking_guild_problem else None, int(problem_id)
+    #         )
+    #         # Make sure the author didn't already solve this problem
+    #         if problem.is_solver(inter.author):
+    #             await inter.send(
+    #                 embed=ErrorEmbed(
+    #                     "You have already solved this problem!",
+    #                     custom_title="Already solved.",
+    #                 ),
+    #                 ephemeral=True,
+    #             )
+    #             return
+    #     except (KeyError, problems_module.errors.ProblemNotFound):
+    #         await inter.send(
+    #             embed=ErrorEmbed(
+    #                 "This problem doesn't exist!", custom_title="Nonexistent problem."
+    #             ),
+    #             ephemeral=True,
+    #         )
+    #         return
+    #     # Should reverse this
+    #     if not problem.check_answer(answer):
+    #         await inter.send(
+    #             embed=ErrorEmbed(
+    #                 "You didn't answer the problem correctly! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.",
+    #                 custom_title="Sorry, your answer is wrong.",
+    #             ),
+    #             ephemeral=True,
+    #         )
+    #     else:
+    #         await inter.send(
+    #             embed=SuccessEmbed(
+    #                 "", successTitle="You answered this question correctly!"
+    #             ),
+    #             ephemeral=True,
+    #         )
+    #         await problem.add_solver(inter.author)
+    #         return
+    #
 
-        await cooldowns.check_for_cooldown(inter, "check_answer", 5)
-        try:
-            problem = await self.cache.get_problem(
-                int(inter.guild.id) if checking_guild_problem else None, int(problem_id)
-            )
-            # Make sure the author didn't already solve this problem
-            if problem.is_solver(inter.author):
-                await inter.send(
-                    embed=ErrorEmbed(
-                        "You have already solved this problem!",
-                        custom_title="Already solved.",
-                    ),
-                    ephemeral=True,
-                )
-                return
-        except (KeyError, problems_module.errors.ProblemNotFound):
-            await inter.send(
-                embed=ErrorEmbed(
-                    "This problem doesn't exist!", custom_title="Nonexistent problem."
-                ),
-                ephemeral=True,
-            )
-            return
-        # Should reverse this
-        if not problem.check_answer(answer):
-            await inter.send(
-                embed=ErrorEmbed(
-                    "You didn't answer the problem correctly! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.",
-                    custom_title="Sorry, your answer is wrong.",
-                ),
-                ephemeral=True,
-            )
-        else:
-            await inter.send(
-                embed=SuccessEmbed(
-                    "", successTitle="You answered this question correctly!"
-                ),
-                ephemeral=True,
-            )
-            await problem.add_solver(inter.author)
-            return
-
+    # Commented out: duplicate
     @commands.slash_command(
         name="check_answer",
         description="Check if you are right",
@@ -691,7 +696,7 @@ NumSolvers: {len(problem.get_solvers())}"""
 
     @commands.slash_command(
         name="vote",
-        description="Vote for the deletion of a problem",
+        description="Vote for the deletion of a problem!",
         options=[
             Option(
                 name="problem_id",
@@ -708,12 +713,13 @@ NumSolvers: {len(problem.get_solvers())}"""
         ],
     )
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def vote(self, inter, problem_id, is_guild_problem=False):
+    async def vote(self, inter, problem_id: int, is_guild_problem: bool = False):
         """/vote [problem_id: int] [is_guild_problem: bool = False]
         Vote for the deletion of the problem with the given problem_id.
         if is_guild_problem is true, then the bot looks for the problem with the given problem id and guild id, and makes you vote for it.
         Otherwise, the bot looks for the global problem with given problem id (the guild id is None).
-        There is a 5-second cooldown on this command, to prevent spam."""
+        There is a 5-second cooldown on this command, to prevent spam.
+        The data about you voting is not private; it will be given to people who created/solved/voted for problems and use /user_data get_data"""
         try:
             problem = await self.bot.cache.get_problem(
                 inter.guild.id
@@ -827,23 +833,24 @@ NumSolvers: {len(problem.get_solvers())}"""
 
     @commands.slash_command(
         name="delete_problem",
-        description="Deletes a problem",
+        description="Delete a problem",
         options=[
             Option(
                 name="problem_id",
-                description="Problem ID!",
+                description="Problem ID of the problem you want to delete.",
                 type=OptionType.integer,
                 required=True,
             ),
             Option(
                 name="is_guild_problem",
-                description="whether you are deleting a guild problem",
+                description="whether you are deleting a guild problem. Defaults to False (which means it's global)",
                 type=OptionType.boolean,
                 required=False,
             ),
         ],
     )
     @commands.cooldown(1, 0.5, commands.BucketType.user)
+    @commands.guild_only()
     async def delete_problem(
         self: "ProblemsCog",
         inter: disnake.ApplicationCommandInteraction,
@@ -852,7 +859,15 @@ NumSolvers: {len(problem.get_solvers())}"""
     ) -> typing.Optional[disnake.Message]:
         """/delete_problem (problem_id: int) [is_guild_problem: bool = False]
         Delete a problem. You must either have the Administrator permission in the guild, and the problem must be a guild problem, or"""
-        guild_id = inter.guild.id
+        if inter.guild is not None:
+            guild_id = inter.guild.id
+        else:
+            guild_id = None
+        if not inter.guild and is_guild_problem:
+            return await inter.send(
+                "You cannot delete guild problems unless you execute this problem in a guild!"
+            )
+
         if is_guild_problem:
             if guild_id is None:
                 await inter.send(
@@ -877,11 +892,16 @@ NumSolvers: {len(problem.get_solvers())}"""
                 in self.bot.trusted_users  # Global trusted users can delete problems
                 or not problem.is_author()  # Authors can delete
                 or (
-                    inter.author.guild_permissions.administrator and is_guild_problem
-                )  # Users with the 'administrator' permission can delete problems
+                    inter.author.guild_permissions.administrator
+                    and is_guild_problem
+                    and problem.guild_id == guild_id
+                )  # Users with the 'administrator' permission can delete problems if the problem is in the guild
             ):
                 await inter.send(
-                    embed=ErrorEmbed("Insufficient permissions"), ephemeral=True
+                    embed=ErrorEmbed(
+                        "You don't have permission to delete this problem!"
+                    ),
+                    ephemeral=True,
                 )
                 return
             await self.cache.remove_problem(guild_id, problem_id)
@@ -896,15 +916,22 @@ NumSolvers: {len(problem.get_solvers())}"""
                 )
             )
             return
-        if problem_id not in (await self.cache.get_guild_problems(inter.guild)).keys():
+        try:
+            problem = await self.cache.get_problem(guild_id, problem_id)
+        except ProblemNotFound:
             await inter.send(
                 embed=ErrorEmbed("That problem doesn't exist."), ephemeral=True
             )
             return
+
         if not (
             inter.author.id in self.bot.trusted_users
             or not (self.cache.get_problem(guild_id, problem_id).is_author())
-            or (inter.author.guild_permissions.administrator and is_guild_problem)
+            or (
+                inter.author.guild_permissions.administrator
+                and is_guild_problem
+                and problem.guild_id == guild_id
+            )
         ):  # Not
             await inter.send(
                 embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True

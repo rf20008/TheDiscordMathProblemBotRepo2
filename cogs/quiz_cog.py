@@ -11,4 +11,4 @@ class QuizCog(HelperCog):
         super().__init__(bot)
         self.bot = bot
         self.cache: MathProblemCache = bot.cache
-        #TODO: quiz commands :-)
+        # TODO: quiz commands :-)

@@ -89,20 +89,20 @@ class QuizProblem(BaseProblem):
     """A class that represents a Quiz Math Problem"""
 
     def __init__(
-            self,
-            question,
-            answer,
-            id,
-            author,
-            guild_id=None,
-            voters=None,
-            solvers=None,
-            cache=None,
-            answers=None,
-            is_written=False,
-            quiz_id=None,
-            max_score=-1,
-            quiz=None,
+        self,
+        question,
+        answer,
+        id,
+        author,
+        guild_id=None,
+        voters=None,
+        solvers=None,
+        cache=None,
+        answers=None,
+        is_written=False,
+        quiz_id=None,
+        max_score=-1,
+        quiz=None,
     ):
         """A method that allows the creation of new QuizMathProblems"""
         if not isinstance(quiz, Quiz):
@@ -136,18 +136,18 @@ class QuizProblem(BaseProblem):
             return self.cache.get_quiz(self.quiz_id)
 
     def edit(
-            self,
-            question=None,
-            answer=None,
-            id=None,
-            guild_id=None,
-            voters=None,
-            solvers=None,
-            author=None,
-            answers=None,
-            is_written=None,
-            quiz=None,
-            max_score: int = -1,
+        self,
+        question=None,
+        answer=None,
+        id=None,
+        guild_id=None,
+        voters=None,
+        solvers=None,
+        author=None,
+        answers=None,
+        is_written=None,
+        quiz=None,
+        max_score: int = -1,
     ):
         """Edit a problem!"""
         super().edit(question, answer, id, guild_id, voters, solvers, author, answers)
@@ -175,7 +175,7 @@ class QuizProblem(BaseProblem):
             "max_score": self.max_score,
         }
         if show_answer:
-            d['answer'] = self.answers
+            d["answer"] = self.answers
         return d
 
     @classmethod
@@ -214,11 +214,11 @@ class Quiz(list):
     but it has an additional attribute submissions which is a list of QuizSubmissions"""
 
     def __init__(
-            self,
-            id: int,
-            quiz_problems: List[QuizProblem],
-            submissions: List[QuizSubmission] = None,
-            cache=None,
+        self,
+        id: int,
+        quiz_problems: List[QuizProblem],
+        submissions: List[QuizSubmission] = None,
+        cache=None,
     ) -> None:
         """Create a new quiz. id is the quiz id and iter is an iterable of QuizMathProblems"""
         if not submissions:
@@ -255,7 +255,7 @@ class Quiz(list):
 
         for s in _dict["submissions"]:
             submissions.append(QuizSubmission.from_dict(s))
-        c = cls(quiz_problems=problems_as_type, id=_dict['id'])
+        c = cls(quiz_problems=problems_as_type, id=_dict["id"])
         c._submissions = submissions
         c._id = _dict["id"]
         return c

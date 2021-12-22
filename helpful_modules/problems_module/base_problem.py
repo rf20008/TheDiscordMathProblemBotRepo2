@@ -13,16 +13,16 @@ class BaseProblem:
     """For readability purposes :) This also isn't an ABC."""
 
     def __init__(
-            self,
-            question: str,
-            id: int,
-            author: int,
-            answer: str = None,
-            guild_id: typing.Optional[int] = None,
-            voters: list = None,
-            solvers: list = None,
-            cache=None,
-            answers: list = None,
+        self,
+        question: str,
+        id: int,
+        author: int,
+        answer: str = None,
+        guild_id: typing.Optional[int] = None,
+        voters: list = None,
+        solvers: list = None,
+        cache=None,
+        answers: list = None,
     ):
         if voters is None:
             voters = []
@@ -36,7 +36,9 @@ class BaseProblem:
             raise TypeError("id is not an integer")
         if not isinstance(question, str):
             raise TypeError("question is not a string")
-        if not isinstance(answer, str) and answer is not None:  # answer is None because of answers
+        if (
+            not isinstance(answer, str) and answer is not None
+        ):  # answer is None because of answers
             raise TypeError("answer is not a string")
         if not isinstance(author, int):
             raise TypeError("author is not an integer")
@@ -71,15 +73,15 @@ class BaseProblem:
         self.answers = answers
 
     async def edit(
-            self,
-            question: str = None,
-            answer: str = None,
-            id: int = None,
-            guild_id: int = None,
-            voters: typing.Optional[typing.List[str]] = None,
-            solvers: typing.Optional[typing.List[str]] = None,
-            author: typing.Optional[int] = None,
-            answers: typing.Optional[typing.Union[int, str, bool]] = None,
+        self,
+        question: str = None,
+        answer: str = None,
+        id: int = None,
+        guild_id: int = None,
+        voters: typing.Optional[typing.List[str]] = None,
+        solvers: typing.Optional[typing.List[str]] = None,
+        author: typing.Optional[int] = None,
+        answers: typing.Optional[typing.Union[int, str, bool]] = None,
     ) -> None:
         """Edit a problem. The edit is in place."""
         if answers is not None and not isinstance(answers, list):
@@ -106,11 +108,11 @@ class BaseProblem:
         if not isinstance(solvers, list) and solvers is not None:
             raise TypeError("solvers is not a list")
         if (
-                id is not None
-                or guild_id is not None
-                or voters is not None
-                or solvers is not None
-                or author is not None
+            id is not None
+            or guild_id is not None
+            or voters is not None
+            or solvers is not None
+            or author is not None
         ):
             warnings.warn(
                 "You are changing one of the attributes that you should not be changing.",
@@ -118,8 +120,8 @@ class BaseProblem:
             )
         if question is not None:
             if (
-                    self._cache is not None
-                    and len(question) > self._cache.max_question_length
+                self._cache is not None
+                and len(question) > self._cache.max_question_length
             ) or (len(question) > 250 and self._cache is None):
                 if self._cache is not None:
                     raise TooLongQuestion(
@@ -130,9 +132,14 @@ class BaseProblem:
                         f"Your question is {len(question) - 250} characters too long. Questions may be up to 250 characters long."
                     )
             self.question = question
-        if answer is not None and (
-                self._cache is not None and len(answer) > self._cache.max_question_length
-        ) or (len(answer) > 100 and self._cache is None):
+        if (
+            answer is not None
+            and (
+                self._cache is not None
+                and len(answer) > self._cache.max_question_length
+            )
+            or (len(answer) > 100 and self._cache is None)
+        ):
             if self._cache is not None:
                 raise TooLongAnswer(
                     f"Your answer is {len(question) - self._cache.max_answer_length} characters too long. Answers may be up to {self._cache.max_answer_length} characters long."
@@ -178,9 +185,7 @@ class BaseProblem:
     def from_row(cls, row: dict, cache=None):
         """Convert a dictionary-ified row into a MathProblem"""
         if not isinstance(row, dict):
-            raise TypeError(
-                "The problem has not been dictionary-ified"
-            )
+            raise TypeError("The problem has not been dictionary-ified")
 
         try:
             answers = pickle.loads(
@@ -190,14 +195,14 @@ class BaseProblem:
             solvers = pickle.loads(row["voters"])
             _Row = {
                 "guild_id": row["guild_id"],  # Could be None
-                "problem_id": row['problem_id'],
+                "problem_id": row["problem_id"],
                 "answer": Exception,  # Placeholder,
                 "answers": answers,
                 "voters": voters,
                 "solvers": solvers,
                 "author": row["author"],
-                "question": row['question'],
-                'id': row['problem_id']
+                "question": row["question"],
+                "id": row["problem_id"],
             }
             return cls.from_dict(_Row, cache=cache)
         except BaseException as e:
@@ -212,11 +217,11 @@ class BaseProblem:
     def from_dict(cls, _dict: dict, cache=None):
         """Convert a dictionary to a math problem. cache must be a valid MathProblemCache"""
         assert isinstance(_dict, dict)
-        assert _dict['guild_id'] is None or isinstance(_dict['guild_id'], int)
+        assert _dict["guild_id"] is None or isinstance(_dict["guild_id"], int)
         problem = _dict
         guild_id = problem["guild_id"]
         if (
-                guild_id is None
+            guild_id is None
         ):  # Remove the guild_id null (used for global problems), which is not used any more because of conflicts with sql.
             problem = cls(
                 question=problem["question"],
@@ -263,7 +268,7 @@ class BaseProblem:
     def add_voter(self, voter: typing.Union[disnake.User, disnake.Member]):
         """Adds a voter. Voter must be a disnake.User object or disnake.Member object."""
         if not isinstance(voter, disnake.User) and not isinstance(
-                voter, disnake.Member
+            voter, disnake.Member
         ):
             raise TypeError("User is not a User object")
         if not self.is_voter(voter):
@@ -273,7 +278,7 @@ class BaseProblem:
     def add_solver(self, solver: typing.Union[disnake.User, disnake.Member]):
         """Adds a solver. Solver must be a disnake.User object or disnake.Member object."""
         if not isinstance(solver, disnake.User) and not isinstance(
-                solver, disnake.Member
+            solver, disnake.Member
         ):
             raise TypeError("Solver is not a User object")
         if not self.is_solver(solver):
@@ -295,7 +300,7 @@ class BaseProblem:
     def check_answer_and_add_checker(self, answer, potential_solver):
         """Checks the answer. If it's correct, it adds potentialSolver to the solvers."""
         if not isinstance(potential_solver, disnake.User) and not isinstance(
-                potential_solver, disnake.Member
+            potential_solver, disnake.Member
         ):
             raise TypeError("potentialSolver is not a User object")
         if self.check_answer(answer):
@@ -358,7 +363,7 @@ class BaseProblem:
         answers = {self.answers}, id = {self.id}, guild_id={self.guild_id},
         voters={self.voters},solvers={self.solvers},author={self.author},cache={None})"""  # If I stored the problems, then there would be an infinite loop
 
-    def __str__(self, include_answer: bool =False) -> str:
+    def __str__(self, include_answer: bool = False) -> str:
         _str = f"""Question: '{self.question}', 
         id: {self.id}, 
         guild_id: {self.guild_id}, 
@@ -380,6 +385,5 @@ class BaseProblem:
             author=deepcopy(self.author),
             id=deepcopy(self.id),
             guild_id=deepcopy(self.guild_id),
-            cache = self._cache
-
+            cache=self._cache,
         )

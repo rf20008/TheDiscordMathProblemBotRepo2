@@ -7,6 +7,7 @@
 import asyncio
 import threading
 import warnings
+import typing
 from asyncio import sleep as asyncio_sleep
 from copy import copy
 from sys import exc_info, stdout
@@ -27,7 +28,7 @@ from helpful_modules.threads_or_useful_funcs import *
 # Imports - 3rd party
 
 if (
-        not __debug__
+    not __debug__
 ):  # __debug__ must be true for the bot to run (because assert statements)
     exit("__debug__ must be True for the bot to run! (Don't run with -o or -OO)")
 del exit
@@ -71,6 +72,8 @@ def the_daemon_file_saver():
         )
 
 
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
 warnings.simplefilter("default")  # unnecessary, probably will be removed
 # constants
 
@@ -118,13 +121,13 @@ def get_git_revision_hash() -> str:
     """A method that gets the git revision hash. Credit to https://stackoverflow.com/a/21901260 for the code :-)"""
     return (
         subprocess.check_output(["git", "rev-parse", "HEAD"])
-            .decode("ascii")
-            .strip()[:7]
+        .decode("ascii")
+        .strip()[:7]
     )  # [7:] is here because of the commit hash, the rest of this function is from stack overflow
 
 
 # @bot.event
-async def on_ready(Bot):
+async def on_ready(bot: TheDiscordMathProblemBot):
     """Ran when the disnake library detects that the bot is ready"""
     print("The bot is now ready!")
 
@@ -141,7 +144,8 @@ bot = TheDiscordMathProblemBot(
     constants=bot_constants,
     trusted_users=copy(trusted_users),
     tasks={},
-    on_ready_func=on_ready
+    on_ready_func=on_ready,
+    loop=loop
     # activity = nextcord.CustomActivity(name="Making sure that the bot works!", emoji = "🙂") # This didn't work anyway, will set the activity in on_connect
 )
 # TODO: move bot events + initializing to custom_bot.py
@@ -193,7 +197,6 @@ async def on_connect():
     print("The bot has connected to Discord successfully.")
     await asyncio_sleep(0.5)
     await bot.change_presence(
-        
         status=disnake.Status.idle,
     )
     bot.log.debug(
@@ -203,12 +206,12 @@ async def on_connect():
         guild.id for guild in bot.guilds
     ]  # The guild_ids of the guilds that the bot is in
     for (
-            guild_id
+        guild_id
     ) in (
-            await bot.cache.get_guilds()
+        await bot.cache.get_guilds()
     ):  # Obtain all guilds the cache stores data (will need to be upgraded.)
         if guild_id not in bot_guild_ids:  # It's not in!
-            if guild_id is None: # Don't delete global problems
+            if guild_id is None:  # Don't delete global problems
                 continue
             bot.log.debug("The bot is deleting data from a guild it has left.")
             await bot.cache.delete_all_by_guild_id(guild_id)  # Delete the data
