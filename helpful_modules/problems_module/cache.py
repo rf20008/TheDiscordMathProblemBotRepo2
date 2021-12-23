@@ -173,10 +173,11 @@ class MathProblemCache:
                 connection.commit()
 
     async def get_user_data(self, user_id: int,
-                            default: typing.Optional[UserData] = UserData(user_id=user_id, trusted=False,
-                                                                          blacklisted=False)):
+                            default: typing.Optional[UserData] = None):
         assert isinstance(user_id, int)
         assert isinstance(default, UserData) or default is None
+        if default is None:
+            default = UserData(user_id=user_id, trusted=False, blacklisted=False)
         if self.use_sqlite:
             async with aiosqlite.connect(self.db) as conn:
                 conn.row_factory = dict_factory

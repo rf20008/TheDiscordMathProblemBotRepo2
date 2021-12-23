@@ -614,7 +614,31 @@ class MiscCommandsCog(HelperCog):
         await channel.send(embed=embed, content=content)
         await inter.send("Your request has been submitted!")
 
-    @commands.cooldown(1, 1, commands.BucketType.user)
+    @commands.cooldown(1, 1,commands.BucketType.user)
+    @commands.slash_command(
+        name="documentation",
+        description="Returns help!",
+        options=[
+                Option(
+                    name="documentation_type",
+                    description="What kind of help you want",
+                    choices=[
+                        OptionChoice(name="documentation_link", value="documentation_link"),
+                        OptionChoice(name="command_help", value="command_help"),
+                        OptionChoice(name="function_help", value="function_help"),
+                        OptionChoice(name="privacy_policy", value="privacy_policy"),
+                        OptionChoice(name="terms_of_service", value="terms_of_service"),
+                    ],
+                    required=True,
+                ),
+                Option(
+                    name="help_obj",
+                    description="What you want help on",
+                    required=False,
+                    type=OptionType.string,
+                ),
+        ],
+    )
     async def documentation(
             self,
             inter: disnake.ApplicationCommandInteraction,

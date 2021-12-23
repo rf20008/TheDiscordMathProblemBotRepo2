@@ -159,32 +159,7 @@ class DeveloperCommands(HelperCog):
         )
         raise error
 
-    @commands.cooldown(1, 0.1)
-    @commands.slash_command(
-        name="documentation",
-        description="Returns help!",
-        options=[
-            Option(
-                name="documentation_type",
-                description="What kind of help you want",
-                choices=[
-                    OptionChoice(name="documentation_link", value="documentation_link"),
-                    OptionChoice(name="command_help", value="command_help"),
-                    OptionChoice(name="function_help", value="function_help"),
-                    OptionChoice(name="privacy_policy", value="privacy_policy"),
-                    OptionChoice(name="terms_of_service", value="terms_of_service"),
-                ],
-                required=True,
-            ),
-            Option(
-                name="help_obj",
-                description="What you want help on",
-                required=False,
-                type=OptionType.string,
-            ),
-        ],
-    )
-    @commands.cooldown(1, 5, commands.BucketType.user)
+
     @commands.slash_command(
         name="debug",
         description="Helpful for debugging :-)",
@@ -203,6 +178,7 @@ class DeveloperCommands(HelperCog):
             ),
         ],
     )
+
     async def debug(
         self,
         inter: disnake.ApplicationCommandInteraction,
