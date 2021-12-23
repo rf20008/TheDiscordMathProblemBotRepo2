@@ -14,7 +14,7 @@ class UserData:
         self.trusted=trusted
         self.blacklisted=blacklisted
     @classmethod
-    def from_dict(cls, dict: dict) -> UserData:
+    def from_dict(cls, dict: dict) -> "UserData":
         "Get UserData from a dictionary"
         return cls(
             user_id = dict['user_id'],
