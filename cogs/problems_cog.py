@@ -1,15 +1,15 @@
+import disnake
 import threading
 import typing
 from asyncio import run
-
-import disnake
 from disnake import *
 from disnake.ext import commands
-
 from helpful_modules import checks, cooldowns, problems_module
+from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.custom_embeds import SimpleEmbed, SuccessEmbed, ErrorEmbed
 from helpful_modules.problems_module import *
 from helpful_modules.threads_or_useful_funcs import generate_new_id
+
 from .helper_cog import HelperCog
 
 
@@ -17,7 +17,7 @@ from .helper_cog import HelperCog
 
 
 class ProblemsCog(HelperCog):
-    def __init__(self, bot):
+    def __init__(self, bot: TheDiscordMathProblemBot):
         self.bot = bot
         self.cache = bot.cache
         super().__init__(bot)
@@ -944,9 +944,9 @@ NumSolvers: {len(problem.get_solvers())}"""
         )
 
 
-def setup(bot):
+def setup(bot: disnake.ext.commands.Bot):
     bot.add_cog(ProblemsCog(bot))
 
 
-def teardown(bot):
+def teardown(bot: disnake.ext.commands.Bot):
     bot.remove_cog(ProblemsCog)

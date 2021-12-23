@@ -1,12 +1,12 @@
 [![Number of source lines of code](https://img.shields.io/tokei/lines/github/rf20008/TheDiscordMathProblemBotRepo)](https://img.shields.io)
 
 # If you run into issues
-If you run into any issues create an issue or DM me (ay136416#2707)). 
+If you run into any issues create an issue or DM me (ay136416#2707). 
 
 # Announcements
 
 <ol>
-<li> CC-BY-SA 4.0 is no longer a valid license to use this bot under! You **must** license the bot under GPLv3 (or a later verson.)
+<li> CC-BY-SA 4.0 is no longer a valid license to use this bot under! You **must** license the bot under GPLv3 (or a later version.)
 (CC-BY-SA 4.0 has a one way migration to GPLv3, so you are allowed to do this. </li>
 <li> **Everything (even things that do not explicitly say they are licensed under GPLv3) in this repository except for things that are ignored in .gitignored are licensed under GPLv3. This includes every python file.** </li>
 </ol>
@@ -25,13 +25,13 @@ A few guidelines:
 6) No syntax errors, please! <br>
 7) You should lint your code. (this uses [python-black](https://pypi.org/project/black/)) <br>
 8) Follow common sense <br>
-9) Make sure to follow GPLv3! (You'll need to include the link to the modified version of my code and make it somehow __***easily***__ accessible through the bot (or if you're just fixing a bug the 'forked from' label should be enough attribution), state signifigant changes made to the software, include the license (which is already done for you, don't modify LICENSE. Treat it as read-only.) You must state if )
+9) Make sure to follow GPLv3! (You'll need to include the link to the modified version of my code and make it somehow __***easily***__ accessible through the bot (or if you're just fixing a bug the 'forked from' label should be enough attribution), state significant changes made to the software, include the license (which is already done for you, don't modify LICENSE. Treat it as read-only.) You must state if )
 # If you run into issues
 If you run into any issues create an issue or DM me (ay136416#2707)). 
 
 # Contribute to this project!
 
-Open a pull request or issue and I will be sure to look at it.
+Open a pull request or issue! I will be sure to look at it.
 
 # If you see an error
 
@@ -41,7 +41,7 @@ As soon as you see them, contact me as soon as possible!
 
 Recommended invite: https://discord.com/oauth2/authorize?client_id=845751152901750824&scope=bot+applications.commands&permissions=2147535872
 
-(However, the bot is in a alpha phase. I do not make any guarantees that it will work right now)
+(However, the bot is in an alpha phase. I do not make any guarantees that it will work right now)
 
 # Documentation
 
@@ -80,7 +80,7 @@ No privileged intents are required (the bot has been designed to not require pri
 8. Create a .env file inside the repository folder. Inside it, you need to put 
 Make sure to add the env keys listed below.
 9. Run the main.py file (```poetry install; pip3 install -r requirements.txt; python3 main.py```) Don't use the -O / -OO option (assert statements are necessary to run the bot, and they only run if \_\_debug\_\_ is true, which is not the case if the -O option is selected)
-10. Invite the bot bot (use the invite link, but replace the client_id field with your bot's client id)
+10. Invite the bot  (use the invite link, but replace the client_id field with your bot's client id)
 ## Update the bot with my changes
 
 1. Run ``cd path/to/your/repo/``
@@ -100,7 +100,7 @@ mysql_db_ip: The IP/webserver of the MySQL database
 mysql_db_username: Your username to the MySQL database
 mysql_db_pass: Your password to the MySQL database
 mysql_db_name: Your MySQL database name
-source_code_link: link to the place that contains the bot's source code (if modified)! This must be public and have the actual source code (and filling it out __should__ fufill the Disclose source requirement of GPLv3, if it is valid). However, unless I am sued or legally obligated to check if it's valid, I won't check.
+source_code_link: link to the place that contains the bot's source code. This must be public and have the actual source code (and filling it out __should__ fulfill the Disclose source requirement of GPLv3, if it is valid). However, unless I am sued or legally obligated to check if it's valid, I won't check.
 
 
 ## Attribution / Contributors
@@ -110,5 +110,4 @@ GPLv3 simplified: https://tldrlegal.com/license/gnu-general-public-license-v3-(g
 @duck-master helped me revise the privacy policy. Thanks so much!
 (get_git_revision_hash)[https://stackoverflow.com/a/21901260]
 Disabling buttons: https://stackoverflow.com/questions/68842747/how-to-disable-button-once-it-is-clicked-in-discord-js-13 & help from @umairshasheen78 (through Discord)
-
-
+MySQL placeholders: https://stackoverflow.com/questions/2527941/python-mysqldb-placeholders-syntax#2527950

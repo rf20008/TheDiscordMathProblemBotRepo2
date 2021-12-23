@@ -2,23 +2,22 @@ import json
 import typing
 from asyncio import sleep as asyncio_sleep
 from copy import copy
+from disnake import *
+from disnake.ext import commands
+from helpful_modules import checks
+from helpful_modules import cooldowns
+from helpful_modules import problems_module
+from helpful_modules.custom_bot import TheDiscordMathProblemBot
+from helpful_modules.custom_buttons import *
+from helpful_modules.custom_embeds import SimpleEmbed
+from helpful_modules.save_files import FileSaver
+from helpful_modules.threads_or_useful_funcs import get_git_revision_hash
 from io import BytesIO  # For file submitting!
 from os import cpu_count
 from sys import version_info, version
 from time import asctime
 from typing import Union
 
-from disnake import *
-from disnake.ext import commands
-
-from helpful_modules import checks
-from helpful_modules import cooldowns
-from helpful_modules import problems_module
-from helpful_modules.custom_buttons import *
-from helpful_modules.custom_embeds import SimpleEmbed
-from helpful_modules.save_files import FileSaver
-from helpful_modules.custom_bot import TheDiscordMathProblemBot
-from helpful_modules.threads_or_useful_funcs import get_git_revision_hash
 from .helper_cog import HelperCog
 
 

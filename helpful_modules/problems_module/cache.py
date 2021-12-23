@@ -11,6 +11,7 @@ import aiosqlite
 import disnake
 
 from helpful_modules.dict_factory import dict_factory
+from .user_data import UserData
 from .base_problem import BaseProblem
 from .errors import *
 from .mysql_connector_with_stmt import *
@@ -114,7 +115,12 @@ class MathProblemCache:
                     )"""
                 )  # as dictionary
                 # Used to store submissions!
-
+                await cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS user_data (
+                    USER_ID INT,
+                    trusted INT NOT NULL,
+                    blacklisted INT NOT NULL)""" # will use bool(val) because SQLite doesn't support booleans
+                )
                 await conn.commit()  # Otherwise, when this closes, the database just reverted!
         else:
             with mysql_connection(
@@ -157,6 +163,125 @@ class MathProblemCache:
                     )"""
                 )  # as dictionary
                 # Used to store submissions
+                cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS user_data (
+                    user_id INT,
+                    trusted BOOLEAN DEFAULT false,
+                    blacklisted BOOLEAN DEFAULT false
+                    )"""
+                )
+                connection.commit()
+
+    async def get_user_data(self, user_id: int, default: typing.Optional[UserData] = UserData(user_id=user_id,trusted=False,blacklisted=False)):
+        assert isinstance(user_id, int)
+        assert isinstance(default, UserData) or default is None
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db) as conn:
+                conn.row_factory=dict_factory
+                cursor = await conn.cursor()
+                await cursor.execute("SELECT * FROM user_data WHERE user_id = ?", (user_id,))
+                cursor_results = list(await cursor.fetchall())
+                if len(cursor_results) == 0:
+                    return default
+                elif len(cursor_results == 1):
+                    dict_to_use = cursor_results[0]
+                    dict_to_use['trusted'] = bool(dict_to_use['trusted'])
+                    dict_to_use['blacklisted'] = boolean(dict_to_use['blacklisted'])
+                    return UserData.from_dict(dict_to_use)
+                else:
+                    raise TooMuchUserDataException(f"Too much user data; found {len(cursor_results)} results; expected either 1 or 0")
+        else:
+            with mysql_connection(
+                    host=self.mysql_db_ip,
+                    password=self.mysql_password,
+                    user=self.mysql_username,
+                    database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
+                    'SELECT * FROM user_data WHERE USER_ID=%i', (user_id,) #TODO: fix placeholders
+                )
+                results = list(cursor.fetchall())
+                if len(results) == 0:
+                    return default
+                elif len(results) == 1:
+                    return UserData.from_dict(
+                        results[0]
+                    )
+                else:
+                    raise TooMuchUserDataException(f"Too much user data; found {len(results)} results; expected either 1 or 0")
+
+    async def set_user_data(self, user_id: int, new: UserData) -> None:
+      """Set the user_data of a user."""
+       assert isinstance(user_id,int)
+       assert isinstance(new, UserData)
+       if (await self.get_user_data(user_id=user_id,default=None)) is not None:
+           raise MathProblemsModuleException("User data does not exist! Use add_user_data instead")
+       if self.use_sqlite:
+           async with aiosqlite.connect(self.db) as conn:
+               conn.row_factory=dict_factory
+               blacklisted_int = int(new.blacklisted)
+               trusted_int = int(new.trusted)
+               cursor = await conn.cursor()
+               await cursor.execute("""UPDATE user_data 
+               SET user_id=?, blacklisted=?, trusted=?
+               WHERE user_id=?;""", (user_id, blacklisted_int, trusted_int, user_id))
+               await conn.commit()
+       else:
+           with mysql_connection(
+                   host=self.mysql_db_ip,
+                   password=self.mysql_password,
+                   user=self.mysql_username,
+                   database=self.mysql_db_name,
+           ) as connection:
+               cursor = connection.cursor(dictionaries=True)
+               cursor.execute(
+                   """UPDATE user_id
+                   SET user_id = %s, trusted=%s, blacklisted=%s
+                   WHERE user_id = %s""", (user_id, new.trusted, new.blacklisted, user_id)
+               )
+               connection.commit()
+               return
+
+    async def add_user_data(user_id: int, thing_to_add: UserData) -> None:
+        assert isinstance(user_id, int)
+        assert isinstance(thing_to_add, UserData)
+        if (await self.get_user_data(user_id, default=None)) is not None:
+            raise MathProblemsModuleException("User data already exists") #Make sure the user data doesn't already exist
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db) as conn:
+                cursor = await conn.cursor()
+                await cursor.execute("""INSERT INTO user_data (user_id, trusted, blacklisted)
+                VALUES (?,?,?)""", (user_id, thing_to_add.trusted, thing_to_add.blacklisted)) #add the user data
+                await conn.commit()
+        else:
+            with mysql_connection(
+                    host=self.mysql_db_ip,
+                    password=self.mysql_password,
+                    user=self.mysql_username,
+                    database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute("""INSERT INTO user_data (user_id, trusted, blacklisted)
+                VALUES (%s, %s, %s)""", (user_id, thing_to_add.trusted, thing_to_add.blacklisted))
+                connection.commit()
+    async def del_user_data(user_id: int):
+        """Delete user data given the user id"""
+        assert isinstance(user_id, int)
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db) as conn:
+                cursor = await conn.cursor()
+                await cursor.execute("DELETE FROM user_data WHERE user_id = ?", (user_id,))
+                await conn.commit()
+        else:
+            with mysql_connection(
+                    host=self.mysql_db_ip,
+                    password=self.mysql_password,
+                    user=self.mysql_username,
+                    database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute("DELETE FROM user_data WHERE user_id = %s", (user_id,))
 
     @property
     def max_answer_length(self):
@@ -180,7 +305,6 @@ class MathProblemCache:
             for Problem in self.guild_problems[guild_id]:
                 e[guild_id][Problem.id] = Problem.to_dict()
         return e
-
     def convert_dict_to_math_problem(self, problem: dict, use_from_dict: bool = True):
         """Convert a dictionary into a math problem. It must be in the expected format. (Overridden by from_dict, but still used) Possibly not used due to SQL."""
         if use_from_dict:
@@ -440,7 +564,7 @@ class MathProblemCache:
                 ) as connection:
                     cursor = connection.cursor(dictionaries=True)
                     cursor.execute(
-                        "SELECT * from problems WHERE guild_id = %i AND problem_id = %i"
+                        "SELECT * from problems WHERE guild_id = %s AND problem_id = %s"
                     )  # Get the problem
                     rows = cursor.fetchall()
                     if len(rows) == 0:
