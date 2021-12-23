@@ -184,106 +184,6 @@ class DeveloperCommands(HelperCog):
             ),
         ],
     )
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def documentation(
-        self,
-        inter: disnake.ApplicationCommandInteraction,
-        documentation_type: typing.Literal[
-            "documentation_link",
-            "command_help",
-            "function_help",
-            "privacy_policy",
-            "terms_of_service",
-        ],
-        help_obj: str = None,
-    ) -> typing.Optional[disnake.Message]:
-        """/documentation {documentation_type: str|documentation_link|command_help|function_help} {help_obj}
-
-        Prints documentation :-). If the documentation is a command, it attempts to get its docstring.
-        Otherwise, it gets the cached documentation.
-        help_obj will be ignored if documentation_type is privacy_policy or documentation_link.
-        Legend (for other documentation)
-        /command_name: the command
-        {argument_name: type |choice1|choice2|...} (for a required argument with choices of the given type, and the available choices are choice1, choice 2, etc)
-        {argument_name: type |choice1|choice2|... = default} (an optional argument that defaults to default if not specified. Arguments must be a choice specified(from choice 1 etc.) and must be of the type specified.)
-        [argument_name: type = default] (an argument with choices of the given type, and defaults to default if not specified. Strings are represented without quotation marks.)
-        (argument_name: type) A required argument of the given type"""
-        if help_obj is None and documentation_type in ["command_help", "function_help"]:
-            return await inter.send(
-                embed=ErrorEmbed(
-                    "I can't help you with a command or function unless you tell me what you want help on!"
-                )
-            )
-        if documentation_type == "documentation_link":
-            await inter.send(
-                embed=SuccessEmbed(
-                    f"""<@{inter.author.id}> [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
-        """
-                ),
-                ephemeral=True,
-            )
-            return None
-        if documentation_type == "command_help":
-            try:
-                command = self.bot.get_slash_command(help_obj)  # Get the command
-                if command is None:  # command not found
-                    return await inter.send(
-                        embed=ErrorEmbed(
-                            custom_title="I couldn't find your command!",
-                            description=":x: Could not find the command specified. ",
-                        )
-                    )
-                command_docstring = command.func.__doc__
-                if command_docstring is None:
-                    return await inter.send(
-                        "Oh no! This command does not have documentation! Please report this bug."
-                    )
-                return await inter.send(
-                    embed=SuccessEmbed(description=str(command_docstring))
-                )
-            except AttributeError as exc:
-                # My experiment failed
-                raise Exception("uh oh...") from exc  # My experiment failed!
-        elif documentation_type == "function_help":
-            documentation_loader = (
-                the_documentation_file_loader.DocumentationFileLoader()
-            )
-            try:
-                _documentation = documentation_loader.get_documentation(
-                    {
-                        "function_help": "docs/misc-non-commands-documentation.md",
-                    }[documentation_type],
-                    help_obj,
-                )
-            except the_documentation_file_loader.DocumentationNotFound as e:
-                if isinstance(
-                    e, the_documentation_file_loader.DocumentationFileNotFound
-                ):
-                    await inter.send(
-                        embed=ErrorEmbed(
-                            "Documentation file was not found. Please report this error!"
-                        )
-                    )
-                    return None
-                await inter.send(embed=ErrorEmbed(str(e)))
-                return None
-            await inter.send(_documentation)
-        elif documentation_type == "privacy_policy":
-            with open("PRIVACY_POLICY.md") as file:
-                await inter.send(
-                    embed=SuccessEmbed("".join([str(line) for line in file]))
-                )  # Concatenate the lines in the file and send them
-            return
-        elif documentation_type == "terms_of_service":
-            with open("TERMS_AND_CONDITIONS.md") as file:
-                await inter.send(
-                    embed=SuccessEmbed("".join([line for line in file]))
-                )  # Concatenate the lines in the file + send them
-        else:
-            raise NotImplementedError(
-                "This hasn't been implemented yet. Please contribute something!"
-            )
-
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.slash_command(
         name="debug",
@@ -476,6 +376,7 @@ class DeveloperCommands(HelperCog):
         ],
     )
     @checks.trusted_users_only()
+    @checks.is_not_blacklisted()
     @commands.cooldown(1, 600, commands.BucketType.user)
     async def add_trusted_user(
         self,
@@ -486,12 +387,21 @@ class DeveloperCommands(HelperCog):
         This slash commands adds a trusted user!
         You must be a trusted user to add a trusted user, and the user you are trying to make a trusted user must not be a trusted user.
         You must also share a server with the new trusted user."""
-        if inter.author.id not in self.bot.trusted_users:
-            await inter.send(
-                embed=ErrorEmbed("You aren't a trusted user!"), ephemeral=True
+        user_data = await self.bot.cache.get_user_data(
+            user_id=user.id,
+            default = problems_module.UserData(
+                user_id=user.id,
+                trusted=False,
+                blacklisted=False
             )
-            return
-        if user.id in self.bot.trusted_users:
+        )
+
+        #if inter.author.id not in self.bot.trusted_users: # Should work
+        #    await inter.send(
+        #        embed=ErrorEmbed("You aren't a trusted user!"), ephemeral=True
+        #    )
+        #    return
+        if user_data.trusted:
             await inter.send(
                 embed=ErrorEmbed(f"{user.name} is already a trusted user!"),
                 ephemeral=True,

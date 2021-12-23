@@ -186,7 +186,7 @@ bot.add_cog(MiscCommandsCog(bot))
 bot.add_cog(TestCog(bot))
 bot.CONSTANTS = bot_constants
 print("Bots successfully created.")
-
+bot.add_check(checks.is_not_blacklisted())
 
 # Events
 

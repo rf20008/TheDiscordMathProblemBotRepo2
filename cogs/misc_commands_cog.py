@@ -42,9 +42,9 @@ class MiscCommandsCog(HelperCog):
     )
     @commands.cooldown(1, 15, commands.BucketType.user)
     async def info(
-        self,
-        inter: disnake.ApplicationCommandInteraction,
-        include_extra_info: bool = False,
+            self,
+            inter: disnake.ApplicationCommandInteraction,
+            include_extra_info: bool = False,
     ):
         """/info [include_extra_info: bool = False]
         Show bot info. include_extra_info shows technical information!"""
@@ -146,8 +146,8 @@ class MiscCommandsCog(HelperCog):
                         "Could not save the files after removing the trusted user with ID that does not exist!"
                     ) from e
             except (
-                disnake.Forbidden,
-                disnake.Forbidden,
+                    disnake.Forbidden,
+                    disnake.Forbidden,
             ) as exc:  # Cannot fetch this user!
                 raise RuntimeError("Cannot fetch users") from exc
             else:
@@ -175,7 +175,7 @@ class MiscCommandsCog(HelperCog):
         description="Prints the vote threshold and takes no arguments",
     )
     async def what_is_vote_threshold(
-        self, inter: disnake.ApplicationCommandInteraction
+            self, inter: disnake.ApplicationCommandInteraction
     ):
         """Returns the vote threshold. Takes no arguments."""
         await cooldowns.check_for_cooldown(inter, "what_is_vote_threshold", 5)
@@ -247,7 +247,7 @@ class MiscCommandsCog(HelperCog):
         15, 500, commands.BucketType.default
     )  # To prevent wars! If you want your own version, self host it :-)
     async def set_vote_threshold(
-        self, inter: disnake.ApplicationCommandInteraction, threshold: int
+            self, inter: disnake.ApplicationCommandInteraction, threshold: int
     ):
         """/set_vote_threshold [threshold: int]
         Set the vote threshold. Only trusted users may do this.
@@ -315,11 +315,11 @@ class MiscCommandsCog(HelperCog):
         ],
     )
     async def delete_all(
-        self: "MiscCommandsCog",
-        inter: disnake.ApplicationCommandInteraction,
-        save_data_before_deletion: bool = True,
-        delete_votes=False,
-        delete_solves=False,
+            self: "MiscCommandsCog",
+            inter: disnake.ApplicationCommandInteraction,
+            save_data_before_deletion: bool = True,
+            delete_votes=False,
+            delete_solves=False,
     ):
         """/user_data delete_all [save_data_before_deletion: bool = True] [delete_votes: bool = False] [delete_solves: bool = False]
         Delete all your data. YOU MUST CONFIRM THIS!
@@ -334,9 +334,9 @@ class MiscCommandsCog(HelperCog):
             )  # Turn it into a dictionary
 
         async def confirm_callback(
-            Self: ConfirmationButton,
-            interaction: disnake.Interaction,
-            _extra_data: dict,
+                Self: ConfirmationButton,
+                interaction: disnake.Interaction,
+                _extra_data: dict,
         ):
             """The function that runs when the button gets pressed. This actually deletes the data.
             Time complexity: O(V*N+P+S*M)
@@ -382,7 +382,7 @@ class MiscCommandsCog(HelperCog):
             return
 
         async def deny_callback(
-            _self: BasicButton, interaction: disnake.MessageInteraction
+                _self: BasicButton, interaction: disnake.MessageInteraction
         ):
             """A function that runs when the deny button is pressed"""
             await interaction.response.reply(
@@ -422,7 +422,7 @@ class MiscCommandsCog(HelperCog):
         )
 
     async def _get_json_data_by_user(
-        self, author: Union[disnake.User, disnake.Member]
+            self, author: Union[disnake.User, disnake.Member]
     ) -> typing.Dict[str, typing.Any]:
         """A helper function to obtain a user's stored data and return a version of it that is a dictionary."""
         raw_data = await self.cache.get_all_by_author_id(author.id)
@@ -434,7 +434,7 @@ class MiscCommandsCog(HelperCog):
             func=lambda problem, user_id: user_id in problem.solvers, args=(author,)
         )
         is_trusted_user = (
-            author.id in self.bot.trusted_users
+                author.id in self.bot.trusted_users
         )  # TODO: replace when SQL is being used to store user status
         is_blacklisted = author.id in self.bot.blacklisted_users
 
@@ -552,24 +552,24 @@ class MiscCommandsCog(HelperCog):
         ],
     )
     async def submit_a_request(
-        self,
-        inter: disnake.ApplicationCommandInteraction,
-        offending_problem_guild_id: int = None,
-        offending_problem_id: int = None,
-        extra_info: str = None,
-        copyrighted_thing: str = Exception,
-        type: str = "",
+            self,
+            inter: disnake.ApplicationCommandInteraction,
+            offending_problem_guild_id: int = None,
+            offending_problem_id: int = None,
+            extra_info: str = None,
+            copyrighted_thing: str = Exception,
+            type: str = "",
     ):
         """/submit_a_request [offending_problem_guild_id: int = None] [offending_problem_id: int = None]
 
         Submit a request! I will know! It uses a channel in my discord server and posts an embed.
         I will probably deprecate this and replace it with emailing me."""
         if (
-            extra_info is None
-            and type == ""
-            and copyrighted_thing is not Exception
-            and offending_problem_guild_id is None
-            and offending_problem_id is None
+                extra_info is None
+                and type == ""
+                and copyrighted_thing is not Exception
+                and offending_problem_guild_id is None
+                and offending_problem_id is None
         ):
             await inter.send(embed=ErrorEmbed("You must specify some field."))
         if extra_info is None:
@@ -605,11 +605,207 @@ class MiscCommandsCog(HelperCog):
 
         content = "A request has been submitted."
         for (
-            owner_id
+                owner_id
         ) in (
-            self.bot.owner_ids
+                self.bot.owner_ids
         ):  # Mentioning owners: may be removed (you can also remove it as well)
             content += f"<@{owner_id}>"
         content += f"<@{self.bot.owner_id}>"
         await channel.send(embed=embed, content=content)
         await inter.send("Your request has been submitted!")
+
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def documentation(
+            self,
+            inter: disnake.ApplicationCommandInteraction,
+            documentation_type: typing.Literal[
+                "documentation_link",
+                "command_help",
+                "function_help",
+                "privacy_policy",
+                "terms_of_service",
+            ],
+            help_obj: str = None,
+    ) -> typing.Optional[disnake.Message]:
+        """/documentation {documentation_type: str|documentation_link|command_help|function_help} {help_obj}
+
+        Prints documentation :-). If the documentation is a command, it attempts to get its docstring.
+        Otherwise, it gets the cached documentation.
+        help_obj will be ignored if documentation_type is privacy_policy or documentation_link.
+        Legend (for other documentation)
+        /command_name: the command
+        {argument_name: type |choice1|choice2|...} (for a required argument with choices of the given type, and the available choices are choice1, choice 2, etc.)
+        {argument_name: type |choice1|choice2|... = default} (an optional argument that defaults to default if not specified. Arguments must be a choice specified(from choice 1 etc.) and must be of the type specified.)
+        [argument_name: type = default] (an argument with choices of the given type, and defaults to default if not specified. Strings are represented without quotation marks.)
+        (argument_name: type) A required argument of the given type"""
+        if help_obj is None and documentation_type in ["command_help", "function_help"]:
+            return await inter.send(
+                embed=ErrorEmbed(
+                    "I can't help you with a command or function unless you tell me what you want help on!"
+                )
+            )
+        if documentation_type == "documentation_link":
+            await inter.send(
+                embed=SuccessEmbed(
+                    f"""<@{inter.author.id}> [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
+        """
+                ),
+                ephemeral=True,
+            )
+            return None
+        if documentation_type == "command_help":
+            try:
+                command = self.bot.get_slash_command(help_obj)  # Get the command
+                if command is None:  # command not found
+                    return await inter.send(
+                        embed=ErrorEmbed(
+                            custom_title="I couldn't find your command!",
+                            description=":x: Could not find the command specified. ",
+                        )
+                    )
+                command_docstring = command.func.__doc__
+                if command_docstring is None:
+                    return await inter.send(
+                        "Oh no! This command does not have documentation! Please report this bug."
+                    )
+                return await inter.send(
+                    embed=SuccessEmbed(description=str(command_docstring))
+                )
+            except AttributeError as exc:
+                # My experiment failed
+                raise Exception("uh oh...") from exc  # My experiment failed!
+        elif documentation_type == "function_help":
+            documentation_loader = (
+                the_documentation_file_loader.DocumentationFileLoader()
+            )
+            try:
+                _documentation = documentation_loader.get_documentation(
+                    {
+                        "function_help": "docs/misc-non-commands-documentation.md",
+                    }[documentation_type],
+                    help_obj,
+                )
+            except the_documentation_file_loader.DocumentationNotFound as e:
+                if isinstance(
+                        e, the_documentation_file_loader.DocumentationFileNotFound
+                ):
+                    await inter.send(
+                        embed=ErrorEmbed(
+                            "Documentation file was not found. Please report this error!"
+                        )
+                    )
+                    return None
+                await inter.send(embed=ErrorEmbed(str(e)))
+                return None
+            await inter.send(_documentation)
+        elif documentation_type == "privacy_policy":
+            with open("PRIVACY_POLICY.md") as file:
+                await inter.send(
+                    embed=SuccessEmbed("".join([str(line) for line in file]))
+                )  # Concatenate the lines in the file and send them
+            return
+        elif documentation_type == "terms_of_service":
+            with open("TERMS_AND_CONDITIONS.md") as file:
+                await inter.send(
+                    embed=SuccessEmbed("".join([line for line in file]))
+                )  # Concatenate the lines in the file + send them
+        else:
+            raise NotImplementedError(
+                "This hasn't been implemented yet. Please contribute something!"
+            )
+
+    @commands.slash_command(
+        name='blacklist',
+        description="Blacklist someone from the bot!",
+        options=[
+            Option(
+                name="user",
+                description="The user to blacklist",
+                type=OptionType.user,
+                required=True
+            )
+        ]
+    )
+    @checks.trusted_users_only()
+    @checks.is_not_blacklisted()
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def blacklist(self: "MiscCommandsCog", inter: disnake.ApplicationCommandInteraction,
+                        user: typing.Union[disnake.User, disnake.Member]):
+        """/blacklist [user: user]
+        Blacklist someone from the bot. You must be a trusted user to do this!
+        There is a 1-second cooldown."""
+        user_data = await self.cache.get_user_data(
+            user_id=user.id,
+            default=problems_module.UserData(
+                user_id=user.id,
+                trusted=False,
+                blacklisted=False
+            )
+        )
+        if not user_data.blacklisted:
+            bot.log.debug("Can't blacklist user; user already blacklisted")
+            return await inter.send("Can't blacklist user; user already blacklisted")
+        else:
+            user_data.blacklisted = True
+            try:
+                await self.cache.update_user_data(
+                    user_id=user_id,
+                    new=user_data
+                )
+            except problems_module.MathProblemsModuleException:
+                await self.cache.add_user_data(
+                    user_id=user_id,
+                    new=user_data
+                )
+            bot.log.info(f"Successfully blacklisted the user with id {user.id}")
+            await inter.send("Successfully blacklisted the user!")
+
+            # TODO: what do I do after a user gets blacklisted? Do I delete their data?
+
+    @commands.slash_command(
+        name='unblacklist',
+        description="Remove someone's blacklist",
+        options=[
+            Option(
+                name="user",
+                description="The user to un-blacklist",
+                type=OptionType.user,
+                required=True
+            )
+        ]
+    )
+    @checks.trusted_users_only()
+    @checks.is_not_blacklisted()
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def unblacklist(self: "MiscCommandsCog", inter: disnake.ApplicationCommandInteraction,
+                        user: typing.Union[disnake.User, disnake.Member]):
+        """/unblacklist [user: user]
+        Remove a user's bot blacklist. You must be a trusted user to do this!
+        There is a 1-second cooldown."""
+        user_data = await self.cache.get_user_data(
+            user_id=user.id,
+            default=problems_module.UserData(
+                user_id=user.id,
+                trusted=False,
+                blacklisted=False
+            )
+        )
+        if not user_data.blacklisted:
+            bot.log.debug("Can't un-blacklist user; user not blacklisted")
+            return await inter.send("Can't un-blacklist user; user not blacklisted")
+        else:
+            user_data.blacklisted = False
+            try:
+                await self.cache.update_user_data(
+                    user_id=user_id,
+                    new=user_data
+                )
+            except problems_module.MathProblemsModuleException:
+                await self.cache.add_user_data(
+                    user_id=user_id,
+                    new=user_data
+                )
+            bot.log.info(f"Successfully un-blacklisted the user with id {user.id}")
+            await inter.send("Successfully un-blacklisted the user!")
+
+            # TODO: what do I do after a user gets blacklisted? Do I delete their data?
