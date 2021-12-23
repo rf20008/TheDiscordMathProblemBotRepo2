@@ -212,7 +212,7 @@ class MathProblemCache:
                     raise TooMuchUserDataException(f"Too much user data; found {len(results)} results; expected either 1 or 0")
 
     async def set_user_data(self, user_id: int, new: UserData) -> None:
-      """Set the user_data of a user."""
+       """Set the user_data of a user."""
        assert isinstance(user_id,int)
        assert isinstance(new, UserData)
        if (await self.get_user_data(user_id=user_id,default=None)) is not None:
@@ -243,7 +243,7 @@ class MathProblemCache:
                connection.commit()
                return
 
-    async def add_user_data(user_id: int, thing_to_add: UserData) -> None:
+    async def add_user_data(self, user_id: int, thing_to_add: UserData) -> None:
         assert isinstance(user_id, int)
         assert isinstance(thing_to_add, UserData)
         if (await self.get_user_data(user_id, default=None)) is not None:
@@ -265,7 +265,7 @@ class MathProblemCache:
                 cursor.execute("""INSERT INTO user_data (user_id, trusted, blacklisted)
                 VALUES (%s, %s, %s)""", (user_id, thing_to_add.trusted, thing_to_add.blacklisted))
                 connection.commit()
-    async def del_user_data(user_id: int):
+    async def del_user_data(self, user_id: int):
         """Delete user data given the user id"""
         assert isinstance(user_id, int)
         if self.use_sqlite:
@@ -282,7 +282,8 @@ class MathProblemCache:
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute("DELETE FROM user_data WHERE user_id = %s", (user_id,))
-
+                connection.commit()
+                connection.close()
     @property
     def max_answer_length(self):
         return self._max_answer_length
@@ -1212,6 +1213,8 @@ class MathProblemCache:
     async def delete_all_by_user_id(self, user_id: int) -> None:
         """Delete all data stored under a given user id"""
         assert isinstance(user_id, int)
+        await self.del_user_data(user_id)
+
         if self.use_sqlite:
             async with aiosqlite.connect(self.db) as conn:
                 cursor = await conn.cursor()
