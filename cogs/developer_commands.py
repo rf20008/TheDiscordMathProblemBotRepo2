@@ -34,7 +34,7 @@ class DeveloperCommands(HelperCog):
     )
     @checks.trusted_users_only()
     async def force_load_files(
-        self, inter: disnake.ApplicationCommandInteraction
+            self, inter: disnake.ApplicationCommandInteraction
     ) -> None:
         """Forcefully load files. You must be a trusted user to do this command.
         This command does not take any user-provided arguments."""
@@ -123,17 +123,17 @@ class DeveloperCommands(HelperCog):
         ],
     )
     async def raise_error(
-        self,
-        inter: disnake.ApplicationCommandInteraction,
-        error_type: typing.Literal["Exception"],
-        error_description: str = None,
+            self,
+            inter: disnake.ApplicationCommandInteraction,
+            error_type: typing.Literal["Exception"],
+            error_description: str = None,
     ) -> None:
         """/raise_error {error_type: str|Exception} [error_description: str = None]
         This command raises an error (of type error_type) that has the description of the error_description.
         You must be a trusted user and the bot owner to run this command!
         The purpose of this command is to test the bot's on_slash_command_error event!"""
         if (
-            inter.author.id not in self.bot.trusted_users
+                inter.author.id not in self.bot.trusted_users
         ):  # Check that the user is a trusted user
             await inter.send(
                 embed=ErrorEmbed(
@@ -159,7 +159,6 @@ class DeveloperCommands(HelperCog):
         )
         raise error
 
-
     @commands.slash_command(
         name="debug",
         description="Helpful for debugging :-)",
@@ -178,12 +177,11 @@ class DeveloperCommands(HelperCog):
             ),
         ],
     )
-
     async def debug(
-        self,
-        inter: disnake.ApplicationCommandInteraction,
-        raw: bool = False,
-        send_ephermally: bool = True,
+            self,
+            inter: disnake.ApplicationCommandInteraction,
+            raw: bool = False,
+            send_ephermally: bool = True,
     ):
         """/debug [raw: bool = False] [send_ephermally: bool = False]
         Provides helpful debug information :-)"""
@@ -199,7 +197,7 @@ class DeveloperCommands(HelperCog):
             "problem_limit": self.bot.cache.max_guild_problems,
             "reached_max_problems": "✅"
             if len(await self.bot.cache.get_guild_problems(inter.guild))
-            >= self.bot.cache.max_guild_problems
+               >= self.bot.cache.max_guild_problems
             else "❌",
             "num_guild-problems": len(
                 await self.bot.cache.get_guild_problems(inter.guild)
@@ -254,9 +252,9 @@ class DeveloperCommands(HelperCog):
     )
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def generate_new_problems(
-        self,
-        inter: disnake.ApplicationCommandInteraction,
-        num_new_problems_to_generate: int,
+            self,
+            inter: disnake.ApplicationCommandInteraction,
+            num_new_problems_to_generate: int,
     ) -> typing.Optional[disnake.Message]:
         """/generate_new_problems [num_new_problems_to_generate: int]
         Generate new Problems."""
@@ -277,6 +275,8 @@ class DeveloperCommands(HelperCog):
             )
 
         for i in range(num_new_problems_to_generate):  # basic problems for now.... :(
+            #TODO: linear equations
+
             operation = random.choice(["+", "-", "*", "/", "^"])
             if operation == "^":
                 num1 = random.randint(1, 20)
@@ -313,15 +313,15 @@ class DeveloperCommands(HelperCog):
                 ]:  # All problem_ids
                     break
             question = (
-                f"What is {num1} "
-                + {
-                    "*": "times",
-                    "+": "times",
-                    "-": "minus",
-                    "/": "divided by",
-                    "^": "to the power of",
-                }[operation]
-                + f" {str(num2)}?"
+                    f"What is {num1} "
+                    + {
+                        "*": "times",
+                        "+": "times",
+                        "-": "minus",
+                        "/": "divided by",
+                        "^": "to the power of",
+                    }[operation]
+                    + f" {str(num2)}?"
             )
             Problem = problems_module.BaseProblem(
                 question=question,
@@ -355,9 +355,9 @@ class DeveloperCommands(HelperCog):
     @checks.is_not_blacklisted()
     @commands.cooldown(1, 600, commands.BucketType.user)
     async def add_trusted_user(
-        self,
-        inter: disnake.ApplicationCommandInteraction,
-        user: typing.Union[disnake.Member, disnake.User],
+            self,
+            inter: disnake.ApplicationCommandInteraction,
+            user: typing.Union[disnake.Member, disnake.User],
     ) -> None:
         """/add_trusted_user [user: User]
         This slash commands adds a trusted user!
@@ -365,14 +365,14 @@ class DeveloperCommands(HelperCog):
         You must also share a server with the new trusted user."""
         user_data = await self.bot.cache.get_user_data(
             user_id=user.id,
-            default = problems_module.UserData(
+            default=problems_module.UserData(
                 user_id=user.id,
                 trusted=False,
                 blacklisted=False
             )
         )
 
-        #if inter.author.id not in self.bot.trusted_users: # Should work
+        # if inter.author.id not in self.bot.trusted_users: # Should work
         #    await inter.send(
         #        embed=ErrorEmbed("You aren't a trusted user!"), ephemeral=True
         #    )
@@ -405,9 +405,9 @@ class DeveloperCommands(HelperCog):
     @commands.cooldown(1, 600, commands.BucketType.user)
     @checks.trusted_users_only()
     async def remove_trusted_user(
-        self: "DeveloperCommands",
-        inter: disnake.ApplicationCommandInteraction,
-        user: disnake.User,
+            self: "DeveloperCommands",
+            inter: disnake.ApplicationCommandInteraction,
+            user: disnake.User,
     ) -> typing.Optional[disnake.InteractionMessage]:
         """/remove_trusted_user [user: User]
         Remove a trusted user. You must be a trusted user to do this.
