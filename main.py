@@ -5,18 +5,15 @@
 
 # imports - standard library
 import asyncio
+import logging
 import threading
-import warnings
 import typing
+import warnings
 from asyncio import sleep as asyncio_sleep
+from cogs import *
 from copy import copy
-from sys import exc_info, stdout
-from sys import exit
-
 # Imports - My own files
 from disnake.ext import commands
-
-from cogs import *
 from helpful_modules import checks
 from helpful_modules import custom_embeds, problems_module
 from helpful_modules import save_files, the_documentation_file_loader, return_intents
@@ -24,6 +21,8 @@ from helpful_modules.constants_loader import *
 from helpful_modules.cooldowns import check_for_cooldown
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.threads_or_useful_funcs import *
+from sys import exc_info, stdout
+from sys import exit
 
 # Imports - 3rd party
 
@@ -45,7 +44,9 @@ DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
 if DISCORD_TOKEN is None:
     raise RuntimeError("Cannot start bot; no discord_token environment variable")
 
-
+# TODO: use logging + changelog.json + debugging :-)
+logging.basicConfig(level=logging.WARNING)
+log = logging.getLogger(__name__)
 def the_daemon_file_saver():
     """Auto-save files!"""
     global bot, guildMathProblems, trusted_users, vote_threshold

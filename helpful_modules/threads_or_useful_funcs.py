@@ -1,18 +1,22 @@
 import disnake
-from disnake.ext import commands
-from time import sleep
-import subprocess, random
-from .the_documentation_file_loader import DocumentationFileLoader
+import logging
+import random
+import subprocess
 import traceback
-from .custom_embeds import *
+from disnake.ext import commands
+from sys import stderr, exc_info
 from time import asctime
+from time import sleep
+
 from ._error_logging import log_error
 from .cooldowns import OnCooldown
-from sys import stderr
+from .custom_embeds import *
+from .the_documentation_file_loader import DocumentationFileLoader
+
 
 # Licensed under GPLv3
 
-
+log = logging.getLogger(__name__)
 def generate_new_id():
     "Generate a random number from 0 to 2**53-1"
     return random.randint(0, 2 ** 53 - 1)
@@ -61,6 +65,7 @@ async def base_on_error(inter, error):
             )
         }
     # Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
+    logging.error(exc_info=exc_info())
     print(
         "\n".join(traceback.format_exception(error)),  # python 3.10 only!
         file=stderr,
