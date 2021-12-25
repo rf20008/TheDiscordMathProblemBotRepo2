@@ -47,6 +47,8 @@ if DISCORD_TOKEN is None:
 # TODO: use logging + changelog.json + debugging :-)
 logging.basicConfig(level=logging.WARNING)
 log = logging.getLogger(__name__)
+
+
 def the_daemon_file_saver():
     """Auto-save files!"""
     global bot, guildMathProblems, trusted_users, vote_threshold
@@ -184,9 +186,7 @@ bot.add_cog(DeveloperCommands(bot))
 bot.add_cog(ProblemsCog(bot))
 bot.add_cog(QuizCog(bot))
 bot.add_cog(MiscCommandsCog(bot))
-bot.add_cog(TestCog(bot))
 bot.CONSTANTS = bot_constants
-print("Bots successfully created.")
 bot.add_check(checks.is_not_blacklisted())
 
 
@@ -221,6 +221,7 @@ async def on_connect():
 
 @bot.event
 async def on_error(event, *args, **kwargs):
+    print(f"Error in {event}... uh oh", file=stderr)
     error = exc_info()
     # print the traceback to the file
     print(
@@ -275,9 +276,8 @@ async def on_guild_remove(guild):
 
 if __name__ == "__main__":
     print("The bot has finished setting up and will now run.")
-    # slash.run(DISCORD_TOKEN)
     for command in bot.global_slash_commands:
         # raise
         if len(command.name) > 100:
-            raise Exception(f"This command: {command.name} is too long")
+            raise Exception(f"This command: {command.name} is too long!")
     bot.run(DISCORD_TOKEN)
