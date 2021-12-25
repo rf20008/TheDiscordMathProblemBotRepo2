@@ -1,22 +1,19 @@
-en# Written by @rf20008
+# Written by @rf20008
 # Licensed under GPLv3 (or later)
 # Feel free to contribute! :-)
 # Python 3.10+ is required.
 
 # imports - standard library
 import asyncio
+import logging
 import threading
-import warnings
 import typing
+import warnings
 from asyncio import sleep as asyncio_sleep
+from cogs import *
 from copy import copy
-from sys import exc_info, stdout
-from sys import exit
-
 # Imports - My own files
 from disnake.ext import commands
-
-from cogs import *
 from helpful_modules import checks
 from helpful_modules import custom_embeds, problems_module
 from helpful_modules import save_files, the_documentation_file_loader, return_intents
@@ -24,11 +21,13 @@ from helpful_modules.constants_loader import *
 from helpful_modules.cooldowns import check_for_cooldown
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.threads_or_useful_funcs import *
+from sys import exc_info, stdout
+from sys import exit
 
 # Imports - 3rd party
 
 if (
-    not __debug__
+        not __debug__
 ):  # __debug__ must be true for the bot to run (because assert statements)
     exit("__debug__ must be True for the bot to run! (Don't run with -o or -OO)")
 del exit
@@ -45,7 +44,9 @@ DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
 if DISCORD_TOKEN is None:
     raise RuntimeError("Cannot start bot; no discord_token environment variable")
 
-
+# TODO: use logging + changelog.json + debugging :-)
+logging.basicConfig(level=logging.WARNING)
+log = logging.getLogger(__name__)
 def the_daemon_file_saver():
     """Auto-save files!"""
     global bot, guildMathProblems, trusted_users, vote_threshold
@@ -121,8 +122,8 @@ def get_git_revision_hash() -> str:
     """A method that gets the git revision hash. Credit to https://stackoverflow.com/a/21901260 for the code :-)"""
     return (
         subprocess.check_output(["git", "rev-parse", "HEAD"])
-        .decode("ascii")
-        .strip()[:7]
+            .decode("ascii")
+            .strip()[:7]
     )  # [7:] is here because of the commit hash, the rest of this function is from stack overflow
 
 
@@ -187,6 +188,7 @@ bot.CONSTANTS = bot_constants
 print("Bots successfully created.")
 bot.add_check(checks.is_not_blacklisted())
 
+
 # Events
 
 # TODO: (general) add changelog.json
@@ -205,9 +207,9 @@ async def on_connect():
         guild.id for guild in bot.guilds
     ]  # The guild_ids of the guilds that the bot is in
     for (
-        guild_id
+            guild_id
     ) in (
-        await bot.cache.get_guilds()
+            await bot.cache.get_guilds()
     ):  # Obtain all guilds the cache stores data (will need to be upgraded.)
         if guild_id not in bot_guild_ids:  # It's not in!
             if guild_id is None:  # Don't delete global problems
@@ -260,8 +262,8 @@ async def on_guild_join(guild):
         # await guild.leave()  # This will mess up stuff
         # print("Oh no")
         # raise RuntimeError(
-        #     "Oh no..... there is a guild with id None... this will mess up the bot!"
-        # )  # Make sure that a guild with id _global doesn't mess up stuff
+        #     "Oh no..... there is a guild with id None... this will mess up the bot!")
+        #  # Make sure that a guild with id _global doesn't mess up stuff
 
 
 @bot.event

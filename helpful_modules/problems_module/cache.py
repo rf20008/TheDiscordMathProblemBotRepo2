@@ -203,7 +203,7 @@ class MathProblemCache:
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
-                    'SELECT * FROM user_data WHERE USER_ID=%i', (user_id,)  # TODO: fix placeholders
+                    'SELECT * FROM user_data WHERE USER_ID=%s', (user_id,)  # TODO: fix placeholders
                 )
                 results = list(cursor.fetchall())
                 if len(results) == 0:
@@ -728,7 +728,7 @@ class MathProblemCache:
                 cursor = connection.cursor(dictionaries=True)
                 await cursor.execute(
                     """INSERT INTO problems (guild_id, problem_id, question, answer, voters, solvers, author)
-                VALUES (%i,%i,%s,%b,%b,%b,%i)""",
+                VALUES (%s,%s,%s,%b,%b,%b,%s)""",
                     (
                         int(problem.guild_id),
                         int(problem.id),
@@ -782,7 +782,7 @@ class MathProblemCache:
                         raise  # Re-raise the exception
                 cursor = await conn.cursor()
                 await cursor.execute(
-                    "DELETE FROM problems WHERE guild_id = %i and problem_id = %i",
+                    "DELETE FROM problems WHERE guild_id = %s and problem_id = %s",
                     (guild_id, problem_id),
                 )  # The actual deletion
                 try:
@@ -805,7 +805,7 @@ class MathProblemCache:
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
-                    "DELETE FROM problems WHERE guild_id = %i and problem_id = %i",
+                    "DELETE FROM problems WHERE guild_id = %s and problem_id = %s",
                     (guild_id, problem_id),
                 )  # The actual deletion
                 connection.commit()
@@ -949,7 +949,7 @@ class MathProblemCache:
                 for item in quiz.problems:
                     cursor.execute(
                         """INSERT INTO quizzes (guild_id, quiz_id, problem_id, question, answer, voters, solvers, author)
-                    VALUES ('%i','%i','%i',%s,%b,%b,%b,'%i')""",
+                    VALUES ('%s','%s','%s',%s,%s,%s,%s,'%s')""",
                         (
                             item.guild_id,
                             item.quiz_id,
@@ -964,7 +964,7 @@ class MathProblemCache:
                 for item in quiz.submissions:
                     cursor.execute(
                         """INSERT INTO quiz_submissions (guild_id, quiz_id, user_id, submissions)
-                    VALUES ('%i','%l','%l',%b)""",
+                    VALUES ('%s','%s','%s',%s)""",
                         (
                             item.guild_id,
                             item.quiz_id,
@@ -1024,12 +1024,12 @@ class MathProblemCache:
                     database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
-                cursor.execute("SELECT * FROM quizzes WHERE quiz_id = '%i'", (quiz_id,))
+                cursor.execute("SELECT * FROM quizzes WHERE quiz_id = '%s'", (quiz_id,))
                 problems = [
                     QuizProblem.from_row(row, copy(self)) for row in cursor.fetchall()
                 ]
                 cursor.execute(
-                    "SELECT * FROM submissions WHERE quiz_id = '%i'", (quiz_id,)
+                    "SELECT * FROM submissions WHERE quiz_id = '%s'", (quiz_id,)
                 )
                 submissions = [
                     QuizSubmission.from_dict(pickle.loads(row[0]), cache=copy(self))
@@ -1090,8 +1090,8 @@ class MathProblemCache:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     """UPDATE problems 
-                    SET guild_id = '%i', problem_id = '%i', question = %s, answer = %b, voters = %b, solvers = %b, author = '%i'
-                    WHERE guild_id = '%i' AND problem_id = '%i'""",
+                    SET guild_id = '%s', problem_id = '%s', question = %s, answer = %s, voters = %s, solvers = %s, author = '%s'
+                    WHERE guild_id = '%s' AND problem_id = '%s'""",
                     (
                         int(new.guild_id),
                         int(new.id),
@@ -1189,14 +1189,14 @@ class MathProblemCache:
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
-                    "SELECT * FROM quizzes WHERE author = '%i'", (author_id,)
+                    "SELECT * FROM quizzes WHERE author = '%s'", (author_id,)
                 )
                 quiz_problems = [
                     QuizProblem.from_row(row, cache=copy(self))
                     for row in cursor.fetchall()
                 ]
                 cursor.execute(
-                    "SELECT submissions FROM quiz_submissions WHERE user_id = '%i'",
+                    "SELECT submissions FROM quiz_submissions WHERE user_id = '%s'",
                     (author_id,),
                 )
                 quiz_submissions = [
@@ -1206,7 +1206,7 @@ class MathProblemCache:
                     ]
                 ]
                 cursor.execute(
-                    "SELECT * FROM problems WHERE author = '%i'", (author_id,)
+                    "SELECT * FROM problems WHERE author = '%s'", (author_id,)
                 )
                 problems = [
                     BaseProblem.from_dict(item, cache=copy(self))
@@ -1244,10 +1244,10 @@ class MathProblemCache:
                     database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
-                cursor.execute("DELETE FROM problems WHERE author = '%i'", (user_id,))
-                cursor.execute("DELETE FROM quizzes WHERE author = '%i'", (user_id,))
+                cursor.execute("DELETE FROM problems WHERE author = '%s'", (user_id,))
+                cursor.execute("DELETE FROM quizzes WHERE author = '%s'", (user_id,))
                 cursor.execute(
-                    "DELETE FROM quiz_submissions WHERE author = '%i'", (user_id,)
+                    "DELETE FROM quiz_submissions WHERE author = '%s'", (user_id,)
                 )
                 connection.commit()
 
