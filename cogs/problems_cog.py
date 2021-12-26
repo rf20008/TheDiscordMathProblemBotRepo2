@@ -512,7 +512,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             cache=self.cache,
         )  # Create the problem!
         await self.cache.add_problem(
-            guild_id=guild_id, problem_id=problem_id, Problem=problem
+            guild_id=guild_id, problem_id=problem_id, problem=problem
         )  # Add the problem
 
         await inter.send(
@@ -880,6 +880,7 @@ NumSolvers: {len(problem.get_solvers())}"""
                 problem = await self.cache.get_problem(
                     guild_id if is_guild_problem else None, problem_id
                 )
+                #print(problem)
             except (problems_module.ProblemNotFound, ProblemNotFoundException):
                 return await inter.send(
                     embed=ErrorEmbed(

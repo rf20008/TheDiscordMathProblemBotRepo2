@@ -65,7 +65,7 @@ async def base_on_error(inter, error):
             )
         }
     # Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
-    logging.error(exc_info=exc_info())
+    logging.error("Uh oh - an error occured ", exc_info=exc_info())
     print(
         "\n".join(traceback.format_exception(error)),  # python 3.10 only!
         file=stderr,

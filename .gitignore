@@ -168,7 +168,7 @@ pylint/**
 pylint/*.txt
 **/.DS_Store # This is a macOS folder design file which is not necessary for this file
 **/config.json
-
+MathProblemCache1.db
 #Security
 .env # I would like to keep my secrets safe. :-)
 .env.save
