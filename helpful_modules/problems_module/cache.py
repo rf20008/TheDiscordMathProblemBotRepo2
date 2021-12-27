@@ -414,7 +414,7 @@ class MathProblemCache:
                         guild_problems[problem.guild_id][problem.id] = problem
                     except BaseException as e:
                         raise SQLException(
-                            "An error occured while assigning the problem..."
+                            "An error occurred while assigning the problem..."
                         ) from e
                 cursor.execute("SELECT * FROM quizzes")  # Get all quiz problems
                 for row in cursor.fetchall():
@@ -447,7 +447,7 @@ class MathProblemCache:
             # TODO: fix this so this doesn't lead to errors
         except KeyError:  # No global problems yet
             global_problems = {}
-        #Don't deepcop the problems
+        # Don't deepcopy the problems
         self.guild_problems = guild_problems
         self.guild_ids = guild_ids
         self.global_problems = global_problems
@@ -476,8 +476,8 @@ class MathProblemCache:
     async def get_problems_by_func(
             self: "MathProblemCache",
             func: FunctionType = lambda problem: False,
-            args: typing.Union[tuple, list] = None,
-            kwargs: dict = None,
+            args: typing.Optional[typing.Union[tuple, list]] = None,
+            kwargs: Optional[dict] = None,
     ) -> typing.List[BaseProblem]:
         """Returns the list of all problems that match the given function. args and kwargs are extra parameters to give to the function"""
         if args is None:
