@@ -615,7 +615,6 @@ class MathProblemCache:
         """Returns global problems"""
         if self.update_cache_by_default_when_requesting:
             await self.update_cache()
-            print(self.global_problems)
         return self.global_problems
 
     def add_empty_guild(self, guild) -> typing.NoReturn:
@@ -680,7 +679,7 @@ class MathProblemCache:
         except KeyError:  # New guild creating first problem
             pass
         if not isinstance(
-                Problem, BaseProblem
+                problem, BaseProblem
         ):  # Make sure it's actually a Problem and not something else
             raise TypeError("Problem is not a valid Problem object.")
         # All the checks passed, hooray! Now let's add the problem.
@@ -718,7 +717,7 @@ class MathProblemCache:
                 )
 
                 await conn.commit()
-            return Problem
+            return problem
         else:
             with mysql_connection(
                     host=self.mysql_db_ip,

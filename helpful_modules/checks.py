@@ -108,7 +108,7 @@ def is_not_blacklisted():
         if not isinstance(inter.bot, TheDiscordMathProblemBot):
             raise TypeError("Uh oh!")
         user_data: UserData = await inter.bot.cache.get_user_data(
-            user_data=inter.author.id,
+            user_id=inter.author.id,
             default=UserData(
                 user_id=inter.author.id,
                 trusted=False,
