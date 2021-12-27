@@ -4,7 +4,7 @@ import typing
 from asyncio import run
 from disnake import *
 from disnake.ext import commands
-from helpful_modules import checks, cooldowns, problems_module
+from helpful_modules import checks, problems_module
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.custom_embeds import SimpleEmbed, SuccessEmbed, ErrorEmbed
 from helpful_modules.problems_module import *

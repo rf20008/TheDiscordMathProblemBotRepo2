@@ -156,20 +156,19 @@ class MiscCommandsCog(HelperCog):
                 )  # 100 ms between fetching to respect the rate limit (and to prevent spam)
 
         await inter.send(__trusted_users, ephemeral=True)
-
+    @commands.cooldown(1,30,commands.BucketType.user)
     @commands.slash_command(
         name="ping", description="Prints latency and takes no arguments"
     )
     async def ping(self, inter: disnake.ApplicationCommandInteraction):
         """Ping the bot which returns its latency! This command does not take any arguments."""
-        await cooldowns.check_for_cooldown(inter, "ping", 5)
         await inter.send(
             embed=SuccessEmbed(
                 f"Pong! My latency is {round(self.bot.latency * 1000)}ms."
             ),
             ephemeral=True,
         )
-
+    @commands.cooldown(1,5,commands.BucketType.user)
     @commands.slash_command(
         name="what_is_vote_threshold",
         description="Prints the vote threshold and takes no arguments",
@@ -177,8 +176,8 @@ class MiscCommandsCog(HelperCog):
     async def what_is_vote_threshold(
             self, inter: disnake.ApplicationCommandInteraction
     ):
-        """Returns the vote threshold. Takes no arguments."""
-        await cooldowns.check_for_cooldown(inter, "what_is_vote_threshold", 5)
+        """/what_is_vote_threshold
+        Returns the vote threshold. Takes no arguments. There is a 5 second cooldown on this command."""
         await inter.send(
             embed=SuccessEmbed(f"The vote threshold is {self.bot.vote_threshold}."),
             ephemeral=True,
@@ -192,7 +191,6 @@ class MiscCommandsCog(HelperCog):
     async def generate_invite_link(self, inter: disnake.ApplicationCommandInteraction):
         """/generate_invite_link
         Generate an invite link for the bot. Takes no arguments"""
-        await cooldowns.check_for_cooldown(inter, "generateInviteLink", 5)
         await inter.send(
             embed=SuccessEmbed(
                 disnake.utils.oauth_url(
