@@ -37,7 +37,8 @@ class MathProblemCache:
             update_cache_by_default_when_requesting: bool = True,
             use_cached_problems: bool = False,
     ):
-        """Create a new MathProblemCache. The arguments should be self-explanatory"""
+        """Create a new MathProblemCache. The arguments should be self-explanatory.
+        Many methods are async!"""
         # make_sql_table([], db_name = sql_dict_db_name)
         # make_sql_table([], db_name = "MathProblemCache1.db", table_name="kv_store")
         if use_sqlite:
@@ -60,7 +61,8 @@ class MathProblemCache:
         self.mysql_password = mysql_password
         self.mysql_db_ip = mysql_db_ip
         self.mysql_db_name = mysql_db_name
-        asyncio.run(self.initialize_sql_table())
+        asyncio.run(
+            self.initialize_sql_table())  # Initialize the SQL tables (but asyncio.run() has to be used because __init__ cannot be async)
         self.update_cache_by_default_when_requesting = (
             update_cache_by_default_when_requesting
         )
@@ -73,6 +75,7 @@ class MathProblemCache:
         asyncio.run(self.update_cache())
 
     async def initialize_sql_table(self):
+        """Initialize my internal SQL table. This does nothing if the internal SQL tables already exist!"""
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
                 cursor = await conn.cursor()
@@ -374,6 +377,7 @@ class MathProblemCache:
                     await cursor.execute("SELECT * FROM quizzes")
                     for Row in await cursor.fetchall():
                         quiz_problem = QuizProblem.from_row(Row, cache=copy(self))
+                        # Add the problem to the cache
                         try:
                             quiz_problems_dict[quiz_problem.id].append(quiz_problem)
                         except KeyError:
@@ -410,7 +414,7 @@ class MathProblemCache:
                         guild_problems[problem.guild_id][problem.id] = problem
                     except BaseException as e:
                         raise SQLException(
-                            "An error occured while assigning the problem..."
+                            "An error occurred while assigning the problem..."
                         ) from e
                 cursor.execute("SELECT * FROM quizzes")  # Get all quiz problems
                 for row in cursor.fetchall():
@@ -443,7 +447,7 @@ class MathProblemCache:
             # TODO: fix this so this doesn't lead to errors
         except KeyError:  # No global problems yet
             global_problems = {}
-        #Don't deepcop the problems
+        # Don't deepcopy the problems
         self.guild_problems = guild_problems
         self.guild_ids = guild_ids
         self.global_problems = global_problems
@@ -472,8 +476,8 @@ class MathProblemCache:
     async def get_problems_by_func(
             self: "MathProblemCache",
             func: FunctionType = lambda problem: False,
-            args: typing.Union[tuple, list] = None,
-            kwargs: dict = None,
+            args: typing.Optional[typing.Union[tuple, list]] = None,
+            kwargs: Optional[dict] = None,
     ) -> typing.List[BaseProblem]:
         """Returns the list of all problems that match the given function. args and kwargs are extra parameters to give to the function"""
         if args is None:
