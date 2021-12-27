@@ -37,7 +37,8 @@ class MathProblemCache:
             update_cache_by_default_when_requesting: bool = True,
             use_cached_problems: bool = False,
     ):
-        """Create a new MathProblemCache. The arguments should be self-explanatory"""
+        """Create a new MathProblemCache. The arguments should be self-explanatory.
+        Many methods are async!"""
         # make_sql_table([], db_name = sql_dict_db_name)
         # make_sql_table([], db_name = "MathProblemCache1.db", table_name="kv_store")
         if use_sqlite:
@@ -60,7 +61,8 @@ class MathProblemCache:
         self.mysql_password = mysql_password
         self.mysql_db_ip = mysql_db_ip
         self.mysql_db_name = mysql_db_name
-        asyncio.run(self.initialize_sql_table())
+        asyncio.run(
+            self.initialize_sql_table())  # Initialize the SQL tables (but asyncio.run() has to be used because __init__ cannot be async)
         self.update_cache_by_default_when_requesting = (
             update_cache_by_default_when_requesting
         )
@@ -73,6 +75,7 @@ class MathProblemCache:
         asyncio.run(self.update_cache())
 
     async def initialize_sql_table(self):
+        """Initialize my internal SQL table. This does nothing if the internal SQL tables already exist!"""
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
                 cursor = await conn.cursor()
@@ -374,6 +377,7 @@ class MathProblemCache:
                     await cursor.execute("SELECT * FROM quizzes")
                     for Row in await cursor.fetchall():
                         quiz_problem = QuizProblem.from_row(Row, cache=copy(self))
+                        # Add the problem to the cache
                         try:
                             quiz_problems_dict[quiz_problem.id].append(quiz_problem)
                         except KeyError:
