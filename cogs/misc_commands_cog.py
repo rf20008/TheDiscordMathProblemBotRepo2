@@ -694,7 +694,7 @@ class MiscCommandsCog(HelperCog):
                             description=":x: Could not find the command specified. ",
                         )
                     )
-                command_docstring = command.func.__doc__
+                command_docstring = command.callback.__doc__
                 if command_docstring is None:
                     return await inter.send(
                         "Oh no! This command does not have documentation! Please report this bug."
