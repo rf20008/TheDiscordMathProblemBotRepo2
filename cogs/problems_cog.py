@@ -22,7 +22,7 @@ class ProblemsCog(HelperCog):
         self.cache = bot.cache
         super().__init__(bot)
         checks.setup(bot)
-
+    @commands.cooldown(1,1,commands.BucketType.user)
     @checks.is_not_blacklisted()
     @commands.slash_command(
         name="edit_problem",
@@ -64,7 +64,6 @@ class ProblemsCog(HelperCog):
     ) -> typing.Optional[disnake.Message]:
         """/edit_problem problem_id:
         Allows you to edit a math problem."""
-        await cooldowns.check_for_cooldown(inter, "edit_problem", 0.5)
         try:
             problem = await self.cache.get_problem(int(guild_id), int(problem_id))
             if not problem.is_author(inter.author):
@@ -98,7 +97,6 @@ class ProblemsCog(HelperCog):
                 return await inter.send("You must provide either a question or answer.")
 
         await inter.send(embed=SuccessEmbed(e), ephemeral=True)
-
     @commands.slash_command(
         name="show_problem_info",
         description="Show problem info",
@@ -137,21 +135,39 @@ class ProblemsCog(HelperCog):
         raw: bool = False,
         is_guild_problem: bool = False,
     ):
-        """Show the info of a problem."""
-        if is_guild_problem and inter.guild is None or not inter.guild.id:
+        """/show_problem_info [problem_id: int] (show_all_data: bool = false) (raw: bool = False) (is_guild_problem: bool = false)
+        Show the info of a problem.
+        If show_all_data is set to true, you must have trusted user permissions or have the administrator permission in the guild! Otherwise, the bot will tell you can't do that.
+        The option `raw` is whether to show the problem as JSON. Otherwise, it will be shown in a user-friendly manner. This defaults to False.
+        The option `is_guild_problem` tells the bot about whether the problem you're trying to show is a guild problem. This defaults to false, which means you are viewing a global problems unless you specify otherwise.
+        **If you execute this in a DM, the bot will treat it like you set is_guild_problem to False regardless of what you put in for the option!**"""
+        if inter.guild is None:
+            #return await inter.send(embed=ErrorEmbed(
+            #    "If you're running this command in a DM, I won't know what guild you're trying to run the command in!"
+            #))
+            is_guild_problem = False
+        if is_guild_problem and inter.guild is None: 
             embed1 = ErrorEmbed(
                 description="Run this command in the Discord server which has this problem, not a DM!"
             )
             await inter.send(embed=embed1)
             return
-        try:
-            guild_id = inter.guild.id
-        except AttributeError as exc:
-            raise Exception(
-                "*** AttributeError: guild.id was not found! Please report this error or refrain from using it here***"
-            ) from exc
+        #try:
+        #    guild_id = inter.guild.id
+        #except AttributeError as exc:
+        #    raise Exception(
+        #        "*** AttributeError: guild.id was not found! Please report this error or refrain from using it here***"
+        #    ) from exc
+        #
 
-        real_guild_id = int(inter.guild.id) if is_guild_problem else None
+        # get the real_guild_id
+        try:
+            if is_guild_problem:
+                real_guild_id = inter.guild.id
+            else:
+                real_guild_id = None
+        except AttributeError:
+            real_guild_id=None
         try:
             await self.cache.get_problem(real_guild_id, int(problem_id))
         except ProblemNotFound:  # Problem not found
@@ -188,7 +204,7 @@ NumSolvers: {len(problem.get_solvers())}"""
                 )
                 return
             await inter.send(embed=SuccessEmbed(Problem_as_str), ephemeral=True)
-
+    @commands.cooldown(1,2.5, commands.BucketType.user)
     @commands.slash_command(
         name="list_all_problem_ids",
         description="List all problem ids",
@@ -204,7 +220,6 @@ NumSolvers: {len(problem.get_solvers())}"""
     async def list_all_problem_ids(self, inter, show_only_guild_problems=False):
         """/list_all_problem_ids [show_only_guild_problems: bool = false]
         List all problem ids. If show_only_guild_problems is true, then only ids of guild problems will be shown. Otherwise, only problem ids of problems that are global will be shown."""
-        await cooldowns.check_for_cooldown(inter, "list_all_problem_ids", 2.5)
         if show_only_guild_problems:
             guild_id = inter.guild.id
             if guild_id is None:
@@ -236,7 +251,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             global_problems = global_problems.values()
         thing_to_write = "\n".join([str(problem.id) for problem in global_problems])
         await inter.send(embed=SuccessEmbed(thing_to_write))
-
+    @commands.cooldown(1,5,commands.BucketType.user)
     @commands.slash_command(
         name="list_all_problems",
         description="List all problems stored with the bot",
@@ -272,7 +287,6 @@ NumSolvers: {len(problem.get_solvers())}"""
         """/list_all_problems [show_solved_problems: bool = false] [show_guild_problems: bool = true] [show_only_guild_problems: bool = false]
         List all problems.
         If show_solved_problems is set to true,"""
-        await cooldowns.check_for_cooldown(inter, "list_all_problems")
         if inter.guild is None and show_guild_problems:
             await inter.send("You must be in a guild to see guild problems!")
             return
@@ -377,7 +391,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             )
         )
 
-    # @disnake.ext.commands.cooldown(1,5,commands.BucketType.user)
+    @commands.cooldown(1,5,commands.BucketType.user)
     @commands.slash_command(
         name="submit_problem",
         description="Create a new problem",
@@ -413,7 +427,6 @@ NumSolvers: {len(problem.get_solvers())}"""
         Create & submit a new problem with the given question and answer.
         If the problem is a guild problem, it must not be executed in a DM context or the bot will not know which guild the problem is for!"""
 
-        await cooldowns.check_for_cooldown(inter, "submit_problem", 5)
 
         if (
             len(question) > self.cache.max_question_length
