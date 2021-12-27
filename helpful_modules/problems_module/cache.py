@@ -192,7 +192,7 @@ class MathProblemCache:
                 elif len(cursor_results == 1):
                     dict_to_use = cursor_results[0]
                     dict_to_use['trusted'] = bool(dict_to_use['trusted'])
-                    dict_to_use['blacklisted'] = boolean(dict_to_use['blacklisted'])
+                    dict_to_use['blacklisted'] = bool(dict_to_use['blacklisted'])
                     return UserData.from_dict(dict_to_use)
                 else:
                     raise TooMuchUserDataException(
@@ -414,7 +414,7 @@ class MathProblemCache:
                         guild_problems[problem.guild_id][problem.id] = problem
                     except BaseException as e:
                         raise SQLException(
-                            "For some reason, the cache couldn't be updated. Please help!"
+                            "An error occured while assigning the problem..."
                         ) from e
                 cursor.execute("SELECT * FROM quizzes")  # Get all quiz problems
                 for row in cursor.fetchall():
@@ -447,9 +447,8 @@ class MathProblemCache:
             # TODO: fix this so this doesn't lead to errors
         except KeyError:  # No global problems yet
             global_problems = {}
+        #Don't deepcop the problems
         self.guild_problems = guild_problems
-        # For some reason, List[BaseProblem]'s are not deepcopy-able
-        # TODO: make base problems deep-copyable
         self.guild_ids = guild_ids
         self.global_problems = global_problems
         self.cached_quizzes = [
