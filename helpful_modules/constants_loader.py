@@ -1,8 +1,9 @@
-import dotenv, os
+import dotenv
+import os
 
 
 class BotConstants:
-    "Bot constants"
+    """Bot constants"""
 
     def __init__(self, env_path):
         dotenv.load_dotenv(env_path)

@@ -1,4 +1,6 @@
-import time, traceback, datetime
+import datetime
+import time
+import traceback
 
 
 def log_error(error, file_path=""):
@@ -15,7 +17,7 @@ def log_error(error, file_path=""):
             + str(
                 {
                     1: "January",
-                    2: "Febuary,",
+                    2: "February,",
                     3: "March",
                     4: "April",
                     5: "May",

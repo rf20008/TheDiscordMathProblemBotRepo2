@@ -139,7 +139,6 @@ async def on_ready(bot: TheDiscordMathProblemBot):
 
 asyncio.set_event_loop(asyncio.new_event_loop())  # Otherwise, weird errors will happen
 bot = TheDiscordMathProblemBot(
-    command_prefix=commands.when_mentioned,
     intents=return_intents.return_intents(),
     application_id=845751152901750824,
     status=disnake.Status.idle,

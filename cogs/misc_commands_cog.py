@@ -337,7 +337,7 @@ class MiscCommandsCog(HelperCog):
                 Self: ConfirmationButton,
                 interaction: disnake.Interaction,
                 _extra_data: dict,
-        ):
+        ) -> None:
             """The function that runs when the button gets pressed. This actually deletes the data.
             Time complexity: O(V*N+P+S*M)
             V: number of problems user voted for
@@ -429,14 +429,19 @@ class MiscCommandsCog(HelperCog):
         problems_user_voted_for = await self.cache.get_problems_by_func(
             func=lambda problem, user_id: user_id in problem.voters, args=(author,)
         )
-        self.bot.log.trace("getting problems user voted & solved")
+        self.bot.log.trace("Getting problems user voted & solved.")
         problems_user_solved = await self.cache.get_problems_by_func(
             func=lambda problem, user_id: user_id in problem.solvers, args=(author,)
         )
-        is_trusted_user = (
-                author.id in self.bot.trusted_users
-        )  # TODO: replace when SQL is being used to store user status
-        is_blacklisted = author.id in self.bot.blacklisted_users
+        user_data: problems_module.UserData = await self.bot.cache.get_user_data(
+            user_id=author.id,
+            default=UserData(
+                trusted=False,
+                blacklisted=False
+            )
+        )
+        is_trusted_user = user_data.trusted
+        is_blacklisted = user_data.blacklisted
 
         new_data = {
             "Problems": [problem.to_dict() for problem in raw_data["problems"]],
@@ -461,7 +466,8 @@ class MiscCommandsCog(HelperCog):
         return new_data
 
     @staticmethod
-    def _file_version_of_item(item: str, file_name) -> disnake.File:
+    def _file_version_of_item(item: str, file_name: str) -> disnake.File:
+        """Return str in a disnake.File with the specified filename and containing the string in it."""
         assert isinstance(item, str)
         return disnake.File(BytesIO(bytes(item, "utf-8")), filename=file_name)
 
@@ -563,7 +569,8 @@ class MiscCommandsCog(HelperCog):
         """/submit_a_request [offending_problem_guild_id: int = None] [offending_problem_id: int = None]
 
         Submit a request! I will know! It uses a channel in my discord server and posts an embed.
-        I will probably deprecate this and replace it with emailing me."""
+        I will probably deprecate this and replace it with emailing me.
+        Therefore, this command has been deprecated and will be removed in a future version of the bot!"""
         if (
                 extra_info is None
                 and type == ""
@@ -614,29 +621,29 @@ class MiscCommandsCog(HelperCog):
         await channel.send(embed=embed, content=content)
         await inter.send("Your request has been submitted!")
 
-    @commands.cooldown(1, 1,commands.BucketType.user)
+    @commands.cooldown(1, 1, commands.BucketType.user)
     @commands.slash_command(
         name="documentation",
         description="Returns help!",
         options=[
-                Option(
-                    name="documentation_type",
-                    description="What kind of help you want",
-                    choices=[
-                        OptionChoice(name="documentation_link", value="documentation_link"),
-                        OptionChoice(name="command_help", value="command_help"),
-                        OptionChoice(name="function_help", value="function_help"),
-                        OptionChoice(name="privacy_policy", value="privacy_policy"),
-                        OptionChoice(name="terms_of_service", value="terms_of_service"),
-                    ],
-                    required=True,
-                ),
-                Option(
-                    name="help_obj",
-                    description="What you want help on",
-                    required=False,
-                    type=OptionType.string,
-                ),
+            Option(
+                name="documentation_type",
+                description="What kind of help you want",
+                choices=[
+                    OptionChoice(name="documentation_link", value="documentation_link"),
+                    OptionChoice(name="command_help", value="command_help"),
+                    OptionChoice(name="function_help", value="function_help"),
+                    OptionChoice(name="privacy_policy", value="privacy_policy"),
+                    OptionChoice(name="terms_of_service", value="terms_of_service"),
+                ],
+                required=True,
+            ),
+            Option(
+                name="help_obj",
+                description="What you want help on",
+                required=False,
+                type=OptionType.string,
+            ),
         ],
     )
     async def documentation(
@@ -802,7 +809,7 @@ class MiscCommandsCog(HelperCog):
     @checks.is_not_blacklisted()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def unblacklist(self: "MiscCommandsCog", inter: disnake.ApplicationCommandInteraction,
-                        user: typing.Union[disnake.User, disnake.Member]):
+                          user: typing.Union[disnake.User, disnake.Member]):
         """/unblacklist [user: user]
         Remove a user's bot blacklist. You must be a trusted user to do this!
         There is a 1-second cooldown."""

@@ -553,6 +553,7 @@ class MathProblemCache:
                         (guild_id, problem_id),
                     )
                     rows = list(await cursor.fetchall())
+                    #print(rows)
                     if len(list(rows)) == 0:
                         raise ProblemNotFound("Problem not found!")
                     elif len(list(rows)) > 1:

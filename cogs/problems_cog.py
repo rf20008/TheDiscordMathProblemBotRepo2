@@ -75,7 +75,7 @@ class ProblemsCog(HelperCog):
                 )
                 return
         except ProblemNotFound:
-            await inter.send(embed=ErrorEmbed("This problem does not exist."))
+            await inter.send(embed=ErrorEmbed("This problem does not exist!"))
             return
         e = "Successfully"
         if new_question is not None:

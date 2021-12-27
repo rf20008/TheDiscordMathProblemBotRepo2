@@ -27,6 +27,7 @@ async def check_for_cooldown(
     except:
         if is_global_cooldown:
             cooldowns["_global"][ctx.author.id] = time.time() + global_cooldown
+        raise
     try:
         t = cooldowns[command_name][ctx.author.id] - time.time()
         if t > 0:

@@ -4,18 +4,19 @@ from .custom_embeds import SuccessEmbed, ErrorEmbed
 from .threads_or_useful_funcs import base_on_error
 from copy import deepcopy
 
+
 # Licensed under the GNU GPLv3 (or later)
 
 
 class MyView(disnake.ui.View):
-    "A better? view for my bot (which is easier for my bot to work with)"
+    """A better? view for my bot (which is easier for my bot to work with)"""
 
-    async def __init__(
-        self,
-        message: disnake.Message = None,
-        *,
-        timeout: int = 180.0,
-        items: List[disnake.ui.Item]
+    def __init__(
+            self,
+            message: disnake.Message = None,
+            *,
+            timeout: int = 180.0,
+            items: List[disnake.ui.Item]
     ):
         super().__init__(timeout)
         self.message = message
@@ -25,18 +26,19 @@ class MyView(disnake.ui.View):
             self.add_item(item)
 
     async def on_error(
-        self, error: Exception, item: disnake.ui.Item, inter: disnake.Interaction
+            self, error: Exception, item: disnake.ui.Item, inter: disnake.Interaction
     ):
         return await inter.response.send_message(**base_on_error(inter, error))
 
-    async def reply(Interaction: disnake.Interaction, *args, **kwargs):
-        "Reply to an interaction"
+    async def reply(self, Interaction: disnake.Interaction, *args, **kwargs):
+        """Reply to an interaction"""
         return await Interaction.response.send_message(*args, **kwargs)
 
     async def stop_all_items(self):
-        "Stop all items. However, this does not work, because the bot will not know the message before it's sent"
+        """Stop all items. However, this does not work, because the bot will not know the message before it's sent"""
         newView = self.__class__(
-            self.message
+            self.message,
+            items=[]
         )  # Create a new view that has the same message
         for item in self.children:
             if item.__class__ == disnake.ui.Item:
@@ -60,6 +62,7 @@ class BasicButton(disnake.ui.Button):
         super().__init__(**kwargs)
         self.check = check
         self._callback = callback
+        self.disabled=False
         self.user_for = kwargs.pop("user_for").id
 
     async def callback(self, interaction: disnake.Interaction) -> Any:
@@ -67,7 +70,7 @@ class BasicButton(disnake.ui.Button):
             return await self._callback(interaction)
 
     def disable(self):
-        "Disable myself. If this does not work, this is probably a Discord limitation. However, I don't know."
+        """Disable myself. If this does not work, this is probably a Discord limitation. However, I don't know."""
         self.disabled = True
 
     def enable(self):
@@ -76,7 +79,7 @@ class BasicButton(disnake.ui.Button):
 
 
 class ConfirmationButton(BasicButton):
-    "A confirmation button"
+    """A confirmation button"""
 
     def __init__(self, custom_id="1", *args, **kwargs):
         "Create a new ConfirmationButton."
@@ -88,7 +91,7 @@ class ConfirmationButton(BasicButton):
         self._extra_data = kwargs.get("_extra_data", {})
 
     async def callback(
-        self: "ConfirmationButton", interaction: disnake.Interaction
+            self: "ConfirmationButton", interaction: disnake.Interaction
     ) -> Any:
         def check(inter: disnake.Interaction):
             return inter.user.id == self.author_for
