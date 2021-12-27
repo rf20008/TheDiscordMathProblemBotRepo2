@@ -429,13 +429,14 @@ class MiscCommandsCog(HelperCog):
         problems_user_voted_for = await self.cache.get_problems_by_func(
             func=lambda problem, user_id: user_id in problem.voters, args=(author,)
         )
-        self.bot.log.trace("Getting problems user voted & solved.")
+        #self.bot.log.trace("Getting problems user voted & solved.")
         problems_user_solved = await self.cache.get_problems_by_func(
             func=lambda problem, user_id: user_id in problem.solvers, args=(author,)
         )
         user_data: problems_module.UserData = await self.bot.cache.get_user_data(
             user_id=author.id,
-            default=UserData(
+            default=problems_module.UserData(
+                user_id=author.id,
                 trusted=False,
                 blacklisted=False
             )
@@ -481,6 +482,7 @@ class MiscCommandsCog(HelperCog):
         Get all the data the bot stores about you.
         Due to a Discord limitation, the bot cannot send the file in the interaction response, so you will be DMed instead.
         To prevent spam and getting rate limited, there is a 100-second cooldown."""
+        await inter.response.defer()
         file = disnake.File(
             BytesIO(
                 bytes(

@@ -287,11 +287,12 @@ class BaseProblem:
 
     def get_answer(self):
         """Return my answer. This has been deprecated"""
+        warnings.warn("This has been deprecated!", DeprecationWarning, stacklevel=1)
         return self.answer
 
     def get_answers(self):
         """Return my possible answers"""
-        return [self.answer, *self.answers]
+        return [*self.answers]
 
     def get_question(self):
         """Return my question."""

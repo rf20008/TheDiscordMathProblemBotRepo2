@@ -144,7 +144,6 @@ class ProblemsCog(HelperCog):
             )
             await inter.send(embed=embed1)
             return
-        problem_id = int(problem_id)
         try:
             guild_id = inter.guild.id
         except AttributeError as exc:
@@ -157,7 +156,7 @@ class ProblemsCog(HelperCog):
             await self.cache.get_problem(real_guild_id, int(problem_id))
         except ProblemNotFound:  # Problem not found
             await inter.send(embed=ErrorEmbed("Problem not found."))
-            raise
+            return
         problem = await self.cache.get_problem(
             int(inter.guild.id) if is_guild_problem else None, int(problem_id)
         )

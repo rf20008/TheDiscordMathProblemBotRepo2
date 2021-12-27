@@ -351,7 +351,6 @@ class MathProblemCache:
                 conn.row_factory = dict_factory
                 cursor = await conn.cursor()
                 await cursor.execute("SELECT * FROM problems")  # Get all problems
-
                 for row in await cursor.fetchall():  # For each problem:
                     if not isinstance(row, dict):
                         problem = BaseProblem.from_row(
@@ -370,7 +369,7 @@ class MathProblemCache:
                         guild_problems[problem.guild_id][problem.id] = problem
                     except BaseException as e:
                         raise SQLException(
-                            "For some reason, the cache couldn't be updated. Please help!"
+                            "The cache could not be updated because assigning the problem failed!"
                         ) from e
                     await cursor.execute("SELECT * FROM quizzes")
                     for Row in await cursor.fetchall():
@@ -504,7 +503,6 @@ class MathProblemCache:
             self, guild_id: typing.Optional[int], problem_id: int
     ) -> BaseProblem:
         """Gets the problem with this guild id and problem id. If the problem is not found, a ProblemNotFound exception will be raised."""
-
         if not isinstance(guild_id, int) and guild_id is not None:
             if self.warnings:
                 warnings.warn("guild_id is not a integer!", category=RuntimeWarning)
@@ -553,10 +551,9 @@ class MathProblemCache:
                         (guild_id, problem_id),
                     )
                     rows = list(await cursor.fetchall())
-                    #print(rows)
-                    if len(list(rows)) == 0:
+                    if len(rows) == 0:
                         raise ProblemNotFound("Problem not found!")
-                    elif len(list(rows)) > 1:
+                    elif len(rows) > 1:
                         raise TooManyProblems(
                             f"{len(rows)} problems exist with the same guild_id and problem_id, not 1"
                         )
@@ -782,7 +779,7 @@ class MathProblemCache:
                         raise  # Re-raise the exception
                 cursor = await conn.cursor()
                 await cursor.execute(
-                    "DELETE FROM problems WHERE guild_id = %s and problem_id = %s",
+                    "DELETE FROM problems WHERE guild_id = ? and problem_id = ?",
                     (guild_id, problem_id),
                 )  # The actual deletion
                 try:
