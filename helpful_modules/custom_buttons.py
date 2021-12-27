@@ -62,7 +62,7 @@ class BasicButton(disnake.ui.Button):
         super().__init__(**kwargs)
         self.check = check
         self._callback = callback
-        self.disabled=False
+        self.disabled = False
         self.user_for = kwargs.pop("user_for").id
 
     async def callback(self, interaction: disnake.Interaction) -> Any:
@@ -74,7 +74,7 @@ class BasicButton(disnake.ui.Button):
         self.disabled = True
 
     def enable(self):
-        "Enable myself. If this does not work, this is probably a Discord limitation. However, I don't know."
+        """Enable myself. If this does not work, this is probably a Discord limitation. However, I don't know."""
         self.disabled = False
 
 
@@ -82,7 +82,7 @@ class ConfirmationButton(BasicButton):
     """A confirmation button"""
 
     def __init__(self, custom_id="1", *args, **kwargs):
-        "Create a new ConfirmationButton."
+        """Create a new ConfirmationButton."""
         super().__init__(*args, **kwargs)
         self.custom_id = custom_id
         self.author_for = kwargs.pop("author_for")

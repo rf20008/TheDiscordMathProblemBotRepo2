@@ -157,8 +157,7 @@ class ProblemsCog(HelperCog):
             await self.cache.get_problem(real_guild_id, int(problem_id))
         except ProblemNotFound:  # Problem not found
             await inter.send(embed=ErrorEmbed("Problem not found."))
-            return
-
+            raise
         problem = await self.cache.get_problem(
             int(inter.guild.id) if is_guild_problem else None, int(problem_id)
         )

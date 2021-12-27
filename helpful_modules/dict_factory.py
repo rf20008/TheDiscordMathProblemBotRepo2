@@ -1,5 +1,5 @@
 # Attribution to https://web.archive.org/web/20201112013549/https://stackoverflow.com/questions/3300464/how-can-i-get-dict-from-sqlite-query
-# I did not have any part in writing the code
+# I did not have any part in writing the code!
 import sqlite3
 
 
