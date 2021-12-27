@@ -259,9 +259,6 @@ class DeveloperCommands(HelperCog):
         """/generate_new_problems [num_new_problems_to_generate: int]
         Generate new Problems."""
         # TODO: problem_generator class (and use formulas :-))
-        await cooldowns.check_for_cooldown(
-            inter, "generate_new_problems", 30
-        )  # 30 second cooldown!
         await inter.response.defer()
         if inter.author.id not in self.bot.trusted_users:
             await inter.send(embed=ErrorEmbed("You aren't trusted!"), ephemeral=True)
