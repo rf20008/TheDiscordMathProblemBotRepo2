@@ -16,26 +16,30 @@ s
 
 ## Rules/things I have the right to do.
 
-Trusted users (including me) reserve the right to blacklist people from the official instance of the bot for many reasons, including <ul>
+Trusted users (including me) reserve the right to blacklist people from the official instance of the bot for many reasons, including: 
+<ul>
 <li> Sending NSFW/NSFL content through problems </li>
 <li> Submitting copyrighted problems that are reported (or that they find)</li>
 <li> Spamming the bot. The bot might ban you for spamming.</li>
-<li> Disrespecting/targeting/etc people through problems.</li></ul>. Trusted users retain the right to use their own discretion about whether to ban a person.
+<li> Disrespecting/targeting/etc... people through problems.</li>
+<li> Exploiting bugs instead of reporting them. </li> </ul> <!---Note that the space prevents errors---> Trusted users retain the right to use their own discretion about whether to ban a person.
 
 The trusted users/guild administrators (if the problem isn't global) also have the right to delete problems submitted to the bot for many reasons, including <ul>
-<li> Disrespecting/targeting/etc people through problems</li>
-</li> Sending NSFW/NSFL content through problems</li>
-<li> Sending copyrighted things that the author does not have the copyright of.</li>
+<li> Disrespecting/targeting/etc... people through problems</li>
+<li> Sending NSFW/NSFL content through problems.</li>
+<li> Sending copyrighted things that the author does not have the correct rights to license to this bot. </li>
 </ul>. People with the authority to delete problems reserve the right to use their own discretion on whether to delete a problem or not. (This covers edge cases!)
 
 ## Disclaimers (because they don't belong in the Privacy Policy)
 ### LIABILITY DISCLAIMER
 
-I'm not liable for the content this bot shows you. Sometimes I shut my bot off for development purposes (if I do, I usually notify you), but otherwise I'm not liable to anyone for that too. I try to get rid of bugs, but I'm not liable for them if they occur.
+I'm not liable for the content this bot shows you as I do not produce it. 
+Sometimes I shut my bot off for development purposes (if I do, I usually notify you), but otherwise I'm not liable to anyone for that too. 
+I try to get rid of bugs, but I'm not liable for them if they occur. However, in most serious cases, the law would supersede this.  
 (In some places, I'm not allowed to legally disclaim liability. If you live in such a place, please ignore this section.)
-(In some scenarios, laws might supersede this policy and I may still be liable. This is the case if there is no plausible interpretation of the law that says I am not liable to you. In those cases, I am still liable.)
+(In some scenarios, laws might supersede this policy. In those cases, I will still be liable. This is the case if there is no plausible interpretation of the law that says I am not liable to you. In those cases, I am still liable.)
 
-
+Note that in most serious scenarios, the law would supersede this policy. I would still be liable in those cases.
 
 ### COPYRIGHT DISCLAIMER
 
@@ -45,11 +49,19 @@ When you submit a problem, quiz, etc. to this bot, you (the user of the bot) giv
 
 When the law complicates stuff & it invalidates parts of these Terms, only the smallest part that, when removed, makes the law not complicate stuff and makes the rest of the Terms invalid, will be removed from the Terms.
 
+Inspiration: https://arcane.bot/tos
+
+If this is not allowed, the above section is rendered null. If it's rendered null, when the law complicates stuff, it will be handled on a case-by-case basis instead.
 # Changes to the Terms
 
-I may change the Terms at any time and for any reason. We won't notify you induvidually (because we don't store contact data about you with the express purpose of contacting you). However, we might use the bot's status/the official server/other ways to notify you. 
+I may change the Terms at any time and for any reason. We won't notify you individually (because we don't store contact data about you with the express purpose of contacting you). However, we might use the bot's status/the official server/other ways to notify you.
+
+## Suggestions
+
+Suggestions to this are welcome (as of right now)! However, make sure to not cause "breaking changes" (which includes changes such that people following the old version could not follow the new version without making breaking changes.).
 
 # Contributions/ Derivatives / Forks of the project
 
 For legal reasons, those are licensed under GPLv3! The maintainers of the fork have the right to change these Terms, but the modified Terms do not apply to this version unless the changes are merged into the main version!
+Note that I am not liable for forks/modifications of this bot as I do not have control over them.
 

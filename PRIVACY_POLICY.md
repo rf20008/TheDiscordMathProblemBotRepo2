@@ -29,7 +29,11 @@ If other kinds of data are disclosed, then either I intend this (and will notify
 
 You can see *all* of your data using the command /user_data get_data.
 
-As of right now, quizzes do not have a user interface, but problems you submit can still be deleted via ``/delete_problem``. Due to Discord limitations, you are not able to delete individual problems that are part of Discord servers are not a part of. There is also a ``/delete_all_my_data`` command, which will delete *all* your problems, quizzes, quiz submissions, and grades you submitted (including guilds you are not part of). However, due to security reasons, we won't delete the data we store about you about whether you're blacklisted / trusted.  It is possible to delete data about whether you voted or solved problems.
+As of right now, quizzes do not have a user interface, but problems you submit can still be deleted via ``/delete_problem``. 
+Due to Discord limitations, you are not able to delete individual problems that are part of Discord servers are not a part of. 
+There is also a ``/user_data delete_all`` command, which will delete *all* your problems, quizzes, quiz submissions, and grades you submitted (including guilds you are not part of). 
+However, due to security reasons, we won't delete the data we store about you about whether you're blacklisted / trusted.  
+It is possible to delete data about whether you voted or solved problems.
 
 ## Updates and notification
 
