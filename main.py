@@ -6,6 +6,7 @@
 # imports - standard library
 import asyncio
 import logging
+from logging import handlers
 import threading
 import typing
 import warnings
@@ -46,14 +47,16 @@ if DISCORD_TOKEN is None:
 # TODO: use logging + changelog.json + debugging :-)
 # TODO: fix SQL errors
 # TODO: store logs
-TRFHB = logging.handlers.TimedRotatingFileHandler(filename='logs/bot.log',
-                                                  interval='midnight',
-                                                  encoding='utf-8',
-                                                  backupcount=300)  # TimedRotatingFileHandler(for the)Bot
-TRFHD = logging.handlers.TimedRotatingFileHandler(filename='logs/disnake.log',
-                                                  interval='midnight',
-                                                  encoding='utf-8',
-                                                  backupcount=300)  # TimedRotatingFileHandler(for) Disnake
+TRFHB = handlers.TimedRotatingFileHandler(
+    filename='logs/bot.log',
+    when='midnight',
+    encoding='utf-8',
+    backupCount=300)  # TimedRotatingFileHandler(for the)Bot
+TRFHD = handlers.TimedRotatingFileHandler(
+    filename='logs/disnake.log',
+    when='midnight',
+    encoding='utf-8',
+    backupCount=300)  # TimedRotatingFileHandler(for) Disnake
 log = logging.getLogger(__name__)
 disnake_log = logging.getLogger('disnake')
 log.addHandler(TRFHB)
