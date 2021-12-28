@@ -21,8 +21,7 @@ from helpful_modules.constants_loader import *
 from helpful_modules.cooldowns import check_for_cooldown
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.threads_or_useful_funcs import *
-from sys import exc_info, stdout
-from sys import exit
+from sys import exc_info, stdout, exit
 
 # Imports - 3rd party
 
@@ -45,14 +44,21 @@ if DISCORD_TOKEN is None:
     raise RuntimeError("Cannot start bot; no discord_token environment variable")
 
 # TODO: use logging + changelog.json + debugging :-)
-
-# Timed rotating file handler for the bot
-TRFHB = logging.handlers.TimedRotatingFileHandler(filename='logs/bot.log')
-TRFHD = logging.handlers.TimedRotatingFileHandler(filename='logs/disnake.log')
+# TODO: fix SQL errors
+# TODO: store logs
+TRFHB = logging.handlers.TimedRotatingFileHandler(filename='logs/bot.log',
+                                                  interval='midnight',
+                                                  encoding='utf-8',
+                                                  backupcount=300)  # TimedRotatingFileHandler(for the)Bot
+TRFHD = logging.handlers.TimedRotatingFileHandler(filename='logs/disnake.log',
+                                                  interval='midnight',
+                                                  encoding='utf-8',
+                                                  backupcount=300)  # TimedRotatingFileHandler(for) Disnake
 log = logging.getLogger(__name__)
 disnake_log = logging.getLogger('disnake')
 log.addHandler(TRFHB)
 disnake_log.addHandler(TRFHD)
+
 
 def the_daemon_file_saver():
     """Auto-save files!"""

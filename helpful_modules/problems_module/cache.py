@@ -6,7 +6,7 @@ import warnings
 from copy import deepcopy, copy
 from types import FunctionType
 from typing import *
-
+import logging
 import aiosqlite
 import disnake
 
@@ -16,6 +16,8 @@ from .base_problem import BaseProblem
 from .errors import *
 from .mysql_connector_with_stmt import *
 from .quizzes import Quiz, QuizProblem, QuizSubmission
+
+log = logging.getLogger(__name__)
 
 
 class MathProblemCache:
@@ -75,7 +77,7 @@ class MathProblemCache:
         asyncio.run(self.update_cache())
 
     async def initialize_sql_table(self):
-        """Initialize my internal SQL table. This does nothing if the internal SQL tables already exist!"""
+        """Initialize my internal SQL tables. This does nothing if the internal SQL tables already exist!"""
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
                 cursor = await conn.cursor()
@@ -91,7 +93,7 @@ class MathProblemCache:
                         )"""
                 )  # Blob types will be compiled with pickle.loads() and pickle.dumps() (they are lists)
                 # author: int = user_id
-
+                # Create table of problems
                 await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS quizzes (
                     guild_id INT,
@@ -216,8 +218,11 @@ class MathProblemCache:
                         results[0]
                     )
                 else:
-                    raise TooMuchUserDataException(
-                        f"Too much user data; found {len(results)} results; expected either 1 or 0")
+                    try:
+                        raise TooMuchUserDataException(
+                            f"Too much user data; found {len(results)} results;    expected either 1 or 0")
+                    except NameError:
+                        raise MathProblemsModuleException("Too much user data found.")
 
     async def set_user_data(self, user_id: int, new: UserData) -> None:
         """Set the user_data of a user."""
@@ -471,7 +476,7 @@ class MathProblemCache:
         if kwargs is None:
             kwargs = {}
         await self.update_cache()
-        return [quiz for quiz in self.cached_quizzes if func(quiz, *args, **kwargs)]
+        return [quiz for quiz in self.cached_quizzes if func(quiz, *args, **kwargs)]  # type: ignore
 
     async def get_problems_by_func(
             self: "MathProblemCache",
@@ -493,10 +498,10 @@ class MathProblemCache:
         global_problems_that_meet_the_criteria = [
             problem
             for problem in self.global_problems.values()
-            if func(problem, *args, **kwargs)
+            if func(problem, *args, **kwargs)  # type: ignore
         ]
         guild_problems_that_meet_the_criteria = [
-            problem for problem in guild_problems if func(problem, *args, **kwargs)
+            problem for problem in guild_problems if func(problem, *args, **kwargs)  # type: ignore
         ]
         problems_that_meet_the_criteria = global_problems_that_meet_the_criteria
         problems_that_meet_the_criteria.extend(guild_problems_that_meet_the_criteria)
@@ -506,6 +511,7 @@ class MathProblemCache:
             self, guild_id: typing.Optional[int], problem_id: int
     ) -> BaseProblem:
         """Gets the problem with this guild id and problem id. If the problem is not found, a ProblemNotFound exception will be raised."""
+        # For some reason this isn't working (but update_cache is...)
         if not isinstance(guild_id, int) and guild_id is not None:
             if self.warnings:
                 warnings.warn("guild_id is not a integer!", category=RuntimeWarning)
@@ -526,14 +532,16 @@ class MathProblemCache:
                     problem_id
                 ]  # Get the cached problem!
             except KeyError:
-                raise ProblemNotFound(
-                    "Problem not found in the cache! You may want to try again, but without caching!"
-                )
+                try:
+                    return self.global_problems[problem_id]
+                except KeyError:
+                    raise ProblemNotFound(
+                        "Problem not found in the cache! You may want to try again, but without caching!"
+                    )
         else:
             # Otherwise, use SQL to get the problem!
             if self.use_sqlite:
                 async with aiosqlite.connect(self.db_name) as conn:
-
                     try:
                         conn.row_factory = dict_factory  # Make sure the row_factory can be set to dict_factory
                     except BaseException as exc:
@@ -548,12 +556,17 @@ class MathProblemCache:
                             pass
                         else:
                             raise  # Re-raise the exception
+
                     cursor = await conn.cursor()
+                    log.debug(
+                        f"Getting the problem with guild id {guild_id} and problem_id {problem_id} (types: {type(guild_id)}, {type(problem_id)})")
                     await cursor.execute(
-                        "SELECT * from problems WHERE guild_id = ? AND problem_id = ?",
+                        "SELECT * FROM problems WHERE guild_id = ? AND problem_id = ?",
+                        # Not sure if making "from" lowercase will change anything (but it selects the problem from the database)
                         (guild_id, problem_id),
                     )
                     rows = list(await cursor.fetchall())
+                    log.debug(f"{len(rows)} problems found")
                     if len(rows) == 0:
                         raise ProblemNotFound("Problem not found!")
                     elif len(rows) > 1:
