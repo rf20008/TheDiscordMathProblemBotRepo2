@@ -21,8 +21,7 @@ from helpful_modules.constants_loader import *
 from helpful_modules.cooldowns import check_for_cooldown
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.threads_or_useful_funcs import *
-from sys import exc_info, stdout
-from sys import exit
+from sys import exc_info, stdout, exit
 
 # Imports - 3rd party
 
