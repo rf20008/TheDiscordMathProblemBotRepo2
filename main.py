@@ -45,7 +45,11 @@ if DISCORD_TOKEN is None:
     raise RuntimeError("Cannot start bot; no discord_token environment variable")
 
 # TODO: use logging + changelog.json + debugging :-)
+# TODO: fix SQL errors
+# TODO: store logs
+
 logging.basicConfig(level=logging.WARNING)
+disnake_logger = logging.getLogger('disnake')
 log = logging.getLogger(__name__)
 
 
