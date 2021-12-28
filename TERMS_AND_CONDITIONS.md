@@ -1,9 +1,9 @@
 # Terms & Conditions
-Disclaimer: I am not a lawyer.
+Disclaimer: I am not a lawyer. If you want legal advice, please ask a real lawyer.
 
 Most of this language should be self-explanatory. Please create an issue if it isn't!
 
-By using the application (The Discord Math Problem Bot), you agree to these Terms
+By using the application (The Discord Math Problem Bot), you agree to these Terms.
 
 ## Definitions
 "us/we" means the people who develop/maintain The Discord Math Problem Bot (on the official instance, it's @rf20008)
@@ -11,7 +11,6 @@ By using the application (The Discord Math Problem Bot), you agree to these Term
 "the bot" means The Discord Math Problem Bot.
 "me" means @rf20008.
 "guild administrators" means people who have the 'administrator' permission in the guild.
-s
 
 
 ## Rules/things I have the right to do.
@@ -28,7 +27,7 @@ The trusted users/guild administrators (if the problem isn't global) also have t
 <li> Disrespecting/targeting/etc... people through problems</li>
 <li> Sending NSFW/NSFL content through problems.</li>
 <li> Sending copyrighted things that the author does not have the correct rights to license to this bot. </li>
-</ul>. People with the authority to delete problems reserve the right to use their own discretion on whether to delete a problem or not. (This covers edge cases!)
+</ul>People with the authority to delete problems reserve the right to use their own discretion on whether to delete a problem or not. (This covers edge cases!) I also do not have control over guild administrators (as they are not me)
 
 ## Disclaimers (because they don't belong in the Privacy Policy)
 ### LIABILITY DISCLAIMER
@@ -45,22 +44,22 @@ Note that in most serious scenarios, the law would supersede this policy. I woul
 
 When you submit a problem, quiz, etc. to this bot, you (the user of the bot) give me (ay136416 / rf20008) a royalty-free, worldwide, non-revocable, etc. license with enough rights to allow me to use this bot to process, store, show, etc. the problem in order for the bot to function properly. However, you don't necessarily transfer ownership to me, and you still get credit for this problem wherever the bot shows it.
 
-# When the law complicates stuff
+## When the law complicates stuff
 
 When the law complicates stuff & it invalidates parts of these Terms, only the smallest part that, when removed, makes the law not complicate stuff and makes the rest of the Terms invalid, will be removed from the Terms.
 
 Inspiration: https://arcane.bot/tos
 
 If this is not allowed, the above section is rendered null. If it's rendered null, when the law complicates stuff, it will be handled on a case-by-case basis instead.
-# Changes to the Terms
+## Changes to the Terms
 
 I may change the Terms at any time and for any reason. We won't notify you individually (because we don't store contact data about you with the express purpose of contacting you). However, we might use the bot's status/the official server/other ways to notify you.
 
-## Suggestions
+### Suggestions
 
 Suggestions to this are welcome (as of right now)! However, make sure to not cause "breaking changes" (which includes changes such that people following the old version could not follow the new version without making breaking changes.).
 
-# Contributions/ Derivatives / Forks of the project
+## Contributions/ Derivatives / Forks of the project
 
 For legal reasons, those are licensed under GPLv3! The maintainers of the fork have the right to change these Terms, but the modified Terms do not apply to this version unless the changes are merged into the main version!
 Note that I am not liable for forks/modifications of this bot as I do not have control over them.
