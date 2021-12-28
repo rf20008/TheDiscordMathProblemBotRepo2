@@ -45,9 +45,14 @@ if DISCORD_TOKEN is None:
     raise RuntimeError("Cannot start bot; no discord_token environment variable")
 
 # TODO: use logging + changelog.json + debugging :-)
-logging.basicConfig(level=logging.WARNING)
-log = logging.getLogger(__name__)
 
+# Timed rotating file handler for the bot
+TRFHB = logging.handlers.TimedRotatingFileHandler(filename='logs/bot.log')
+TRFHD = logging.handlers.TimedRotatingFileHandler(filename='logs/disnake.log')
+log = logging.getLogger(__name__)
+disnake_log = logging.getLogger('disnake')
+log.addHandler(TRFHB)
+disnake_log.addHandler(TRFHD)
 
 def the_daemon_file_saver():
     """Auto-save files!"""

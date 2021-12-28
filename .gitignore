@@ -173,11 +173,15 @@ MathProblemCache1.db
 .env # I would like to keep my secrets safe. :-)
 .env.save
 *.json # Don't show the actual problems
+
 #:(
 
 /error_logs/**/
 /error_logs/*
 error_logs/
+logs/**
+**/logs/**
+
 # I'm willing to un-gitignore error_logs (for debugging purposes)
 
 
