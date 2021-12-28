@@ -62,7 +62,8 @@ disnake_log = logging.getLogger('disnake')
 log.addHandler(TRFHB)
 disnake_log.addHandler(TRFHD)
 
-
+log.setLevel(logging.DEBUG)
+disnake_log.setLevel(logging.DEBUG)
 def the_daemon_file_saver():
     """Auto-save files!"""
     global bot, guildMathProblems, trusted_users, vote_threshold
