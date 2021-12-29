@@ -544,7 +544,7 @@ class MathProblemCache:
         # Searching by NULL
         log.debug(
             f'Type of guild_id & problem_id: guild_id: {type(guild_id)} {guild_id}, problem_id: {type(problem_id)} {problem_id}')
-        if not isinstance(guild_id, int) and guild_id is not None:
+        if not isinstance(guild_id, int) and guild_id is not None: # type-checking
             if self.warnings:
                 warnings.warn("guild_id is not a integer!", category=RuntimeWarning)
             else:
@@ -565,7 +565,7 @@ class MathProblemCache:
                 ]  # Get the cached problem!
             except KeyError:
                 try:
-                    return self.global_problems[problem_id]
+                    return self.global_problems[problem_id] # global problem?
                 except KeyError:
                     raise ProblemNotFound(
                         "Problem not found in the cache! You may want to try again, but without caching!"
