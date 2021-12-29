@@ -18,6 +18,7 @@ from .mysql_connector_with_stmt import *
 from .quizzes import Quiz, QuizProblem, QuizSubmission
 
 log = logging.getLogger(__name__)
+log.setLevel(logging.NOTSET)
 
 
 class MathProblemCache:
@@ -41,6 +42,7 @@ class MathProblemCache:
     ):
         """Create a new MathProblemCache. The arguments should be self-explanatory.
         Many methods are async!"""
+        log.info("Initializing the MathProblemCache object.")
         # make_sql_table([], db_name = sql_dict_db_name)
         # make_sql_table([], db_name = "MathProblemCache1.db", table_name="kv_store")
         if use_sqlite:
@@ -48,6 +50,7 @@ class MathProblemCache:
         self.db_name = db_name
         self.db = db_name
         if warnings_or_errors not in ["warnings", "errors"]:
+            log.critical("Uh oh; warnings_or_errors is bad")
             raise ValueError(
                 f"warnings_or_errors is {warnings_or_errors}, not 'warnings' or 'errors'"
             )
@@ -78,6 +81,7 @@ class MathProblemCache:
 
     async def initialize_sql_table(self):
         """Initialize my internal SQL tables. This does nothing if the internal SQL tables already exist!"""
+        log.info("Initializing my internal SQL tables")
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
                 cursor = await conn.cursor()
@@ -94,6 +98,7 @@ class MathProblemCache:
                 )  # Blob types will be compiled with pickle.loads() and pickle.dumps() (they are lists)
                 # author: int = user_id
                 # Create table of problems
+                log.debug("Created problems table")
                 await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS quizzes (
                     guild_id INT,
@@ -111,6 +116,7 @@ class MathProblemCache:
                 # voters: Blob (a list)
                 # solvers: Blob (a list)
                 # submissions: Blob (a dictionary)
+                log.debug("Created quizzes table")
                 await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS quiz_submissions (
                     guild_id INT,
@@ -120,13 +126,16 @@ class MathProblemCache:
                     )"""
                 )  # as dictionary
                 # Used to store submissions!
+                log.debug("Created submissions table")
                 await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS user_data (
                     USER_ID INT,
                     trusted INT NOT NULL,
                     blacklisted INT NOT NULL)"""  # will use bool(val) because SQLite doesn't support booleans
                 )
+                log.debug("Created user_data table")
                 await conn.commit()  # Otherwise, when this closes, the database just reverted!
+                log.debug("Saved!")
         else:
             with mysql_connection(
                     host=self.mysql_db_ip,
@@ -135,10 +144,11 @@ class MathProblemCache:
                     database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
+                log.debug("Created cursor")
                 cursor.execute(
                     """CREATE TABLE IF NOT EXISTS problems (
                         guild_id BIGINT,
-                        problem_id BIGINT,
+                        problem_id BIGINT NOT NULL,
                         question TEXT(2000) NOT NULL,
                         answers BLOB NOT NULL, 
                         author BIGINT NOT NULL,
@@ -147,6 +157,7 @@ class MathProblemCache:
                         )"""
                 )  # Blob types will be compiled with pickle.loads() and pickle.dumps() (they are lists)
                 # author: int = user_id
+                log.debug("Created problems table!")
                 cursor.execute(
                     """CREATE TABLE IF NOT EXISTS quizzes (
                     guild_id BIGINT,
@@ -159,6 +170,7 @@ class MathProblemCache:
                     solvers BLOB NOT NULL
                 )"""
                 )
+                log.debug("Created quizzes table")
                 cursor.execute(
                     """CREATE TABLE IF NOT EXISTS quiz_submissions (
                     guild_id BIGINT,
@@ -168,6 +180,7 @@ class MathProblemCache:
                     )"""
                 )  # as dictionary
                 # Used to store submissions
+                log.debug("Created submissions table")
                 cursor.execute(
                     """CREATE TABLE IF NOT EXISTS user_data (
                     user_id INT,
@@ -175,26 +188,32 @@ class MathProblemCache:
                     blacklisted BOOLEAN DEFAULT false
                     )"""
                 )
+                log.debug("Created user data table")
                 connection.commit()
+                log.debug("Saved tables!")
 
     async def get_user_data(self, user_id: int,
                             default: typing.Optional[UserData] = None):
+        log.debug(f"get_user_data method called. user_id: {user_id}, default: {default}")
         assert isinstance(user_id, int)
         assert isinstance(default, UserData) or default is None
         if default is None:
             default = UserData(user_id=user_id, trusted=False, blacklisted=False)
+            # To avoid mutable default arguments
         if self.use_sqlite:
-            async with aiosqlite.connect(self.db) as conn:
+            async with aiosqlite.connect(self.db_name) as conn:
                 conn.row_factory = dict_factory
                 cursor = await conn.cursor()
-                await cursor.execute("SELECT * FROM user_data WHERE user_id = ?", (user_id,))
+                await cursor.execute("SELECT * FROM user_data WHERE user_id = ?", (user_id,))  # Select the data
                 cursor_results = list(await cursor.fetchall())
+                log.debug(f"Data selected (results: {cursor_results})")
                 if len(cursor_results) == 0:
                     return default
                 elif len(cursor_results == 1):
                     dict_to_use = cursor_results[0]
                     dict_to_use['trusted'] = bool(dict_to_use['trusted'])
                     dict_to_use['blacklisted'] = bool(dict_to_use['blacklisted'])
+                    log.debug("Data successfully returned!")
                     return UserData.from_dict(dict_to_use)
                 else:
                     raise TooMuchUserDataException(
@@ -206,6 +225,7 @@ class MathProblemCache:
                     user=self.mysql_username,
                     database=self.mysql_db_name,
             ) as connection:
+                log.debug('Connected to MySQL')
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     'SELECT * FROM user_data WHERE USER_ID=%s', (user_id,)  # TODO: fix placeholders
@@ -231,15 +251,17 @@ class MathProblemCache:
         if (await self.get_user_data(user_id=user_id, default=None)) is not None:
             raise MathProblemsModuleException("User data does not exist! Use add_user_data instead")
         if self.use_sqlite:
-            async with aiosqlite.connect(self.db) as conn:
+            async with aiosqlite.connect(self.db_name) as conn:
+                log.debug('Connected to sqlite!')
                 conn.row_factory = dict_factory
                 blacklisted_int = int(new.blacklisted)
                 trusted_int = int(new.trusted)
                 cursor = await conn.cursor()
                 await cursor.execute("""UPDATE user_data 
-               SET user_id=?, blacklisted=?, trusted=?
-               WHERE user_id=?;""", (user_id, blacklisted_int, trusted_int, user_id))
+                SET user_id=?, blacklisted=?, trusted=?
+                WHERE user_id=?;""", (user_id, blacklisted_int, trusted_int, user_id))
                 await conn.commit()
+                log.debug("Finished!")
         else:
             with mysql_connection(
                     host=self.mysql_db_ip,
@@ -247,6 +269,7 @@ class MathProblemCache:
                     user=self.mysql_username,
                     database=self.mysql_db_name,
             ) as connection:
+                log.debug("Connected to MySQL")
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     """UPDATE user_id
@@ -254,6 +277,7 @@ class MathProblemCache:
                    WHERE user_id = %s""", (user_id, new.trusted, new.blacklisted, user_id)
                 )
                 connection.commit()
+                log.debug("Finished!")
                 return
 
     async def add_user_data(self, user_id: int, thing_to_add: UserData) -> None:
@@ -263,11 +287,12 @@ class MathProblemCache:
             raise MathProblemsModuleException(
                 "User data already exists")  # Make sure the user data doesn't already exist
         if self.use_sqlite:
-            async with aiosqlite.connect(self.db) as conn:
+            async with aiosqlite.connect(self.db_name) as conn:
                 cursor = await conn.cursor()
                 await cursor.execute("""INSERT INTO user_data (user_id, trusted, blacklisted)
                 VALUES (?,?,?)""", (user_id, thing_to_add.trusted, thing_to_add.blacklisted))  # add the user data
                 await conn.commit()
+                log.debug("Finished adding user data!")
         else:
             with mysql_connection(
                     host=self.mysql_db_ip,
@@ -284,7 +309,7 @@ class MathProblemCache:
         """Delete user data given the user id"""
         assert isinstance(user_id, int)
         if self.use_sqlite:
-            async with aiosqlite.connect(self.db) as conn:
+            async with aiosqlite.connect(self.db_name) as conn:
                 cursor = await conn.cursor()
                 await cursor.execute("DELETE FROM user_data WHERE user_id = ?", (user_id,))
                 await conn.commit()
@@ -312,7 +337,7 @@ class MathProblemCache:
     def max_guild_problems(self):
         return self._max_guild_limit
 
-    async def convert_to_dict(self):
+    async def convert_to_dict(self) -> dict:
         """A method that converts self to a dictionary (not used, will probably be removed soon)"""
         e = {}
         await self.update_cache()
@@ -323,6 +348,7 @@ class MathProblemCache:
                 e[guild_id][Problem.id] = Problem.to_dict()
         return e
 
+    # TODO: finish logging
     def convert_dict_to_math_problem(self, problem: dict, use_from_dict: bool = True):
         """Convert a dictionary into a math problem. It must be in the expected format. (Overridden by from_dict, but still used) Possibly not used due to SQL."""
         if use_from_dict:
@@ -511,7 +537,13 @@ class MathProblemCache:
             self, guild_id: typing.Optional[int], problem_id: int
     ) -> BaseProblem:
         """Gets the problem with this guild id and problem id. If the problem is not found, a ProblemNotFound exception will be raised."""
-        # For some reason this isn't working (but update_cache is...)
+        # This isn't working
+        # Possible causes:
+        # The item is of the wrong type
+        # Wrong database/table / a SQL feature that I didn't know about
+        # Searching by NULL
+        log.debug(
+            f'Type of guild_id & problem_id: guild_id: {type(guild_id)} {guild_id}, problem_id: {type(problem_id)} {problem_id}')
         if not isinstance(guild_id, int) and guild_id is not None:
             if self.warnings:
                 warnings.warn("guild_id is not a integer!", category=RuntimeWarning)
@@ -560,6 +592,8 @@ class MathProblemCache:
                     cursor = await conn.cursor()
                     log.debug(
                         f"Getting the problem with guild id {guild_id} and problem_id {problem_id} (types: {type(guild_id)}, {type(problem_id)})")
+                    log.debug("Expected SQL statement:")
+                    log.warning(f"SELECT * FROM problems WHERE guild_id = {guild_id} AND problem_id = {problem_id}")
                     await cursor.execute(
                         "SELECT * FROM problems WHERE guild_id = ? AND problem_id = ?",
                         # Not sure if making "from" lowercase will change anything (but it selects the problem from the database)
@@ -570,6 +604,7 @@ class MathProblemCache:
                     if len(rows) == 0:
                         raise ProblemNotFound("Problem not found!")
                     elif len(rows) > 1:
+                        log.critical("Uh oh; too many problems!")
                         raise TooManyProblems(
                             f"{len(rows)} problems exist with the same guild_id and problem_id, not 1"
                         )
