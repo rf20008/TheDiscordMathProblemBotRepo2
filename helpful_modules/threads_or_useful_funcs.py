@@ -72,6 +72,14 @@ async def base_on_error(inter, error):
         file=stderr,
     )
     log_error(error)  # Log the error
+    error_msg = """An error occured!
+    
+    Steps you should do:
+    1) Please report this bug to me! (Either create a github issue, or report it in the support server)
+    2) If you are a programmer, please suggest a fix.
+    3) Please don't use this command until it gets fixed in a later update!
+    
+    The error traceback is shown below; this may be removed/DMed to the user in the future.""" + disnake.utils.escape_markdown(error_traceback) # TODO: update when my support server becomes public & think about providing the traceback to the user
     try:
         embed = disnake.Embed(
             colour=disnake.Colour.red(),
@@ -82,7 +90,7 @@ async def base_on_error(inter, error):
 
         # send as plain text
         plain_text = (
-            "Oh no! An Exception occurred! And it couldn't be sent as an embed!```"
+            """Oh no! An Exception occurred! And it couldn't be sent as an embed!```"""
         )
         plain_text += error_traceback
         plain_text += f"```Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"

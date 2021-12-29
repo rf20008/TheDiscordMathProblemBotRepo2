@@ -265,7 +265,8 @@ async def on_slash_command_error(inter, error):
     try:
         return await inter.send(**dict_args)
     except AttributeError:
-        return await inter.send()
+        log_error(error, f'error_logs/{str(datetime.datetime.now())}')
+        return await inter.send('An error occured, and the error message couldn\'t be sent. However, it has been saved.')
 
 
 # @bot.command(help = """Adds a trusted user!
