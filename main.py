@@ -51,19 +51,22 @@ TRFHB = handlers.TimedRotatingFileHandler(
     filename='logs/bot.log',
     when='midnight',
     encoding='utf-8',
-    backupCount=300)  # TimedRotatingFileHandler(for the)Bot
+    backupCount=300
+)  # TimedRotatingFileHandler(for the)Bot
 TRFHD = handlers.TimedRotatingFileHandler(
     filename='logs/disnake.log',
     when='midnight',
     encoding='utf-8',
     backupCount=300)  # TimedRotatingFileHandler(for) Disnake
-log = logging.getLogger(__name__)
+assert TRFHD != TRFHB
+log = logging.getLogger('__main__' if __name__ == "__main__" else __name__)
 disnake_log = logging.getLogger('disnake')
 log.addHandler(TRFHB)
 disnake_log.addHandler(TRFHD)
-
-log.setLevel(logging.DEBUG)
-disnake_log.setLevel(logging.INFO)
+log.setLevel(5)
+disnake_log.setLevel(logging.DEBUG)
+print(log.handlers)
+log.debug('test!')
 def the_daemon_file_saver():
     """Auto-save files!"""
     global bot, guildMathProblems, trusted_users, vote_threshold
@@ -118,6 +121,8 @@ main_cache = problems_module.MathProblemCache(
     mysql_db_name=bot_constants.MYSQL_DB_NAME,
     use_sqlite=bot_constants.USE_SQLITE,
 )  # Generate a new cache for the bot!
+print(main_cache.db_name)
+assert main_cache.db is main_cache.db_name
 vote_threshold = 0  # default
 mathProblems = {}
 guildMathProblems = {}
