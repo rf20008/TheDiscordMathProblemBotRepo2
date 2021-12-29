@@ -593,7 +593,8 @@ class MathProblemCache:
                     log.debug(
                         f"Getting the problem with guild id {guild_id} and problem_id {problem_id} (types: {type(guild_id)}, {type(problem_id)})")
                     log.debug("Expected SQL statement:")
-                    log.warning(f"SELECT * FROM problems WHERE guild_id = {guild_id} AND problem_id = {problem_id}")
+                    log.warning(f"""SELECT * FROM problems 
+WHERE guild_id = {guild_id} AND problem_id = {problem_id}""")
                     await cursor.execute(
                         """SELECT * FROM problems 
                         WHERE guild_id = ? AND problem_id = ?""",
