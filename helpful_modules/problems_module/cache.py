@@ -595,7 +595,8 @@ class MathProblemCache:
                     log.debug("Expected SQL statement:")
                     log.warning(f"SELECT * FROM problems WHERE guild_id = {guild_id} AND problem_id = {problem_id}")
                     await cursor.execute(
-                        "SELECT * FROM problems WHERE guild_id = ? AND problem_id = ?",
+                        """SELECT * FROM problems 
+                        WHERE guild_id = ? AND problem_id = ?""",
                         # Not sure if making "from" lowercase will change anything (but it selects the problem from the database)
                         (guild_id, problem_id),
                     )

@@ -427,7 +427,6 @@ NumSolvers: {len(problem.get_solvers())}"""
         Create & submit a new problem with the given question and answer.
         If the problem is a guild problem, it must not be executed in a DM context or the bot will not know which guild the problem is for!"""
 
-
         if (
             len(question) > self.cache.max_question_length
         ):  # Check to make sure it's not too long!
