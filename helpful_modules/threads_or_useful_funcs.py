@@ -7,6 +7,7 @@ from disnake.ext import commands
 from sys import stderr, exc_info
 from time import asctime
 from time import sleep
+from logging import handlers
 
 from ._error_logging import log_error
 from .cooldowns import OnCooldown
@@ -63,17 +64,16 @@ async def base_on_error(inter, error):
         return {
             "embed": ErrorEmbed(
                 str(error)
-                + " You probably aren't allowed to run this command. If this is a bug, please report it :-)"
             )
         }
     # Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
-    logging.error("Uh oh - an error occured ", exc_info=exc_info())
+    logging.error("Uh oh - an error occurred ", exc_info=exc_info())
     print(
         "\n".join(traceback.format_exception(error)),  # python 3.10 only!
         file=stderr,
     )
     log_error(error)  # Log the error
-    error_msg = """An error occured!
+    error_msg = """An error occurred!
     
     Steps you should do:
     1) Please report this bug to me! (Either create a github issue, or report it in the support server)
@@ -86,10 +86,10 @@ async def base_on_error(inter, error):
     try:
         embed = disnake.Embed(
             colour=disnake.Colour.red(),
-            description=disnake.utils.escape_markdown(error_traceback),
+            description=error_msg,
             title="Oh, no! An error occurred!",
         )
-    except TypeError as e:
+    except (TypeError, NameError) as e:
 
         # send as plain text
         plain_text = (
@@ -103,3 +103,11 @@ async def base_on_error(inter, error):
     footer = f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
     embed.set_footer(text=footer)
     return {"embed": embed}
+
+def get_log(name: str) -> logging.Logger:
+    _log = logging.getLogger(name)
+    TRFH = handlers.TimedRotatingFileHandler(filename="logs/bot.log", when="midnight", encoding="utf-8", backupCount=300)
+    _log.addHandler(TRFH)
+    return _log
+
+
