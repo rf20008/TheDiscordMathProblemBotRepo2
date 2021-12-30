@@ -40,7 +40,7 @@ def loading_documentation_thread():
     del d
 
 
-async def base_on_error(inter, error):
+async def base_on_error(inter: disnake.ApplicationCommandInteraction, error: BaseException):
     """The base on_error event. Call this and use the dictionary as keyword arguments to print to the user"""
     error_traceback = "\n".join(traceback.format_exception(error))
     if isinstance(error, BaseException) and not isinstance(error, Exception):
