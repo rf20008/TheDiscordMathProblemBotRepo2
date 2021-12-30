@@ -1,24 +1,31 @@
 # NOT NEEDED - I forgot about decorators
 import typing as t
+
+
 class OnCooldown(Exception):
-    #This is no longer needed
+    # This is no longer needed
     pass
-async def check_for_cooldown(ctx, command_name: str, cooldown_time: float = 0.1, is_global_cooldown: bool = False) -> t.NoReturn:
+
+
+async def check_for_cooldown(
+    ctx, command_name: str, cooldown_time: float = 0.1, is_global_cooldown: bool = False
+) -> t.NoReturn:
     raise DeprecationWarning("Don't use this!")
+
 
 # import time
 #
 # cooldowns = {}
 
 
-#class OnCooldown(Exception):
+# class OnCooldown(Exception):
 #    "This command is on cooldown"
 #    pass
 
 
 # async def check_for_cooldown(
 #    ctx, command_name, cooldown_time=0.1, is_global_cooldown=False, global_cooldown=0
-#):
+# ):
 #    "A function that checks for cooldowns. Raises nextcord.ext.commands.errors.CommandOnCooldown if you are on cooldown Otherwise, returns False and sets the user on cooldown. cooldown_time is in seconds."
 #    global cooldowns
 #    if command_name not in cooldowns.keys():

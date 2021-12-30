@@ -27,8 +27,8 @@ def get_git_revision_hash() -> str:
     """A method that gets the git revision hash. Credit to https://stackoverflow.com/a/21901260 for the code :-)"""
     return (
         subprocess.check_output(["git", "rev-parse", "HEAD"])
-            .decode("ascii")
-            .strip()[:7]
+        .decode("ascii")
+        .strip()[:7]
     )  # [7:] is here because of the commit hash, the rest of this function is from stack overflow
 
 
@@ -44,6 +44,7 @@ async def base_on_error(inter, error):
     error_traceback = "\n".join(traceback.format_exception(error))
     if isinstance(error, BaseException) and not isinstance(error, Exception):
         # Errors that do not inherit from Exception are not meant to be caught
+        await inter.bot.close()
         raise
     if isinstance(error, (OnCooldown, disnake.ext.commands.CommandOnCooldown)):
         # This is a cooldown exception
@@ -79,7 +80,9 @@ async def base_on_error(inter, error):
     2) If you are a programmer, please suggest a fix.
     3) Please don't use this command until it gets fixed in a later update!
     
-    The error traceback is shown below; this may be removed/DMed to the user in the future.""" + disnake.utils.escape_markdown(error_traceback) # TODO: update when my support server becomes public & think about providing the traceback to the user
+    The error traceback is shown below; this may be removed/DMed to the user in the future.""" + disnake.utils.escape_markdown(
+        error_traceback
+    )  # TODO: update when my support server becomes public & think about providing the traceback to the user
     try:
         embed = disnake.Embed(
             colour=disnake.Colour.red(),

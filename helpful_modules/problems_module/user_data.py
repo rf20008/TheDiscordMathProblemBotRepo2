@@ -5,7 +5,9 @@ class UserData:
     """A dataclass to store user data for the bot!"""
 
     # __slots__ = ('trusted', 'blacklisted', 'user_id')
-    def __init__(self, *, user_id: int, trusted: bool = False, blacklisted: bool = False):
+    def __init__(
+        self, *, user_id: int, trusted: bool = False, blacklisted: bool = False
+    ):
         if not isinstance(user_id, int):
             raise TypeError("user_id is not an integer")
         if not isinstance(trusted, bool):
@@ -20,17 +22,17 @@ class UserData:
     def from_dict(cls, dict: dict) -> "UserData":
         """Get UserData from a dictionary"""
         return cls(
-            user_id=dict['user_id'],
-            trusted=dict['trusted'],
-            blacklisted=dict['blacklisted']
+            user_id=dict["user_id"],
+            trusted=dict["trusted"],
+            blacklisted=dict["blacklisted"],
         )
 
     def to_dict(self) -> dict:
         """Convert myself to a dictionary"""
         return {
-            'user_id': self.user_id,
-            'trusted': self.trusted,
-            'blacklisted': self.blacklisted
+            "user_id": self.user_id,
+            "trusted": self.trusted,
+            "blacklisted": self.blacklisted,
         }
 
     async def add_to_cache(self, cache):

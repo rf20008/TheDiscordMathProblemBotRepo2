@@ -22,7 +22,8 @@ class ProblemsCog(HelperCog):
         self.cache = bot.cache
         super().__init__(bot)
         checks.setup(bot)
-    @commands.cooldown(1,1,commands.BucketType.user)
+
+    @commands.cooldown(1, 1, commands.BucketType.user)
     @checks.is_not_blacklisted()
     @commands.slash_command(
         name="edit_problem",
@@ -97,6 +98,7 @@ class ProblemsCog(HelperCog):
                 return await inter.send("You must provide either a question or answer.")
 
         await inter.send(embed=SuccessEmbed(e), ephemeral=True)
+
     @commands.slash_command(
         name="show_problem_info",
         description="Show problem info",
@@ -142,19 +144,19 @@ class ProblemsCog(HelperCog):
         The option `is_guild_problem` tells the bot about whether the problem you're trying to show is a guild problem. This defaults to false, which means you are viewing a global problems unless you specify otherwise.
         **If you execute this in a DM, the bot will treat it like you set is_guild_problem to False regardless of what you put in for the option!**"""
         if inter.guild is None:
-            #return await inter.send(embed=ErrorEmbed(
+            # return await inter.send(embed=ErrorEmbed(
             #    "If you're running this command in a DM, I won't know what guild you're trying to run the command in!"
-            #))
+            # ))
             is_guild_problem = False
-        if is_guild_problem and inter.guild is None: 
+        if is_guild_problem and inter.guild is None:
             embed1 = ErrorEmbed(
                 description="Run this command in the Discord server which has this problem, not a DM!"
             )
             await inter.send(embed=embed1)
             return
-        #try:
+        # try:
         #    guild_id = inter.guild.id
-        #except AttributeError as exc:
+        # except AttributeError as exc:
         #    raise Exception(
         #        "*** AttributeError: guild.id was not found! Please report this error or refrain from using it here***"
         #    ) from exc
@@ -167,7 +169,7 @@ class ProblemsCog(HelperCog):
             else:
                 real_guild_id = None
         except AttributeError:
-            real_guild_id=None
+            real_guild_id = None
         try:
             await self.cache.get_problem(real_guild_id, int(problem_id))
         except ProblemNotFound:  # Problem not found
@@ -204,7 +206,8 @@ NumSolvers: {len(problem.get_solvers())}"""
                 )
                 return
             await inter.send(embed=SuccessEmbed(Problem_as_str), ephemeral=True)
-    @commands.cooldown(1,2.5, commands.BucketType.user)
+
+    @commands.cooldown(1, 2.5, commands.BucketType.user)
     @commands.slash_command(
         name="list_all_problem_ids",
         description="List all problem ids",
@@ -251,7 +254,8 @@ NumSolvers: {len(problem.get_solvers())}"""
             global_problems = global_problems.values()
         thing_to_write = "\n".join([str(problem.id) for problem in global_problems])
         await inter.send(embed=SuccessEmbed(thing_to_write))
-    @commands.cooldown(1,5,commands.BucketType.user)
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.slash_command(
         name="list_all_problems",
         description="List all problems stored with the bot",
@@ -391,7 +395,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             )
         )
 
-    @commands.cooldown(1,5,commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.slash_command(
         name="submit_problem",
         description="Create a new problem",
@@ -890,7 +894,7 @@ NumSolvers: {len(problem.get_solvers())}"""
                 problem = await self.cache.get_problem(
                     guild_id if is_guild_problem else None, problem_id
                 )
-                #print(problem)
+                # print(problem)
             except (problems_module.ProblemNotFound, ProblemNotFoundException):
                 return await inter.send(
                     embed=ErrorEmbed(

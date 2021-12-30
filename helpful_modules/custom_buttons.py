@@ -12,11 +12,11 @@ class MyView(disnake.ui.View):
     """A better? view for my bot (which is easier for my bot to work with)"""
 
     def __init__(
-            self,
-            message: disnake.Message = None,
-            *,
-            timeout: int = 180.0,
-            items: List[disnake.ui.Item]
+        self,
+        message: disnake.Message = None,
+        *,
+        timeout: int = 180.0,
+        items: List[disnake.ui.Item]
     ):
         super().__init__(timeout)
         self.message = message
@@ -26,7 +26,7 @@ class MyView(disnake.ui.View):
             self.add_item(item)
 
     async def on_error(
-            self, error: Exception, item: disnake.ui.Item, inter: disnake.Interaction
+        self, error: Exception, item: disnake.ui.Item, inter: disnake.Interaction
     ):
         return await inter.response.send_message(**base_on_error(inter, error))
 
@@ -37,8 +37,7 @@ class MyView(disnake.ui.View):
     async def stop_all_items(self):
         """Stop all items. However, this does not work, because the bot will not know the message before it's sent"""
         newView = self.__class__(
-            self.message,
-            items=[]
+            self.message, items=[]
         )  # Create a new view that has the same message
         for item in self.children:
             if item.__class__ == disnake.ui.Item:
@@ -91,7 +90,7 @@ class ConfirmationButton(BasicButton):
         self._extra_data = kwargs.get("_extra_data", {})
 
     async def callback(
-            self: "ConfirmationButton", interaction: disnake.Interaction
+        self: "ConfirmationButton", interaction: disnake.Interaction
     ) -> Any:
         def check(inter: disnake.Interaction):
             return inter.user.id == self.author_for

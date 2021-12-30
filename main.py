@@ -13,6 +13,7 @@ import warnings
 from asyncio import sleep as asyncio_sleep
 from cogs import *
 from copy import copy
+
 # Imports - My own files
 from disnake.ext import commands
 from helpful_modules import checks
@@ -27,7 +28,7 @@ from sys import exc_info, stdout, exit
 # Imports - 3rd party
 
 if (
-        not __debug__
+    not __debug__
 ):  # __debug__ must be true for the bot to run (because assert statements)
     exit("__debug__ must be True for the bot to run! (Don't run with -o or -OO)")
 del exit
@@ -48,25 +49,22 @@ if DISCORD_TOKEN is None:
 # TODO: fix SQL errors
 # TODO: store logs
 TRFHB = handlers.TimedRotatingFileHandler(
-    filename='logs/bot.log',
-    when='midnight',
-    encoding='utf-8',
-    backupCount=300
+    filename="logs/bot.log", when="midnight", encoding="utf-8", backupCount=300
 )  # TimedRotatingFileHandler(for the)Bot
 TRFHD = handlers.TimedRotatingFileHandler(
-    filename='logs/disnake.log',
-    when='midnight',
-    encoding='utf-8',
-    backupCount=300)  # TimedRotatingFileHandler(for) Disnake
+    filename="logs/disnake.log", when="midnight", encoding="utf-8", backupCount=300
+)  # TimedRotatingFileHandler(for) Disnake
 assert TRFHD != TRFHB
-log = logging.getLogger('__main__' if __name__ == "__main__" else __name__)
-disnake_log = logging.getLogger('disnake')
+log = logging.getLogger("__main__" if __name__ == "__main__" else __name__)
+disnake_log = logging.getLogger("disnake")
 log.addHandler(TRFHB)
 disnake_log.addHandler(TRFHD)
 log.setLevel(5)
 disnake_log.setLevel(logging.DEBUG)
 print(log.handlers)
-log.debug('test!')
+log.debug("test!")
+
+
 def the_daemon_file_saver():
     """Auto-save files!"""
     global bot, guildMathProblems, trusted_users, vote_threshold
@@ -144,8 +142,8 @@ def get_git_revision_hash() -> str:
     """A method that gets the git revision hash. Credit to https://stackoverflow.com/a/21901260 for the code :-)"""
     return (
         subprocess.check_output(["git", "rev-parse", "HEAD"])
-            .decode("ascii")
-            .strip()[:7]
+        .decode("ascii")
+        .strip()[:7]
     )  # [7:] is here because of the commit hash, the rest of this function is from stack overflow
 
 
@@ -227,9 +225,9 @@ async def on_connect():
         guild.id for guild in bot.guilds
     ]  # The guild_ids of the guilds that the bot is in
     for (
-            guild_id
+        guild_id
     ) in (
-            await bot.cache.get_guilds()
+        await bot.cache.get_guilds()
     ):  # Obtain all guilds the cache stores data (will need to be upgraded.)
         if guild_id not in bot_guild_ids:  # It's not in!
             if guild_id is None:  # Don't delete global problems
@@ -265,8 +263,10 @@ async def on_slash_command_error(inter, error):
     try:
         return await inter.send(**dict_args)
     except AttributeError:
-        log_error(error, f'error_logs/{str(datetime.datetime.now())}')
-        return await inter.send('An error occured, and the error message couldn\'t be sent. However, it has been saved.')
+        log_error(error, f"error_logs/{str(datetime.datetime.now())}")
+        return await inter.send(
+            "An error occured, and the error message couldn't be sent. However, it has been saved."
+        )
 
 
 # @bot.command(help = """Adds a trusted user!

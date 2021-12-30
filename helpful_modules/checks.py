@@ -13,21 +13,24 @@ def setup(_bot):
 
 class CustomCheckFailure(commands.CheckFailure):
     """Raised when a custom check fails. Some checks raise exceptions inherited from this."""
+
     pass
 
 
 class NotTrustedUser(CustomCheckFailure):
     """Raised when trying to run a command that requires trusted user permissions but you aren't a trusted user"""
+
     pass
 
 
 class BlacklistedException(CustomCheckFailure):
     """Raised when trying to run a command, but something you are trying to use is blacklisted"""
+
     pass
 
 
 def custom_check(
-        function=lambda inter: True, args: list = [], exceptionToRaiseIfFailed=None
+    function=lambda inter: True, args: list = [], exceptionToRaiseIfFailed=None
 ):
     """A check template :-)"""
 
@@ -48,11 +51,7 @@ def trusted_users_only():
             raise TypeError("Uh oh; inter.bot isn't TheDiscordMathProblemBot")
         user_data: UserData = await inter.bot.cache.get_user_data(
             user_data=inter.author.id,
-            default=UserData(
-                user_id=inter.author.id,
-                trusted=False,
-                blacklisted=False
-            )
+            default=UserData(user_id=inter.author.id, trusted=False, blacklisted=False),
         )
         if user_data.trusted:
             return True
@@ -68,9 +67,7 @@ def administrator_or_trusted_users_only():
     """Checks if the user has administrator permission or is a bot trusted user."""
 
     async def predicate(inter):
-        if (
-                inter.author.guild_permissions.adminstrator
-        ):
+        if inter.author.guild_permissions.adminstrator:
             return True
         else:
             if not isinstance(inter.bot, TheDiscordMathProblemBot):
@@ -78,10 +75,8 @@ def administrator_or_trusted_users_only():
             user_data: UserData = await inter.bot.cache.get_user_data(
                 user_data=inter.author.id,
                 default=UserData(
-                    user_id=inter.author.id,
-                    trusted=False,
-                    blacklisted=False
-                )
+                    user_id=inter.author.id, trusted=False, blacklisted=False
+                ),
             )
             if user_data.trusted:
                 return True
@@ -109,11 +104,7 @@ def is_not_blacklisted():
             raise TypeError("Uh oh!")
         user_data: UserData = await inter.bot.cache.get_user_data(
             user_id=inter.author.id,
-            default=UserData(
-                user_id=inter.author.id,
-                trusted=False,
-                blacklisted=False
-            )
+            default=UserData(user_id=inter.author.id, trusted=False, blacklisted=False),
         )
         if user_data.blacklisted:
             raise BlacklistedException("You are blacklisted from the bot!")
