@@ -3,11 +3,12 @@ import logging
 import random
 import subprocess
 import traceback
+from copy import deepcopy
 from disnake.ext import commands
+from logging import handlers
 from sys import stderr, exc_info
 from time import asctime
 from time import sleep
-from logging import handlers
 
 from ._error_logging import log_error
 from .cooldowns import OnCooldown
@@ -28,8 +29,8 @@ def get_git_revision_hash() -> str:
     """A method that gets the git revision hash. Credit to https://stackoverflow.com/a/21901260 for the code :-)"""
     return (
         subprocess.check_output(["git", "rev-parse", "HEAD"])
-        .decode("ascii")
-        .strip()[:7]
+            .decode("ascii")
+            .strip()[:7]
     )  # [7:] is here because of the commit hash, the rest of this function is from stack overflow
 
 
@@ -49,7 +50,9 @@ async def base_on_error(inter, error):
         raise
     if isinstance(error, (OnCooldown, disnake.ext.commands.CommandOnCooldown)):
         # This is a cooldown exception
-        return {"content": str(error)}
+        cooldown = error.cooldown
+        content = f"This command is on cooldown; please retry in {cooldown.per} seconds."
+        return {"content": content}
     if isinstance(error, (disnake.Forbidden,)):
         extra_content = """There was a 403 error. This means either
         1) You didn't give me enough permissions to function correctly, or
@@ -99,15 +102,22 @@ async def base_on_error(inter, error):
         plain_text += f"```Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
 
         plain_text += f"Error that occurred while attempting to send it as an embed: {''.join(traceback.format_exception(e))}"
+        the_new_exception = deepcopy(e)
+        the_new_exception.__cause__ = error
+        if len(plain_text) > 2000:
+            # uh oh
+            raise RuntimeError(
+                "An error occurred; could not send it as an embed nor as plain text!") from the_new_exception
+
         return {"content": plain_text}
     footer = f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
     embed.set_footer(text=footer)
     return {"embed": embed}
 
+
 def get_log(name: str) -> logging.Logger:
     _log = logging.getLogger(name)
-    TRFH = handlers.TimedRotatingFileHandler(filename="logs/bot.log", when="midnight", encoding="utf-8", backupCount=300)
+    TRFH = handlers.TimedRotatingFileHandler(filename="logs/bot.log", when="midnight", encoding="utf-8",
+                                             backupCount=300)
     _log.addHandler(TRFH)
     return _log
-
-
