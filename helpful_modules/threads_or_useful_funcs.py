@@ -63,17 +63,16 @@ async def base_on_error(inter, error):
         return {
             "embed": ErrorEmbed(
                 str(error)
-                + " You probably aren't allowed to run this command. If this is a bug, please report it :-)"
             )
         }
     # Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
-    logging.error("Uh oh - an error occured ", exc_info=exc_info())
+    logging.error("Uh oh - an error occurred ", exc_info=exc_info())
     print(
         "\n".join(traceback.format_exception(error)),  # python 3.10 only!
         file=stderr,
     )
     log_error(error)  # Log the error
-    error_msg = """An error occured!
+    error_msg = """An error occurred!
     
     Steps you should do:
     1) Please report this bug to me! (Either create a github issue, or report it in the support server)
@@ -86,10 +85,10 @@ async def base_on_error(inter, error):
     try:
         embed = disnake.Embed(
             colour=disnake.Colour.red(),
-            description=disnake.utils.escape_markdown(error_traceback),
+            description=error_msg,
             title="Oh, no! An error occurred!",
         )
-    except TypeError as e:
+    except (TypeError, NameError) as e:
 
         # send as plain text
         plain_text = (
