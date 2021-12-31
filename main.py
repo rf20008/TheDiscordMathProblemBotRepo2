@@ -55,13 +55,15 @@ TRFHD = handlers.TimedRotatingFileHandler(
     filename="logs/disnake.log", when="midnight", encoding="utf-8", backupCount=300
 )  # TimedRotatingFileHandler(for) Disnake
 assert TRFHD != TRFHB
-log = logging.getLogger("__main__" if __name__ == "__main__" else __name__)
+if __name__ == "__main__":
+    log = logging.getLogger()
+else:
+    log = logging.getLogger(__name__)
 disnake_log = logging.getLogger("disnake")
 log.addHandler(TRFHB)
 disnake_log.addHandler(TRFHD)
 log.setLevel(5)
 disnake_log.setLevel(logging.INFO)
-print(log.handlers)
 log.debug("test!")
 
 
