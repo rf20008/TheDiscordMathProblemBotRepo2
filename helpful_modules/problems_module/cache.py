@@ -616,7 +616,7 @@ WHERE guild_id = {guild_id} AND problem_id = {problem_id}"""
                         """SELECT * FROM problems 
                         WHERE guild_id = ? AND problem_id = ?""",
                         # Not sure if making "from" uppercase will change anything (but it selects the problem from the database)
-                        (guild_id, problem_id),
+                        (str(guild_id), str(problem_id)),
                     )
                     log.debug(str(r))
                     rows = list(await cursor.fetchall())

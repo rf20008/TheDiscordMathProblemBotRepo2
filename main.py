@@ -60,7 +60,7 @@ disnake_log = logging.getLogger("disnake")
 log.addHandler(TRFHB)
 disnake_log.addHandler(TRFHD)
 log.setLevel(5)
-disnake_log.setLevel(logging.DEBUG)
+disnake_log.setLevel(logging.INFO)
 print(log.handlers)
 log.debug("test!")
 
@@ -107,7 +107,7 @@ except (KeyError, AssertionError):
 bot_constants = BotConstants(dotenv.find_dotenv())
 main_cache = problems_module.MathProblemCache(
     max_answer_length=2000,
-    max_question_limit=250,
+    max_question_limit=2000,
     max_guild_problems=125,
     warnings_or_errors="errors",
     db_name="MathProblemCache1.db",

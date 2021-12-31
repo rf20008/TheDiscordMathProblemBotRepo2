@@ -171,18 +171,18 @@ class ProblemsCog(HelperCog):
         except AttributeError:
             real_guild_id = None
         try:
-            await self.cache.get_problem(real_guild_id, int(problem_id))
+            problem = await self.cache.get_problem(real_guild_id, int(problem_id)) # get the problem
         except ProblemNotFound:  # Problem not found
-            await inter.send(embed=ErrorEmbed("Problem not found."))
+            await inter.send(embed=ErrorEmbed("Problem not found!"))
             return
-        problem = await self.cache.get_problem(
-            int(inter.guild.id) if is_guild_problem else None, int(problem_id)
-        )
-        Problem_as_str = f"""Question: {problem.get_question()}
+        try:
+            Problem_as_str = f"""Question: {problem.get_question()}
 Author: {str(problem.get_author())}
 NumVoters/Vote Threshold: {problem.get_num_voters()}/{self.bot.vote_threshold}
 NumSolvers: {len(problem.get_solvers())}"""
-
+        except NameError:
+            await inter.send("Uh oh - problem not found! This wasn't handled earlier, so I'm raising an error so my developer can figure out why this is the case. :-)")
+            raise
         if show_all_data:
             if not (
                 (
