@@ -614,7 +614,7 @@ WHERE guild_id = {guild_id} AND problem_id = {problem_id}"""
                     )
                     r = await cursor.execute(
                         """SELECT * FROM problems 
-                        WHERE guild_id = ? AND problem_id = ?""",
+                        WHERE (guild_id = ? AND problem_id = ?)""",
                         # Not sure if making "from" uppercase will change anything (but it selects the problem from the database)
                         (str(guild_id), str(problem_id)),
                     )
@@ -850,7 +850,7 @@ WHERE guild_id = {guild_id} AND problem_id = {problem_id}"""
                         raise  # Re-raise the exception
                 cursor = await conn.cursor()
                 await cursor.execute(
-                    "DELETE FROM problems WHERE guild_id = ? and problem_id = ?",
+                    "DELETE FROM problems WHERE (guild_id = ? and problem_id = ?)",
                     (guild_id, problem_id),
                 )  # The actual deletion
                 try:
