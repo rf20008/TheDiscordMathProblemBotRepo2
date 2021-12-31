@@ -257,12 +257,12 @@ class MathProblemCache:
         assert isinstance(user_id, int)
         assert isinstance(new, UserData)
         if (await self.get_user_data(user_id=user_id, default=None)) is not None:
-            raise MathProblemsModuleException(
+            raise UserDataNotExistsException(
                 "User data does not exist! Use add_user_data instead"
             )
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
-                log.debug("Connected to sqlite!")
+                log.debug("Connected to SQLite!")
                 conn.row_factory = dict_factory
                 blacklisted_int = int(new.blacklisted)
                 trusted_int = int(new.trusted)

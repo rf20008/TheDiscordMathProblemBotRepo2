@@ -39,8 +39,8 @@ try:
     assert hasattr(dotenv, "load_dotenv") and hasattr(dotenv, "find_dotenv")
 except (ModuleNotFoundError, AssertionError):
     raise RuntimeError("Dotenv could not be found, therefore cannot load .env")
-dotenv.find_dotenv()
-dotenv.load_dotenv(dotenv.find_dotenv())
+env_path = dotenv.find_dotenv()
+dotenv.load_dotenv(env_path)
 DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
 if DISCORD_TOKEN is None:
     raise RuntimeError("Cannot start bot; no discord_token environment variable")
@@ -121,7 +121,7 @@ main_cache = problems_module.MathProblemCache(
 )  # Generate a new cache for the bot!
 print(main_cache.db_name)
 assert main_cache.db is main_cache.db_name
-vote_threshold = 0  # default
+vote_threshold = -1  # default
 mathProblems = {}
 guildMathProblems = {}
 guild_maximum_problem_limit = 125
@@ -171,14 +171,14 @@ bot = TheDiscordMathProblemBot(
 # TODO: move bot events + initializing to custom_bot.py
 bot._sync_commands_debug = True
 # setup(bot)
-bot._transport_modules = {
-    "problems_module": problems_module,
-    "save_files": save_files,
-    "the_documentation_file_loader": the_documentation_file_loader,
-    "check_for_cooldown": check_for_cooldown,
-    "custom_embeds": custom_embeds,
-    "checks": checks,
-}
+#bot._transport_modules = {
+#    "problems_module": problems_module,
+#    "save_files": save_files,
+#    "the_documentation_file_loader": the_documentation_file_loader,
+#    "check_for_cooldown": check_for_cooldown,
+#    "custom_embeds": custom_embeds,
+#    "checks": checks,
+#}
 bot.add_check(
     disnake.ext.commands.bot_has_permissions(
         send_messages=True,
@@ -186,7 +186,6 @@ bot.add_check(
         embed_links=True,
     )
 )
-bot.blacklisted_users = []  # TODO: store user status in MYSQL
 _the_daemon_file_saver = threading.Thread(
     target=the_daemon_file_saver,
     name="The File Saver",

@@ -378,7 +378,12 @@ class DeveloperCommands(HelperCog):
                 ephemeral=True,
             )
             return
-        self.bot.trusted_users.append(user.id)
+        user_data.trusted=True
+        try:
+            await self.cache.set_user_data(user.id, new=user_data)
+        except problems_module.UserDataNotExistsException:
+            await self.cache.add_user_data(user=user.id, thing_to_add=user_data)
+
         await inter.send(
             embed=ErrorEmbed(f"Successfully made {user.nick} a trusted user!"),
             ephemeral=True,
@@ -407,17 +412,29 @@ class DeveloperCommands(HelperCog):
         """/remove_trusted_user [user: User]
         Remove a trusted user. You must be a trusted user to do this.
         There is also a 10-minute cooldown to prevent raids!"""
-        if inter.author.id not in self.bot.trusted_users:
+        my_user_data = await self.cache.get_user_data(inter.author.id, default=problems_module.UserData(
+            user_id = inter.author.id,
+            trusted=False,
+            blacklisted=False
+        ))
+        if not my_user_data.trusted:
             await inter.send(
                 embed=ErrorEmbed("You aren't a trusted user!"), ephemeral=True
             )
             return
-        if user.id not in self.bot.trusted_users:
+        their_user_data = await self.cache.get_user_data(user.id, default=problems_module.UserData(
+            trusted=False,
+            user_id=user.id,
+            blacklisted=False
+        ))
+        if not their_user_data.trusted:
             await inter.send(
                 embed=ErrorEmbed(f"{user.name} isn't a trusted user!"), ephemeral=True
             )
             return
-        self.bot.trusted_users.pop(user.id)
+        their_user_data.trusted=False
+        try:
+            await self.cache.set_user_data(user_id=user.id, new=their_user_data)
         await inter.send(
             embed=ErrorEmbed(
                 f"Successfully made {user.display_name} no longer a trusted user!"
