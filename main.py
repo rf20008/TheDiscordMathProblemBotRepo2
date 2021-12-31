@@ -32,7 +32,7 @@ if (
 ):  # __debug__ must be true for the bot to run (because assert statements)
     exit("__debug__ must be True for the bot to run! (Don't run with -o or -OO)")
 del exit
-VERSION = "0.0.5a3"
+VERSION = "0.0.5a4"
 try:
     import dotenv  # https://pypi.org/project/python-dotenv/
 

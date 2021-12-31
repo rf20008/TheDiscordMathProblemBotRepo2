@@ -324,7 +324,9 @@ class MiscCommandsCog(HelperCog):
         """/user_data delete_all [save_data_before_deletion: bool = True] [delete_votes: bool = False] [delete_solves: bool = False]
         Delete all your data. YOU MUST CONFIRM THIS!
         If save_data_before_deletion, the data about you will be sent as a json file
-        This has a 500 second cooldown."""
+        This has a 500 second cooldown.
+
+        By using this command, you agree to being DMed!"""
         if save_data_before_deletion:
             json_data: dict = await self._get_json_data_by_user(
                 inter.author
@@ -500,27 +502,13 @@ class MiscCommandsCog(HelperCog):
         # )
         exc_raised = None
         try:
-            await inter.author.send(
+            await inter.send(
                 embed=SuccessEmbed("Your data has been attached in this message!"),
                 file=file,
             )
             # TODO: when discord api allows sending files in interaction replies, send them the file
-            successful = True
         except BaseException as e:  # We can't send
-            successful = False
-            exc_raised = e
-        if successful:
-            return await inter.send(
-                embed=SuccessEmbed("I have DMed you your data!"), ephemeral=True
-            )
-        else:
-            await inter.send(
-                embed=ErrorEmbed(
-                    "I was unable to DM you your data. Please check your privacy settings. If this is a bug, please report it!"
-                )
-            )
-            raise exc_raised
-
+            raise e
     @commands.slash_command(
         name="submit_a_request",
         description="Submit a request. I will know!",

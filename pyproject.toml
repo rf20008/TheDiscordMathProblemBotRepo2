@@ -7,7 +7,7 @@ requires = ["poetry-core>=1.0.0"]
 authors = ["ay136416 <<>>"]
 description = "An open source discord bot for quizzes!"
 name = "thediscordmathproblembot"
-version = "0.0.5a3"
+version = "0.0.5a4"
 [tool.poetry.dependencies]
 aiosqlite = {git = "https://github.com/omnilib/aiosqlite.git", rev = "main"}
 discord = "^1.7.3"
