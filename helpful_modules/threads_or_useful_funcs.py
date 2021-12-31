@@ -9,6 +9,7 @@ from logging import handlers
 from sys import stderr, exc_info
 from time import asctime
 from time import sleep
+from typing import Optional
 
 from ._error_logging import log_error
 from .cooldowns import OnCooldown
@@ -29,8 +30,8 @@ def get_git_revision_hash() -> str:
     """A method that gets the git revision hash. Credit to https://stackoverflow.com/a/21901260 for the code :-)"""
     return (
         subprocess.check_output(["git", "rev-parse", "HEAD"])
-            .decode("ascii")
-            .strip()[:7]
+        .decode("ascii")
+        .strip()[:7]
     )  # [7:] is here because of the commit hash, the rest of this function is from stack overflow
 
 
@@ -41,7 +42,9 @@ def loading_documentation_thread():
     del d
 
 
-async def base_on_error(inter: disnake.ApplicationCommandInteraction, error: BaseException):
+async def base_on_error(
+    inter: disnake.ApplicationCommandInteraction, error: BaseException
+):
     """The base on_error event. Call this and use the dictionary as keyword arguments to print to the user"""
     error_traceback = "\n".join(traceback.format_exception(error))
     if isinstance(error, BaseException) and not isinstance(error, Exception):
@@ -51,7 +54,9 @@ async def base_on_error(inter: disnake.ApplicationCommandInteraction, error: Bas
     if isinstance(error, (OnCooldown, disnake.ext.commands.CommandOnCooldown)):
         # This is a cooldown exception
         cooldown = error.cooldown
-        content = f"This command is on cooldown; please retry in {cooldown.per} seconds."
+        content = (
+            f"This command is on cooldown; please retry in {cooldown.per} seconds."
+        )
         return {"content": content}
     if isinstance(error, (disnake.Forbidden,)):
         extra_content = """There was a 403 error. This means either
@@ -64,11 +69,7 @@ async def base_on_error(inter: disnake.ApplicationCommandInteraction, error: Bas
     if isinstance(error, commands.NotOwner):
         return {"embed": ErrorEmbed("You are not the owner of this bot.")}
     if isinstance(error, disnake.ext.commands.errors.CheckFailure):
-        return {
-            "embed": ErrorEmbed(
-                str(error)
-            )
-        }
+        return {"embed": ErrorEmbed(str(error))}
     # Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
     logging.error("Uh oh - an error occurred ", exc_info=exc_info())
     print(
@@ -80,7 +81,7 @@ async def base_on_error(inter: disnake.ApplicationCommandInteraction, error: Bas
     
     Steps you should do:
     1) Please report this bug to me! (Either create a github issue, or report it in the support server)
-    2) If you are a programmer, please suggest a fix.
+    2) If you are a programmer, please suggest a fix by creating a Pull Request.
     3) Please don't use this command until it gets fixed in a later update!
     
     The error traceback is shown below; this may be removed/DMed to the user in the future.""" + disnake.utils.escape_markdown(
@@ -107,7 +108,8 @@ async def base_on_error(inter: disnake.ApplicationCommandInteraction, error: Bas
         if len(plain_text) > 2000:
             # uh oh
             raise RuntimeError(
-                "An error occurred; could not send it as an embed nor as plain text!") from the_new_exception
+                "An error occurred; could not send it as an embed nor as plain text!"
+            ) from the_new_exception
 
         return {"content": plain_text}
     footer = f"Time: {str(asctime())} Commit hash: {get_git_revision_hash()} The stack trace is shown for debugging purposes. The stack trace is also logged (and pushed), but should not contain identifying information (only code which is on github)"
@@ -115,9 +117,10 @@ async def base_on_error(inter: disnake.ApplicationCommandInteraction, error: Bas
     return {"embed": embed}
 
 
-def get_log(name: str) -> logging.Logger:
+def get_log(name: Optional[str]) -> logging.Logger:
     _log = logging.getLogger(name)
-    TRFH = handlers.TimedRotatingFileHandler(filename="logs/bot.log", when="midnight", encoding="utf-8",
-                                             backupCount=300)
+    TRFH = handlers.TimedRotatingFileHandler(
+        filename="logs/bot.log", when="midnight", encoding="utf-8", backupCount=300
+    )
     _log.addHandler(TRFH)
     return _log

@@ -11,13 +11,14 @@ import aiosqlite
 import disnake
 
 from helpful_modules.dict_factory import dict_factory
+from helpful_modules.threads_or_useful_funcs import get_log
 from .user_data import UserData
 from .base_problem import BaseProblem
 from .errors import *
 from .mysql_connector_with_stmt import *
 from .quizzes import Quiz, QuizProblem, QuizSubmission
 
-log = logging.getLogger(__name__)
+log = get_log(__name__)
 log.setLevel(logging.NOTSET)
 
 
@@ -601,7 +602,7 @@ class MathProblemCache:
                         conn.row_factory = dict_factory  # Make sure the row_factory can be set to dict_factory
                     except Exception as e:
                         raise MathProblemsModuleException(f"Oh no{'!' * 30}") from e
-                    #Theory: the sql statement is not the problem
+                    # Theory: the sql statement is not the problem
                     cursor = await conn.cursor()
                     log.debug(
                         f"Getting the problem with guild id {guild_id} and problem_id {problem_id} (types: {type(guild_id)}, {type(problem_id)})"
@@ -611,12 +612,13 @@ class MathProblemCache:
                         f"""SELECT * FROM problems 
 WHERE guild_id = {guild_id} AND problem_id = {problem_id}"""
                     )
-                    await cursor.execute(
+                    r = await cursor.execute(
                         """SELECT * FROM problems 
                         WHERE guild_id = ? AND problem_id = ?""",
                         # Not sure if making "from" uppercase will change anything (but it selects the problem from the database)
                         (guild_id, problem_id),
                     )
+                    log.debug(str(r))
                     rows = list(await cursor.fetchall())
                     log.debug(f"{len(rows)} problems found")
                     if len(rows) == 0:
