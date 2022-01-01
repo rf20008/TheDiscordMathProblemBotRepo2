@@ -84,7 +84,9 @@ async def base_on_error(
     2) If you are a programmer, please suggest a fix by creating a Pull Request.
     3) Please don't use this command until it gets fixed in a later update!
     
-    The error traceback is shown below; this may be removed/DMed to the user in the future.""" + disnake.utils.escape_markdown(
+    The error traceback is shown below; this may be removed/DMed to the user in the future.
+    
+    """ + disnake.utils.escape_markdown(
         error_traceback
     )  # TODO: update when my support server becomes public & think about providing the traceback to the user
     try:
