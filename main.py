@@ -152,7 +152,9 @@ def get_git_revision_hash() -> str:
 async def on_ready(bot: TheDiscordMathProblemBot):
     """Ran when the disnake library detects that the bot is ready"""
     print("The bot is now ready!")
-
+    print(f"I connected as {bot.user.name}#{bot.user.discriminator}.")
+    print(f"My owner id is {bot.owner_id}!")
+    print(f"My owner ids are {bot.owner_ids}")
 
 # Bot creation
 
