@@ -27,7 +27,7 @@ The trusted users/guild administrators (if the problem isn't global) also have t
 <li> Disrespecting/targeting/etc... people through problems</li>
 <li> Sending NSFW/NSFL content through problems.</li>
 <li> Sending copyrighted things that the author does not have the correct rights to license to this bot. </li>
-</ul>People with the authority to delete problems reserve the right to use their own discretion on whether to delete a problem or not. (This covers edge cases!) I also do not have control over guild administrators (as they are not me)
+</ul>People with the authority to delete problems reserve the right to use their own discretion on whether to delete a problem or not. (This covers edge cases!) I also do not have control over guild administrators (as they are not me).
 
 ## Disclaimers (because they don't belong in the Privacy Policy)
 ### LIABILITY DISCLAIMER
@@ -38,7 +38,7 @@ I try to get rid of bugs, but I'm not liable for them if they occur. However, in
 (In some places, I'm not allowed to legally disclaim liability. If you live in such a place, please ignore this section.)
 (In some scenarios, laws might supersede this policy. In those cases, I will still be liable. This is the case if there is no plausible interpretation of the law that says I am not liable to you. In those cases, I am still liable.)
 
-Note that in most serious scenarios, the law would supersede this policy. I would still be liable in those cases.
+In most serious scenarios, the law would supersede this policy. I would still be liable in those cases.
 
 ### COPYRIGHT DISCLAIMER
 
@@ -57,10 +57,9 @@ I may change the Terms at any time and for any reason. We won't notify you indiv
 
 ### Suggestions
 
-Suggestions to this are welcome (as of right now)! However, make sure to not cause "breaking changes" (which includes changes such that people following the old version could not follow the new version without making breaking changes.).
+Suggestions to this are welcome (as of right now)! If you make any TOS changes that will affect people's usage of the bot, please let me know through the commit message. PR's containing TOS/Privacy policies will be considered more strictly.
 
 ## Contributions/ Derivatives / Forks of the project
 
 For legal reasons, those are licensed under GPLv3! The maintainers of the fork have the right to change these Terms, but the modified Terms do not apply to this version unless the changes are merged into the main version!
 Note that I am not liable for forks/modifications of this bot as I do not have control over them.
-
