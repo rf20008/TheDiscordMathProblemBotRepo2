@@ -216,10 +216,12 @@ class MathProblemCache:
                 log.debug(f"Data selected (results: {cursor_results})")
                 if len(cursor_results) == 0:
                     return default
-                elif len(cursor_results == 1):
+                elif len(cursor_results) == 1:
+                    
                     dict_to_use = cursor_results[0]
                     dict_to_use["trusted"] = bool(dict_to_use["trusted"])
                     dict_to_use["blacklisted"] = bool(dict_to_use["blacklisted"])
+                    dict_to_use["user_id"] = int(dict_to_use["USER_ID"])
                     log.debug("Data successfully returned!")
                     return UserData.from_dict(dict_to_use)
                 else:
@@ -243,6 +245,7 @@ class MathProblemCache:
                 if len(results) == 0:
                     return default
                 elif len(results) == 1:
+                    results[0]["user_id"] = results[0]["USER_ID"]
                     return UserData.from_dict(results[0])
                 else:
                     try:

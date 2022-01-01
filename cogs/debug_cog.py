@@ -18,14 +18,16 @@ class DebugCog(HelperCog):
 
     def cog_slash_command_check(self, inter: disnake.ApplicationCommandInteraction):
         """A check that makes sure only bot owners can use this cog!"""
-        if self.bot.owner_id in [None, []]:
+        if self.bot.owner_id in [None, [], set()] and self.bot.owner_ids is None:
+            raise commands.CheckFailure("Failing to protect myself (neither owner_id nor owner_ids are defined)")
+        if self.bot.owner_id in [None, [], set()]:
             raise commands.CheckFailure(
                 "You're not the owner of this bot! You must be the owner to execute debug commands!")
         if self.bot.owner_id == inter.author.id:
             return True
 
         try:
-            if self.bot.owner_ids not in [None, []] and inter.author.id in self.bot.owner_ids:
+            if self.bot.owner_ids not in [None, [],set()] and inter.author.id in self.bot.owner_ids:
                 return True
             raise commands.CheckFailure("You don't own this bot!")
         except AttributeError:
@@ -49,9 +51,14 @@ class DebugCog(HelperCog):
         """/sql [query: str]
         A debug command to run SQL!
         You must own this bot to run this command!"""
-        if inter.author.id not in self.bot.owner_ids or inter.author.id != self.bot.owner_id:
-            await inter.send("You don't own this bot.")
+        if (self.bot.owner_ids not in [None, [], set()] and inter.author.id not in self.bot.owner_ids):
+            await inter.send("You don't own this bot...")
             return
+        if self.bot.owner_id is not None and inter.author.id != self.bot.owner_id:
+            await inter.send("You don't own this bot!!!")
+            return
+        if self.bot.owner_id is None and self.bot.owner_ids is None:
+            return await inter.send("Neither owner_id or owner_ids is defined... exiting!")
         try:
             result = await self.cache.run_sql(query)
         except BaseException as e:
