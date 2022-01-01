@@ -1326,19 +1326,61 @@ WHERE (guild_id = {guild_id} AND problem_id = {problem_id})"""
                 "You are not allowed to delete global problems!"
             )
         assert isinstance(guild_id, int)
-        async with aiosqlite.connect(self.db) as conn:
-            cursor = await conn.cursor()
-            await cursor.execute(
-                "DELETE FROM problems WHERE guild_id = ?", (guild_id,)
-            )  # Delete all problems from the guild
-            await cursor.execute(
-                "DELETE FROM quizzes WHERE guild_id = ?", (guild_id,)
-            )  # Delete all quiz problems from the guild
-            await cursor.execute(
-                "DELETE FROM quiz_submissions WHERE guild_id = ?", (guild_id,)
-            )  # Delete all quiz submissions from the guild!
-            await conn.commit()  # Otherwise, nothing happens!
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db) as conn:
+                cursor = await conn.cursor()
+                await cursor.execute(
+                    "DELETE FROM problems WHERE guild_id = ?", (guild_id,)
+                )  # Delete all problems from the guild
+                await cursor.execute(
+                    "DELETE FROM quizzes WHERE guild_id = ?", (guild_id,)
+                )  # Delete all quiz problems from the guild
+                await cursor.execute(
+                    "DELETE FROM quiz_submissions WHERE guild_id = ?", (guild_id,)
+                )  # Delete all quiz submissions from the guild!
+                await conn.commit()  # Otherwise, nothing happens!
+        else:
+            with mysql_connection(
+                    host=self.mysql_db_ip,
+                    password=self.mysql_password,
+                    user=self.mysql_username,
+                    database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
+                    "DELETE FROM problems WHERE guild_id = %s", (guild_id,)
+                ) # Remove all guild problems from this guild
+                cursor.execute(
+                    "DELETE FROM quizzes WHERE guild_id = %s", (guild_id,)
+                ) # Remove all quizzes from the guild
+                cursor.execute(
+                    "DELETE FROM quiz_submissions WHERE guild_id = ?", (guild_id,)
+                ) # Remove all quiz submissions as well
+                connection.commit()
 
     def __bool__(self):
         """Return bool(self)"""
         return True
+
+    async def run_sql(self, sql: str) -> dict:
+        """Run arbitrary SQL. Only used in /sql"""
+        assert isinstance(sql, str)
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db_name) as conn:
+                conn.row_factory = dict_factory
+                cursor = await conn.cursor()
+                await cursor.execute(sql)
+                await conn.commit()
+                return await cursor.fetchall()
+        else:
+            with mysql_connection(
+                    host=self.mysql_db_ip,
+                    password=self.mysql_password,
+                    user=self.mysql_username,
+                    database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(sql)
+                connection.commit()
+                return cursor.fetchall()
+
