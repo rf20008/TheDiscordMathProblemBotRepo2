@@ -6,7 +6,7 @@ from traceback import format_exception
 from disnake.ext import commands
 from helpful_modules import checks, problems_module
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
-
+from helpful_modules.custom_embeds import SuccessEmbed, ErrorEmbed, SimpleEmbed
 from .helper_cog import HelperCog
 
 
@@ -92,28 +92,32 @@ class DebugCog(HelperCog):
         """
         new_stdout = io.StringIO()
         new_stderr = io.StringIO()
-        if inter.author.id not in self.bot.owner_ids or inter.author.id != self.bot.owner_id:
-            await inter.send("You don't own this bot.")
+        if (self.bot.owner_ids not in [None, [], set()] and inter.author.id not in self.bot.owner_ids):
+            await inter.send("You don't own this bot...")
             return
+        if self.bot.owner_id is not None and inter.author.id != self.bot.owner_id:
+            await inter.send("You don't own this bot!!!")
+            return
+        if self.bot.owner_id is None and self.bot.owner_ids is None:
+            return await inter.send("Neither owner_id or owner_ids is defined... exiting!")
         code_ = '\n'.join(code.split('\\n')) #Split the code by `\n`
         thing_to_run = '''async def func():
         '''
         thing_to_run += textwrap.indent(code_, '\t', predicate = lambda l: True)
         try:
-            exec(thing_to_run, globals = globals(), locals = locals())
+            exec(thing_to_run, globals(), locals())
         except SyntaxError as e:
-            new_stderr.write(format_exception(e))
+            new_stderr.write(''.join(format_exception(e)))
 
         try:
             with contextlib.redirect_stdout(new_stdout):
                 with contextlib.redirect_stderr(new_stderr):
-                    exec('func()')
+                    exec('import asyncio; asyncio.run(func())')
         except BaseException as e:
-            new_stderr.write(format_exception(e))
-        await inter.reply(embed = SuccessEmbed(
+            new_stderr.write(''.join(format_exception(e)))
+        await inter.send(embed = SuccessEmbed(
             f"""The code was successfully executed!
-stdin: ```{stdin}```
-stdout: ```{new_stdout.getvalue()}```
+stdout: ```{new_stdout.getvalue()} ```
 stderr: ```{new_stderr.getvalue()}```"""
         ))
         new_stdout.close()
