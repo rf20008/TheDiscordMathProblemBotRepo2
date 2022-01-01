@@ -610,7 +610,7 @@ class MathProblemCache:
                     log.debug("Expected SQL statement:")
                     log.warning(
                         f"""SELECT * FROM problems 
-WHERE guild_id = {guild_id} AND problem_id = {problem_id}"""
+WHERE (guild_id = {guild_id} AND problem_id = {problem_id})"""
                     )
                     r = await cursor.execute(
                         """SELECT * FROM problems 
