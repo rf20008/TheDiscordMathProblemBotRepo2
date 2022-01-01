@@ -151,9 +151,13 @@ def get_git_revision_hash() -> str:
 # @bot.event
 async def on_ready(bot: TheDiscordMathProblemBot):
     """Ran when the disnake library detects that the bot is ready"""
+    app_info = await bot.application_info()
     print("The bot is now ready!")
     print(f"I connected as {bot.user.name}#{bot.user.discriminator}.")
-    print(f"My owner id is {bot.owner_id}!")
+    print(f"My owner id is {bot.owner_id if bot.owner_id is not None else app_info.owner.id}!")
+    if bot.owner_id is None and app_info.owner.id is not None:
+        bot.owner_id = app_info.owner.id
+        
     print(f"My owner ids are {bot.owner_ids}")
 
 # Bot creation

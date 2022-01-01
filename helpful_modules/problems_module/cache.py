@@ -201,7 +201,7 @@ class MathProblemCache:
             f"get_user_data method called. user_id: {user_id}, default: {default}"
         )
         assert isinstance(user_id, int)
-        assert isinstance(default, UserData) or default is None
+        assert isinstance(default, UserData) or default is None or default == Exception
         if default is None:
             default = UserData(user_id=user_id, trusted=False, blacklisted=False)
             # To avoid mutable default arguments
@@ -297,7 +297,8 @@ class MathProblemCache:
     async def add_user_data(self, user_id: int, thing_to_add: UserData) -> None:
         assert isinstance(user_id, int)
         assert isinstance(thing_to_add, UserData)
-        if (await self.get_user_data(user_id, default=None)) is not None:
+        if (await self.get_user_data(user_id, default=Exception)) !=Exception: #type: ignore
+            # This is because the user_id is None so it will return the default instead
             raise MathProblemsModuleException(
                 "User data already exists"
             )  # Make sure the user data doesn't already exist
