@@ -13,25 +13,21 @@ class HelperCog(ext.commands.Cog):
 
     def __init__(self, bot: TheDiscordMathProblemBot):
         """Helpful __init__, the entire reason I decided to make this, so I could transfer modules"""
-        self.b = bot._transport_modules
-        checks.setup(bot)
-        (
-            self.problems_module,
-            self.SuccessEmbed,
-            self.ErrorEmbed,
-            self.the_documentation_file_loader,
-        ) = (
-            self.b["problems_module"],
-            self.b["custom_embeds"].SuccessEmbed,
-            self.b["custom_embeds"].ErrorEmbed,
-            self.b["the_documentation_file_loader"],
-        )
+        #self.b = bot._transport_modules
+        #checks.setup(bot)
+        #(
+        #    self.problems_module,
+        #    self.SuccessEmbed,
+        #    self.ErrorEmbed,
+        #    self.the_documentation_file_loader,
+        #) = (
+        #    self.b["problems_module"],
+        #    self.b["custom_embeds"].SuccessEmbed,
+        #    self.b["custom_embeds"].ErrorEmbed,
+        #    self.b["the_documentation_file_loader"],
+        #)
         self.cache: problems_module.MathProblemCache = bot.cache
         self.bot: disnake.ext.commands.Bot = bot
-        self.check_for_cooldown = self.bot._transport_modules["check_for_cooldown"]
-        self.custom_embeds = self.bot._transport_modules["custom_embeds"]
-        self.checks = self.bot._transport_modules["checks"]
-
     @property
     def trusted_users(self):
         """Syntactic sugar? A shorthand for self.bot.trusted_users"""

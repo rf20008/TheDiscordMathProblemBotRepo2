@@ -435,12 +435,15 @@ class DeveloperCommands(HelperCog):
         their_user_data.trusted=False
         try:
             await self.cache.set_user_data(user_id=user.id, new=their_user_data)
+        except problems_module.UserDataNotExistsException:
+            await self.cache.add_user_data(user_id=user_id, thing_to_add=user_data)
         await inter.send(
             embed=ErrorEmbed(
                 f"Successfully made {user.display_name} no longer a trusted user!"
             ),
             ephemeral=True,
         )
+        
 
 
 def setup(bot: TheDiscordMathProblemBot):
