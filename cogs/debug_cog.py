@@ -49,7 +49,18 @@ class DebugCog(HelperCog):
         """/sql [query: str]
         A debug command to run SQL!
         You must own this bot to run this command!"""
-        pass
+        if inter.author.id not in self.bot.owner_ids or inter.author.id != self.bot.owner_id:
+            await inter.send("You don't own this bot.")
+            return
+        try:
+            result = await self.cache.run_sql(query)
+        except BaseException as e:
+            await inter.send("An exception occurred while running the SQL!")
+            raise
+
+        await inter.send(f"Result: {result}")
+        return
+
 
     @commands.is_owner()
     @checks.trusted_users_only()
