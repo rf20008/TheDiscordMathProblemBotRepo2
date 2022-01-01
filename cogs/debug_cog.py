@@ -1,3 +1,4 @@
+import asyncio
 import contextlib
 import disnake
 import io
@@ -101,24 +102,26 @@ class DebugCog(HelperCog):
         if self.bot.owner_id is None and self.bot.owner_ids is None:
             return await inter.send("Neither owner_id or owner_ids is defined... exiting!")
         code_ = '\n'.join(code.split('\\n')) #Split the code by `\n`
-        thing_to_run = '''async def func():
+        thing_to_run = '''async def Func():
         '''
         thing_to_run += textwrap.indent(code_, '\t', predicate = lambda l: True)
+        compiled = True
         try:
             exec(thing_to_run, globals(), locals())
         except SyntaxError as e:
+            compiled = False
             new_stderr.write(''.join(format_exception(e)))
-
-        try:
-            with contextlib.redirect_stdout(new_stdout):
-                with contextlib.redirect_stderr(new_stderr):
-                    exec('import asyncio; asyncio.run(func())')
-        except BaseException as e:
-            new_stderr.write(''.join(format_exception(e)))
+        if compiled:
+            try:
+                with contextlib.redirect_stdout(new_stdout):
+                    with contextlib.redirect_stderr(new_stderr):
+                        await Func()
+            except BaseException as e:
+                new_stderr.write(''.join(format_exception(e)))
         await inter.send(embed = SuccessEmbed(
             f"""The code was successfully executed!
 stdout: ```{new_stdout.getvalue()} ```
-stderr: ```{new_stderr.getvalue()}```"""
+stderr: ```{new_stderr.getvalue()} ```"""
         ))
         new_stdout.close()
         new_stderr.close()
