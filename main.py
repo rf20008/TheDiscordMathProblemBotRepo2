@@ -121,7 +121,6 @@ main_cache = problems_module.MathProblemCache(
     mysql_db_name=bot_constants.MYSQL_DB_NAME,
     use_sqlite=bot_constants.USE_SQLITE,
 )  # Generate a new cache for the bot!
-print(main_cache.db_name)
 assert main_cache.db is main_cache.db_name
 vote_threshold = -1  # default
 mathProblems = {}
@@ -200,6 +199,7 @@ _the_daemon_file_saver.start()
 # slash = InteractionClient(client=bot, sync_commands=True)
 # bot.slash = slash
 # Add the commands
+bot.add_cog(DebugCog(bot))
 bot.add_cog(DeveloperCommands(bot))
 bot.add_cog(ProblemsCog(bot))
 bot.add_cog(QuizCog(bot))

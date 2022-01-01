@@ -16,7 +16,7 @@ class DebugCog(HelperCog):
     def __init__(self, bot: TheDiscordMathProblemBot):
         super().__init__(bot)
 
-    def cog_slash_command_check(self, inter: disnake.ApplicationCommandInteration):
+    def cog_slash_command_check(self, inter: disnake.ApplicationCommandInteraction):
         """A check that makes sure only bot owners can use this cog!"""
         if self.bot.owner_id in [None, []]:
             raise commands.CheckFailure(
@@ -45,7 +45,7 @@ class DebugCog(HelperCog):
             )
         ]
     )
-    async def sql(self, inter: disnake.ApplicationCommandInteration, query: str):
+    async def sql(self, inter: disnake.ApplicationCommandInteraction, query: str):
         """/sql [query: str]
         A debug command to run SQL!
         You must own this bot to run this command!"""
@@ -76,7 +76,7 @@ class DebugCog(HelperCog):
             )
         ]
     )
-    async def eval(self, inter, code: str, stdin: str = ''):
+    async def eval(self, inter: disnake.ApplicationCommandInteraction, code: str):
         """/eval [code: str]
         Evaluate arbitrary python code.
         Any instances of `\n` in code and stdin will be replaced with a newline character!
@@ -99,7 +99,7 @@ class DebugCog(HelperCog):
 
         try:
             with contextlib.redirect_stdout(new_stdout):
-                with contextlib.redirect_stderr(new_stderr)
+                with contextlib.redirect_stderr(new_stderr):
                     exec('func()')
         except BaseException as e:
             new_stderr.write(format_exception(e))
@@ -107,7 +107,7 @@ class DebugCog(HelperCog):
             f"""The code was successfully executed!
 stdin: ```{stdin}```
 stdout: ```{new_stdout.getvalue()}```
-stderr: ```{new_stderr.getvalue()}```}"""
+stderr: ```{new_stderr.getvalue()}```"""
         ))
         new_stdout.close()
         new_stderr.close()
