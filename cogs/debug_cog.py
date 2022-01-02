@@ -1,5 +1,6 @@
 import asyncio
 import contextlib
+import copy
 import disnake
 import io
 import textwrap
@@ -90,9 +91,11 @@ class DebugCog(HelperCog):
         Any instances of `\n` in code and stdin will be replaced with a newline character!
         This will happen even in strings. Therefore, be very careful!
         Only the owner can run this command!
+        This requires both the owner and the bot to have the Administrator permission.
         """
         new_stdout = io.StringIO()
         new_stderr = io.StringIO()
+        
         if (self.bot.owner_ids not in [None, [], set()] and inter.author.id not in self.bot.owner_ids):
             await inter.send("You don't own this bot...")
             return
@@ -101,13 +104,26 @@ class DebugCog(HelperCog):
             return
         if self.bot.owner_id is None and self.bot.owner_ids is None:
             return await inter.send("Neither owner_id or owner_ids is defined... exiting!")
+
+        if inter.guild is None:
+            pass
+        elif not (inter.author.guild_permissions().administrator and inter.guild.me.guild_permissions().administrator):
+            return await inter.send("We must both have the administrator permission to /eval!")
         code_ = '\n'.join(code.split('\\n')) #Split the code by `\n`
         thing_to_run = '''async def func():
         '''
         thing_to_run += textwrap.indent(code_, '\t', predicate = lambda l: True)
         compiled = True
+        new_globals = {
+            'bot': self.bot,
+            'cache': self.cache,
+            'self': self,
+            'inter': inter,
+            'author': inter.author
+        }
+        new_globals.update(globals()) # credit: https://github.com/Rapptz/RoboDanny/blob/rewrite/cogs/admin.py#L234
         try:
-            exec(thing_to_run, globals(), locals())
+            exec(thing_to_run, new_globals)
         except BaseException as e:
             compiled = False
             new_stderr.write(''.join(format_exception(e)))

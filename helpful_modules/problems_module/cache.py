@@ -572,6 +572,8 @@ class MathProblemCache:
         log.debug(
             f"Type of guild_id & problem_id: guild_id: {type(guild_id)} {guild_id}, problem_id: {type(problem_id)} {problem_id}"
         )
+
+        # The problem: where doesn't work wi
         if not isinstance(guild_id, int) and guild_id is not None:  # type-checking
             if self.warnings:
                 warnings.warn("guild_id is not a integer!", category=RuntimeWarning)
