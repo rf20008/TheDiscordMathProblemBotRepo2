@@ -430,7 +430,6 @@ NumSolvers: {len(problem.get_solvers())}"""
         """/submit_problem {question:str}, {answer:str}, [guild_question:bool=false]
         Create & submit a new problem with the given question and answer.
         If the problem is a guild problem, it must not be executed in a DM context or the bot will not know which guild the problem is for!"""
-
         if (
             len(question) > self.cache.max_question_length
         ):  # Check to make sure it's not too long!
@@ -500,7 +499,7 @@ NumSolvers: {len(problem.get_solvers())}"""
                 )
             )
             return  # Exit the function
-
+        
         while True:
 
             problem_id = generate_new_id()
@@ -509,14 +508,13 @@ NumSolvers: {len(problem.get_solvers())}"""
                 for problem in await self.cache.get_guild_problems(inter.guild)
             ]:  # Make sure this id isn't already used!
                 break  # Break the loop if the problem isn't already used
-
         if guild_question:
             # If this is a guild question, set the guild id
             # to the guild id of the guild this command was run in
             guild_id = inter.guild.id
         else:  # But if it's global, make it global
             guild_id = None
-
+        
         problem = problems_module.BaseProblem(
             question=question,
             answer=answer,
@@ -525,6 +523,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             guild_id=guild_id,
             cache=self.cache,
         )  # Create the problem!
+        print(problem)
         await self.cache.add_problem(
             guild_id=guild_id, problem_id=problem_id, problem=problem
         )  # Add the problem

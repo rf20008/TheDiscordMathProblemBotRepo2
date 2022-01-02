@@ -619,10 +619,9 @@ class MathProblemCache:
 WHERE (guild_id = {guild_id} AND problem_id = {problem_id})"""
                     )
                     r = await cursor.execute(
-                        """SELECT * FROM problems 
-                        WHERE (guild_id = ? AND problem_id = ?)""",
+                        """SELECT * FROM problems WHERE (guild_id = ? AND problem_id = ?)""",
                         # Not sure if making "from" uppercase will change anything (but it selects the problem from the database)
-                        (str(guild_id), str(problem_id)),
+                        (guild_id, problem_id),
                     )
                     log.debug(str(r))
                     rows = list(await cursor.fetchall())

@@ -129,7 +129,7 @@ class DebugCog(HelperCog):
         except BaseException as e:
             compiled = False
             new_stderr.write(''.join(format_exception(e)))
-        if 'func' not in globals().keys() and 'func' not in locals().keys():
+        if 'func' not in globals().keys() and 'func' not in locals().keys() and compiled == True:
             raise RuntimeError('func is not defined')
         if compiled:
             try:
