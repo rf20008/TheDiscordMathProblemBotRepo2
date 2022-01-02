@@ -123,7 +123,7 @@ class DebugCog(HelperCog):
         }
         new_globals.update(globals()) # credit: https://github.com/Rapptz/RoboDanny/blob/rewrite/cogs/admin.py#L234
         try:
-            exec(thing_to_run, new_globals)
+            exec(thing_to_run, new_globals, locals())
             compiled = True
         except BaseException as e:
             compiled = False
