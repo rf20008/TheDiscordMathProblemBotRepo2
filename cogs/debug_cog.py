@@ -9,9 +9,10 @@ from disnake.ext import commands
 from helpful_modules import checks, problems_module
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.custom_embeds import SuccessEmbed, ErrorEmbed, SimpleEmbed
+from helpful_modules.threads_or_useful_funcs import get_log
 from .helper_cog import HelperCog
 
-
+log = get_log(__name__)
 class DebugCog(HelperCog):
     """Commands for debugging :-)"""
 
@@ -110,7 +111,7 @@ class DebugCog(HelperCog):
         elif not (inter.author.guild_permissions().administrator and inter.guild.me.guild_permissions().administrator):
             return await inter.send("We must both have the administrator permission to /eval!")
         code_ = '\n'.join(code.split('\\n')) #Split the code by `\n`
-        thing_to_run = '''async def _func():
+        thing_to_run = '''async def func():
         '''
         thing_to_run += textwrap.indent(code_, '    ', predicate = lambda l: True)
         compiled = False
@@ -128,16 +129,20 @@ class DebugCog(HelperCog):
         except BaseException as e:
             compiled = False
             new_stderr.write(''.join(format_exception(e)))
-        if compiled:
-            try:
-                _func
-            except NameError:
-                raise RuntimeError("Uh oh")
+        if 'func' not in globals().keys() and 'func' not in locals().keys():
+            raise RuntimeError('func is not defined')
         if compiled:
             try:
                 with contextlib.redirect_stdout(new_stdout):
                     with contextlib.redirect_stderr(new_stderr):
-                        await _func()
+                        if 'func' in globals().keys():
+                            await globals()['func']() # Get the 'func' from the global variables and call it
+                            log.warning("/eval ran (found in globals)")
+                        elif 'func' in locals().keys():
+                            await locals()['func']() # Get func() from locals and call it
+                            log.warning('/eval ran (found in locals)')
+                        else:
+                            raise Exception(f"""fatal: func() not defined""")
             except BaseException as e:
                 new_stderr.write(''.join(format_exception(e)))
         await inter.send(embed = SuccessEmbed(
