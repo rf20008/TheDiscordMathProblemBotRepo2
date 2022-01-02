@@ -615,11 +615,12 @@ class MathProblemCache:
                     )
                     log.debug("Expected SQL statement:")
                     log.warning(
-                        f"""SELECT * FROM problems 
-WHERE (guild_id = {guild_id} AND problem_id = {problem_id})"""
+                        f"""SELECT * FROM problems
+(WHERE guild_id = {guild_id} AND problem_id = {problem_id})"""
                     )
+                    # The problem is most likely not the SQL statement!
                     r = await cursor.execute(
-                        """SELECT * FROM problems WHERE (guild_id = ? AND problem_id = ?)""",
+                        """SELECT * FROM problems WHERE guild_id = ? AND problem_id = ?""",
                         # Not sure if making "from" uppercase will change anything (but it selects the problem from the database)
                         (guild_id, problem_id),
                     )
