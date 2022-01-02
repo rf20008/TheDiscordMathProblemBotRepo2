@@ -110,10 +110,10 @@ class DebugCog(HelperCog):
         elif not (inter.author.guild_permissions().administrator and inter.guild.me.guild_permissions().administrator):
             return await inter.send("We must both have the administrator permission to /eval!")
         code_ = '\n'.join(code.split('\\n')) #Split the code by `\n`
-        thing_to_run = '''async def func():
+        thing_to_run = '''async def _func():
         '''
-        thing_to_run += textwrap.indent(code_, '\t', predicate = lambda l: True)
-        compiled = True
+        thing_to_run += textwrap.indent(code_, '    ', predicate = lambda l: True)
+        compiled = False
         new_globals = {
             'bot': self.bot,
             'cache': self.cache,
@@ -124,14 +124,20 @@ class DebugCog(HelperCog):
         new_globals.update(globals()) # credit: https://github.com/Rapptz/RoboDanny/blob/rewrite/cogs/admin.py#L234
         try:
             exec(thing_to_run, new_globals)
+            compiled = True
         except BaseException as e:
             compiled = False
             new_stderr.write(''.join(format_exception(e)))
         if compiled:
             try:
+                _func
+            except NameError:
+                raise RuntimeError("Uh oh")
+        if compiled:
+            try:
                 with contextlib.redirect_stdout(new_stdout):
                     with contextlib.redirect_stderr(new_stderr):
-                        await func()
+                        await _func()
             except BaseException as e:
                 new_stderr.write(''.join(format_exception(e)))
         await inter.send(embed = SuccessEmbed(
