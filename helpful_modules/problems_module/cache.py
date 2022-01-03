@@ -807,13 +807,14 @@ class MathProblemCache:
     ) -> BaseProblem:
         """Removes a problem. Returns the deleted problem"""
         Problem = await self.get_problem(guild_id, problem_id)
-        await self.remove_problem_without_returning(problem_id)
+        await self.remove_problem_without_returning(guild_id, problem_id)
         return Problem
 
     async def remove_problem_without_returning(
-            self, problem_id: int
+            self, guild_id: typing.Optional[int], problem_id: int, 
     ) -> None:
         """Remove a problem without returning! Saves time."""
+        assert isinstance(guild_id, int) or guild_id is None
         if not isinstance(problem_id, int):
             if self.warnings:
                 warnings.warn("problem_id isn't an integer")
