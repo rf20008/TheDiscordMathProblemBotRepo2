@@ -990,7 +990,7 @@ class ProblemsCog(HelperCog):
             return
         await self.cache.remove_problem(guild_id, problem_id)
         await inter.send(
-            embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!"),
+            embed=SuccessEmbed(f"Successfully deleted problem the problem with id {problem_id}!"),
             ephemeral=True,
         )
 
