@@ -221,7 +221,7 @@ class ProblemsCog(HelperCog):
                 )
                 return
             await inter.send(embed=SuccessEmbed(Problem_as_str), ephemeral=True)
-
+        await inter.send(embed=SuccessEmbed(Problem_as_str), ephemeral=True)
     @commands.cooldown(1, 2.5, commands.BucketType.user)
     @commands.slash_command(
         name="list_all_problem_ids",
@@ -671,9 +671,7 @@ class ProblemsCog(HelperCog):
                 )
             checking_guild_problem = False
         try:
-            problem = await self.bot.cache.get_problem(
-                int(inter.guild.id) if checking_guild_problem else None, int(problem_id)
-            )
+            problem = await self.bot.cache.get_problem(int(problem_id))
             if problem.is_solver(inter.author):  # If the user solved the problem
                 await inter.send(
                     embed=ErrorEmbed(
