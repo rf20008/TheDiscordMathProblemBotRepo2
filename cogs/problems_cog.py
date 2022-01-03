@@ -27,88 +27,13 @@ class ProblemsCog(HelperCog):
     @checks.is_not_blacklisted()
     @commands.slash_command(
         name="edit_problem",
-        description="edit a problem",
-        options=[
-            Option(
-                name="problem_id",
-                description="problem_id",
-                type=OptionType.integer,
-                required=True,
-            ),
-            Option(
-                name="guild_id",
-                description="the guild id",
-                type=OptionType.integer,
-                required=False,
-            ),
-            Option(
-                name="new_question",
-                description="the new question",
-                type=OptionType.string,
-                required=False,
-            ),
-            Option(
-                name="new_answer",
-                description="the new answer",
-                type=OptionType.string,
-                required=False,
-            ),
-        ],
+        description="edit a problem"
     )
     async def edit_problem(
         self,
-        inter: disnake.ApplicationCommandInteraction,
-        problem_id: int,
-        new_question: str = None,
-        new_answer: str = None,
-        guild_id: int = Exception,
-    ) -> typing.Optional[disnake.Message]:
-        """/edit_problem (problem_id: int) [guild_id: int=Exception] [new_question: str] [new_answer: str]
-        Allows you to edit a math problem.
-        You must be the author of the problem to edit it. You can edit a problem that you created regardless of which guild it's in.
-        If you do not specify guild_id, it will default to the guild id of the interaction instead of being `Exception`.
-        The bot must be in the guild with specified id, or it will error."""
-        if guild_id == Exception:
-            guild_id = inter.guild.id
-        if guild_id is not None and self.bot.get_guild(guild_id) is None:
-            await inter.send(
-                embed=ErrorEmbed(
-                    "I'm not in that guild!",
-                    custom_title = "Uh oh."))
-            return
-        try:
-            problem = await self.cache.get_problem(int(guild_id), int(problem_id))
-            if not problem.is_author(inter.author):
-                await inter.send(
-                    embed=ErrorEmbed(
-                        "You are not the author of this problem and therefore can't edit it!"
-                    )
-                )
-                return
-        except ProblemNotFound:
-            await inter.send(embed=ErrorEmbed("This problem does not exist!"))
-            return
-        e = "Successfully"
-        if new_question is not None:
-            if new_answer is not None:
-                await problem.edit(question=new_question, answer=new_answer)
-                e += f"changed the answer to {new_answer} and question to {new_question}!"
-            else:
-                await problem.edit(question=new_question)
-                e += f"changed the question to {new_question}!"
-        else:
-            if new_answer is not None:
-                await problem.edit(answer=new_answer)
-                e += f"changed the answer to {new_answer}"
-            else:
-                # raise Exception(
-                #    "*** No new answer or new question provided. Aborting command...***"
-                # )
-                # Return error messages in favor of raising exceptions
-
-                return await inter.send("You must provide either a question or answer.")
-
-        await inter.send(embed=SuccessEmbed(e), ephemeral=True)
+        inter: disnake.ApplicationCommandInteraction):
+        """The base command to edit problems."""
+    
         
     @commands.cooldown(1, 1, commands.BucketType.user)
     @checks.is_not_blacklisted()
