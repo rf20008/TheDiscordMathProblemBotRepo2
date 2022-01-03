@@ -37,7 +37,7 @@ class ProblemsCog(HelperCog):
         
     @commands.cooldown(1, 1, commands.BucketType.user)
     @checks.is_not_blacklisted()
-    @commands.slash_command(
+    @edit_problem.sub_command(
         name="edit_problem",
         description="edit a problem",
         options=[
@@ -121,7 +121,7 @@ class ProblemsCog(HelperCog):
 
         await inter.send(embed=SuccessEmbed(e), ephemeral=True)
 
-    @edit_data.sub_command(
+    @edit_problem.sub_command(
         name = 'add_answer',
         description = "Add an answer to an existing problem",
         options = [
