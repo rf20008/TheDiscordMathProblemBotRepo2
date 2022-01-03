@@ -61,10 +61,21 @@ class ProblemsCog(HelperCog):
         problem_id: int,
         new_question: str = None,
         new_answer: str = None,
-        guild_id: int = "null",
+        guild_id: int = Exception,
     ) -> typing.Optional[disnake.Message]:
-        """/edit_problem problem_id:
-        Allows you to edit a math problem."""
+        """/edit_problem (problem_id: int) [guild_id: int=Exception] [new_question: str] [new_answer: str]
+        Allows you to edit a math problem.
+        You must be the author of the problem to edit it. You can edit a problem that you created regardless of which guild it's in.
+        If you do not specify guild_id, it will default to the guild id of the interaction instead of being `Exception`.
+        The bot must be in the guild with specified id, or it will error."""
+        if guild_id == Exception:
+            guild_id = inter.guild.id
+        if guild_id is not None and self.bot.get_guild(guild_id) is None:
+            await inter.send(
+                embed=ErrorEmbed(
+                    "I'm not in that guild!",
+                    custom_title = "Uh oh."))
+            return
         try:
             problem = await self.cache.get_problem(int(guild_id), int(problem_id))
             if not problem.is_author(inter.author):
@@ -171,17 +182,21 @@ class ProblemsCog(HelperCog):
         except AttributeError:
             real_guild_id = None
         try:
-            problem = await self.cache.get_problem(real_guild_id, int(problem_id)) # get the problem
+            problem = await self.cache.get_problem(
+                real_guild_id, int(problem_id)
+            )  # get the problem
         except ProblemNotFound:  # Problem not found
             await inter.send(embed=ErrorEmbed("Problem not found!"))
             return
         try:
             Problem_as_str = f"""Question: {problem.get_question()}
-Author: {str(problem.get_author())}
-NumVoters/Vote Threshold: {problem.get_num_voters()}/{self.bot.vote_threshold}
-NumSolvers: {len(problem.get_solvers())}"""
+            Author: {str(problem.get_author())}
+            NumVoters/Vote Threshold: {problem.get_num_voters()}/{self.bot.vote_threshold}
+            NumSolvers: {len(problem.get_solvers())}"""
         except NameError:
-            await inter.send("Uh oh - problem not found! This wasn't handled earlier, so I'm raising an error so my developer can figure out why this is the case. :-)")
+            await inter.send(
+                "Uh oh - problem not found! This wasn't handled earlier, so I'm raising an error so my developer can figure out why this is the case. :-)"
+            )
             raise
         if show_all_data:
             if not (
@@ -295,10 +310,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             await inter.send("You must be in a guild to see guild problems!")
             return
         showSolvedProblems = show_solved_problems
-        if inter.guild is not None:
-            guild_id = inter.guild.id
-        else:
-            guild_id = "null"
+        guild_id = inter.guild.id
         # Check for no problems
         if len(await self.bot.cache.get_guild_problems(inter.guild)) == 0:
             await inter.send("No problems currently exist.")
@@ -343,13 +355,6 @@ NumSolvers: {len(problem.get_solvers())}"""
                 problem_info_as_str += "The combined length of the questions is too long.... shortening it!"
                 await inter.send(embed=SuccessEmbed(problem_info_as_str[:1930]))
                 return
-            if not isinstance(problem, problems_module.BaseProblem):
-                print(list(global_problems))
-                raise RuntimeError(
-                    "Uh... the problem is not a BaseProblem! Please help :-)"
-                )
-                # If
-                # solved?
             if not showSolvedProblems and problem.is_solver(inter.author):
                 continue  # Don't show solved problems if the user doesn't want to see solved problems
             # Probably will be overhauled with str(problem)
@@ -376,7 +381,6 @@ NumSolvers: {len(problem.get_solvers())}"""
     async def delallbotproblems(self, inter: disnake.ApplicationCommandInteraction):
         """/delallbotproblems
         Delete all automatically generated problems."""
-        assert inter.author.id in self.bot.trusted_users
         await inter.send(
             embed=SimpleEmbed("", description="Attempting to delete bot problems"),
             ephemeral=True,
@@ -401,14 +405,14 @@ NumSolvers: {len(problem.get_solvers())}"""
         description="Create a new problem",
         options=[
             Option(
-                name="answer",
-                description="The answer to this problem",
+                name="question",
+                description="your question to submit!",
                 type=OptionType.string,
                 required=True,
             ),
             Option(
-                name="question",
-                description="your question to submit!",
+                name="answer",
+                description="The answer to this problem",
                 type=OptionType.string,
                 required=True,
             ),
@@ -451,7 +455,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             )
             remover = threading.Thread(
                 target=run, args=(self.cache.remove_duplicate_problems,)
-            )
+            )  # might be removed - DoS attack?
             remover.start()
             return
         if guild_question:
@@ -499,13 +503,15 @@ NumSolvers: {len(problem.get_solvers())}"""
                 )
             )
             return  # Exit the function
-        
+
         while True:
 
             problem_id = generate_new_id()
             if problem_id not in [
                 problem.id
-                for problem in await self.cache.get_guild_problems(inter.guild)
+                for problem in await self.cache.get_problems_by_func(
+                    func=lambda problem: True
+                )  # Get everything
             ]:  # Make sure this id isn't already used!
                 break  # Break the loop if the problem isn't already used
         if guild_question:
@@ -514,7 +520,7 @@ NumSolvers: {len(problem.get_solvers())}"""
             guild_id = inter.guild.id
         else:  # But if it's global, make it global
             guild_id = None
-        
+
         problem = problems_module.BaseProblem(
             question=question,
             answer=answer,
@@ -525,7 +531,7 @@ NumSolvers: {len(problem.get_solvers())}"""
         )  # Create the problem!
         print(problem)
         await self.cache.add_problem(
-            guild_id=guild_id, problem_id=problem_id, problem=problem
+            problem_id=problem_id, problem=problem
         )  # Add the problem
 
         await inter.send(
@@ -854,12 +860,6 @@ NumSolvers: {len(problem.get_solvers())}"""
                 type=OptionType.integer,
                 required=True,
             ),
-            Option(
-                name="is_guild_problem",
-                description="whether you are deleting a guild problem. Defaults to False (which means it's global)",
-                type=OptionType.boolean,
-                required=False,
-            ),
         ],
     )
     @commands.cooldown(1, 0.5, commands.BucketType.user)
@@ -868,90 +868,66 @@ NumSolvers: {len(problem.get_solvers())}"""
         self: "ProblemsCog",
         inter: disnake.ApplicationCommandInteraction,
         problem_id: int,
-        is_guild_problem: bool = False,
     ) -> typing.Optional[disnake.Message]:
-        """/delete_problem (problem_id: int) [is_guild_problem: bool = False]
-        Delete a problem. You must either have the Administrator permission in the guild, and the problem must be a guild problem, or"""
+        """/delete_problem (problem_id: int)
+        Delete a problem. You must either have the Administrator permission in the guild, and the problem must be a guild problem, or be a trusted user.
+
+        You do not need to specify whether the problem is a guild problem, as the bot can figure it out."""
         if inter.guild is not None:
             guild_id = inter.guild.id
         else:
             guild_id = None
-        if not inter.guild and is_guild_problem:
-            return await inter.send(
-                "You cannot delete guild problems unless you execute this problem in a guild!"
-            )
+        try:
+            problem = await self.bot.cache.get_problem(guild_id, problem_id)
+            can_delete: bool = False  # default
+            if problem.author == inter.author.id:
+                can_delete = True
+            elif problem.guild_id is not None:
+                if problem.guild_id != guild_id:
+                    await inter.send(
+                        "Wrong guild; Use this command in the guild with the problem"
+                    )
+                    return
+                elif not inter.author.guild_permissions.administrator:
+                    user_data: problems_module.UserData = (
+                        await self.bot.cache.get_user_data(
+                            user_id=inter.author.id,
+                            default=UserData(
+                                user_id=inter.author.id,
+                                trusted=False,
+                                blacklisted=False,
+                            ),
+                        )
+                    )
+                    if not user_data.trusted:
+                        await inter.send("Insufficient permissions.")
+                        return
+                can_delete = True
+            else:
+                user_data: problems_module.UserData = (
+                    await self.bot.cache.get_user_data(
+                        user_id=inter.author.id,
+                        default=UserData(
+                            user_id=inter.author.id, trusted=False, blacklisted=False
+                        ),
+                    )
+                )
+                if not user_data.trusted:
+                    await inter.send("Insufficient permissions.")
+                    return
+                can_delete = True
 
-        if is_guild_problem:
-            if guild_id is None:
-                await inter.send(
-                    embed=ErrorEmbed(
-                        "Run this command in the discord server which has the problem you are trying to delete, or switch is_guild_problem to False."
-                    )
-                )
-                return
-            try:
-                problem = await self.cache.get_problem(
-                    guild_id if is_guild_problem else None, problem_id
-                )
-                # print(problem)
-            except (problems_module.ProblemNotFound, ProblemNotFoundException):
-                return await inter.send(
-                    embed=ErrorEmbed(
-                        description="This problem does not exist!",
-                        custom_title="Problem not found",
-                    )
-                )
-            if not (
-                inter.author.id
-                in self.bot.trusted_users  # Global trusted users can delete problems
-                or not problem.is_author()  # Authors can delete
-                or (
-                    inter.author.guild_permissions.administrator
-                    and is_guild_problem
-                    and problem.guild_id == guild_id
-                )  # Users with the 'administrator' permission can delete problems if the problem is in the guild
-            ):
-                await inter.send(
-                    embed=ErrorEmbed(
-                        "You don't have permission to delete this problem!"
-                    ),
-                    ephemeral=True,
-                )
-                return
-            await self.cache.remove_problem(guild_id, problem_id)
+        except problems_module.ProblemNotFound:
+            return await inter.send(
+                embed=ErrorEmbed("Problem not found. Cannot delete")
+            )
+        if not can_delete:
             await inter.send(
-                embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!"),
+                embed=ErrorEmbed("You don't have permission to delete this problem!"),
                 ephemeral=True,
             )
-        if guild_id is None:
-            await inter.send(
-                embed=ErrorEmbed(
-                    "Run this command in the discord server which has the problem, or switch is_guild_problem to False."
-                )
-            )
             return
-        try:
-            problem = await self.cache.get_problem(guild_id, problem_id)
-        except ProblemNotFound:
-            await inter.send(
-                embed=ErrorEmbed("That problem doesn't exist."), ephemeral=True
-            )
-            return
-
-        if not (
-            inter.author.id in self.bot.trusted_users
-            or not (self.cache.get_problem(guild_id, problem_id).is_author())
-            or (
-                inter.author.guild_permissions.administrator
-                and is_guild_problem
-                and problem.guild_id == guild_id
-            )
-        ):  # Not
-            await inter.send(
-                embed=ErrorEmbed("Insufficient permissions!"), ephemeral=True
-            )
-            return
-        await self.cache.remove_problem(None, problem_id)
+        await self.cache.remove_problem(guild_id, problem_id)
         await inter.send(
             embed=SuccessEmbed(f"Successfully deleted problem #{problem_id}!"),
             ephemeral=True,
