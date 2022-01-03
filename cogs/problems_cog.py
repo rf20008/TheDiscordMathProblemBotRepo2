@@ -770,7 +770,8 @@ class ProblemsCog(HelperCog):
                 ),
                 ephemeral=True,
             )
-            await problem.add_solver(inter.author)
+            problem.solvers.append(inter.author.id)
+            await problem.update_self()
             return
 
     @commands.slash_command(

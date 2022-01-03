@@ -1120,10 +1120,10 @@ class MathProblemCache:
                 # We will raise if the problem already exists!
                 await cursor.execute(
                     """UPDATE problems 
-                    SET guild_id = ?, problem_id = ?, question = ?, answer = ?, voters = ?, solvers = ?, author = ?
+                    SET guild_id = ?, problem_id = ?, question = ?, answers = ?, voters = ?, solvers = ?, author = ?
                     WHERE problem_id = ?;""",
                     (
-                        int(new.guild_id),
+                        new.guild_id,
                         int(new.id),
                         new.get_question(),
                         pickle.dumps(new.get_answers()),

@@ -179,7 +179,7 @@ class BaseProblem:
     async def update_self(self):
         """A helper method to update the cache with my version"""
         if self._cache is not None:
-            await self._cache.update_problem(self.guild_id, self, id, self)
+            await self._cache.update_problem(self.id, self)
 
     @classmethod
     def from_row(cls, row: dict, cache=None):
@@ -275,7 +275,7 @@ class BaseProblem:
             self.voters.append(voter.id)
         self.update_self()
 
-    def add_solver(self, solver: typing.Union[disnake.User, disnake.Member]):
+    async def add_solver(self, solver: typing.Union[disnake.User, disnake.Member]):
         """Adds a solver. Solver must be a disnake.User object or disnake.Member object."""
         if not isinstance(solver, disnake.User) and not isinstance(
             solver, disnake.Member
@@ -283,7 +283,7 @@ class BaseProblem:
             raise TypeError("Solver is not a User object")
         if not self.is_solver(solver):
             self.solvers.append(solver.id)
-        self.update_self()
+            await self.update_self()
 
     def get_answer(self):
         """Return my answer. This has been deprecated"""
