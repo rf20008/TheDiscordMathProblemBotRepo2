@@ -192,14 +192,14 @@ class DeveloperCommands(HelperCog):
         me = guild.me
         my_permissions = me.guild_permissions
         debug_dict = {
-            "guild_id": inter.guild.id,
-            "author_id": inter.author.id,
-            "problem_limit": self.bot.cache.max_guild_problems,
-            "reached_max_problems": "✅"
+            "Server Guild ID": inter.guild.id,
+            "Invoker's user ID": inter.author.id,
+            "Maximum number of guild-only problems allowed.": self.bot.cache.max_guild_problems,
+            "Has this guild reached the maximum number of problems?": "✅"
             if len(await self.bot.cache.get_guild_problems(inter.guild))
                >= self.bot.cache.max_guild_problems
             else "❌",
-            "num_guild-problems": len(
+            "Number of guild-only problems": len(
                 await self.bot.cache.get_guild_problems(inter.guild)
             ),
         }
@@ -218,23 +218,20 @@ class DeveloperCommands(HelperCog):
             if my_permissions.use_slash_commands
             else "❌",
         }
-        debug_dict["correct_permissions"] = correct_permissions
+        debug_dict["Do I have the correct permissions?"] = correct_permissions
         if raw:
             await inter.send(str(debug_dict), ephemeral=send_ephermally)
             return
         else:
             text = ""
-            for item in debug_dict:
-                if not isinstance([item], dict):
-                    text += f"{item}: {debug_dict.get(item)}\n"
+            for (key, val) in debug_dict:
+                if not isinstance(val, dict):
+                    text += f"{key}: {val}\n"
                 else:
-                    for item2 in item:
-                        if not isinstance(item2, dict):
-                            text += f"{item.get(item2)}: {debug_dict[item]}"
-                        else:
-                            raise RecursionError("uh oh") from Exception(
-                                "***Nested too much***"
-                            )
+                    text += key
+                    if isinstance(val, dict):
+                        for (k, v) in val:
+                            text += f'\t{k}: {v}'
 
         await inter.send(text, ephemeral=send_ephermally)
 
