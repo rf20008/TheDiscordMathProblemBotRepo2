@@ -132,19 +132,19 @@ class DeveloperCommands(HelperCog):
         This command raises an error (of type error_type) that has the description of the error_description.
         You must be a trusted user and the bot owner to run this command!
         The purpose of this command is to test the bot's on_slash_command_error event!"""
-        if (
-                inter.author.id not in self.bot.trusted_users
-        ):  # Check that the user is a trusted user
-            await inter.send(
-                embed=ErrorEmbed(
-                    f"⚠ {inter.author.mention}, you do not have permission to intentionally raise errors for debugging purposes.",
-                    custom_title="Insufficient permission to raise errors.",
-                ),
-                allowed_mentions=disnake.AllowedMentions(
-                    everyone=False, users=[], roles=[], replied_user=False
-                ),
-            )
-            return
+        #if (
+        #        inter.author.id not in self.bot.trusted_users
+        #):  # Check that the user is a trusted user
+        #    await inter.send(
+        #        embed=ErrorEmbed(
+        #            f"⚠ {inter.author.mention}, you do not have permission to intentionally raise errors for debugging purposes.",
+        #            custom_title="Insufficient permission to raise errors.",
+        #        ),
+        #        allowed_mentions=disnake.AllowedMentions(
+        #            everyone=False, users=[], roles=[], replied_user=False
+        #        ),
+        #    )
+        #    return
         if error_description is None:
             error_description = f"Manually raised error by {inter.author.mention}"
         if error_type == "Exception":
