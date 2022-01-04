@@ -229,7 +229,7 @@ class DeveloperCommands(HelperCog):
                 if not isinstance(val, dict):
                     text += f"{key}: {val}\n"
                 else:
-                    text += key
+                    text += key + '\n'
                     if isinstance(val, dict):
                         for k in val.keys():
                             v = val[k]
