@@ -204,17 +204,17 @@ class DeveloperCommands(HelperCog):
             ),
         }
         correct_permissions = {
-            "read_message_history": "✅" if my_permissions.read_messages else "❌",
-            "read_messages": "✅"
+            "Read Message History": "✅" if my_permissions.read_messages else "❌",
+            "Read Messages": "✅"
             if my_permissions.read_messages
             else "❌",  # can I read messages?
-            "send_messages": "✅"
+            "Send Messages": "✅"
             if my_permissions.send_messages
             else "❌",  # can I send messages?
-            "embed_links": "✅"
+            "Embed Links": "✅"
             if my_permissions.embed_links
             else "❌",  # can I embed links?
-            "use_application_commands": "✅"
+            "Use Slash Commands": "✅"
             if my_permissions.use_slash_commands
             else "❌",
         }
@@ -224,14 +224,16 @@ class DeveloperCommands(HelperCog):
             return
         else:
             text = ""
-            for (key, val) in debug_dict:
+            for key in debug_dict.keys():
+                val = debug_dict[key]
                 if not isinstance(val, dict):
                     text += f"{key}: {val}\n"
                 else:
                     text += key
                     if isinstance(val, dict):
-                        for (k, v) in val:
-                            text += f'\t{k}: {v}'
+                        for k in val.keys():
+                            v = val[k]
+                            text += f'\t{k}: {v}\n'
 
         await inter.send(text, ephemeral=send_ephermally)
 
