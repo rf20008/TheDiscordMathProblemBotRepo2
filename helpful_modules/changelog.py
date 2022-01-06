@@ -55,8 +55,17 @@ class ChangeLogManager:
             return changelogs
         self._changelogs = await self._open_file(func = func, mode = 'r')
         return self._changelogs
-    async def save_files(self):
-        pass
-            
-
+    async def save_files(self, new: dict):
+        def func(file: io.TextIOWrapper, data: dict):
+            file.write(data)
+        return await self._open_file(func=func, mode = 'w', args = [new])
+    async def add_changelog(self, item: ChangelogEntry):
+        data = await self.load_files()
+        data.append(item.to_dict())
+        def func(file, data):
+            file.write(data)
+        await self._open_file(func=func, mode = 'w', args = [data])
+    async def create_changelog(self, data: dict):
+        #TODO: finish
+        ...
 
