@@ -160,3 +160,15 @@ JSON error: {e}""")
         )
         await self.cache.add_quiz(quiz_to_create)
         await inter.send("Quiz successfully created!")
+
+    @create.sub_command(
+        name = 'blank',
+        description = 'Create a blank quiz'
+    )
+    async def blank(self, inter):
+        """/quiz create blank
+        Create a blank quiz. This is more user-friendly than /quiz create from_json, but it's slower!"""
+
+        # TODO: only some people can create quizzes
+
+

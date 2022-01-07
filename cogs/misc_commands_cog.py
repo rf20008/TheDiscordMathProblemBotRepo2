@@ -114,14 +114,22 @@ class MiscCommandsCog(HelperCog):
         # Deferring might be unnecessary & and cause errors
         # We might not be able to respond in time because of the 100ms delay between user fetching
         # This is to respect the API rate limit.
-        if len(self.bot.trusted_users) == 0:
+        try:
+            result = await self.cache.run_sql(
+                "SELECT * FROM user_data"
+            )
+            trusted_users = []
+            for item in result:
+                if item['trusted']:
+                    trusted_users.append(item['user_id'])
+        if len(trusted_users) == 0:
             await inter.send("There are no trusted users.")
             return
             # raise Exception("There are no trusted users!")
 
         __trusted_users = ""
 
-        for user_id in self.bot.trusted_users:
+        for user_id in trusted_users:
             try:
                 user = await self.bot.fetch_user(user_id)
                 __trusted_users += f"""{user.name}#{user.discriminator}
