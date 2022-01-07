@@ -122,6 +122,8 @@ class MiscCommandsCog(HelperCog):
             for item in result:
                 if item['trusted']:
                     trusted_users.append(item['user_id'])
+        except:
+            raise
         if len(trusted_users) == 0:
             await inter.send("There are no trusted users.")
             return

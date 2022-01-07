@@ -9,5 +9,5 @@ git+git://github.com/top-gg/python-sdk.git@master
 git+git://github.com/omnilib/aiosqlite.git@main
 git+git://github.com/DisnakeDev/disnake.git
 git+git://github.com/Iapetus-11/betterstatcord.py
-orjson>=3.6.5
+git+git://github.com/ijl/orjson.git
 pre-commit

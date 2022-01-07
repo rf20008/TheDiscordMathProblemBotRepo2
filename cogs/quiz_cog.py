@@ -1,5 +1,5 @@
 import disnake
-import orjson
+import json
 import typing
 from helpful_modules.problems_module import MathProblemCache, QuizProblem, Quiz
 from helpful_modules.problems_module import *
@@ -82,8 +82,8 @@ class QuizCog(HelperCog):
 
         # TODO: quiz creation rules: make it possible to ensure that only some people can create quizzes to prevent spam
         try:
-            _data: dict = orjson.loads(data)
-        except orjson.JSONDecodeError as e:
+            _data: dict = json.loads(data)
+        except json.JSONDecodeError as e:
             return await inter.send(f"""You didn't provide valid JSON, so I don't understand what you mean :(
 
 JSON error: {e}""")

@@ -13,7 +13,7 @@ aiosqlite = {git = "https://github.com/omnilib/aiosqlite.git", rev = "main"}
 discord = "^1.7.3"
 discord-py-slash-command = "^3.0.1"
 nextcord = "^2.0.0-alpha.1"
-orjson = "^3.6.5"
+orjson = {git = "https://github.com/ijl/orjson.git"}
 python = "^3.8"
 python-dotenv = "^0.19.2"
 typing-extensions = "^3.10.0"
