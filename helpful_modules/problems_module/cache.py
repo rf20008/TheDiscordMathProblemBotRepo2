@@ -510,7 +510,8 @@ class MathProblemCache:
         self.guild_ids = guild_ids
         self.global_problems = global_problems
         self.cached_quizzes = [
-            Quiz(_id, quiz_problems_dict[_id], submissions=quiz_submissions_dict[_id])
+            Quiz(_id, quiz_problems=quiz_problems_dict[_id], submissions=quiz_submissions_dict[_id],
+                 authors=set((problem.author for problem in quiz_submissions_dict[_id])))
             for _id in quiz_problems_dict.keys()
         ]
         self.cached_submissions = quiz_submissions_dict.values()
@@ -811,7 +812,7 @@ class MathProblemCache:
         return Problem
 
     async def remove_problem_without_returning(
-            self, guild_id: typing.Optional[int], problem_id: int, 
+            self, guild_id: typing.Optional[int], problem_id: int,
     ) -> None:
         """Remove a problem without returning! Saves time."""
         assert isinstance(guild_id, int) or guild_id is None
@@ -905,7 +906,8 @@ class MathProblemCache:
                     pass  # Don't do anything
                 if all_problems[problemA] == all_problems[problemB]:
                     await self.remove_problem_without_returning(
-                        all_problems[problemA].id
+                        guild_id=problemB.guild_id,
+                        problem_id=[problemA].id
                     )  # Delete the problem
 
     async def get_guilds(
@@ -1091,8 +1093,8 @@ class MathProblemCache:
                     QuizSubmission.from_dict(pickle.loads(row[0]), cache=copy(self))
                     for row in cursor.fetchall()
                 ]
-
-        quiz = Quiz(quiz_id, problems, submissions, cache=copy(self))
+        authors = set((problem.author for problem in problems))
+        quiz = Quiz(quiz_id, problems, submissions, cache=copy(self), authors=authors)  # type: ignore
         return quiz
 
     async def update_problem(

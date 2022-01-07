@@ -216,11 +216,14 @@ class Quiz(list):
     def __init__(
             self,
             id: int,
+            authors: List[int],
             quiz_problems: List[QuizProblem],
             submissions: List[QuizSubmission] = None,
             cache=None,
     ) -> None:
         """Create a new quiz. id is the quiz id and iter is an iterable of QuizMathProblems"""
+        assert isinstance(authors, list)
+        self.authors = authors
         if not submissions:
             submissions = []
         self.problems = quiz_problems

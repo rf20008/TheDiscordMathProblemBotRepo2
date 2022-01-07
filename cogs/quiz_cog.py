@@ -9,6 +9,7 @@ from disnake.ext import commands
 
 log = get_log(__name__)
 
+
 # Licensed under GPLv3 (or later)
 
 
@@ -144,6 +145,7 @@ JSON error: {e}""")
                     answers=answers,
                     max_score=points,
                     cache=self.cache,
+                    author=inter.author.id
                 )
             )
         already_existing_quiz_ids = [quiz.id for quiz in await self.cache.get_quizzes_by_func(func=lambda quiz: True)]
@@ -153,22 +155,35 @@ JSON error: {e}""")
                 break
 
         quiz_to_create = Quiz(
-            id = id,
-            problems = real_problems,
-            submissions = [],
-            cache = self.cache
+            id=id,
+            problems=real_problems,
+            submissions=[],
+            cache=self.cache,
+            authors=[inter.author.id]
         )
         await self.cache.add_quiz(quiz_to_create)
         await inter.send("Quiz successfully created!")
 
     @create.sub_command(
-        name = 'blank',
-        description = 'Create a blank quiz'
+        name='blank',
+        description='Create a blank quiz'
     )
     async def blank(self, inter):
         """/quiz create blank
         Create a blank quiz. This is more user-friendly than /quiz create from_json, but it's slower!"""
 
         # TODO: only some people can create quizzes
-
-
+        already_existing_quiz_ids = [quiz.id for quiz in await self.cache.get_quizzes_by_func(func=lambda quiz: True)]
+        while True:
+            id = generate_new_id()
+            if id not in already_existing_quiz_ids:
+                break
+        quiz = Quiz(
+            id=id,
+            problems=[],
+            submissions = [],
+            authors = [],
+            cache = self.cache
+        )
+        await self.bot.cache.add_quiz(quiz)
+        await inter.send("Successfully created quiz!")
