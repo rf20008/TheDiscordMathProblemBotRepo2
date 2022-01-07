@@ -38,7 +38,7 @@ class ProblemsCog(HelperCog):
     @commands.cooldown(1, 1, commands.BucketType.user)
     @checks.is_not_blacklisted()
     @edit_problem.sub_command(
-        name="edit_problem",
+        name="general_edits",
         description="edit a problem",
         options=[
             Option(
@@ -212,7 +212,7 @@ class ProblemsCog(HelperCog):
         """/show_problem_info [problem_id: int] (show_all_data: bool = false) (raw: bool = False) (is_guild_problem: bool = false)
         Show the info of a problem.
         If show_all_data is set to true, you must have trusted user permissions or have the administrator permission in the guild! Otherwise, the bot will tell you can't do that.
-        The option `raw` is whether to show the problem as JSON. Otherwise, it will be shown in a user-friendly manner. This defaults to False.
+        The option `raw` is whether to show the problem as a string-ified version of a Python dictionary. Otherwise, it will be shown in a user-friendly manner. This defaults to False.
         The option `is_guild_problem` tells the bot about whether the problem you're trying to show is a guild problem. This defaults to false, which means you are viewing a global problems unless you specify otherwise.
         **If you execute this in a DM, the bot will treat it like you set is_guild_problem to False regardless of what you put in for the option!**"""
         if inter.guild is None:
@@ -252,8 +252,8 @@ class ProblemsCog(HelperCog):
         try:
             Problem_as_str = f"""Question: {problem.get_question()}
             Author: {str(problem.get_author())}
-            NumVoters/Vote Threshold: {problem.get_num_voters()}/{self.bot.vote_threshold}
-            NumSolvers: {len(problem.get_solvers())}"""
+            Number of Voters/Vote Threshold: {problem.get_num_voters()}/{self.bot.vote_threshold}
+            Number of solvers: {len(problem.get_solvers())}"""
         except NameError:
             await inter.send(
                 "Uh oh - problem not found! This wasn't handled earlier, so I'm raising an error so my developer can figure out why this is the case. :-)"

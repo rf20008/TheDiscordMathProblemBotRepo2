@@ -136,11 +136,11 @@ class DebugCog(HelperCog):
                 with contextlib.redirect_stdout(new_stdout):
                     with contextlib.redirect_stderr(new_stderr):
                         if 'func' in globals().keys():
-                            await globals()['func']() # Get the 'func' from the global variables and call it
-                            log.warning("/eval ran (found in globals)")
+                            print(await globals()['func']()) # Get the 'func' from the global variables and call it
+                            log.info("/eval ran (found in globals)")
                         elif 'func' in locals().keys():
-                            await locals()['func']() # Get func() from locals and call it
-                            log.warning('/eval ran (found in locals)')
+                            print(await locals()['func']()) # Get func() from locals and call it
+                            log.info('/eval ran (found in locals)')
                         else:
                             raise Exception(f"""fatal: func() not defined""")
             except BaseException as e:
