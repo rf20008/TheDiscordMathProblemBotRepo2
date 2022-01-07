@@ -111,8 +111,8 @@ class DebugCog(HelperCog):
         elif not (inter.author.guild_permissions().administrator and inter.guild.me.guild_permissions().administrator):
             return await inter.send("We must both have the administrator permission to /eval!")
         code_ = '\n'.join(code.split('\\n')) #Split the code by `\n`
-        thing_to_run = '''async def func():
-        '''
+        thing_to_run = '''async def func(): 
+        ''' #maybe: just exec() directly
         thing_to_run += textwrap.indent(code_, '    ', predicate = lambda l: True)
         compiled = False
         new_globals = {

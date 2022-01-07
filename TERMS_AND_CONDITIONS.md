@@ -63,3 +63,4 @@ Suggestions to this are welcome (as of right now)! If you make any TOS changes t
 
 For legal reasons, those are licensed under GPLv3! The maintainers of the fork have the right to change these Terms, but the modified Terms do not apply to this version unless the changes are merged into the main version!
 Note that I am not liable for forks/modifications of this bot as I do not have control over them.
+

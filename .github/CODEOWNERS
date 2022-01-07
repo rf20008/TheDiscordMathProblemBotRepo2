@@ -10,7 +10,7 @@ poetry.lock
 *.rtf
 sql_to_dict/ @rf20008
 __pycache__/
-.github/ @rf20008
+.github/
 .github/workflows
 .replit @rf20008
 poetry.lock @rf20008
@@ -18,3 +18,5 @@ LICENSE
 error_logs/
 
 README.md @duck-master @rf20008
+PRIVACY_POLICY.md @duck-master @rf20008
+TERMS_AND_CONDITIONS.md @duck-master @rf2008

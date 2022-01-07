@@ -1,5 +1,26 @@
 [![Number of source lines of code](https://img.shields.io/tokei/lines/github/rf20008/TheDiscordMathProblemBotRepo)](https://img.shields.io)
 
+# Quick links / Table of Contents
+
+## Quick links
+Invite - https://discord.com/oauth2/authorize?client_id=845751152901750824&scope=bot+applications.commands&permissions=2147535872 <br>
+Terms & Conditions - https://github.com/rf20008/TheDiscordMathProblemBotRepo/blob/beta/TERMS_AND_CONDITIONS.md
+Privacy Policy - https://github.com/rf20008/TheDiscordMathProblemBotRepo/blob/beta/PRIVACY_POLICY.md
+
+## Table of Contents
+<!todo: fix links>
+If you run into issues <br>
+Announcements <br>
+Contribute :-) <br>
+Invite my bot! <br>
+Documentation <br>
+DISCLAIMER <br>
+Self-host my bot <br>
+ * Steps <br>
+ * Update the bot with my changes <br>
+ * env key-value pairs required
+Attribution/Contributors
+
 # If you run into issues
 If you run into any issues create an issue or DM me (ay136416#2707). 
 
@@ -26,17 +47,6 @@ A few guidelines:
 7) You should lint your code. (this uses [python-black](https://pypi.org/project/black/)) <br>
 8) Follow common sense <br>
 9) Make sure to follow GPLv3! (You'll need to include the link to the modified version of my code and make it somehow __***easily***__ accessible through the bot (or if you're just fixing a bug the 'forked from' label should be enough attribution), state significant changes made to the software, include the license (which is already done for you, don't modify LICENSE. Treat it as read-only.) You must state if )
-# If you run into issues
-If you run into any issues create an issue or DM me (ay136416#2707). 
-
-# Contribute to this project!
-
-Open a pull request or issue! I will be sure to look at it.
-
-# If you see an error
-
-As soon as you see them, contact me as soon as possible!
-
 # Invite my bot!
 
 Recommended invite: https://discord.com/oauth2/authorize?client_id=845751152901750824&scope=bot+applications.commands&permissions=2147535872
@@ -45,14 +55,7 @@ Recommended invite: https://discord.com/oauth2/authorize?client_id=8457511529017
 
 # Documentation
 
-https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs
-
-# Attribution
-https://stackoverflow.com/a/21901260 for the get_git_revision_hash :-)
-nextcord + discord devs for their libraries
-SQLDict: https://github.com/rf20008/sqldict
-Bot avatar: https://thumbs.dreamstime.com/z/creative-division-sign-circular-cold-gradient-spectrum-original-152718833.jpg
-And the many un-listed people who contributed ideas/code!
+Documentation for my bot has been replaced with /documentation. I might set up a website soon. However, I don't have a domain.
 
 # DISCLAIMER
 
@@ -107,9 +110,13 @@ source_code_link: link to the place that contains the bot's source code. This mu
 
 ## Attribution / Contributors
 
-MySQL: https://pypi.org/project/mysql-connector-python/#files
-GPLv3 simplified: https://tldrlegal.com/license/gnu-general-public-license-v3-(gpl-3)
-@duck-master helped me revise the privacy policy. Thanks so much!
-(get_git_revision_hash)[https://stackoverflow.com/a/21901260]
-Disabling buttons: https://stackoverflow.com/questions/68842747/how-to-disable-button-once-it-is-clicked-in-discord-js-13 & help from @umairshasheen78 (through Discord)
-MySQL placeholders: https://stackoverflow.com/questions/2527941/python-mysqldb-placeholders-syntax#2527950
+MySQL: https://pypi.org/project/mysql-connector-python/#files <br>
+GPLv3 simplified: https://tldrlegal.com/license/gnu-general-public-license-v3-(gpl-3) <br>
+@duck-master helped me revise the privacy policy. Thanks so much! <br>
+(get_git_revision_hash)[https://stackoverflow.com/a/21901260] <br>
+Disabling buttons: https://stackoverflow.com/questions/68842747/how-to-disable-button-once-it-is-clicked-in-discord-js-13 & help from @umairshasheen78 (through Discord) <br>
+MySQL placeholders: https://stackoverflow.com/questions/2527941/python-mysqldb-placeholders-syntax#2527950 <br>
+https://stackoverflow.com/a/21901260 for the get_git_revision_hash :-) <br>
+Disnake: https://github.com/DisnakeDev/disnake <br>
+Bot avatar: https://thumbs.dreamstime.com/z/creative-division-sign-circular-cold-gradient-spectrum-original-152718833.jpg <br>
+And the many un-listed people who contributed ideas/code! <br>
