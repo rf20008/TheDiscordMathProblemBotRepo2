@@ -4,6 +4,7 @@ import sys
 import traceback
 import typing
 import warnings
+import asyncio
 from copy import deepcopy
 
 from .errors import *
@@ -273,7 +274,7 @@ class BaseProblem:
             raise TypeError("User is not a User object")
         if not self.is_voter(voter):
             self.voters.append(voter.id)
-        self.update_self()
+        asyncio.run(self.update_self())
 
     async def add_solver(self, solver: typing.Union[disnake.User, disnake.Member]):
         """Adds a solver. Solver must be a disnake.User object or disnake.Member object."""
@@ -285,6 +286,13 @@ class BaseProblem:
             self.solvers.append(solver.id)
             await self.update_self()
 
+    def add_answer(self, answer: str):
+        """Add an answer"""
+        if len(self.answers) + 1 > self._cache.max_answers_per_problem:
+            raise MathProblemsModuleException("Too many answers!")
+        self.answers.append(answer)
+        asyncio.run(self.update_self())
+
     def get_answer(self):
         """Return my answer. This has been deprecated"""
         warnings.warn("This has been deprecated!", DeprecationWarning, stacklevel=1)
@@ -292,7 +300,7 @@ class BaseProblem:
 
     def get_answers(self):
         """Return my possible answers"""
-        return [*self.answers]
+        return list(self.answers)
 
     def get_question(self):
         """Return my question."""
@@ -306,6 +314,7 @@ class BaseProblem:
             raise TypeError("potentialSolver is not a User object")
         if self.check_answer(answer):
             self.add_solver(potential_solver)
+            asyncio.run(self.update_self())
 
     def check_answer(self, answer):
         """Checks the answer. Returns True if it's correct and False otherwise."""

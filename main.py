@@ -115,6 +115,7 @@ main_cache = problems_module.MathProblemCache(
     db_name="MathProblemCache1.db",
     update_cache_by_default_when_requesting=True,
     use_cached_problems=False,
+    max_answers_per_problem = 25,
     mysql_username=bot_constants.MYSQL_USERNAME,
     mysql_password=bot_constants.MYSQL_PASSWORD,
     mysql_db_ip=bot_constants.MYSQL_DB_IP,
@@ -154,11 +155,14 @@ async def on_ready(bot: TheDiscordMathProblemBot):
     app_info = await bot.application_info()
     print("The bot is now ready!")
     print(f"I connected as {bot.user.name}#{bot.user.discriminator}.")
-    print(f"My owner id is {bot.owner_id if bot.owner_id is not None else app_info.owner.id}!")
+    print(
+        f"My owner id is {bot.owner_id if bot.owner_id is not None else app_info.owner.id}!"
+    )
     if bot.owner_id is None and app_info.owner.id is not None:
         bot.owner_id = app_info.owner.id
-        
+
     print(f"My owner ids are {bot.owner_ids}")
+
 
 # Bot creation
 
