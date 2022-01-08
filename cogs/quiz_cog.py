@@ -26,8 +26,7 @@ class QuizCog(HelperCog):
         # TODO: quiz commands :-)
 
     @commands.slash_command(
-        name='quiz',
-        description="Interact with a quiz. This has subcommands."
+        name="quiz", description="Interact with a quiz. This has subcommands."
     )
     async def quiz(self, inter):
         """/quiz ...
@@ -40,8 +39,8 @@ class QuizCog(HelperCog):
         """
 
     @quiz.sub_command_group(
-        name='create',
-        description='Create a quiz. However, interacting with quizzes has not been implemented!'
+        name="create",
+        description="Create a quiz. However, interacting with quizzes has not been implemented!",
     )
     async def create(self, inter: disnake.ApplicationCommandInteraction) -> None:
         """The base command to create a quiz. This has subcommands.
@@ -53,18 +52,20 @@ class QuizCog(HelperCog):
         Creates a blank quiz."""
 
     @create.sub_command(
-        name='from_json',
-        description='Create a quiz from JSON.',
+        name="from_json",
+        description="Create a quiz from JSON.",
         options=[
             disnake.Option(
-                name='data',
-                description='The data (JSON) to convert into a quiz.',
+                name="data",
+                description="The data (JSON) to convert into a quiz.",
                 required=True,
-                type=disnake.OptionType.string
+                type=disnake.OptionType.string,
             )
-        ]
+        ],
     )
-    async def from_json(self, inter: disnake.ApplicationCommandInteraction, data: str) -> None:
+    async def from_json(
+        self, inter: disnake.ApplicationCommandInteraction, data: str
+    ) -> None:
         """/quiz create from_json [json: str]
         Create a Quiz from JSON. This is not user-friendly, but it's quick.
 
@@ -88,14 +89,17 @@ class QuizCog(HelperCog):
         try:
             _data: dict = json.loads(data)
         except json.JSONDecodeError as e:
-            return await inter.send(f"""You didn't provide valid JSON, so I don't understand what you mean :(
+            return await inter.send(
+                f"""You didn't provide valid JSON, so I don't understand what you mean :(
 
-JSON error: {e}""")
+JSON error: {e}"""
+            )
         try:
-            guild_id, problems = _data['guild_id'], data["Quiz Problems"]
+            guild_id, problems = _data["guild_id"], data["Quiz Problems"]
         except KeyError:
             return await inter.send(
-                "Error: Could not decode guild_id or problems from the given dictionary. You probably copy-pasted something else.")
+                "Error: Could not decode guild_id or problems from the given dictionary. You probably copy-pasted something else."
+            )
         if not isinstance(problems, list):
             return await inter.send("Problems must be a list.")
 
@@ -103,7 +107,8 @@ JSON error: {e}""")
             return await inter.send("guild_id must either be an integer or None.")
         if guild_id not in [guild.id for guild in inter.author.mutual_guilds]:
             return await inter.send(
-                "You cannot create this quiz because either you or I are not in the guild that you're trying to create the quiz for.")
+                "You cannot create this quiz because either you or I are not in the guild that you're trying to create the quiz for."
+            )
         real_problems: typing.List[QuizProblem] = []
         for problem_num in range(len(problems)):
             problem = problems[problem_num]
@@ -113,34 +118,47 @@ JSON error: {e}""")
 
             # Parse the question
             try:
-                question = problem['question']
+                question = problem["question"]
                 if not isinstance(question, str):
                     raise TypeError("Question is not a string")
             except KeyError:
-                return await inter.send(f"Invalid data - question missing for problem#{problem_num}")
+                return await inter.send(
+                    f"Invalid data - question missing for problem#{problem_num}"
+                )
             except TypeError:
-                return await inter.send(f"Invalid data - question not a string for problem#{problem_num}")
+                return await inter.send(
+                    f"Invalid data - question not a string for problem#{problem_num}"
+                )
 
             # Parse the answer
             try:
-                answers: typing.List[str] = problem['answers']
+                answers: typing.List[str] = problem["answers"]
                 if not isinstance(answers, list):
-                    return await inter.send(f"Invalid data - Answers isn't a list (problem#{problem_num})")
+                    return await inter.send(
+                        f"Invalid data - Answers isn't a list (problem#{problem_num})"
+                    )
                 for answer_num in range(len(answers)):
                     if not isinstance(answers[answer_num], str):
                         return await inter.send(
-                            f"Invalid data - answer #{answer_num} in problem #{problem_num} isn't a string")
+                            f"Invalid data - answer #{answer_num} in problem #{problem_num} isn't a string"
+                        )
             except KeyError:
-                return await inter.send(f"Invalid data - missing answers for problem #{problem_num}")
+                return await inter.send(
+                    f"Invalid data - missing answers for problem #{problem_num}"
+                )
 
             # Parse the number of points this question is worth
 
             try:
-                points: int = problem['points']
+                points: int = problem["points"]
                 if not isinstance(points, int):
-                    return await inter.send(f"Invalid data -  problem#{problem_num}'s point worth isn't a integer")
+                    return await inter.send(
+                        f"Invalid data -  problem#{problem_num}'s point worth isn't a integer"
+                    )
             except KeyError:
-                return await inter.send(f"Invalid data - missing point worth for problem#{problem_num}")
+                return await inter.send(
+                    f"Invalid data - missing point worth for problem#{problem_num}"
+                )
 
             real_problems.append(
                 QuizProblem(
@@ -149,10 +167,13 @@ JSON error: {e}""")
                     max_score=points,
                     cache=self.cache,
                     author=inter.author.id,
-                    guild_id=guild_id
+                    guild_id=guild_id,
                 )
             )
-        already_existing_quiz_ids = [quiz.id for quiz in await self.cache.get_quizzes_by_func(func=lambda quiz: True)]
+        already_existing_quiz_ids = [
+            quiz.id
+            for quiz in await self.cache.get_quizzes_by_func(func=lambda quiz: True)
+        ]
         while True:
             id = generate_new_id()
             if id not in already_existing_quiz_ids:
@@ -163,21 +184,21 @@ JSON error: {e}""")
             problems=real_problems,
             submissions=[],
             cache=self.cache,
-            authors=[inter.author.id]
+            authors=[inter.author.id],
         )
         await self.cache.add_quiz(quiz_to_create)
         await inter.send("Quiz successfully created!")
 
-    @create.sub_command(
-        name='blank',
-        description='Create a blank quiz'
-    )
+    @create.sub_command(name="blank", description="Create a blank quiz")
     async def blank(self, inter):
         """/quiz create blank
         Create a blank quiz. This is more user-friendly than /quiz create from_json, but it's slower!"""
 
         # TODO: only some people can create quizzes
-        already_existing_quiz_ids = [quiz.id for quiz in await self.cache.get_quizzes_by_func(func=lambda quiz: True)]
+        already_existing_quiz_ids = [
+            quiz.id
+            for quiz in await self.cache.get_quizzes_by_func(func=lambda quiz: True)
+        ]
         while True:
             id = generate_new_id()
             if id not in already_existing_quiz_ids:
@@ -187,17 +208,14 @@ JSON error: {e}""")
             quiz_problems=[],
             submissions=[],
             authors=[inter.author.id],
-            cache=self.cache
+            cache=self.cache,
         )
         # bug: empty quizzes cannot be added because they are empty
         # TODO: fix
         await self.bot.cache.add_quiz(quiz)
         await inter.send("Successfully created quiz!")
 
-    @quiz.sub_command_group(
-        name='edit',
-        description='Edit quizzes'
-    )
+    @quiz.sub_command_group(name="edit", description="Edit quizzes")
     async def edit(self, inter: disnake.ApplicationCommandInteraction):
         """/quiz edit
 
@@ -210,42 +228,42 @@ JSON error: {e}""")
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @edit.sub_command(
-        name='add_answer',
-        description='Add an answer to a quiz problem',
+        name="add_answer",
+        description="Add an answer to a quiz problem",
         options=[
             disnake.Option(
-                name='quiz_id',
+                name="quiz_id",
                 description="The ID of the quiz that contains the problem to add the answer to",  # TODO: shorten
                 type=disnake.OptionType.integer,
-                required=True
+                required=True,
             ),
             disnake.Option(
-                name='problem_num',
-                description='The problem # to add the answer to',
+                name="problem_num",
+                description="The problem # to add the answer to",
                 type=disnake.OptionType.integer,
-                required=True
+                required=True,
             ),
             disnake.Option(
-                name='answer',
+                name="answer",
                 description="The answer to add",
                 type=disnake.OptionType.string,
-                required=False
-            )
-        ]
+                required=False,
+            ),
+        ],
     )
     async def add_answer(
-            self: "QuizCog",
-            inter: disnake.ApplicationCommandInteraction,
-            quiz_id: int,
-            problem_num: int,
-            answer: str
+        self: "QuizCog",
+        inter: disnake.ApplicationCommandInteraction,
+        quiz_id: int,
+        problem_num: int,
+        answer: str,
     ):
         """/quiz edit add_answer (quiz_id: int) (problem_num: int) (answer: str)
 
         Add an answer to a quiz problem (found by getting the quiz with provided id and getting the problem from the quiz), provided you are the problem author.
         There is a 5-second cooldown!"""
         if problem_num < 0:
-            await inter.send('Problem num must be greater than 0')
+            await inter.send("Problem num must be greater than 0")
             return
 
         try:
@@ -257,9 +275,11 @@ JSON error: {e}""")
         try:
             problem = quiz.quiz_problems[problem_num]
         except IndexError:
-            await inter.send(embed=ErrorEmbed(
-                f"The quiz with id {quiz_id} doesn't have a problem with id {problem_num}."
-            ))
+            await inter.send(
+                embed=ErrorEmbed(
+                    f"The quiz with id {quiz_id} doesn't have a problem with id {problem_num}."
+                )
+            )
             return
         if not problem.is_author(inter.author):
             await inter.send("You aren't the author of this problem!")
@@ -270,4 +290,3 @@ JSON error: {e}""")
             return
         problem.add_answer(answer)
         await inter.send("Successfully added an answer!")
-

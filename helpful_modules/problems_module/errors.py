@@ -97,4 +97,3 @@ class TooMuchUserDataException(MathProblemsModuleException):
 class UserDataNotExistsException(MathProblemsModuleException):
     "Raised by MathProblemCache.set_user_data when user data does not exist!"
     pass
-

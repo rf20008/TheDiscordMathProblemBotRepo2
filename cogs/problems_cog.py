@@ -25,16 +25,11 @@ class ProblemsCog(HelperCog):
 
     @commands.cooldown(1, 1, commands.BucketType.user)
     @checks.is_not_blacklisted()
-    @commands.slash_command(
-        name="edit_problem",
-        description="edit a problem"
-    )
-    async def edit_problem(
-        self,
-        inter: disnake.ApplicationCommandInteraction):
+    @commands.slash_command(name="edit_problem", description="edit a problem")
+    async def edit_problem(self, inter: disnake.ApplicationCommandInteraction):
         """The base command to edit problems."""
-    
-        
+        pass
+
     @commands.cooldown(1, 1, commands.BucketType.user)
     @checks.is_not_blacklisted()
     @edit_problem.sub_command(
@@ -67,7 +62,8 @@ class ProblemsCog(HelperCog):
             ),
         ],
     )
-    async def general_edits(self,
+    async def general_edits(
+        self,
         inter: disnake.ApplicationCommandInteraction,
         problem_id: int,
         new_question: str = None,
@@ -83,9 +79,8 @@ class ProblemsCog(HelperCog):
             guild_id = inter.guild.id
         if guild_id is not None and self.bot.get_guild(guild_id) is None:
             await inter.send(
-                embed=ErrorEmbed(
-                    "I'm not in that guild!",
-                    custom_title = "Uh oh."))
+                embed=ErrorEmbed("I'm not in that guild!", custom_title="Uh oh.")
+            )
             return
         try:
             problem = await self.cache.get_problem(int(guild_id), int(problem_id))
@@ -122,37 +117,38 @@ class ProblemsCog(HelperCog):
         await inter.send(embed=SuccessEmbed(e), ephemeral=True)
 
     @edit_problem.sub_command(
-        name = 'add_answer',
-        description = "Add an answer to an existing problem",
-        options = [
+        name="add_answer",
+        description="Add an answer to an existing problem",
+        options=[
             Option(
-                name = 'problem_id',
-                description = 'The problem to add an answer to',
-                type = OptionType.integer,
-                required = True
+                name="problem_id",
+                description="The problem to add an answer to",
+                type=OptionType.integer,
+                required=True,
             ),
             Option(
-                name = 'answer',
-                description = "The answer to add to the problem",
-                type = OptionType.string,
-                required = True
+                name="answer",
+                description="The answer to add to the problem",
+                type=OptionType.string,
+                required=True,
             ),
             Option(
-                name='guild_id',
-                description = "The guild ID of the problem to edit",
-                type = OptionType.integer,
-                required = False
-            )
-        ]
+                name="guild_id",
+                description="The guild ID of the problem to edit",
+                type=OptionType.integer,
+                required=False,
+            ),
+        ],
     )
-    async def add_answer(self, inter, problem_id: int, answer: str, guild_id: int = Exception):
+    async def add_answer(
+        self, inter, problem_id: int, answer: str, guild_id: int = Exception
+    ):
         if guild_id == Exception:
             guild_id = inter.guild.id
         if guild_id is not None and self.bot.get_guild(guild_id) is None:
             await inter.send(
-                embed=ErrorEmbed(
-                    "I'm not in that guild!",
-                    custom_title = "Uh oh."))
+                embed=ErrorEmbed("I'm not in that guild!", custom_title="Uh oh.")
+            )
             return
         try:
             problem = await self.cache.get_problem(int(guild_id), int(problem_id))
@@ -166,11 +162,13 @@ class ProblemsCog(HelperCog):
         except ProblemNotFound:
             await inter.send(embed=ErrorEmbed("This problem does not exist!"))
             return
-        problem.answers.append(answer)
+        if len(problem.get_answers()) + 1 >= self.bot.cache.max_answers_per_problem:
+            await inter.send("This problem has the maximum number of answers.")
+            return
+        problem.add_answer(answer)
         await problem.update_self()
         await inter.reply("Successfully added the answer!")
-        
-        
+
     @commands.slash_command(
         name="show_problem_info",
         description="Show problem info",
@@ -283,6 +281,7 @@ class ProblemsCog(HelperCog):
                 return
             await inter.send(embed=SuccessEmbed(Problem_as_str), ephemeral=True)
         await inter.send(embed=SuccessEmbed(Problem_as_str), ephemeral=True)
+
     @commands.cooldown(1, 2.5, commands.BucketType.user)
     @commands.slash_command(
         name="list_all_problem_ids",
@@ -733,7 +732,8 @@ class ProblemsCog(HelperCog):
             checking_guild_problem = False
         try:
             problem = await self.bot.cache.get_problem(
-                inter.guild.id if inter.guild is not None else None, int(problem_id))
+                inter.guild.id if inter.guild is not None else None, int(problem_id)
+            )
             if problem.is_solver(inter.author):  # If the user solved the problem
                 await inter.send(
                     embed=ErrorEmbed(
@@ -990,7 +990,9 @@ class ProblemsCog(HelperCog):
             return
         await self.cache.remove_problem(guild_id, problem_id)
         await inter.send(
-            embed=SuccessEmbed(f"Successfully deleted problem the problem with id {problem_id}!"),
+            embed=SuccessEmbed(
+                f"Successfully deleted problem the problem with id {problem_id}!"
+            ),
             ephemeral=True,
         )
 
