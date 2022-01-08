@@ -95,7 +95,7 @@ class QuizCog(HelperCog):
 JSON error: {e}"""
             )
         try:
-            guild_id, problems = _data["guild_id"], data["Quiz Problems"]
+            guild_id, problems = _data["guild_id"], _data["Quiz Problems"]
         except KeyError:
             return await inter.send(
                 "Error: Could not decode guild_id or problems from the given dictionary. You probably copy-pasted something else."
