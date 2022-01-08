@@ -154,11 +154,14 @@ async def on_ready(bot: TheDiscordMathProblemBot):
     app_info = await bot.application_info()
     print("The bot is now ready!")
     print(f"I connected as {bot.user.name}#{bot.user.discriminator}.")
-    print(f"My owner id is {bot.owner_id if bot.owner_id is not None else app_info.owner.id}!")
+    print(
+        f"My owner id is {bot.owner_id if bot.owner_id is not None else app_info.owner.id}!"
+    )
     if bot.owner_id is None and app_info.owner.id is not None:
         bot.owner_id = app_info.owner.id
-        
+
     print(f"My owner ids are {bot.owner_ids}")
+
 
 # Bot creation
 
@@ -178,14 +181,14 @@ bot = TheDiscordMathProblemBot(
 # TODO: move bot events + initializing to custom_bot.py
 bot._sync_commands_debug = True
 # setup(bot)
-#bot._transport_modules = {
+# bot._transport_modules = {
 #    "problems_module": problems_module,
 #    "save_files": save_files,
 #    "the_documentation_file_loader": the_documentation_file_loader,
 #    "check_for_cooldown": check_for_cooldown,
 #    "custom_embeds": custom_embeds,
 #    "checks": checks,
-#}
+# }
 bot.add_check(
     disnake.ext.commands.bot_has_permissions(
         send_messages=True,

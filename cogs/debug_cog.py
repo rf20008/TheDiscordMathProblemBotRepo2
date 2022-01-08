@@ -165,12 +165,12 @@ class DebugCog(HelperCog):
                     with contextlib.redirect_stderr(new_stderr):
                         if "func" in globals().keys():
                             print(
-                                await globals()["func"]()
+                                await globals()["func"](), file=new_stdout
                             )  # Get the 'func' from the global variables and call it
                             log.info("/eval ran (found in globals)")
                         elif "func" in locals().keys():
                             print(
-                                await locals()["func"]()
+                                await locals()["func"](), file=new_stdout
                             )  # Get func() from locals and call it
                             log.info("/eval ran (found in locals)")
                         else:
