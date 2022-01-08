@@ -115,6 +115,7 @@ main_cache = problems_module.MathProblemCache(
     db_name="MathProblemCache1.db",
     update_cache_by_default_when_requesting=True,
     use_cached_problems=False,
+    max_answers_per_problem = 25,
     mysql_username=bot_constants.MYSQL_USERNAME,
     mysql_password=bot_constants.MYSQL_PASSWORD,
     mysql_db_ip=bot_constants.MYSQL_DB_IP,
