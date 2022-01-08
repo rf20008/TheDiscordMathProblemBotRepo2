@@ -4,6 +4,8 @@ import typing
 from helpful_modules.problems_module import MathProblemCache, QuizProblem, Quiz
 from helpful_modules.problems_module import *
 from helpful_modules.threads_or_useful_funcs import generate_new_id, get_log
+from helpful_modules.custom_embeds import ErrorEmbed, SuccessEmbed
+from helpful_modules import problems_module
 from .helper_cog import HelperCog
 from disnake.ext import commands
 
@@ -11,10 +13,11 @@ log = get_log(__name__)
 
 
 # Licensed under GPLv3 (or later)
+# TODO: implement everything!
 
 
 class QuizCog(HelperCog):
-    """An incomplete cog which will eventually store quiz-related commands"""
+    """An incomplete cog which will eventually store all quiz-related commands"""
 
     def __init__(self, bot: disnake.ext.commands.Bot):
         super().__init__(bot)
@@ -145,7 +148,8 @@ JSON error: {e}""")
                     answers=answers,
                     max_score=points,
                     cache=self.cache,
-                    author=inter.author.id
+                    author=inter.author.id,
+                    guild_id=guild_id
                 )
             )
         already_existing_quiz_ids = [quiz.id for quiz in await self.cache.get_quizzes_by_func(func=lambda quiz: True)]
@@ -180,10 +184,90 @@ JSON error: {e}""")
                 break
         quiz = Quiz(
             id=id,
-            problems=[],
-            submissions = [],
-            authors = [],
-            cache = self.cache
+            quiz_problems=[],
+            submissions=[],
+            authors=[inter.author.id],
+            cache=self.cache
         )
+        # bug: empty quizzes cannot be added because they are empty
+        # TODO: fix
         await self.bot.cache.add_quiz(quiz)
         await inter.send("Successfully created quiz!")
+
+    @quiz.sub_command_group(
+        name='edit',
+        description='Edit quizzes'
+    )
+    async def edit(self, inter: disnake.ApplicationCommandInteraction):
+        """/quiz edit
+
+        Edit quizzes
+
+        Usage:
+        /quiz edit add_problem (quiz_id: int) (insert_loc: int) (question: str) (answer1: str) [numPoints: int=1]
+        /quiz edit add_answer (quiz_id: int) (problem_num: int) (answer: str)"""
+        pass
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @edit.sub_command(
+        name='add_answer',
+        description='Add an answer to a quiz problem',
+        options=[
+            disnake.Option(
+                name='quiz_id',
+                description="The ID of the quiz that contains the problem to add the answer to",  # TODO: shorten
+                type=disnake.OptionType.integer,
+                required=True
+            ),
+            disnake.Option(
+                name='problem_num',
+                description='The problem # to add the answer to',
+                type=disnake.OptionType.integer,
+                required=True
+            ),
+            disnake.Option(
+                name='answer',
+                description="The answer to add",
+                type=disnake.OptionType.string,
+                required=False
+            )
+        ]
+    )
+    async def add_answer(
+            self: "QuizCog",
+            inter: disnake.ApplicationCommandInteraction,
+            quiz_id: int,
+            problem_num: int,
+            answer: str
+    ):
+        """/quiz edit add_answer (quiz_id: int) (problem_num: int) (answer: str)
+
+        Add an answer to a quiz problem (found by getting the quiz with provided id and getting the problem from the quiz), provided you are the problem author.
+        There is a 5-second cooldown!"""
+        if problem_num < 0:
+            await inter.send('Problem num must be greater than 0')
+            return
+
+        try:
+            quiz = await self.bot.cache.get_quiz(quiz_id)
+        except problems_module.QuizNotFound:
+            await inter.send(embed=ErrorEmbed("Quiz not found!"))
+            return
+
+        try:
+            problem = quiz.quiz_problems[problem_num]
+        except IndexError:
+            await inter.send(embed=ErrorEmbed(
+                f"The quiz with id {quiz_id} doesn't have a problem with id {problem_num}."
+            ))
+            return
+        if not problem.is_author(inter.author):
+            await inter.send("You aren't the author of this problem!")
+            return
+
+        if len(problem.answers) > self.cache.max_answers_per_problem:
+            await inter.send("This problem has reached the maximum number of answers!")
+            return
+        problem.add_answer(answer)
+        await inter.send("Successfully added an answer!")
+

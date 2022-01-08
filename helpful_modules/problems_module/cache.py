@@ -36,6 +36,7 @@ class MathProblemCache:
             max_answer_length: int = 100,
             max_question_limit: int = 250,
             max_guild_problems: int = 125,
+            max_answers_per_problem: int = 25,
             warnings_or_errors: Union[Literal["warnings"], Literal["errors"]] = "warnings",
             db_name: str = "problems_module.db",
             update_cache_by_default_when_requesting: bool = True,
@@ -58,6 +59,7 @@ class MathProblemCache:
         self.warnings = (
                 warnings_or_errors == "warnings"
         )  # Whether to raise TypeErrors or warn
+        self._max_answers_per_problem = max_answers_per_problem
         self.use_sqlite = use_sqlite
         self.use_cached_problems = use_cached_problems
         self._max_answer_length = max_answer_length
@@ -301,7 +303,7 @@ class MathProblemCache:
         assert isinstance(user_id, int)
         assert isinstance(thing_to_add, UserData)
         if (await self.get_user_data(user_id, default=Exception)) != Exception:  # type: ignore
-            # This is because the user_id is None so it will return the default instead
+            # This is because the user_id is None. Then it will return the default instead
             raise MathProblemsModuleException(
                 "User data already exists"
             )  # Make sure the user data doesn't already exist
@@ -363,6 +365,10 @@ class MathProblemCache:
     @property
     def max_guild_problems(self):
         return self._max_guild_limit
+
+    @property
+    def max_answers_per_problem(self):
+        return self._max_answers_per_problem
 
     async def convert_to_dict(self) -> dict:
         """A method that converts self to a dictionary (not used, will probably be removed soon)"""
@@ -509,11 +515,29 @@ class MathProblemCache:
         self.guild_problems = guild_problems
         self.guild_ids = guild_ids
         self.global_problems = global_problems
-        self.cached_quizzes = [
-            Quiz(_id, quiz_problems=quiz_problems_dict[_id], submissions=quiz_submissions_dict[_id],
-                 authors=set((problem.author for problem in quiz_submissions_dict[_id])))
-            for _id in quiz_problems_dict.keys()
-        ]
+        self.cached_quizzes = []  # Could cause a race condition
+        for _id in quiz_problems_dict.keys():
+            has_submissions = (_id in list(
+                quiz_submissions_dict.keys()))  # There could be a quiz with problems but not submissions
+            if has_submissions:
+                self.cached_quizzes.append(
+                    Quiz(
+                        _id,
+                        quiz_problems=quiz_problems_dict[_id],
+                        submissions=quiz_submissions_dict[_id],
+                        authors=set((problem.author for problem in quiz_submissions_dict[_id]))
+                    )
+                )
+
+            else:
+                self.cached_quizzes.append(
+                    Quiz(
+                        _id,
+                        quiz_problems=quiz_problems_dict[_id],
+                        submissions=[],
+                        authors=set((problem.author for problem in quiz_submissions_dict[_id]))
+                    )
+                )
         self.cached_submissions = quiz_submissions_dict.values()
 
     async def get_quizzes_by_func(
