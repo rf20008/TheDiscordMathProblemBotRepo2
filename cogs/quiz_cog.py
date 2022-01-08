@@ -180,7 +180,7 @@ JSON error: {e}""")
                 break
         quiz = Quiz(
             id=id,
-            problems=[],
+            quiz_problems=[],
             submissions = [],
             authors = [],
             cache = self.cache
