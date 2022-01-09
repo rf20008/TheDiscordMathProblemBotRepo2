@@ -64,22 +64,23 @@ class QuizCog(HelperCog):
         ],
     )
     async def from_json(
-        self, inter: disnake.ApplicationCommandInteraction, data: str
+            self, inter: disnake.ApplicationCommandInteraction, data: str
     ) -> None:
         """/quiz create from_json [json: str]
         Create a Quiz from JSON. This is not user-friendly, but it's quick.
 
         Structure:
-        Quiz_Problem: list of quiz problem objects. This order will determine the order of the problems in the quiz.
+        Quiz Problem: list of quiz problem objects. This order will determine the order of the problems in the quiz.
         guild_id: guild id for the quiz. This guild id must be one of the guilds that you share with this bot or `null` for a global quiz. You must specify this or it will fail!
         -------
         Quiz problem:
-        key | value type | description
+        legend: key | value type | description
+        --------
         question | string | The question to ask the user in this question
         answer | List[string] | The acceptable answers. This is a list of strings.
         points | int | The number of points this problem is worth.
-
-        ----
+        is_written | boolean (either `true` or `false`) | whether this problem is a written problem. Cannot be used with the `answers` parameter.
+        ------
         """
 
         # Must parse into list
@@ -115,7 +116,7 @@ JSON error: {e}"""
             # parse the problem
             if not isinstance(problem, dict):
                 return await inter.send(f"Problem#{problem_num} isn't a dictionary.")
-
+            has_answers: bool = 'answers' in problem.keys()
             # Parse the question
             try:
                 question = problem["question"]
@@ -131,21 +132,34 @@ JSON error: {e}"""
                 )
 
             # Parse the answer
-            try:
-                answers: typing.List[str] = problem["answers"]
-                if not isinstance(answers, list):
-                    return await inter.send(
-                        f"Invalid data - Answers isn't a list (problem#{problem_num})"
-                    )
-                for answer_num in range(len(answers)):
-                    if not isinstance(answers[answer_num], str):
+            if has_answers:
+                try:
+                    answers: typing.List[str] = problem["answers"]
+                    if not isinstance(answers, list):
                         return await inter.send(
-                            f"Invalid data - answer #{answer_num} in problem #{problem_num} isn't a string"
+                            f"Invalid data - Answers isn't a list (problem#{problem_num})"
                         )
-            except KeyError:
-                return await inter.send(
-                    f"Invalid data - missing answers for problem #{problem_num}"
-                )
+                    for answer_num in range(len(answers)):
+                        if not isinstance(answers[answer_num], str):
+                            return await inter.send(
+                                f"Invalid data - answer #{answer_num} in problem #{problem_num} isn't a string"
+                            )
+                except KeyError:
+                    return await inter.send(
+                        f"Invalid data - missing answers for problem #{problem_num}"
+                    )
+            else:
+                answers = []
+                try:
+                    is_written: boolean = problem['is_written']
+                    if not isinstance(is_written, bool):
+                        return await inter.send(
+                            f"Invalid data - is_written for problem #{problem_num} is not a boolean."
+                        )
+                except KeyError:
+                    return await inter.send(
+                        f'Invalid data - missing is_written and answer for problem#{problem_num}. Please try again!'
+                    )
 
             # Parse the number of points this question is worth
 
@@ -252,11 +266,11 @@ JSON error: {e}"""
         ],
     )
     async def add_answer(
-        self: "QuizCog",
-        inter: disnake.ApplicationCommandInteraction,
-        quiz_id: int,
-        problem_num: int,
-        answer: str,
+            self: "QuizCog",
+            inter: disnake.ApplicationCommandInteraction,
+            quiz_id: int,
+            problem_num: int,
+            answer: str,
     ):
         """/quiz edit add_answer (quiz_id: int) (problem_num: int) (answer: str)
 
@@ -290,3 +304,42 @@ JSON error: {e}"""
             return
         problem.add_answer(answer)
         await inter.send("Successfully added an answer!")
+
+    @edit.sub_command(
+        name='add_problem',
+        description='Add a problem to a quiz. You must be an author of the quiz to add a problem',  # TODO: shorten
+        options=[
+            disnake.Option(
+                name='quiz_id',
+                description="The ID of the quiz to add the problem to",
+                type=disnake.OptionType.integer,
+                required=True,
+            ),
+            disnake.Option(
+                name='problem_to_insert_before',
+                description="The problem to insert this question before. Defaults to the last question in the quiz.",
+                type=disnake.OptionType.integer,
+                required=True,
+            ),
+            disnake.Option(
+                name='question',
+                description='The question to ask in this problem',
+                type=disnake.OptionType.string,
+                required=True
+            ),
+            disnake.Option(
+                name='answer',
+                description='A possible answer for this problem.',
+                type=disnake.OptionType.string,
+                required=False
+            ),
+            disnake.Option(
+                ...
+            )
+
+        ]
+    )
+    async def add_problem(self, inter, quiz_id, problem_to_insert_before: int, question: str, answer: typing.Optional[str] = None,
+                          # ...
+                          ):
+        raise NotImplementedError("I need to implement this!")
