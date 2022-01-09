@@ -206,7 +206,9 @@ JSON error: {e}"""
     @create.sub_command(name="blank", description="Create a blank quiz")
     async def blank(self, inter):
         """/quiz create blank
-        Create a blank quiz. This is more user-friendly than /quiz create from_json, but it's slower!"""
+        Create a blank quiz. This is more user-friendly than /quiz create from_json, but it's slower!
+
+        There is currently a bug!"""
 
         # TODO: only some people can create quizzes
         already_existing_quiz_ids = [
@@ -334,12 +336,28 @@ JSON error: {e}"""
                 required=False
             ),
             disnake.Option(
-                ...
+                name='is_written',
+                description="Whether this problem is a written problem and manually graded",  # TODO: shorten
+                type=disnake.OptionType.boolean,
+                required=False
+            ),
+            disnake.Option(
+                name='points',
+                description="The number of points this question is worth. This must be greater than 0!",  # TODO: shorten
+                type=disnake.OptionType.number,
+                required=False
             )
-
         ]
     )
-    async def add_problem(self, inter, quiz_id, problem_to_insert_before: int, question: str, answer: typing.Optional[str] = None,
+    async def add_problem(self, inter: disnake.ApplicationCommandInteraction, quiz_id: int, problem_to_insert_before: int, question: str,
+                          answer: typing.Optional[str] = None, is_written: boolean = False,
+                          points: typing.Optional[float] = 0.5
                           # ...
-                          ):
-        raise NotImplementedError("I need to implement this!")
+                          ) -> None:
+        if answer is None and is_written == False:
+            return await inter.send("You must provide an answer or make the problem a written problem!")
+        try:
+            quiz = await self.bot.cache.get_quiz(quiz_id)
+        except QuizNotFound:
+            return await inter.send("Quiz not found!")
+
