@@ -350,7 +350,7 @@ JSON error: {e}"""
         ]
     )
     async def add_problem(self, inter: disnake.ApplicationCommandInteraction, quiz_id: int, problem_to_insert_before: int, question: str,
-                          answer: typing.Optional[str] = None, is_written: boolean = False,
+                          answer: typing.Optional[str] = None, is_written: bool = False,
                           points: typing.Optional[float] = 0.5
                           # ...
                           ) -> None:
