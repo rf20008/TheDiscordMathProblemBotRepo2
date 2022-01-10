@@ -89,20 +89,20 @@ class QuizProblem(BaseProblem):
     """A class that represents a Quiz Math Problem"""
 
     def __init__(
-        self,
-        question: str,
-        id: int,
-        author: int,
-        answer: str = "",
-        guild_id: int = None,
-        voters: List[int] = None,
-        solvers: List[int] = None,
-        cache=None,
-        answers: List[str] = None,
-        is_written: bool = False,
-        quiz_id: int = None,
-        max_score: int = -1,
-        quiz=None,
+            self,
+            question: str,
+            id: int,
+            author: int,
+            answer: str = "",
+            guild_id: int = None,
+            voters: List[int] = None,
+            solvers: List[int] = None,
+            cache=None,
+            answers: List[str] = None,
+            is_written: bool = False,
+            quiz_id: int = None,
+            max_score: int = -1,
+            quiz=None,
     ):
         """A method that allows the creation of new QuizMathProblems"""
         if not isinstance(quiz, Quiz):
@@ -136,18 +136,18 @@ class QuizProblem(BaseProblem):
             return self.cache.get_quiz(self.quiz_id)
 
     def edit(
-        self,
-        question=None,
-        answer=None,
-        id=None,
-        guild_id=None,
-        voters=None,
-        solvers=None,
-        author=None,
-        answers=None,
-        is_written=None,
-        quiz=None,
-        max_score: int = -1,
+            self,
+            question=None,
+            answer=None,
+            id=None,
+            guild_id=None,
+            voters=None,
+            solvers=None,
+            author=None,
+            answers=None,
+            is_written=None,
+            quiz=None,
+            max_score: int = -1,
     ):
         """Edit a problem!"""
         super().edit(question, answer, id, guild_id, voters, solvers, author, answers)
@@ -214,12 +214,12 @@ class Quiz(list):
     but it has an additional attribute submissions which is a list of QuizSubmissions"""
 
     def __init__(
-        self,
-        id: int,
-        authors: List[int],
-        quiz_problems: List[QuizProblem],
-        submissions: List[QuizSubmission] = None,
-        cache=None,
+            self,
+            id: int,
+            authors: List[int],
+            quiz_problems: List[QuizProblem],
+            submissions: List[QuizSubmission] = None,
+            cache=None,
     ) -> None:
         """Create a new quiz. id is the quiz id and iter is an iterable of QuizMathProblems"""
         assert isinstance(authors, list)
@@ -239,6 +239,21 @@ class Quiz(list):
         self._submissions.append(submission)
         await self.update_self()
 
+    async def add_problem(self, problem: QuizProblem, insert_location: typing.Optional[int] = None):
+        """Add a problem to this quiz."""
+        if len(self.problems) + 1 > self._cache.max_problems_per_quiz:
+            raise TooManyProblems(f'''There is already the maximum number of problems on this quiz. Therefore, adding a new quiz is prohibited to save memory. 
+            Because this is a FOSS bot, there is no premium version and thus no way to increase the number of problems you can have on a quiz!''')
+        if insert_location is None:
+            insert_location = len(self.problems) - 1
+        assert isisntance(problem, QuizProblem)  # Type-checking
+        self.problems.insert(problem, insert_location)
+        await self.update_self()
+
+    @property
+    def quiz_problems(self):
+        return self.problems
+
     @property
     def submissions(self):
         return self._submissions
@@ -246,6 +261,16 @@ class Quiz(list):
     @property
     def id(self):
         return self._id
+
+    @property
+    def guild_id(self):
+        if self.empty:
+            raise MathProblemsModuleException("This quiz is empty!")
+        return self.problems[0].guild_id
+
+    @property
+    def empty(self) -> bool:
+        return len(self.problems) == 0 and len(self.submissions) == 0
 
     @classmethod
     def from_dict(cls, _dict: dict):

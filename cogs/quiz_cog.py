@@ -64,7 +64,7 @@ class QuizCog(HelperCog):
         ],
     )
     async def from_json(
-            self, inter: disnake.ApplicationCommandInteraction, data: str
+        self, inter: disnake.ApplicationCommandInteraction, data: str
     ) -> None:
         """/quiz create from_json [json: str]
         Create a Quiz from JSON. This is not user-friendly, but it's quick.
@@ -116,7 +116,7 @@ JSON error: {e}"""
             # parse the problem
             if not isinstance(problem, dict):
                 return await inter.send(f"Problem#{problem_num} isn't a dictionary.")
-            has_answers: bool = 'answers' in problem.keys()
+            has_answers: bool = "answers" in problem.keys()
             # Parse the question
             try:
                 question = problem["question"]
@@ -151,14 +151,14 @@ JSON error: {e}"""
             else:
                 answers = []
                 try:
-                    is_written: boolean = problem['is_written']
+                    is_written: boolean = problem["is_written"]
                     if not isinstance(is_written, bool):
                         return await inter.send(
                             f"Invalid data - is_written for problem #{problem_num} is not a boolean."
                         )
                 except KeyError:
                     return await inter.send(
-                        f'Invalid data - missing is_written and answer for problem#{problem_num}. Please try again!'
+                        f"Invalid data - missing is_written and answer for problem#{problem_num}. Please try again!"
                     )
 
             # Parse the number of points this question is worth
@@ -268,11 +268,11 @@ JSON error: {e}"""
         ],
     )
     async def add_answer(
-            self: "QuizCog",
-            inter: disnake.ApplicationCommandInteraction,
-            quiz_id: int,
-            problem_num: int,
-            answer: str,
+        self: "QuizCog",
+        inter: disnake.ApplicationCommandInteraction,
+        quiz_id: int,
+        problem_num: int,
+        answer: str,
     ):
         """/quiz edit add_answer (quiz_id: int) (problem_num: int) (answer: str)
 
@@ -307,57 +307,109 @@ JSON error: {e}"""
         problem.add_answer(answer)
         await inter.send("Successfully added an answer!")
 
+    @commands.cooldown(1, 30, disnake.BucketType.user)
     @edit.sub_command(
-        name='add_problem',
-        description='Add a problem to a quiz. You must be an author of the quiz to add a problem',  # TODO: shorten
+        name="add_problem",
+        description="Add a problem to a quiz. You must be an author of the quiz to add a problem",  # TODO: shorten
         options=[
             disnake.Option(
-                name='quiz_id',
+                name="quiz_id",
                 description="The ID of the quiz to add the problem to",
                 type=disnake.OptionType.integer,
                 required=True,
             ),
             disnake.Option(
-                name='problem_to_insert_before',
+                name="problem_to_insert_before",
                 description="The problem to insert this question before. Defaults to the last question in the quiz.",
                 type=disnake.OptionType.integer,
                 required=True,
             ),
             disnake.Option(
-                name='question',
-                description='The question to ask in this problem',
+                name="question",
+                description="The question to ask in this problem",
                 type=disnake.OptionType.string,
-                required=True
+                required=True,
             ),
             disnake.Option(
-                name='answer',
-                description='A possible answer for this problem.',
+                name="answer",
+                description="A possible answer for this problem.",
                 type=disnake.OptionType.string,
-                required=False
+                required=False,
             ),
             disnake.Option(
-                name='is_written',
+                name="is_written",
                 description="Whether this problem is a written problem and manually graded",  # TODO: shorten
                 type=disnake.OptionType.boolean,
-                required=False
+                required=False,
             ),
             disnake.Option(
-                name='points',
+                name="points",
                 description="The number of points this question is worth. This must be greater than 0!",  # TODO: shorten
                 type=disnake.OptionType.number,
-                required=False
+                required=False,
+            ),
+        ],
+    )
+    async def add_problem(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        quiz_id: int,
+        problem_to_insert_before: int,
+        question: str,
+        answer: typing.Optional[str] = None,
+        is_written: bool = False,
+        points: typing.Optional[float] = 0.5
+        # ...
+    ) -> None:
+        """/quiz edit add_problem (quiz_id: int) (problem_to_insert_before: int) (question: str) [answer: str = None], [is_written: bool = False] [points: float = 0.5]
+        Add a problem to a quiz. You must be an author of the quiz (which means that you are one of the people who created a problem for the quiz) to add the problem to the quiz.
+        There is a 30 second cooldown on this to prevent spam!
+
+        """
+        if answer is None and is_written == False:
+            return await inter.send(
+                "You must provide an answer or make the problem a written problem!"
+            )
+        try:
+            quiz: Quiz = await self.bot.cache.get_quiz(quiz_id)
+        except QuizNotFound:
+            return await inter.send("Quiz not found!")
+        try:
+            problem = QuizProblem(
+                question = question,
+                answers = [answer] if answer is not None else [],
+                quiz=quiz,
+                guild_id = quiz.guild_id,
+                is_written = is_written,
+                author = inter.author.id,
+                voters = [],
+                solvers = [],
+                max_score = points,
+                cache = self.cache
+            )
+        except MathProblemsModuleException as e:
+            if str(e) == 'This quiz is empty!':
+                return await inter.send("This quiz is empty! Please help me fix this bug!")
+            raise
+        else:
+            if inter.author.id not in quiz.authors:
+                return await inter.send(embed = ErrorEmbed("You don't have permission to add a problem to this quiz. :("))
+            await quiz.add_problem(problem, problem_to_insert_before)
+            return await inter.send("Successfully added the problem!")
+
+
+    @edit.sub_command(
+        name = 'delete_problem',
+        description = 'Delete a problem in a quiz. You must be the author of it or be an admin to delete it.',
+        options = [
+            disnake.Option(
+                name = 'quiz_id',
+                description = 'The quiz id of the quiz that contains the problem that you want to delete',
+                type = disnake.OptionType.integer,
+                required = True,
+            ),
+            disnake.Option(
+
             )
         ]
     )
-    async def add_problem(self, inter: disnake.ApplicationCommandInteraction, quiz_id: int, problem_to_insert_before: int, question: str,
-                          answer: typing.Optional[str] = None, is_written: bool = False,
-                          points: typing.Optional[float] = 0.5
-                          # ...
-                          ) -> None:
-        if answer is None and is_written == False:
-            return await inter.send("You must provide an answer or make the problem a written problem!")
-        try:
-            quiz = await self.bot.cache.get_quiz(quiz_id)
-        except QuizNotFound:
-            return await inter.send("Quiz not found!")
-
