@@ -64,7 +64,7 @@ class QuizCog(HelperCog):
         ],
     )
     async def from_json(
-        self, inter: disnake.ApplicationCommandInteraction, data: str
+            self, inter: disnake.ApplicationCommandInteraction, data: str
     ) -> None:
         """/quiz create from_json [json: str]
         Create a Quiz from JSON. This is not user-friendly, but it's quick.
@@ -208,7 +208,7 @@ JSON error: {e}"""
         """/quiz create blank
         Create a blank quiz. This is more user-friendly than /quiz create from_json, but it's slower!
 
-        There is currently a bug!"""
+        There is currently a bug. Don't use this because there is a bug that makes the quiz not actually be created because there are no problems."""
 
         # TODO: only some people can create quizzes
         already_existing_quiz_ids = [
@@ -268,11 +268,11 @@ JSON error: {e}"""
         ],
     )
     async def add_answer(
-        self: "QuizCog",
-        inter: disnake.ApplicationCommandInteraction,
-        quiz_id: int,
-        problem_num: int,
-        answer: str,
+            self: "QuizCog",
+            inter: disnake.ApplicationCommandInteraction,
+            quiz_id: int,
+            problem_num: int,
+            answer: str,
     ):
         """/quiz edit add_answer (quiz_id: int) (problem_num: int) (answer: str)
 
@@ -344,29 +344,30 @@ JSON error: {e}"""
             ),
             disnake.Option(
                 name="points",
-                description="The number of points this question is worth. This must be greater than 0!",  # TODO: shorten
+                description="The number of points this question is worth. This must be greater than 0!",
+                # TODO: shorten
                 type=disnake.OptionType.number,
                 required=False,
             ),
         ],
     )
     async def add_problem(
-        self,
-        inter: disnake.ApplicationCommandInteraction,
-        quiz_id: int,
-        problem_to_insert_before: int,
-        question: str,
-        answer: typing.Optional[str] = None,
-        is_written: bool = False,
-        points: typing.Optional[float] = 0.5
-        # ...
+            self,
+            inter: disnake.ApplicationCommandInteraction,
+            quiz_id: int,
+            problem_to_insert_before: int,
+            question: str,
+            answer: typing.Optional[str] = None,
+            is_written: bool = False,
+            points: typing.Optional[float] = 0.5
+            # ...
     ) -> None:
         """/quiz edit add_problem (quiz_id: int) (problem_to_insert_before: int) (question: str) [answer: str = None], [is_written: bool = False] [points: float = 0.5]
         Add a problem to a quiz. You must be an author of the quiz (which means that you are one of the people who created a problem for the quiz) to add the problem to the quiz.
-        There is a 30 second cooldown on this to prevent spam!
+        There is a 30-second cooldown on this to prevent spam!
 
         """
-        if answer is None and is_written == False:
+        if answer is None and is_written is False:
             return await inter.send(
                 "You must provide an answer or make the problem a written problem!"
             )
@@ -376,16 +377,16 @@ JSON error: {e}"""
             return await inter.send("Quiz not found!")
         try:
             problem = QuizProblem(
-                question = question,
-                answers = [answer] if answer is not None else [],
+                question=question,
+                answers=[answer] if answer is not None else [],
                 quiz=quiz,
-                guild_id = quiz.guild_id,
-                is_written = is_written,
-                author = inter.author.id,
-                voters = [],
-                solvers = [],
-                max_score = points,
-                cache = self.cache
+                guild_id=quiz.guild_id,
+                is_written=is_written,
+                author=inter.author.id,
+                voters=[],
+                solvers=[],
+                max_score=points,
+                cache=self.cache
             )
         except MathProblemsModuleException as e:
             if str(e) == 'This quiz is empty!':
@@ -393,23 +394,87 @@ JSON error: {e}"""
             raise
         else:
             if inter.author.id not in quiz.authors:
-                return await inter.send(embed = ErrorEmbed("You don't have permission to add a problem to this quiz. :("))
+                return await inter.send(embed=ErrorEmbed("You don't have permission to add a problem to this quiz. :("))
             await quiz.add_problem(problem, problem_to_insert_before)
             return await inter.send("Successfully added the problem!")
 
-
+    @commands.cooldown(1, 60, disnake.BucketType.user)
     @edit.sub_command(
-        name = 'delete_problem',
-        description = 'Delete a problem in a quiz. You must be the author of it or be an admin to delete it.',
-        options = [
+        name='delete_problem',
+        description='Delete a problem in a quiz. You must be the author of it or be an admin to delete it.',
+        options=[
             disnake.Option(
-                name = 'quiz_id',
-                description = 'The quiz id of the quiz that contains the problem that you want to delete',
-                type = disnake.OptionType.integer,
-                required = True,
+                name='quiz_id',
+                description='The quiz id of the quiz that contains the problem that you want to delete',
+                type=disnake.OptionType.integer,
+                required=True,
             ),
             disnake.Option(
-
+                name='problem_to_delete',
+                description="The problem number of the problem you want to delete",
+                type=disnake.OptionType.integer,
+                required=True
             )
         ]
     )
+    async def delete_problem(self, inter: disnake.ApplicationCommandInteraction, quiz_id: int, problem_to_delete: int):
+        """/quiz edit delete_problem (quiz_id: int) (problem_to_delete: int)
+        Delete a problem in a quiz, provided that you authored the problem, have the `Administrator` permission the guild, or are a trusted user.
+        There is a 60-second cooldown on this command that is not reducible."""
+        # First make sure the problem exists
+        await inter.response.defer()
+        try:
+            quiz = await self.cache.get_quiz(
+                quiz_id=quiz_id
+            )
+        except QuizNotFound:
+            return await inter.send("Quiz not found.")
+
+        try:
+            problem = quiz.problems[problem_to_delete]  # Get the problem
+            can_delete: bool = False
+
+            # Check the permissions
+            if inter.author.id == problem.author:
+                can_delete = True
+            elif inter.author.guild_permissions.administrator:
+                can_delete = True
+
+            if not can_delete:
+                user_data: UserData = await self.bot.cache.get_user_data(
+                    user_id=inter.author.id,
+                    default=UserData(
+                        trusted=False,
+                        blacklisted=False,
+                        user_id=inter.author.id
+                    )
+                )
+                if user_data.trusted:
+                    can_delete = True
+
+                if can_delete:
+                    # They have permissions to delete
+                    # Firstly, I need to shift it all 1 down after
+                    for problem_num in range(problem_to_delete, len(quiz.problems), 1):
+                        problem_num.id -= 1  # This has to be done or there will be skips and that will be bad
+                    del quiz.problems[problem_to_delete]
+                    await quiz.update_self()
+                    await inter.send(embed=SuccessEmbed("Successfully deleted the problem!"))
+                    return
+                else:
+                    return await inter.send(embed=ErrorEmbed("You don't have permission to delete this problem!"))
+        except IndexError:
+            return await inter.send("This problem in the quiz was not found.")
+
+
+    #@edit.sub_command(
+    #    name = 'modify_problem',
+    #    description = 'Modify a problem, changing its question/answer/point worth/etc...',
+    #    options = [
+    #        disnake.Option(
+    #
+    #        )
+    #    ]
+    #)
+    #async def modify_problem(self):
+        ...

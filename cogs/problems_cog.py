@@ -12,7 +12,7 @@ from helpful_modules.threads_or_useful_funcs import generate_new_id
 
 from .helper_cog import HelperCog
 
-
+# TODO: implement /edit_problem remove_answer (but only for authors. Warn the user and confirm using buttons if they are removing the last answer of a problem)
 # Licensed under GPLv3
 
 
