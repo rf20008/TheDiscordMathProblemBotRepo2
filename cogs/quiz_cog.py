@@ -307,7 +307,7 @@ JSON error: {e}"""
         problem.add_answer(answer)
         await inter.send("Successfully added an answer!")
 
-    @commands.cooldown(1, 30, disnake.BucketType.user)
+    @commands.cooldown(1, 30, commands.BucketType.user)
     @edit.sub_command(
         name="add_problem",
         description="Add a problem to a quiz. You must be an author of the quiz to add a problem",  # TODO: shorten
@@ -398,7 +398,7 @@ JSON error: {e}"""
             await quiz.add_problem(problem, problem_to_insert_before)
             return await inter.send("Successfully added the problem!")
 
-    @commands.cooldown(1, 60, disnake.BucketType.user)
+    @commands.cooldown(1, 60, commands.BucketType.user)
     @edit.sub_command(
         name='delete_problem',
         description='Delete a problem in a quiz. You must be the author of it or be an admin to delete it.',

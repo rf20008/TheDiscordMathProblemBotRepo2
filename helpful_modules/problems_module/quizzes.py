@@ -1,4 +1,4 @@
-import sqlite3
+import typing
 import sys
 import traceback
 from typing import *
@@ -135,7 +135,7 @@ class QuizProblem(BaseProblem):
         else:
             return self.cache.get_quiz(self.quiz_id)
 
-    def edit(
+    async def edit(
             self,
             question=None,
             answer=None,
