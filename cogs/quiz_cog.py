@@ -466,15 +466,60 @@ JSON error: {e}"""
         except IndexError:
             return await inter.send("This problem in the quiz was not found.")
 
+    @edit.sub_command(
+        name='modify_problem',
+        description='Modify a problem, changing its question/answer/point worth/etc...',
+        options=[
+            disnake.Option(
+                name='quiz_id',
+                description="The ID of the quiz that contains the problem to change!",
+                type=disnake.OptionType.integer,
+                required=True
+            ),
+            disnake.Option(
+                name='problem_num',
+                description="The problem number to change in the quiz",
+                type=disnake.OptionType.integer,
+                required=True
+            ),
+            disnake.Option(
+                name='new_question',
+                description='The new question to have',
+                type=disnake.OptionType.string,
+                required=False
+            ),
+            disnake.Option(
+                name='new_answer',
+                description='The new answer to replace the already existing answers with!',
+                type=disnake.OptionType.string,
+                required=False
+            ),
+            disnake.Option(
+                name='points_worth',
+                description="The new number of points this problem will be worth",
+                type=disnake.OptionType.integer,
+                required=False
+            ),
+            disnake.Option(
+                name = 'is_written',
+                description = "Whether the problem will be written or not!",
+                type = disnake.OptionType.boolean,
+                required = False
+            )
+        ]
+    )
+    async def modify_problem(self,
+                             inter: disnake.ApplicationCommandInteraction,
+                             quiz_id: int,
+                             problem_num: int,
+                             new_question: str = None,
+                             new_answer: str = None,
+                             points_worth: int = None,
+                             is_written: bool = None
+                             ):
+        """/quiz edit modify problem (quiz_id: int) (problem_num: int) [new_question: str = None] [new_answer: str= None] [points_worth: int = None] [is_written: bool = None]
+        Edit the problem with the given quiz id and problem number, replacing the question, answer, points worth, etc with what is provided.
+        You must be the author of the problem to edit it!
+        """
+        raise NotImplementedError("I'll implement this tommorrow (Wed Jan 12, 2022). If I don't implement this, please notify me :-)")
 
-    #@edit.sub_command(
-    #    name = 'modify_problem',
-    #    description = 'Modify a problem, changing its question/answer/point worth/etc...',
-    #    options = [
-    #        disnake.Option(
-    #
-    #        )
-    #    ]
-    #)
-    #async def modify_problem(self):
-        ...
