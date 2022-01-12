@@ -155,11 +155,18 @@ class QuizProblem(BaseProblem):
             raise TypeError(
                 f"quiz is of type {quiz.__class.__name}, not Quiz"
             )  # Here to help me debug
+        if not isinstance(is_written, bool) and is_written is not None:
+            raise TypeError("is_written is not of type bool")
+        else:
+            self.quiz_id = quiz.id
+        if max_score is not None:
+            self.max_score = max_score
+        if is_written is not None:
+            self.is_written = is_written
+
         if self.cache:
             self.cache.update_quiz(self.quiz_id, quiz)
-        if not isinstance(is_written, bool):
-            raise TypeError("is_written is not of type bool")
-        self.update_self()
+        await self.update_self()
 
     def to_dict(self, show_answer: bool = False):
         d = {
@@ -203,10 +210,10 @@ class QuizProblem(BaseProblem):
                 "Oh no... conversion from row failed"
             ) from e  # Re-raise (which wil log)
 
-    def update_self(self):
+    async def update_self(self):
         """Update myself"""
         if self.cache is not None:
-            self.quiz.update_self()
+            await self.quiz.update_self()
 
 
 class Quiz(list):
