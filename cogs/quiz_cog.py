@@ -501,10 +501,10 @@ JSON error: {e}"""
                 required=False
             ),
             disnake.Option(
-                name = 'is_written',
-                description = "Whether the problem will be written or not!",
-                type = disnake.OptionType.boolean,
-                required = False
+                name='is_written',
+                description="Whether the problem will be written or not!",
+                type=disnake.OptionType.boolean,
+                required=False
             )
         ]
     )
@@ -518,10 +518,9 @@ JSON error: {e}"""
                              is_written: bool = None
                              ):
         """/quiz edit modify problem (quiz_id: int) (problem_num: int) [new_question: str = None] [new_answer: str= None] [points_worth: int = None] [is_written: bool = None]
-        Edit the problem with the given quiz id and problem number, replacing the question, answer, points worth, etc with what is provided.
+        Edit the problem with the given quiz id and problem number, replacing the question, answer, points worth, etc. with what is provided.
         You must be the author of the problem to edit it!
         """
-        #raise NotImplementedError("I'll implement this tommorrow (Wed Jan 12, 2022). If I don't implement this, please notify me :-)")
         try:
             quiz: Quiz = await self.bot.cache.get_quiz(quiz_id)
         except QuizNotFound:
@@ -538,12 +537,13 @@ JSON error: {e}"""
             return await inter.send("You did not author this problem. Therefore, you can't edit it!")
         else:
             await problem.edit(
-                question = new_question if new_question is not None else problem.question, # The question if there's a new question, otherwise the original question
-                answers = [new_answer] if new_answer is not None else problem.answer, # The new answer (which replaces all the other answers) if there is a new answer. Otherwise, use the original answer!
-                max_score = points_worth if points_worth is not None else problem.max_score, # Similar logic
-                is_written = is_written if is_written is not None else is_written # Similarly here
-            ) # Edit the problem
+                question=new_question if new_question is not None else problem.question,
+                # The question if there's a new question, otherwise the original question
+                answers=[new_answer] if new_answer is not None else problem.answer,
+                # The new answer (which replaces all the other answers) if there is a new answer. Otherwise, use the original answer!
+                max_score=points_worth if points_worth is not None else problem.max_score,  # Similar logic
+                is_written=is_written if is_written is not None else is_written  # Similarly here
+            )  # Edit the problem
             return await inter.send("You have successfully modified the problem!")
 
-
-        #TODO: use QuizSessions to keep track of people solving quizzes!
+        # TODO: use QuizSessions to keep track of people solving quizzes!
