@@ -1130,7 +1130,7 @@ class MathProblemCache:
         """Add a QuizSession to the SQL database"""
         assert isinstance(session, QuizSolvingSession)
         try:
-            self.get_quiz_submission_by_special_id(session.special_id)
+            await self.get_quiz_submission_by_special_id(session.special_id)
             raise MathProblemsModuleException("Quiz session already exists")
         except QuizSessionNotFoundException:
             pass
@@ -1182,7 +1182,7 @@ class MathProblemCache:
         assert isinstance(special_id, int)
         assert isinstance(session, QuizSolvingSession)
         try:
-            self.get_quiz_submission_by_special_id(special_id)
+            await self.get_quiz_submission_by_special_id(special_id)
         except QuizSessionNotFoundException as quiz_session_not_found_exception:
             raise QuizSessionNotFoundException("Quiz session not found - use add_quiz_session instead") from quiz_session_not_found_exception
 
@@ -1257,7 +1257,13 @@ class MathProblemCache:
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute("SELECT * FROM quiz_submission_sessions WHERE special_id = %s", (special_id,))
-
+                potential_sessions = list(cursor.fetchall())
+                if len(potential_sessions) < 1:
+                    raise QuizSessionNotFoundException("There aren't any quiz sessions found with this special id")
+                elif len(potential_sessions) > 1:
+                    raise MathProblemsModuleException("There are too many quiz sessions with this special id")
+                else:
+                    return QuizSolvingSession.from_mysql_dict(potential_sessions[0])
 
 
 
