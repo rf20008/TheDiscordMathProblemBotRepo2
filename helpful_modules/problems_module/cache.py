@@ -48,6 +48,7 @@ class MathProblemCache:
     ):
         """Create a new MathProblemCache. The arguments should be self-explanatory.
         Many methods are async!"""
+        self.cached_submissions_organized_by_dict = None
         log.info("Initializing the MathProblemCache object.")
         # make_sql_table([], db_name = sql_dict_db_name)
         # make_sql_table([], db_name = "MathProblemCache1.db", table_name="kv_store")
@@ -90,6 +91,7 @@ class MathProblemCache:
         self.guild_problems = {}
         self._guilds: typing.List[disnake.Guild] = []
         asyncio.run(self.update_cache())
+        self.cached_sessions = {}
 
     async def initialize_sql_table(self):
         """Initialize my internal SQL tables. This does nothing if the internal SQL tables already exist!"""
@@ -444,6 +446,7 @@ class MathProblemCache:
         guild_problems = {}
         guild_ids = []
         quiz_problems_dict = {}
+        quiz_sessions_dict = {}
         quiz_submissions_dict = {}
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
@@ -487,6 +490,13 @@ class MathProblemCache:
                             quiz_submissions_dict[submission.quiz_id].append(submission)
                         except KeyError:
                             quiz_submissions_dict[submission.quiz_id] = [submission]
+                    await cursor.execute("SELECT * FROM quiz_submission_sessions")
+                    for _row in await cursor.fetchall():
+                        session = QuizSolvingSession.from_sqlite_dict(_row, cache=self)
+                        try:
+                            quiz_sessions_dict[session.quiz_id].append(session)
+                        except KeyError:
+                            quiz_sessions_dict[session.quiz_id] = [session]
 
         else:
             with mysql_connection(
@@ -535,7 +545,13 @@ class MathProblemCache:
                         quiz_submissions_dict[submission.quiz_id].append(submission)
                     except KeyError:
                         quiz_submissions_dict[submission.quiz_id] = [submission]
-
+                cursor.execute("SELECT * FROM quiz_submission_sessions")
+                for _row in cursor.fetchall():
+                    session = QuizSolvingSession.from_sqlite_dict(_row, cache=self)
+                    try:
+                        quiz_sessions_dict[session.quiz_id].append(session)
+                    except KeyError:
+                        quiz_sessions_dict[session.quiz_id] = [session]
         try:
             global_problems = deepcopy(
                 guild_problems[None]
@@ -547,6 +563,7 @@ class MathProblemCache:
         self.guild_problems = guild_problems
         self.guild_ids = guild_ids
         self.global_problems = global_problems
+        self.cached_sessions = quiz_sessions_dict
         self.cached_quizzes = []  # Could cause a race condition
         for _id in quiz_problems_dict.keys():
             has_submissions = _id in list(
@@ -558,6 +575,7 @@ class MathProblemCache:
                         _id,
                         quiz_problems=quiz_problems_dict[_id],
                         submissions=quiz_submissions_dict[_id],
+                        existing_sessions=[quiz_sessions_dict[quiz_id]] if quiz_id in quiz_sessions_dict.keys() else [],
                         authors=set(
                             (problem.author for problem in quiz_submissions_dict[_id])
                         ),
@@ -570,12 +588,14 @@ class MathProblemCache:
                         _id,
                         quiz_problems=quiz_problems_dict[_id],
                         submissions=[],
+                        existing_sessions=[quiz_sessions_dict[quiz_id]] if quiz_id in quiz_sessions_dict.keys() else [],
                         authors=set(
                             (problem.author for problem in quiz_submissions_dict[_id])
                         ),
                     )
                 )
         self.cached_submissions = quiz_submissions_dict.values()
+        self.cached_submissions_organized_by_dict = quiz_submissions_dict
 
     async def get_quizzes_by_func(
             self: "MathProblemCache",
@@ -1184,7 +1204,8 @@ class MathProblemCache:
         try:
             await self.get_quiz_submission_by_special_id(special_id)
         except QuizSessionNotFoundException as quiz_session_not_found_exception:
-            raise QuizSessionNotFoundException("Quiz session not found - use add_quiz_session instead") from quiz_session_not_found_exception
+            raise QuizSessionNotFoundException(
+                "Quiz session not found - use add_quiz_session instead") from quiz_session_not_found_exception
 
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
@@ -1234,8 +1255,8 @@ class MathProblemCache:
                 return
 
     async def get_quiz_session_by_special_id(self, special_id: int) -> QuizSolvingSession:
-        "Get a quiz submission by its special id"
-        assert isinstance(special_id, int) # Basic type-checking
+        """Get a quiz submission by its special id"""
+        assert isinstance(special_id, int)  # Basic type-checking
 
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
@@ -1247,7 +1268,7 @@ class MathProblemCache:
                 elif len(potential_sessions) > 1:
                     raise MathProblemsModuleException("There are too many quiz sessions with this special id")
                 else:
-                    return QuizSolvingSession.from_sqlite_dict(potential_sessions[0])
+                    return QuizSolvingSession.from_sqlite_dict(potential_sessions[0], cache=self)
         else:
             with mysql_connection(
                     host=self.mysql_db_ip,
@@ -1263,9 +1284,7 @@ class MathProblemCache:
                 elif len(potential_sessions) > 1:
                     raise MathProblemsModuleException("There are too many quiz sessions with this special id")
                 else:
-                    return QuizSolvingSession.from_mysql_dict(potential_sessions[0])
-
-
+                    return QuizSolvingSession.from_mysql_dict(potential_sessions[0], cache=self)
 
     async def get_quiz(self, quiz_id: int) -> Optional[Quiz]:
         """Get the quiz with the id specified. Returns None if not found"""
