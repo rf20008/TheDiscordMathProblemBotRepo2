@@ -4,7 +4,6 @@ import typing
 from asyncio import run
 
 from helpful_modules.threads_or_useful_funcs import generate_new_id
-from .quiz import Quiz
 from helpful_modules.problems_module.errors import *
 
 from .quiz_problem import QuizProblem
