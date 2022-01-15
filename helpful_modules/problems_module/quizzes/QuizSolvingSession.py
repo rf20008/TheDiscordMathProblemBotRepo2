@@ -5,7 +5,7 @@ from asyncio import run
 
 from helpful_modules.threads_or_useful_funcs import generate_new_id
 from .quiz import Quiz
-from .quiz_problem import QuizProblem
+from helpful_modules.problems_module.errors import *
 from .quiz_submissions import QuizSubmission, QuizSubmissionAnswer
 
 
@@ -44,7 +44,7 @@ class QuizSolvingSession:
 
     def _get_quiz(self) -> Quiz:
         """Get the quiz for this QuizSubmissionSession and return it"""
-        return asyncio.run(self.cache.get_quiz(self.quiz_id))
+        return run(self.cache.get_quiz(self.quiz_id))
 
     def add_submission_answer(self, submission_answer: QuizSubmissionAnswer):
         """Add a submission answer to this session!"""
