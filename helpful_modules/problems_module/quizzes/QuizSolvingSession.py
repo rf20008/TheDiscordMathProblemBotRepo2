@@ -4,10 +4,9 @@ import typing
 from asyncio import run
 
 from helpful_modules.threads_or_useful_funcs import generate_new_id
-from .quiz import Quiz
+
 from .quiz_problem import QuizProblem
 from .quiz_submissions import QuizSubmission, QuizSubmissionAnswer
-
 
 # Licensed under GPLv3 (as all other code in this repository is)
 
@@ -42,7 +41,7 @@ class QuizSolvingSession:
         """Reset myself"""
         pass
 
-    def _get_quiz(self) -> Quiz:
+    def _get_quiz(self) -> "Quiz":
         """Get the quiz for this QuizSubmissionSession and return it"""
         return asyncio.run(self.cache.get_quiz(self.quiz_id))
 
@@ -57,7 +56,7 @@ class QuizSolvingSession:
         return self.answers[problem_num]
 
     @property
-    def overtime(self: QuizSolvingSession) -> bool:
+    def overtime(self: "QuizSolvingSession") -> bool:
         return time.time() > self.expire_time
 
     @classmethod
@@ -73,8 +72,8 @@ class QuizSolvingSession:
             start_time: int,
             expire_time: int,
             special_id: int
-    ) -> QuizSolvingSession:
-        QuizSession: QuizSolvingSession = cls(
+    ) -> "QuizSolvingSession":
+        QuizSession: "QuizSolvingSession" = cls(
             cache=cache,
             quiz_id=quiz_id,
             user_id=user_id
@@ -89,7 +88,7 @@ class QuizSolvingSession:
         return QuizSession
 
     @classmethod
-    def from_sqlite_dict(cls, dict: dict, cache) -> QuizSolvingSession:
+    def from_sqlite_dict(cls, dict: dict, cache) -> "QuizSolvingSession":
         """Convert a dict returned from sql into a QuizSolvingSession"""
         _quiz = run(cache.get_quiz(dict['quiz_id']))
         return cls.better_init(
@@ -104,7 +103,7 @@ class QuizSolvingSession:
         )
 
     @classmethod
-    def from_mysql_dict(cls, dict: dict, cache) -> QuizSolvingSession:
+    def from_mysql_dict(cls, dict: dict, cache) -> "QuizSolvingSession":
         _quiz = run(cache.get_quiz(dict['quiz_id']))
         return cls.better_init(
             cache=cache,

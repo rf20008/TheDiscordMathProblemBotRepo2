@@ -1,6 +1,10 @@
+from typing import List
+import typing
 from helpful_modules.problems_module import BaseProblem
 
-from . import QuizProblem, QuizSubmission
+from .QuizSolvingSession import QuizSolvingSession
+from .quiz_problem import QuizProblem
+from .quiz_submissions import QuizSubmission
 
 
 class Quiz(list):
