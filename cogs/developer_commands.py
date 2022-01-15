@@ -7,13 +7,17 @@ import disnake
 from disnake import *
 from disnake.ext import commands
 
-from helpful_modules import checks
-from helpful_modules import cooldowns, the_documentation_file_loader
-from helpful_modules import problems_module
+from helpful_modules import (
+    checks,
+    cooldowns,
+    problems_module,
+    the_documentation_file_loader,
+)
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.custom_embeds import *
 from helpful_modules.save_files import FileSaver
 from helpful_modules.threads_or_useful_funcs import generate_new_id
+
 from .helper_cog import HelperCog
 
 slash = None

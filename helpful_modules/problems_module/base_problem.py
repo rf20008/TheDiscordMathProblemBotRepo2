@@ -1,11 +1,12 @@
-import disnake
+import asyncio
 import pickle
 import sys
 import traceback
 import typing
 import warnings
-import asyncio
 from copy import deepcopy
+
+import disnake
 
 from .errors import *
 

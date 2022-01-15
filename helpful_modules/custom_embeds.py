@@ -1,5 +1,6 @@
-from disnake import Embed, Color
 from random import randint
+
+from disnake import Color, Embed
 
 
 class SimpleEmbed(Embed):

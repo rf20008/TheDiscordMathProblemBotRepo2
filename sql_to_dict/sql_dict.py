@@ -1,4 +1,5 @@
-import sqlite3, copy
+import copy
+import sqlite3
 
 
 class CannotConnectException(Exception):

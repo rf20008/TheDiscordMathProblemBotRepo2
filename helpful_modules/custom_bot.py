@@ -1,7 +1,9 @@
-import disnake, logging
-import helpful_modules
+import logging
 import time
 
+import disnake
+
+import helpful_modules
 from helpful_modules import problems_module
 from helpful_modules.constants_loader import BotConstants
 from helpful_modules.problems_module.cache import MathProblemCache

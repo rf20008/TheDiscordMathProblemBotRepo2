@@ -1,6 +1,7 @@
 from helpful_modules.problems_module import BaseProblem
-from . import QuizProblem
-from . import QuizSubmission
+
+from . import QuizProblem, QuizSubmission
+
 
 class Quiz(list):
     """Represents a quiz.
@@ -12,11 +13,14 @@ class Quiz(list):
             authors: List[int],
             quiz_problems: List[QuizProblem],
             submissions: List[QuizSubmission] = None,
+            existing_sessions=None,  # This is a list of QuizSessions
             cache=None,
     ) -> None:
         """Create a new quiz. id is the quiz id and iter is an iterable of QuizMathProblems"""
+        assert isinstance(existing_sessions, list) or existing_sessions is None
         assert isinstance(authors, list)
         self.authors = authors
+        self.existing_sessions = existing_sessions if existing_sessions is not None else []
         if not submissions:
             submissions = []
         self.problems = quiz_problems
@@ -32,11 +36,15 @@ class Quiz(list):
         self._submissions.append(submission)
         await self.update_self()
 
-    async def add_problem(self, problem: QuizProblem, insert_location: typing.Optional[int] = None):
+    async def add_problem(
+            self, problem: QuizProblem, insert_location: typing.Optional[int] = None
+    ):
         """Add a problem to this quiz."""
         if len(self.problems) + 1 > self._cache.max_problems_per_quiz:
-            raise TooManyProblems(f'''There is already the maximum number of problems on this quiz. Therefore, adding a new quiz is prohibited to save memory. 
-            Because this is a FOSS bot, there is no premium version and thus no way to increase the number of problems you can have on a quiz!''')
+            raise TooManyProblems(
+                f"""There is already the maximum number of problems on this quiz. Therefore, adding a new quiz is prohibited to save memory. 
+            Because this is a FOSS bot, there is no premium version and thus no way to increase the number of problems you can have on a quiz!"""
+            )
         if insert_location is None:
             insert_location = len(self.problems) - 1
         assert isisntance(problem, QuizProblem)  # Type-checking
@@ -90,3 +98,20 @@ class Quiz(list):
     async def update_self(self):
         """Update myself!"""
         await self._cache.update_quiz(self._id, self)
+
+    @classmethod
+    def from_data(
+            cls,
+            problems: typing.List[QuizProblem],
+            authors: typing.List[int],
+            existing_sessions: typing.List[QuizSolvingSession],
+            submissions: typing.List[QuizSubmission],
+            cache
+    ):
+        return cls(
+            quiz_problems=problems,
+            authors=authors,
+            existing_sessions=existing_sessions,
+            submissions=submissions,
+            cache=cache
+        )

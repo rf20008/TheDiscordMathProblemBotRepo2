@@ -1,5 +1,6 @@
-import mysql.connector
 import contextlib
+
+import mysql.connector
 
 # Licensed under GPLv3 (or later)
 

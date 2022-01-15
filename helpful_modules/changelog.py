@@ -1,7 +1,7 @@
-import json
-import typing as t
 import datetime
 import io
+import json
+import typing as t
 
 
 class ChangeLogEntry:

@@ -1,12 +1,14 @@
-import disnake
 import threading
 import typing
 from asyncio import run
+
+import disnake
 from disnake import *
 from disnake.ext import commands
+
 from helpful_modules import checks, problems_module
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
-from helpful_modules.custom_embeds import SimpleEmbed, SuccessEmbed, ErrorEmbed
+from helpful_modules.custom_embeds import ErrorEmbed, SimpleEmbed, SuccessEmbed
 from helpful_modules.problems_module import *
 from helpful_modules.threads_or_useful_funcs import generate_new_id
 

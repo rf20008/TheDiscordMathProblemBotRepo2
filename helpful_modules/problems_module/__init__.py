@@ -18,11 +18,11 @@
 #     You should have received a copy of the GNU General Public License
 #     along with the Discord Math Problem Bot.  If not, see <https://www.gnu.org/licenses/>.
 
-from .errors import *
-from .base_problem import BaseProblem
-from .quizzes import *
-from .cache import MathProblemCache
-from .user_data import UserData
 from . import *
+from .base_problem import BaseProblem
+from .cache import MathProblemCache
+from .errors import *
+from .quizzes import *
+from .user_data import UserData
 
 __version__ = "0.1.0"

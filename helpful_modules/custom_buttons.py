@@ -1,9 +1,10 @@
-import disnake
-from typing import Any, List
-from .custom_embeds import SuccessEmbed, ErrorEmbed
-from .threads_or_useful_funcs import base_on_error
 from copy import deepcopy
+from typing import Any, List
 
+import disnake
+
+from .custom_embeds import ErrorEmbed, SuccessEmbed
+from .threads_or_useful_funcs import base_on_error
 
 # Licensed under the GNU GPLv3 (or later)
 

@@ -96,11 +96,15 @@ class TooMuchUserDataException(MathProblemsModuleException):
 
 class UserDataNotExistsException(MathProblemsModuleException):
     """Raised by MathProblemCache.set_user_data when user data does not exist!"""
+
     pass
 
 
 class TooManyQuizzesException(MathProblemsModuleException):
     """Raised a guild has too many quizzes"""
+
     def __init__(self, num_quizzes: int):
-        message: str = f"The guild already has {num_quizzes} quizzes, which is too much!"
+        message: str = (
+            f"The guild already has {num_quizzes} quizzes, which is too much!"
+        )
         super().__init__(message)

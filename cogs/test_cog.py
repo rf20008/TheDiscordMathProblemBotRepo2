@@ -1,7 +1,9 @@
 """A cog made to test TheDiscordMathProblemBot's connection to Discord. This doesn't provide the bot extra functionality.
 This cog, like everything else in this repository, is licensed under GPLv3 (or later)"""
 import typing
+
 import disnake
+
 from .helper_cog import HelperCog
 
 

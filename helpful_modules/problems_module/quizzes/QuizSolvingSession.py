@@ -20,12 +20,16 @@ class QuizSolvingSession:
         try:
             self.expire_time: int = self.start_time + self._quiz.time_limit
         except AttributeError:
-            raise NotImplementedError("Quiz descriptions + other metadata needs to be fully implemented!")
+            raise NotImplementedError(
+                "Quiz descriptions + other metadata needs to be fully implemented!"
+            )
 
         try:
             self.guild_id = self._quiz.guild_id
         except MathProblemsModuleException as MPME:
-            raise RuntimeError("This quiz does not have a guild id, or it is None.") from MPME
+            raise RuntimeError(
+                "This quiz does not have a guild id, or it is None."
+            ) from MPME
 
         self._reset()
 
@@ -46,3 +50,8 @@ class QuizSolvingSession:
     def _get_submission_answer(self, problem_num: int):
         """Get this submission answer or raise KeyError if it isn't found"""
         return self.answers[problem_num]
+
+    @property
+    def is_overtime(self: QuizSolvingSession) -> bool:
+        return time.time() > self.expire_time
+
