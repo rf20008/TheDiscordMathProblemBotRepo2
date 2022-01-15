@@ -3,6 +3,7 @@ import time
 import typing
 from asyncio import run
 
+from helpful_modules.threads_or_useful_funcs import generate_new_id
 from .quiz import Quiz
 from .quiz_problem import QuizProblem
 from .quiz_submissions import QuizSubmission, QuizSubmissionAnswer
@@ -14,6 +15,7 @@ class QuizSolvingSession:
     def __init__(self, user_id: int, quiz_id: int, cache):
         self.user_id = user_id
         self.quiz_id = quiz_id
+        self.special_id = generate_new_id()
         self.is_final = False
         self.cache = cache
         self.answers: typing.Dict[int, QuizSubmissionAnswer] = {}
@@ -69,6 +71,7 @@ class QuizSolvingSession:
             guild_id: int,
             start_time: int,
             expire_time: int,
+            special_id: int
     ) -> QuizSolvingSession:
         QuizSession: QuizSolvingSession = cls(
             cache=cache,
@@ -81,6 +84,7 @@ class QuizSolvingSession:
         QuizSession._quiz = run(cache.get_quiz(quiz_id))
         QuizSession.start_time = start_time
         QuizSession.expire_time = expire_time
+        QuizSession.special_id = special_id
         return QuizSession
 
     @classmethod
@@ -94,7 +98,8 @@ class QuizSolvingSession:
             user_id=dict['user_id'],
             quiz_id=dict['quiz_id'],
             guild_id=dict['guild_id'],
-            answers=pickle.loads(dict['answers'])  # TODO: don't use pickle because RCE
+            answers=pickle.loads(dict['answers']),  # TODO: don't use pickle because RCE
+            special_id = dict['special_id']
         )
 
     @classmethod
@@ -107,5 +112,6 @@ class QuizSolvingSession:
             quiz_id = dict['quiz_id'],
             expire_time=dict['expire_time'],
             is_finished = dict['is_finished'],
-            answers = pickle.loads(dict['answers'])
+            answers = pickle.loads(dict['answers']),
+            special_id = dict['special_id']
         )

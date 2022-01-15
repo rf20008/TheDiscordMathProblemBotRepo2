@@ -1130,7 +1130,8 @@ class MathProblemCache:
         assert isinstance(session, QuizSolvingSession)
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
-
+                conn.row_factory = dict_factory
+                cursor = await conn.cursor()
 
 
     async def get_quiz(self, quiz_id: int) -> Optional[Quiz]:
