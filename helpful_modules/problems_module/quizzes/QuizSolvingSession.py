@@ -8,6 +8,7 @@ from .quiz import Quiz
 from .quiz_problem import QuizProblem
 from .quiz_submissions import QuizSubmission, QuizSubmissionAnswer
 
+
 # Licensed under GPLv3 (as all other code in this repository is)
 
 
@@ -99,7 +100,7 @@ class QuizSolvingSession:
             quiz_id=dict['quiz_id'],
             guild_id=dict['guild_id'],
             answers=pickle.loads(dict['answers']),  # TODO: don't use pickle because RCE
-            special_id = dict['special_id']
+            special_id=dict['special_id']
         )
 
     @classmethod
@@ -109,9 +110,10 @@ class QuizSolvingSession:
             cache=cache,
             start_time=dict['start_time'],
             user_id=dict['user_id'],
-            quiz_id = dict['quiz_id'],
+            quiz_id=dict['quiz_id'],
+            guild_id=dict['guild_id'],
             expire_time=dict['expire_time'],
-            is_finished = dict['is_finished'],
-            answers = pickle.loads(dict['answers']),
-            special_id = dict['special_id']
+            is_finished=dict['is_finished'],
+            answers=pickle.loads(dict['answers']),
+            special_id=dict['special_id']
         )
