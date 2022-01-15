@@ -8,7 +8,7 @@ Terms & Conditions - https://github.com/rf20008/TheDiscordMathProblemBotRepo/blo
 Privacy Policy - https://github.com/rf20008/TheDiscordMathProblemBotRepo/blob/beta/PRIVACY_POLICY.md
 
 ## Table of Contents
-<!todo: fix links>
+<!----- todo: use links----->
 If you run into issues <br>
 Announcements <br>
 Contribute :-) <br>
@@ -66,15 +66,14 @@ My bot is just a platform for storing problems. If someone submits a copyrighted
 # Self-host my bot
 My code is open source, so you can! There are bugs, so you should probably help me instead. I won't stop you from self-hosting though.
 
-(I'd prefer if you didn't, though. However, due to GPLv3, I am required to. I hope you find this useful!)
-
-
+I only recommend self-hosting this if you want to help develop the bot or you want to host your own instance of this bot for your server.
+Just follow the GPLv3 and you're fine!
 ## Steps
 (This assumes you already have knowledge of the command line and how to make a new discord application. If you don't have this knowledge, you probably aren't qualified to self-host a bot.)
 If you don't, you can either help me with my code (if you want to modify the code and help everyone out) or invite my bot.
 No privileged intents are required (the bot has been designed to not require privileged intents, but this is causing some non-essential features to be not-so-great)
 1. Create a new Discord application with a bot user. Save the token (you will need it later)
-2. Update Python to 3.9/3.10
+2. You will need Python 3.10. I have only tested this bot with CPython (which is the official Python implementation). If you don't already have Python 3.10 on your computer., install it [here](https://www.python.org/downloads/release/python-3101/).
 3. Create a venv (execute ``python3.10 -m venv /path/to/new/virtual/environment``)
 4. Move to your new venv (use the cd command)
 5. Install poetry, a dependency installer (``pip3 install git+https://github.com/python-poetry/poetry.git``). You can also optionally install it outside.

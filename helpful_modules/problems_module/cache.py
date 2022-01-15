@@ -17,7 +17,7 @@ from helpful_modules.threads_or_useful_funcs import get_log
 from .base_problem import BaseProblem
 from .errors import *
 from .mysql_connector_with_stmt import *
-from .quizzes import Quiz, QuizProblem, QuizSubmission, QuizSolvingSession
+from .quizzes import Quiz, QuizProblem, QuizSolvingSession, QuizSubmission
 from .user_data import UserData
 
 log = get_log(__name__)
@@ -145,6 +145,18 @@ class MathProblemCache:
                     trusted INT NOT NULL,
                     blacklisted INT NOT NULL)"""  # will use bool(val) because SQLite doesn't support booleans
                 )
+                await cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS quiz_submission_sessions (
+                    quiz_id INT NOT NULL,
+                    user_id INT NOT NULL,
+                    is_finished INT,
+                    start_time INT,
+                    expire_time INT,
+                    guild_id INT,
+                    answers BLOB,
+                    special_id INT
+                    )"""
+                ) # Special_id is for avoiding the weird bug with 'and' not working in SQL statements
                 log.debug("Created user_data table")
                 await conn.commit()  # Otherwise, when this closes, the database just reverted!
                 log.debug("Saved!")
@@ -198,6 +210,18 @@ class MathProblemCache:
                     user_id INT,
                     trusted BOOLEAN DEFAULT false,
                     blacklisted BOOLEAN DEFAULT false
+                    )"""
+                )
+                cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS quiz_submission_sessions (
+                    quiz_id INT NOT NULL,
+                    user_id INT NOT NULL,
+                    is_finished INT,
+                    start_time INT,
+                    expire_time INT,
+                    guild_id INT,
+                    answers BLOB,
+                    special_id INT
                     )"""
                 )
                 log.debug("Created user data table")
@@ -981,7 +1005,7 @@ class MathProblemCache:
         assert isinstance(quiz, Quiz)
         if not quiz.empty:
             num_already_existing_quizzes = await self.get_quizzes_by_func(
-                func=lambda QUIZ: not QUIZ.empty and QUIZ.guild_id == quiz.guild_id
+                func=lambda QUIZ: not QUIZ.empty and QUIZ.guild_id == quiz.guild_id  # type: ignore
             )
             if len(num_already_existing_quizzes) >= self.cache.max_quizzes_per_guild:
                 raise TooManyQuizzesException(len(num_already_existing_quizzes) + 1)
@@ -1078,8 +1102,35 @@ class MathProblemCache:
     def __str__(self):
         raise NotImplementedError
 
-    async def _get_quiz_sessions(self, quiz_id: int) -> QuizSolvingSession:
-        raise NotImplementedError
+    async def _get_quiz_sessions(self, quiz_id: int) -> List[QuizSolvingSession]:
+        """Get the quiz sessions for a quiz"""
+        assert isinstance(quiz_id, int)
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db) as conn:
+                conn.row_factory = dict_factory
+                cursor = await conn.cursor()
+                await cursor.execute(
+                    "SELECT * WHERE quiz_id = ?", (quiz_id,)
+                )
+                # For each row retrieved: use from_sqlite_dict to turn into a QuizSolvingSession and return it
+                return [QuizSolvingSession.from_sqlite_dict(item, cache=self) for item in await cursor.fetchall()]
+        else:
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute("SELECT * WHERE quiz_id = %s", (quiz_id,))
+                # For each row retrieved: turn it into a QuizSolvingSession using from_mysql_dict and return the result
+                return [QuizSolvingSession.from_mysql_dict(item, cache=self) for item in cursor.fetchall()]
+
+    async def _add_quiz_session(self, session: QuizSolvingSession):
+        assert isinstance(session, QuizSolvingSession)
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db_name) as conn:
+
 
 
     async def get_quiz(self, quiz_id: int) -> Optional[Quiz]:

@@ -181,14 +181,20 @@ MathProblemCache1.db
 error_logs/
 logs/**
 **/logs/**
-
+# The venv probably can be ignored
+venv/*
 # I'm willing to un-gitignore error_logs (for debugging purposes)
 
 
 #Whitelists
-!**/*.py #never ignore any python file :)
+#never ignore any python file :)
+!**/*.py
+# not gitignores
 !**/.gitignore
 !.gitignore
+#Don't ignore the docs
 !docs/** # The documentation needs to be not git-ignored
+# Don't ignore python
 !**/__init__.py
+#PyCharm-specific, can be ignored
 .idea/**

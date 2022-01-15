@@ -4,7 +4,7 @@ from warnings import warn
 import disnake
 from disnake import ext
 
-from helpful_modules import  problems_module
+from helpful_modules import problems_module
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 
 

@@ -18,14 +18,9 @@ from sys import exc_info, exit, stdout
 from disnake.ext import commands
 
 from cogs import *
-from helpful_modules import (
-    checks,
-    custom_embeds,
-    problems_module,
-    return_intents,
-    save_files,
-    the_documentation_file_loader,
-)
+from helpful_modules import (checks, custom_embeds, problems_module,
+                             return_intents, save_files,
+                             the_documentation_file_loader)
 from helpful_modules.constants_loader import *
 from helpful_modules.cooldowns import check_for_cooldown
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
