@@ -108,3 +108,8 @@ class TooManyQuizzesException(MathProblemsModuleException):
             f"The guild already has {num_quizzes} quizzes, which is too much!"
         )
         super().__init__(message)
+
+
+class QuizSessionNotFoundException(MathProblemsModuleException):
+    """Raised when trying to find quiz sessions but they are not found"""
+    pass

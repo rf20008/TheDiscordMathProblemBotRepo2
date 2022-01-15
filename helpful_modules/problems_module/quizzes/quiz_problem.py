@@ -1,3 +1,8 @@
+from typing import *
+
+from helpful_modules.problems_module import BaseProblem
+
+
 class QuizProblem(BaseProblem):
     """A class that represents a Quiz Math Problem"""
 

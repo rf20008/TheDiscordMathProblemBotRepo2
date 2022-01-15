@@ -1129,6 +1129,12 @@ class MathProblemCache:
     async def add_quiz_session(self, session: QuizSolvingSession):
         """Add a QuizSession to the SQL database"""
         assert isinstance(session, QuizSolvingSession)
+        try:
+            self.get_quiz_submission_by_special_id(session.special_id)
+            raise MathProblemsModuleException("Quiz session already exists")
+        except QuizSessionNotFoundException:
+            pass
+
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
                 conn.row_factory = dict_factory
@@ -1175,6 +1181,11 @@ class MathProblemCache:
         """Update the quiz session given the special id"""
         assert isinstance(special_id, int)
         assert isinstance(session, QuizSolvingSession)
+        try:
+            self.get_quiz_submission_by_special_id(special_id)
+        except QuizSessionNotFoundException as quiz_session_not_found_exception:
+            raise QuizSessionNotFoundException("Quiz session not found - use add_quiz_session instead") from quiz_session_not_found_exception
+
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
                 conn.row_factory = dict_factory
@@ -1221,6 +1232,34 @@ class MathProblemCache:
                 )
                 connection.commit()
                 return
+
+    async def get_quiz_session_by_special_id(self, special_id: int) -> QuizSolvingSession:
+        "Get a quiz submission by its special id"
+        assert isinstance(special_id, int) # Basic type-checking
+
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db_name) as conn:
+                cursor = await conn.cursor()
+                await cursor.execute("SELECT * FROM quiz_submission_sessions WHERE special_id = ?", (special_id,))
+                potential_sessions = list(await cursor.fetchall())
+                if len(potential_sessions) < 1:
+                    raise QuizSessionNotFoundException("There aren't any quiz sessions found with this special id")
+                elif len(potential_sessions) > 1:
+                    raise MathProblemsModuleException("There are too many quiz sessions with this special id")
+                else:
+                    return QuizSolvingSession.from_sqlite_dict(potential_sessions[0])
+        else:
+            with mysql_connection(
+                    host=self.mysql_db_ip,
+                    password=self.mysql_password,
+                    user=self.mysql_username,
+                    database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute("SELECT * FROM quiz_submission_sessions WHERE special_id = %s", (special_id,))
+
+
+
 
     async def get_quiz(self, quiz_id: int) -> Optional[Quiz]:
         """Get the quiz with the id specified. Returns None if not found"""
