@@ -118,3 +118,8 @@ class QuizSessionNotFoundException(MathProblemsModuleException):
 class QuizSessionOvertimeException(MathProblemsModuleException):
     """Raised when a quiz session is attempted to be modified but they ran out of time"""
     pass
+
+
+class QuizDescriptionNotFoundException(MathProblemsModuleException):
+    """Raised when Quiz Description is not found"""
+    pass

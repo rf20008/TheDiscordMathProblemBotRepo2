@@ -5,7 +5,8 @@ from helpful_modules.problems_module import BaseProblem
 from .QuizSolvingSession import QuizSolvingSession
 from .quiz_problem import QuizProblem
 from .quiz_submissions import QuizSubmission
-
+from .quiz_description import QuizDescription
+from .related_enums import QuizIntensity, QuizTimeLimit
 
 class Quiz(list):
     """Represents a quiz.
@@ -19,10 +20,17 @@ class Quiz(list):
             submissions: List[QuizSubmission] = None,
             existing_sessions=None,  # This is a list of QuizSessions
             cache=None,
+            description=None
     ) -> None:
         """Create a new quiz. id is the quiz id and iter is an iterable of QuizMathProblems"""
         assert isinstance(existing_sessions, list) or existing_sessions is None
         assert isinstance(authors, list)
+        self._description = description
+        self._time_limit=description.time_limit
+        self.license = description.license
+        self.intensity = description.intensity
+        self.category=category
+        self.category = category
         self.authors = authors
         self.existing_sessions = existing_sessions if existing_sessions is not None else []
         if not submissions:
@@ -87,8 +95,9 @@ class Quiz(list):
         problems_as_type.sort(key=lambda problem: problem.id)
 
         for s in _dict["submissions"]:
-            submissions.append(QuizSubmission.from_dict(s))
-        c = cls(quiz_problems=problems_as_type, id=_dict["id"])
+            submissions.append(QuizSubmission.from_dict(s))  # type: ignore
+        c = cls(quiz_problems=problems_as_type, id=_dict["id"])  # type: ignore
+
         c._submissions = submissions
         c._id = _dict["id"]
         return c
@@ -110,7 +119,7 @@ class Quiz(list):
             authors: typing.List[int],
             existing_sessions: typing.List[QuizSolvingSession],
             submissions: typing.List[QuizSubmission],
-            cache
+            cache: "MathProblemCache"
     ):
         return cls(
             quiz_problems=problems,
@@ -118,4 +127,4 @@ class Quiz(list):
             existing_sessions=existing_sessions,
             submissions=submissions,
             cache=cache
-        )
+        )  # type: ignore

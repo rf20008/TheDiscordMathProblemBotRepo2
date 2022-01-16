@@ -16,6 +16,7 @@ from helpful_modules.threads_or_useful_funcs import get_log
 
 from .base_problem import BaseProblem
 from .errors import *
+from .quiz_description import QuizDescription
 from .mysql_connector_with_stmt import *
 from .quizzes import Quiz, QuizProblem, QuizSolvingSession, QuizSubmission
 from .user_data import UserData
@@ -159,6 +160,16 @@ class MathProblemCache:
                     special_id INT
                     )"""
                 )  # Special_id is for avoiding the weird bug with 'and' not working in SQL statements
+                await cursor.execute("""CREATE TABLE IF NOT EXISTS quiz_description ("
+                                               description VARCHAR,
+                                               quiz_id INT PRIMARY KEY,
+                                               time_limit INT,
+                                               intensity FLOAT,
+                                               license VARCHAR,
+                                               category VARCHAR
+                                               )
+                                               """)
+                # Maybe SQL won't understand enums... but that's ok :)
                 log.debug("Created user_data table")
                 await conn.commit()  # Otherwise, when this closes, the database just reverted!
                 log.debug("Saved!")
@@ -226,6 +237,17 @@ class MathProblemCache:
                     special_id INT
                     )"""
                 )
+                cursor.execute("""CREATE TABLE IF NOT EXISTS quiz_description ("
+                               description VARCHAR,
+                               quiz_id INT PRIMARY KEY,
+                               time_limit INT,
+                               intensity FLOAT,
+                               license VARCHAR,
+                               category VARCHAR
+                               )
+                               """)
+                # TODO: test whether SQL can serialize enums
+                # I don't know whether SQL can serialize enums
                 log.debug("Created user data table")
                 connection.commit()
                 log.debug("Saved tables!")
@@ -1370,7 +1392,17 @@ class MathProblemCache:
                     for row in cursor.fetchall()
                 ]
         authors = set((problem.author for problem in problems))
-        quiz = Quiz(quiz_id, problems, submissions, cache=copy(self), authors=authors)  # type: ignore
+        sessions = await self.get_quiz_sessions(quiz_id)
+        description = await self.get_quiz_description(quiz_id)
+        quiz = Quiz(
+            quiz_id,
+            problems,
+            submissions,
+            cache=self,
+            authors=authors,  # type: ignore
+            existing_sessions=sessions,
+            description=description
+        )
         return quiz
 
     async def update_problem(self, problem_id: int, new: BaseProblem) -> None:
@@ -1455,6 +1487,12 @@ class MathProblemCache:
                 await cursor.execute(
                     "DELETE FROM quiz_submissions WHERE quiz_id=?", (quiz_id,)
                 )  # Delete the submissions as well.
+                await cursor.execute(
+                    "DELETE FROM quiz_submission_sessions WHERE quiz_id = ?", (quiz_id,)
+                )  # Delete the sessions associated with it
+                await cursor.execute(
+                    "DELETE from quiz_description WHERE quiz_id = ?", (quiz_id,)
+                )
                 await conn.commit()  # Commit
         else:
             with mysql_connection(
@@ -1470,12 +1508,17 @@ class MathProblemCache:
                 cursor.execute(
                     "DELETE FROM quiz_submissions WHERE quiz_id='?'", (quiz_id,)
                 )  # Delete the submissions as well.
+                cursor.execute(
+                    "DELETE FROM quiz_submission_sessions WHERE quiz_id = ?", (quiz_id,)
+                )  # Delete the sessions associated with it
+                connection.commit()
 
     async def get_all_by_author_id(self, author_id: int) -> dict:
         """Return a dictionary containing everything that was created by the author"""
         assert isinstance(author_id, int)  # Make sure it is of type integer
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
+                conn.row_factory = dict_factory
                 cursor = await conn.cursor()  # Create a cursor
                 # Get all quiz problems they made
                 await cursor.execute(
@@ -1656,14 +1699,17 @@ class MathProblemCache:
         """Return bool(self)"""
         return True
 
-    async def run_sql(self, sql: str) -> dict:
+    async def run_sql(self, sql: str, placeholders: typing.Optional[typing.List[Any]] = None) -> dict:
         """Run arbitrary SQL. Only used in /sql"""
         assert isinstance(sql, str)
+        assert isinstance(placeholders, list) or placeholders is None
+        if placeholders is None:
+            placeholders = []
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
                 conn.row_factory = dict_factory
                 cursor = await conn.cursor()
-                await cursor.execute(sql)
+                await cursor.execute(sql, placeholders)
                 await conn.commit()
                 return await cursor.fetchall()
         else:
@@ -1674,6 +1720,165 @@ class MathProblemCache:
                     database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
-                cursor.execute(sql)
+                cursor.execute(sql, placeholders)
                 connection.commit()
                 return cursor.fetchall()
+
+    async def get_quiz_description(self, quiz_id: int) -> QuizDescription:
+        """Get a quiz description from a quiz id"""
+        assert isinstance(quiz_id, int)
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db_name) as conn:
+                conn.row_factory = dict_factory
+                cursor = await conn.cursor()
+                await cursor.execute("SELECT * FROM quiz_description WHERE quiz_id = ?", (quiz_id,))
+                possible_quiz_descriptions = await cursor.fetchall()
+                if len(possible_quiz_descriptions) == 0:
+                    raise QuizDescriptionNotFoundException("Quiz description not found")
+                elif len(possible_quiz_descriptions) > 1:
+                    raise MathProblemsModuleException("There are too many quiz descriptions with the same id!")
+                return QuizDescription.from_dict(possible_quiz_descriptions[0], cache=self)
+        else:
+            with mysql_connection(
+                    host=self.mysql_db_ip,
+                    password=self.mysql_password,
+                    user=self.mysql_username,
+                    database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute("SELECT * FROM quiz_description WHERE quiz_id = ?", (quiz_id,))
+                possible_quiz_descriptions = cursor.fetchall()
+                if len(possible_quiz_descriptions) == 0:
+                    raise QuizDescriptionNotFoundException("Quiz description not found")
+                elif len(possible_quiz_descriptions) > 1:
+                    raise MathProblemsModuleException("There are too many quiz descriptions with the same id!")
+                return QuizDescription.from_dict(possible_quiz_descriptions[0], cache=self)
+
+    async def update_quiz_description(self, quiz_id: int, description: QuizDescription):
+        """Update quiz description"""
+        assert isinstance(quiz_id, int)
+        assert isinstance(description, QuizDescription)
+        try:
+            await self.get_quiz_description(quiz_id)
+        except QuizDescriptionNotFoundException:
+            raise QuizDescriptionNotFoundException(
+                "Quiz description not found - you need to use add_quiz_description instead")
+
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db_name) as conn:
+
+                cursor = await conn.cursor()
+                await cursor.execute(
+                    """UPDATE quiz_description
+                    SET description = ?, license = ?, time_limit = ?, intensity = ?, category = ?, quiz_id = ?, author = ?
+                    WHERE quiz_id = ?""",
+                    (
+                        description.description,
+                        description.license,
+                        description.time_limit,
+                        description.intensity,
+                        description.category,
+                        description.quiz_id,
+                        description.author,
+                        description.quiz_id
+                    )
+                )
+                await conn.commit()
+        else:
+            with mysql_connection(
+                    host=self.mysql_db_ip,
+                    password=self.mysql_password,
+                    user=self.mysql_username,
+                    database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
+                    """UPDATE quiz_description
+                    SET description = %s, license = %s, time_limit = %s, intensity = %s, category = %s, quiz_id = %s, author = %s
+                    WHERE quiz_id = %s"""
+                    (
+                        description.description,
+                        description.license,
+                        description.time_limit,
+                        description.intensity,
+                        description.category,
+                        description.quiz_id,
+                        description.author,
+                        description.quiz_id
+                    )
+                )
+                connection.commit()
+
+    async def add_quiz_description(self, description: QuizDescription):
+        """Add quiz description"""
+        assert isinstance(description, QuizDescription)
+        try:
+            await self.get_quiz_description(description.quiz_id)
+            raise MathProblemsModuleException("Quiz description already exists")
+        except QuizDescriptionNotFoundException:
+            pass
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db_name) as conn:
+                conn.row_factory = dict_factory
+                cursor = await conn.cursor()
+                await cursor.execute(
+                    """INSERT INTO quiz_description (description, license, time_limit, intensity, quiz_id, author, category)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        # These will replace the ?'s
+                        description.description,
+                        description.license,
+                        description.time_limit,
+                        description.intensity,
+                        description.quiz_id,
+                        description.author,
+                        description.category
+                    )
+                )
+                await conn.commit()
+        else:
+            with mysql_connection(
+                    host=self.mysql_db_ip,
+                    password=self.mysql_password,
+                    user=self.mysql_username,
+                    database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
+                    """INSERT INTO quiz_description (description, license, time_limit, intensity, quiz_id, author, category)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    """,
+                    (
+                        # These will replace the ?'s
+                        description.description,
+                        description.license,
+                        description.time_limit,
+                        description.intensity,
+                        description.quiz_id,
+                        description.author,
+                        description.category
+                    )
+                )
+                connection.commit()
+
+    async def delete_quiz_description(self, quiz_id: int):
+        """DELETE quiz description!"""
+
+        assert isinstance(quiz_id, int)
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db) as conn:
+                cursor = await conn.cursor()
+                await cursor.execute("DELETE * FROM quiz_description WHERE quiz_id = ?", (quiz_id,))  # Delete it
+                await conn.commit()
+
+        else:
+            with mysql_connection(
+                    host=self.mysql_db_ip,
+                    password=self.mysql_password,
+                    user=self.mysql_username,
+                    database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute("DELETE * FROM quiz_description WHERE quiz_id = ?", (quiz_id,))  # Delete it
+                conn.commit()
