@@ -1,6 +1,7 @@
-from dataclasses import dataclass
-from .related_enums import QuizIntensity, QuizTimeLimit
 import typing as t
+from dataclasses import dataclass
+
+from .related_enums import QuizIntensity, QuizTimeLimit
 
 
 @dataclass
@@ -10,19 +11,23 @@ class QuizDescription:
     description: str
     license: str
     cache: "MathProblemCache"
-    time_limit: t.Union[int, QuizTimeLimit]
+    time_limit: t.Union[int, QuizTimeLimit],
+    guild_id: int
+    author: int
 
     def __init__(self,
                  *,
                  cache: "MathProblemCache",
                  quiz_id: int,
                  author: int,
+                 guild_id: int,
                  category: str = "Unspecified",
                  intensity: t.Union[QuizIntensity, float] = QuizIntensity.IMPOSSIBLE,
                  description="No description given",
                  license="Unspecified (the default is GNU GDL)",
                  time_limit=QuizTimeLimit.UNLIMITED
                  ):
+        self.guild_id = guild_id
         self.author = author
         self.quiz_id = quiz_id
         self.cache = cache
@@ -42,5 +47,6 @@ class QuizDescription:
             intensity=data['intensity'],
             description=data['description'],
             license=data['license'],
-            time_limit=data['timelimit']
+            time_limit=data['timelimit'],
+            guild_id = data['guild_id']
         )

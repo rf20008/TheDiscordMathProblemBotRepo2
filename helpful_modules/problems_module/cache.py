@@ -16,8 +16,8 @@ from helpful_modules.threads_or_useful_funcs import get_log
 
 from .base_problem import BaseProblem
 from .errors import *
-from .quiz_description import QuizDescription
 from .mysql_connector_with_stmt import *
+from .quiz_description import QuizDescription
 from .quizzes import Quiz, QuizProblem, QuizSolvingSession, QuizSubmission
 from .user_data import UserData
 
@@ -167,6 +167,8 @@ class MathProblemCache:
                                                intensity FLOAT,
                                                license VARCHAR,
                                                category VARCHAR
+                                               author INT,
+                                               guild_id INT
                                                )
                                                """)
                 # Maybe SQL won't understand enums... but that's ok :)
@@ -1556,12 +1558,20 @@ class MathProblemCache:
                     """SELECT * FROM quiz_submission_sessions WHERE user_id = ?""",
                     (user_id,)
                 )
+
                 sessions = [
                     QuizSolvingSession.from_sqlite_dict(
                         cache=self,
                         dict=item
                     ) for item in await cursor.fetchall()
                 ]
+                await cursor.execute(
+                    "SELECT * FROM quiz_description WHERE author = ?", (user_id,)
+                )
+                descriptions = [
+                    QuizDescription.from_dict(data, cache=self) for data in await cursor.fetchall()
+                ]
+
         else:
             with mysql_connection(
                     host=self.mysql_db_ip,
@@ -1604,12 +1614,19 @@ class MathProblemCache:
                     )
                     for item in cursor.fetchall()
                 ]
+                cursor.execute(
+                    "SELECT * FROM quiz_description WHERE author = ?", (user_id,)
+                )
+                descriptions = [
+                    QuizDescription.from_dict(cache=self, data=data) for data in cursor.fetchall()
+                ]
 
         return {
             "quiz_problems": quiz_problems,
             "quiz_submissions": quiz_submissions,
             "problems": problems,
-            "sessions": sessions
+            "sessions": sessions,
+            'descriptions_created': descriptions
         }
 
     async def delete_all_by_user_id(self, user_id: int) -> None:
@@ -1631,6 +1648,10 @@ class MathProblemCache:
                 await cursor.execute(
                     "DELETE FROM quiz_submission_sessions WHERE user_id = ?", (user_id,)
                 )
+                await cursor.execute(
+                    "DELETE FROM quiz_description WHERE user_id = ?", (user_id,)
+                )
+
                 await conn.commit()  # Otherwise, nothing happens and it rolls back!!
         else:
             with mysql_connection(
@@ -1647,6 +1668,9 @@ class MathProblemCache:
                 )
                 cursor.execute(
                     "DELETE FROM quiz_submission_sessions WHERE author = %s", (user_id,)
+                )
+                cursor.execute(
+                    "DELETE FROM quiz_description WHERE user_id = %s", (user_id,)
                 )
                 connection.commit()
 
@@ -1672,6 +1696,7 @@ class MathProblemCache:
                 await cursor.execute(
                     "DELETE FROM quiz_submission_sessions WHERE guild_id = ?", (guild_id,)
                 )  # Delete all quiz submissions from the guild!
+                await cursor.execute("DELETE FROM quiz_description WHERE guild_id = %s", (guild_id,))
                 await conn.commit()  # Otherwise, nothing happens!
         else:
             with mysql_connection(
@@ -1693,6 +1718,9 @@ class MathProblemCache:
                 cursor.execute(
                     "DELETE FROM quiz_submission_sessions WHERE guild_id = %s", (guild_id,)
                 )
+                cursor.execute("DELETE FROM quiz_description WHERE guild_id = %s", (guild_id,))
+
+                # uh oh - we don't have a guild id
                 connection.commit()
 
     def __bool__(self):
@@ -1770,7 +1798,7 @@ class MathProblemCache:
                 cursor = await conn.cursor()
                 await cursor.execute(
                     """UPDATE quiz_description
-                    SET description = ?, license = ?, time_limit = ?, intensity = ?, category = ?, quiz_id = ?, author = ?
+                    SET description = ?, license = ?, time_limit = ?, intensity = ?, category = ?, quiz_id = ?, author = ?, guild_id = ?
                     WHERE quiz_id = ?""",
                     (
                         description.description,
@@ -1780,6 +1808,7 @@ class MathProblemCache:
                         description.category,
                         description.quiz_id,
                         description.author,
+                        description.guild_id,
                         description.quiz_id
                     )
                 )
@@ -1794,7 +1823,7 @@ class MathProblemCache:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     """UPDATE quiz_description
-                    SET description = %s, license = %s, time_limit = %s, intensity = %s, category = %s, quiz_id = %s, author = %s
+                    SET description = %s, license = %s, time_limit = %s, intensity = %s, category = %s, quiz_id = %s, author = %s, guild_id = %s
                     WHERE quiz_id = %s"""
                     (
                         description.description,
@@ -1804,6 +1833,7 @@ class MathProblemCache:
                         description.category,
                         description.quiz_id,
                         description.author,
+                        description.guild_id,
                         description.quiz_id
                     )
                 )
@@ -1822,8 +1852,8 @@ class MathProblemCache:
                 conn.row_factory = dict_factory
                 cursor = await conn.cursor()
                 await cursor.execute(
-                    """INSERT INTO quiz_description (description, license, time_limit, intensity, quiz_id, author, category)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """INSERT INTO quiz_description (description, license, time_limit, intensity, quiz_id, author, category. guild_id)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         # These will replace the ?'s
@@ -1833,7 +1863,8 @@ class MathProblemCache:
                         description.intensity,
                         description.quiz_id,
                         description.author,
-                        description.category
+                        description.category,
+                        description.guild_id
                     )
                 )
                 await conn.commit()
@@ -1846,8 +1877,8 @@ class MathProblemCache:
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
-                    """INSERT INTO quiz_description (description, license, time_limit, intensity, quiz_id, author, category)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    """INSERT INTO quiz_description (description, license, time_limit, intensity, quiz_id, author, category, guild_id)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s. %s)
                     """,
                     (
                         # These will replace the ?'s
@@ -1857,7 +1888,8 @@ class MathProblemCache:
                         description.intensity,
                         description.quiz_id,
                         description.author,
-                        description.category
+                        description.category,
+                        description.guild_id
                     )
                 )
                 connection.commit()
@@ -1881,4 +1913,4 @@ class MathProblemCache:
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute("DELETE * FROM quiz_description WHERE quiz_id = ?", (quiz_id,))  # Delete it
-                conn.commit()
+                connection.commit()

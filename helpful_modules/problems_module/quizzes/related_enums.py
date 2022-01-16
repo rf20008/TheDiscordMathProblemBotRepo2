@@ -1,4 +1,5 @@
 import enum
+
 # This isn't really used, but it's licensed under GPLv3
 
 

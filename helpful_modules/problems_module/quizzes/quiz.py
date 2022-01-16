@@ -1,12 +1,14 @@
-from typing import List
 import typing
+from typing import List
+
 from helpful_modules.problems_module import BaseProblem
 
-from .QuizSolvingSession import QuizSolvingSession
+from .quiz_description import QuizDescription
 from .quiz_problem import QuizProblem
 from .quiz_submissions import QuizSubmission
-from .quiz_description import QuizDescription
+from .QuizSolvingSession import QuizSolvingSession
 from .related_enums import QuizIntensity, QuizTimeLimit
+
 
 class Quiz(list):
     """Represents a quiz.
