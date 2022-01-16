@@ -11,7 +11,7 @@ class QuizDescription:
     description: str
     license: str
     cache: "MathProblemCache"
-    time_limit: t.Union[int, QuizTimeLimit],
+    time_limit: t.Union[int, QuizTimeLimit]
     guild_id: int
     author: int
 

@@ -17,7 +17,7 @@ from helpful_modules.threads_or_useful_funcs import get_log
 from .base_problem import BaseProblem
 from .errors import *
 from .mysql_connector_with_stmt import *
-from .quiz_description import QuizDescription
+from .quizzes.quiz_description import QuizDescription
 from .quizzes import Quiz, QuizProblem, QuizSolvingSession, QuizSubmission
 from .user_data import UserData
 
@@ -160,7 +160,7 @@ class MathProblemCache:
                     special_id INT
                     )"""
                 )  # Special_id is for avoiding the weird bug with 'and' not working in SQL statements
-                await cursor.execute("""CREATE TABLE IF NOT EXISTS quiz_description ("
+                await cursor.execute("""CREATE TABLE IF NOT EXISTS quiz_description (
                                                description VARCHAR,
                                                quiz_id INT PRIMARY KEY,
                                                time_limit INT,
