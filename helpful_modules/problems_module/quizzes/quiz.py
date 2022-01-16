@@ -15,26 +15,28 @@ class Quiz(list):
     but it has an additional attribute submissions which is a list of QuizSubmissions"""
 
     def __init__(
-            self,
-            id: int,
-            authors: List[int],
-            quiz_problems: List[QuizProblem],
-            submissions: List[QuizSubmission] = None,
-            existing_sessions=None,  # This is a list of QuizSessions
-            cache=None,
-            description=None
+        self,
+        id: int,
+        authors: List[int],
+        quiz_problems: List[QuizProblem],
+        submissions: List[QuizSubmission] = None,
+        existing_sessions=None,  # This is a list of QuizSessions
+        cache=None,
+        description=None,
     ) -> None:
         """Create a new quiz. id is the quiz id and iter is an iterable of QuizMathProblems"""
         assert isinstance(existing_sessions, list) or existing_sessions is None
         assert isinstance(authors, list)
         self._description = description
-        self._time_limit=description.time_limit
+        self._time_limit = description.time_limit
         self.license = description.license
         self.intensity = description.intensity
-        self.category=category
+        self.category = category
         self.category = category
         self.authors = authors
-        self.existing_sessions = existing_sessions if existing_sessions is not None else []
+        self.existing_sessions = (
+            existing_sessions if existing_sessions is not None else []
+        )
         if not submissions:
             submissions = []
         self.problems = quiz_problems
@@ -51,7 +53,7 @@ class Quiz(list):
         await self.update_self()
 
     async def add_problem(
-            self, problem: QuizProblem, insert_location: typing.Optional[int] = None
+        self, problem: QuizProblem, insert_location: typing.Optional[int] = None
     ):
         """Add a problem to this quiz."""
         if len(self.problems) + 1 > self._cache.max_problems_per_quiz:
@@ -116,17 +118,17 @@ class Quiz(list):
 
     @classmethod
     def from_data(
-            cls,
-            problems: typing.List[QuizProblem],
-            authors: typing.List[int],
-            existing_sessions: typing.List[QuizSolvingSession],
-            submissions: typing.List[QuizSubmission],
-            cache: "MathProblemCache"
+        cls,
+        problems: typing.List[QuizProblem],
+        authors: typing.List[int],
+        existing_sessions: typing.List[QuizSolvingSession],
+        submissions: typing.List[QuizSubmission],
+        cache: "MathProblemCache",
     ):
         return cls(
             quiz_problems=problems,
             authors=authors,
             existing_sessions=existing_sessions,
             submissions=submissions,
-            cache=cache
+            cache=cache,
         )  # type: ignore

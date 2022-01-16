@@ -42,9 +42,9 @@ class MiscCommandsCog(HelperCog):
     )
     @commands.cooldown(1, 15, commands.BucketType.user)
     async def info(
-            self,
-            inter: disnake.ApplicationCommandInteraction,
-            include_extra_info: bool = False,
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        include_extra_info: bool = False,
     ):
         """/info [include_extra_info: bool = False]
         Show bot info. include_extra_info shows technical information!"""
@@ -153,8 +153,8 @@ class MiscCommandsCog(HelperCog):
                         "Could not save the files after removing the trusted user with ID that does not exist!"
                     ) from e
             except (
-                    disnake.Forbidden,
-                    disnake.Forbidden,
+                disnake.Forbidden,
+                disnake.Forbidden,
             ) as exc:  # Cannot fetch this user!
                 raise RuntimeError("Cannot fetch users") from exc
             else:
@@ -184,7 +184,7 @@ class MiscCommandsCog(HelperCog):
         description="Prints the vote threshold and takes no arguments",
     )
     async def what_is_vote_threshold(
-            self, inter: disnake.ApplicationCommandInteraction
+        self, inter: disnake.ApplicationCommandInteraction
     ):
         """/what_is_vote_threshold
         Returns the vote threshold. Takes no arguments. There is a 5-second cooldown on this command."""
@@ -255,7 +255,7 @@ class MiscCommandsCog(HelperCog):
         15, 500, commands.BucketType.default
     )  # To prevent wars! If you want your own version, self host it :-)
     async def set_vote_threshold(
-            self, inter: disnake.ApplicationCommandInteraction, threshold: int
+        self, inter: disnake.ApplicationCommandInteraction, threshold: int
     ):
         """/set_vote_threshold [threshold: int]
         Set the vote threshold. Only trusted users may do this.
@@ -281,7 +281,7 @@ class MiscCommandsCog(HelperCog):
         vote_threshold = int(threshold)  # Probably unnecessary
         for problem in await self.bot.cache.get_global_problems():
             if (
-                    problem.get_num_voters() >= vote_threshold
+                problem.get_num_voters() >= vote_threshold
             ):  # Delete the problem if the number of votes the problem has is above the new threshold.
                 await self.cache.remove_problem(problem.id)
         await inter.send(
@@ -325,11 +325,11 @@ class MiscCommandsCog(HelperCog):
         ],
     )
     async def delete_all(
-            self: "MiscCommandsCog",
-            inter: disnake.ApplicationCommandInteraction,
-            save_data_before_deletion: bool = True,
-            delete_votes=False,
-            delete_solves=False,
+        self: "MiscCommandsCog",
+        inter: disnake.ApplicationCommandInteraction,
+        save_data_before_deletion: bool = True,
+        delete_votes=False,
+        delete_solves=False,
     ):
         """/user_data delete_all [save_data_before_deletion: bool = True] [delete_votes: bool = False] [delete_solves: bool = False]
         Delete all your data. YOU MUST CONFIRM THIS!
@@ -346,9 +346,9 @@ class MiscCommandsCog(HelperCog):
             )  # Turn it into a dictionary
 
         async def confirm_callback(
-                Self: ConfirmationButton,
-                interaction: disnake.Interaction,
-                _extra_data: dict,
+            Self: ConfirmationButton,
+            interaction: disnake.Interaction,
+            _extra_data: dict,
         ) -> None:
             """The function that runs when the button gets pressed. This actually deletes the data.
             Time complexity: O(V*N+P+S*M)
@@ -394,7 +394,7 @@ class MiscCommandsCog(HelperCog):
             return
 
         async def deny_callback(
-                _self: BasicButton, interaction: disnake.MessageInteraction
+            _self: BasicButton, interaction: disnake.MessageInteraction
         ):
             """A function that runs when the deny button is pressed"""
             await interaction.response.reply(
@@ -434,7 +434,7 @@ class MiscCommandsCog(HelperCog):
         )
 
     async def _get_json_data_by_user(
-            self, author: Union[disnake.User, disnake.Member]
+        self, author: Union[disnake.User, disnake.Member]
     ) -> typing.Dict[str, typing.Any]:
         """A helper function to obtain a user's stored data and return a version of it that is a dictionary."""
         raw_data = await self.cache.get_all_by_author_id(author.id)
@@ -463,10 +463,11 @@ class MiscCommandsCog(HelperCog):
                 submission.to_dict() for submission in raw_data["quiz_submissions"]
             ],
             "Quiz Sessions Created": [
-                session.to_dict() for session in raw_data['sessions']
+                session.to_dict() for session in raw_data["sessions"]
             ],
             "Descriptions created": [
-                description.to_dict() for description in raw_data['descriptions_created']
+                description.to_dict()
+                for description in raw_data["descriptions_created"]
             ],
             "Problems the user voted for": [
                 problem.to_dict(show_answer=False)
@@ -562,13 +563,13 @@ class MiscCommandsCog(HelperCog):
         ],
     )
     async def submit_a_request(
-            self,
-            inter: disnake.ApplicationCommandInteraction,
-            offending_problem_guild_id: int = None,
-            offending_problem_id: int = None,
-            extra_info: str = None,
-            copyrighted_thing: str = Exception,
-            type: str = "",
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        offending_problem_guild_id: int = None,
+        offending_problem_id: int = None,
+        extra_info: str = None,
+        copyrighted_thing: str = Exception,
+        type: str = "",
     ):
         """/submit_a_request [offending_problem_guild_id: int = None] [offending_problem_id: int = None]
 
@@ -576,11 +577,11 @@ class MiscCommandsCog(HelperCog):
         I will probably deprecate this and replace it with emailing me.
         Therefore, this command has been deprecated and will be removed in a future version of the bot!"""
         if (
-                extra_info is None
-                and type == ""
-                and copyrighted_thing is not Exception
-                and offending_problem_guild_id is None
-                and offending_problem_id is None
+            extra_info is None
+            and type == ""
+            and copyrighted_thing is not Exception
+            and offending_problem_guild_id is None
+            and offending_problem_id is None
         ):
             await inter.send(embed=ErrorEmbed("You must specify some field."))
         if extra_info is None:
@@ -617,9 +618,9 @@ class MiscCommandsCog(HelperCog):
 
         content = "A request has been submitted."
         for (
-                owner_id
+            owner_id
         ) in (
-                self.bot.owner_ids
+            self.bot.owner_ids
         ):  # Mentioning owners: may be removed (you can also remove it as well)
             content += f"<@{owner_id}>"
         content += f"<@{self.bot.owner_id}>"
@@ -652,16 +653,16 @@ class MiscCommandsCog(HelperCog):
         ],
     )
     async def documentation(
-            self,
-            inter: disnake.ApplicationCommandInteraction,
-            documentation_type: typing.Literal[
-                "documentation_link",  # type: ignore
-                "command_help",
-                "function_help",
-                "privacy_policy",
-                "terms_of_service",
-            ],
-            help_obj: str = None,
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        documentation_type: typing.Literal[
+            "documentation_link",  # type: ignore
+            "command_help",
+            "function_help",
+            "privacy_policy",
+            "terms_of_service",
+        ],
+        help_obj: str = None,
     ) -> typing.Optional[disnake.Message]:
         """/documentation {documentation_type: str|documentation_link|command_help|function_help} {help_obj}
 
@@ -723,7 +724,7 @@ class MiscCommandsCog(HelperCog):
                 )
             except the_documentation_file_loader.DocumentationNotFound as e:
                 if isinstance(
-                        e, the_documentation_file_loader.DocumentationFileNotFound
+                    e, the_documentation_file_loader.DocumentationFileNotFound
                 ):
                     await inter.send(
                         embed=ErrorEmbed(
@@ -766,9 +767,9 @@ class MiscCommandsCog(HelperCog):
     @checks.is_not_blacklisted()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def blacklist(
-            self: "MiscCommandsCog",
-            inter: disnake.ApplicationCommandInteraction,
-            user: typing.Union[disnake.User, disnake.Member],
+        self: "MiscCommandsCog",
+        inter: disnake.ApplicationCommandInteraction,
+        user: typing.Union[disnake.User, disnake.Member],
     ):
         """/blacklist [user: user]
         Blacklist someone from the bot. You must be a trusted user to do this!
@@ -809,9 +810,9 @@ class MiscCommandsCog(HelperCog):
     @checks.is_not_blacklisted()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def unblacklist(
-            self: "MiscCommandsCog",
-            inter: disnake.ApplicationCommandInteraction,
-            user: typing.Union[disnake.User, disnake.Member],
+        self: "MiscCommandsCog",
+        inter: disnake.ApplicationCommandInteraction,
+        user: typing.Union[disnake.User, disnake.Member],
     ):
         """/unblacklist [user: user]
         Remove a user's bot blacklist. You must be a trusted user to do this!

@@ -4,7 +4,7 @@ import enum
 
 
 class QuizIntensity(float, enum.Enum):
-    IMPOSSIBLE = float('inf')
+    IMPOSSIBLE = float("inf")
     ONLY_GENIUSES_CAN_SOLVE_THIS = 200 << 100
     EXTREMELY_CHALLENGING = 10000.0
     EXTREMELY_HARD = 5000.0
@@ -19,7 +19,7 @@ class QuizIntensity(float, enum.Enum):
     VERY_VERY_EASY = 25
     TRIVIAL = 0
     CUSTOM = -1
-    TOO_EASY = -float('inf')
+    TOO_EASY = -float("inf")
 
 
 class QuizTimeLimit(int, enum.Enum):
@@ -53,7 +53,7 @@ class QuizTimeLimit(int, enum.Enum):
 
 
 class QuizIntensity(float, enum.Enum):
-    IMPOSSIBLE = float('inf')
+    IMPOSSIBLE = float("inf")
     ONLY_GENIUSES_CAN_SOLVE_THIS = 200 << 100
     EXTREMELY_CHALLENGING = 10000.0
     EXTREMELY_HARD = 5000.0
@@ -68,7 +68,7 @@ class QuizIntensity(float, enum.Enum):
     VERY_VERY_EASY = 25
     TRIVIAL = 0
     CUSTOM = -1
-    TOO_EASY = -float('inf')
+    TOO_EASY = -float("inf")
 
 
 class QuizTimeLimit(int, enum.Enum):

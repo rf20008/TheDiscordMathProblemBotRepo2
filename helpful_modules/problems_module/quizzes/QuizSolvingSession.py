@@ -62,22 +62,20 @@ class QuizSolvingSession:
 
     @classmethod
     def better_init(
-            cls,
-            *,
-            user_id: int,
-            quiz_id: int,
-            cache,
-            is_finished: bool,
-            answers: typing.List[QuizSubmissionAnswer],
-            guild_id: int,
-            start_time: int,
-            expire_time: int,
-            special_id: int
+        cls,
+        *,
+        user_id: int,
+        quiz_id: int,
+        cache,
+        is_finished: bool,
+        answers: typing.List[QuizSubmissionAnswer],
+        guild_id: int,
+        start_time: int,
+        expire_time: int,
+        special_id: int
     ) -> "QuizSolvingSession":
         QuizSession: "QuizSolvingSession" = cls(
-            cache=cache,
-            quiz_id=quiz_id,
-            user_id=user_id
+            cache=cache, quiz_id=quiz_id, user_id=user_id
         )
         QuizSession.is_finished = is_finished
         QuizSession.answers = answers
@@ -91,44 +89,42 @@ class QuizSolvingSession:
     @classmethod
     def from_sqlite_dict(cls, dict: dict, cache) -> "QuizSolvingSession":
         """Convert a dict returned from sql into a QuizSolvingSession"""
-        _quiz = run(cache.get_quiz(dict['quiz_id']))
+        _quiz = run(cache.get_quiz(dict["quiz_id"]))
         return cls.better_init(
             cache=cache,
-            start_time=dict['start_time'],
-            expire_time=dict['expire_time'],
-            user_id=dict['user_id'],
-            quiz_id=dict['quiz_id'],
-            guild_id=dict['guild_id'],
-            answers=pickle.loads(dict['answers']),  # TODO: don't use pickle because RCE
-            special_id=dict['special_id']
+            start_time=dict["start_time"],
+            expire_time=dict["expire_time"],
+            user_id=dict["user_id"],
+            quiz_id=dict["quiz_id"],
+            guild_id=dict["guild_id"],
+            answers=pickle.loads(dict["answers"]),  # TODO: don't use pickle because RCE
+            special_id=dict["special_id"],
         )
 
     @classmethod
     def from_mysql_dict(cls, dict: dict, cache) -> "QuizSolvingSession":
-        _quiz = run(cache.get_quiz(dict['quiz_id']))
+        _quiz = run(cache.get_quiz(dict["quiz_id"]))
         return cls.better_init(
             cache=cache,
-            start_time=dict['start_time'],
-            user_id=dict['user_id'],
-            quiz_id=dict['quiz_id'],
-            guild_id=dict['guild_id'],
-            expire_time=dict['expire_time'],
-            is_finished=dict['is_finished'],
-            answers=pickle.loads(dict['answers']),
-            special_id=dict['special_id']
+            start_time=dict["start_time"],
+            user_id=dict["user_id"],
+            quiz_id=dict["quiz_id"],
+            guild_id=dict["guild_id"],
+            expire_time=dict["expire_time"],
+            is_finished=dict["is_finished"],
+            answers=pickle.loads(dict["answers"]),
+            special_id=dict["special_id"],
         )
 
     def to_dict(self) -> dict:
         return {
-            'start_time': self.start_time,
-            'user_id': self.user_id,
-            'quiz_id': self.quiz_id,
-            'guild_id': self.guild_id,
-            'expire_time': self.expire_time,
-            'is_finished': self.is_finished,
-            'answers': [
-                answer.to_dict() for answer in self.answers.values()
-            ],
+            "start_time": self.start_time,
+            "user_id": self.user_id,
+            "quiz_id": self.quiz_id,
+            "guild_id": self.guild_id,
+            "expire_time": self.expire_time,
+            "is_finished": self.is_finished,
+            "answers": [answer.to_dict() for answer in self.answers.values()],
         }
 
     async def update_self(self):
@@ -171,4 +167,3 @@ class QuizSolvingSession:
             return self.answers[index]
         except IndexError:
             raise MathProblemsModuleException("Index out of range")
-

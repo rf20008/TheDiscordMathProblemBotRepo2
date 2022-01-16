@@ -1,4 +1,5 @@
 [![Number of source lines of code](https://img.shields.io/tokei/lines/github/rf20008/TheDiscordMathProblemBotRepo)](https://img.shields.io)
+<!---TODO: rewrite--->
 
 # Quick links / Table of Contents
 
