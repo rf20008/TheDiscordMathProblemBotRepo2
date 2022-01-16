@@ -157,7 +157,8 @@ class MathProblemCache:
                     expire_time INT,
                     guild_id INT,
                     answers BLOB,
-                    special_id INT
+                    special_id INT,
+                    attempt_num INT
                     )"""
                 )  # Special_id is for avoiding the weird bug with 'and' not working in SQL statements
                 await cursor.execute(
@@ -238,7 +239,8 @@ class MathProblemCache:
                     expire_time INT,
                     guild_id INT,
                     answers BLOB,
-                    special_id INT
+                    special_id INT,
+                    attempt_num INT
                     )"""
                 )
                 cursor.execute(
@@ -1199,7 +1201,7 @@ class MathProblemCache:
                 conn.row_factory = dict_factory
                 cursor = await conn.cursor()
                 await cursor.execute(
-                    """INSERT INTO quiz_submission_sessions (user_id, quiz_id, guild_id, is_finished, answers, start_time, expire_time, special_id)
+                    """INSERT INTO quiz_submission_sessions (user_id, quiz_id, guild_id, is_finished, answers, start_time, expire_time, special_id, attempt_num)
                     VALUES (?,?,?,?,?,?,?,?)""",
                     (
                         session.user_id,
@@ -1223,7 +1225,7 @@ class MathProblemCache:
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
-                    """INSERT INTO quiz_submission_sessions (user_id, quiz_id, guild_id, is_finished, answers, start_time, expire_time, special_id)
+                    """INSERT INTO quiz_submission_sessions (user_id, quiz_id, guild_id, is_finished, answers, start_time, expire_time, special_id, attempt_num)
                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""",
                     (
                         session.user_id,
@@ -1236,6 +1238,7 @@ class MathProblemCache:
                         session.start_time,
                         session.expire_time,
                         session.special_id,
+                        session.attempt_num
                     ),
                 )
                 connection.commit()
@@ -1257,7 +1260,7 @@ class MathProblemCache:
                 cursor = await conn.cursor()
                 await cursor.execute(
                     """UPDATE quiz_submission_sessions 
-                    SET guild_id = ?, quiz_id = ?, user_id = ?, answers = ?, start_time = ?, expire_time = ?, is_finished = ?, special_id = ? 
+                    SET guild_id = ?, quiz_id = ?, user_id = ?, answers = ?, start_time = ?, expire_time = ?, is_finished = ?, special_id = ?, attempt_num = ?
                     WHERE special_id = ?""",
                     (
                         session.guild_id,
@@ -1268,7 +1271,8 @@ class MathProblemCache:
                         session.expire_time,
                         int(session.is_finished),
                         session.special_id,
-                        session.special_id,
+                        session.attempt_num,
+                        session.special_id
                     ),
                 )
                 await conn.commit()
@@ -1283,7 +1287,7 @@ class MathProblemCache:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(  # Connect to SQL and actually change it
                     """UPDATE quiz_submission_sessions 
-                    SET guild_id = %s, quiz_id = %s, user_id = %s, answers = %s, start_time = %s, expire_time = %s, is_finished = %s, special_id = %s 
+                    SET guild_id = %s, quiz_id = %s, user_id = %s, answers = %s, start_time = %s, expire_time = %s, is_finished = %s, special_id = %s, attempt_num = %s
                     WHERE special_id = %s""",
                     (
                         session.guild_id,
@@ -1294,6 +1298,7 @@ class MathProblemCache:
                         session.expire_time,
                         int(session.is_finished),
                         session.special_id,
+                        session.attempt_num,
                         session.special_id,
                     ),
                 )

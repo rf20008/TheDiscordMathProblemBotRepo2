@@ -9,11 +9,12 @@ from helpful_modules.threads_or_useful_funcs import generate_new_id
 from .quiz_problem import QuizProblem
 from .quiz_submissions import QuizSubmission, QuizSubmissionAnswer
 
+
 # Licensed under GPLv3 (as all other code in this repository is)
 
 
 class QuizSolvingSession:
-    def __init__(self, user_id: int, quiz_id: int, cache):
+    def __init__(self, user_id: int, quiz_id: int, cache, guild_id: int, attempt_num: int):
         self.user_id = user_id
         self.quiz_id = quiz_id
         self.special_id = generate_new_id()
@@ -22,6 +23,10 @@ class QuizSolvingSession:
         self.answers: typing.Dict[int, QuizSubmissionAnswer] = {}
         self.start_time = time.time()
         self._quiz = self._get_quiz()
+        self.guild_id = guild_id
+        self.attempt_num = attempt_num
+
+
         try:
             self.expire_time: int = self.start_time + self._quiz.time_limit
         except AttributeError:
@@ -29,12 +34,12 @@ class QuizSolvingSession:
                 "Quiz descriptions + other metadata needs to be fully implemented!"
             )
 
-        try:
-            self.guild_id = self._quiz.guild_id
-        except MathProblemsModuleException as MPME:
-            raise RuntimeError(
-                "This quiz does not have a guild id, or it is None."
-            ) from MPME
+        # try:
+        #    self.guild_id = self._quiz.guild_id
+        # except MathProblemsModuleException as MPME:
+        #    raise RuntimeError(
+        #        "This quiz does not have a guild id, or it is None."
+        #    ) from MPME
 
         self._reset()
 
@@ -62,17 +67,17 @@ class QuizSolvingSession:
 
     @classmethod
     def better_init(
-        cls,
-        *,
-        user_id: int,
-        quiz_id: int,
-        cache,
-        is_finished: bool,
-        answers: typing.List[QuizSubmissionAnswer],
-        guild_id: int,
-        start_time: int,
-        expire_time: int,
-        special_id: int
+            cls,
+            *,
+            user_id: int,
+            quiz_id: int,
+            cache,
+            is_finished: bool,
+            answers: typing.List[QuizSubmissionAnswer],
+            guild_id: int,
+            start_time: int,
+            expire_time: int,
+            special_id: int
     ) -> "QuizSolvingSession":
         QuizSession: "QuizSolvingSession" = cls(
             cache=cache, quiz_id=quiz_id, user_id=user_id
@@ -99,6 +104,7 @@ class QuizSolvingSession:
             guild_id=dict["guild_id"],
             answers=pickle.loads(dict["answers"]),  # TODO: don't use pickle because RCE
             special_id=dict["special_id"],
+            attempt_num=dict['attempt_num']
         )
 
     @classmethod
@@ -114,6 +120,7 @@ class QuizSolvingSession:
             is_finished=dict["is_finished"],
             answers=pickle.loads(dict["answers"]),
             special_id=dict["special_id"],
+            attempt_num=dict['attempt_num']
         )
 
     def to_dict(self) -> dict:
