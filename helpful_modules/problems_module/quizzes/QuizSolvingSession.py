@@ -18,7 +18,7 @@ class QuizSolvingSession:
         self.quiz_id = quiz_id
         self.special_id = generate_new_id()
         self.is_final = False
-        self.cache = cache
+        self.cache: "MathProblemCache" = cache
         self.answers: typing.Dict[int, QuizSubmissionAnswer] = {}
         self.start_time = time.time()
         self._quiz = self._get_quiz()
@@ -117,3 +117,58 @@ class QuizSolvingSession:
             answers=pickle.loads(dict['answers']),
             special_id=dict['special_id']
         )
+
+    def to_dict(self) -> dict:
+        return {
+            'start_time': self.start_time,
+            'user_id': self.user_id,
+            'quiz_id': self.quiz_id,
+            'guild_id': self.guild_id,
+            'expire_time': self.expire_time,
+            'is_finished': self.is_finished,
+            'answers': [
+                answer.to_dict() for answer in self.answers.values()
+            ],
+        }
+
+    async def update_self(self):
+        """Update myself in SQL"""
+        try:
+            await self.cache.update_quiz_session(self.special_id, self)
+        except QuizSessionNotFoundException:
+            await self.cache.add_quiz_session(self)
+
+    async def add_answer(self, answer_to_add: QuizSubmissionAnswer):
+        """Add an answer"""
+        if self.editable:
+            raise QuizSessionOvertimeException("Quiz session overtime")
+        assert isinstance(answer_to_add, QuizSubmissionAnswer)
+        try:
+            self.answers[answer_to_add.problem_id] = answer_to_add
+        except IndexError:
+            raise MathProblemsModuleException("Question number out of range")
+
+        await self.update_self()
+
+    @property
+    def editable(self):
+        return (not self.overtime) and (not self.is_final)
+
+    async def modify_answer(self, new_answer: QuizSubmissionAnswer, index: int):
+        if self.editable:
+            raise QuizSessionOvertimeException("Quiz session overtime")
+
+        assert isinstance(new, QuizSubmissionAnswer)
+        try:
+            self.answers[answer_to_add.problem_id] = new_answer
+        except IndexError:
+            raise MathProblemsModuleException("Question number out of range")
+        await self.update_self()
+
+    def get_answer(self, index: int) -> "QuizSubmissionAnswer":
+
+        try:
+            return self.answers[index]
+        except IndexError:
+            raise MathProblemsModuleException("Index out of range")
+

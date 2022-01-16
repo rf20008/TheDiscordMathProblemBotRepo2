@@ -1254,6 +1254,31 @@ class MathProblemCache:
                 connection.commit()
                 return
 
+    async def delete_quiz_session(self, special_id: int):
+        """DELETE a quiz session!"""
+        assert isinstance(special_id, int)  # basic type-checking
+
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db_name) as conn:
+                cursor = await conn.cursor()
+                await cursor.execute(
+                    "DELETE FROM quiz_submission_sessions WHERE special_id = ?", (special_id,)
+                )
+                await conn.commit()
+
+        else:
+            with mysql_connection(
+                    host=self.mysql_db_ip,
+                    password=self.mysql_password,
+                    user=self.mysql_username,
+                    database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
+                    "DELETE FROM quiz_submission_session WHERE special_id=%s", (special_id,)
+                )
+                connection.commit()
+
     async def get_quiz_session_by_special_id(self, special_id: int) -> QuizSolvingSession:
         """Get a quiz submission by its special id"""
         assert isinstance(special_id, int)  # Basic type-checking
@@ -1484,6 +1509,16 @@ class MathProblemCache:
                     BaseProblem.from_row(dict_factory(cursor, row))
                     for row in await cursor.fetchall()
                 ]
+                await cursor.execute(
+                    """SELECT * FROM quiz_submission_sessions WHERE user_id = ?""",
+                    (user_id,)
+                )
+                sessions = [
+                    QuizSolvingSession.from_sqlite_dict(
+                        cache=self,
+                        dict=item
+                    ) for item in await cursor.fetchall()
+                ]
         else:
             with mysql_connection(
                     host=self.mysql_db_ip,
@@ -1516,11 +1551,22 @@ class MathProblemCache:
                     BaseProblem.from_dict(item, cache=copy(self))
                     for item in cursor.fetchall()
                 ]
+                cursor.execute(
+                    "SELECT * FROM quiz_submission_sessions WHERE author = %s", (user_id,)
+                )
+                sessions = [
+                    QuizSolvingSession.from_mysql_dict(
+                        cache=self,
+                        dict=item
+                    )
+                    for item in cursor.fetchall()
+                ]
 
         return {
             "quiz_problems": quiz_problems,
             "quiz_submissions": quiz_submissions,
             "problems": problems,
+            "sessions": sessions
         }
 
     async def delete_all_by_user_id(self, user_id: int) -> None:
@@ -1539,6 +1585,9 @@ class MathProblemCache:
                 await cursor.execute(
                     "DELETE FROM quiz_submissions WHERE user_id = ?", (user_id,)
                 )  # Delete all quiz submissions created by the author
+                await cursor.execute(
+                    "DELETE FROM quiz_submission_sessions WHERE user_id = ?", (user_id,)
+                )
                 await conn.commit()  # Otherwise, nothing happens and it rolls back!!
         else:
             with mysql_connection(
@@ -1552,6 +1601,9 @@ class MathProblemCache:
                 cursor.execute("DELETE FROM quizzes WHERE author = '%s'", (user_id,))
                 cursor.execute(
                     "DELETE FROM quiz_submissions WHERE author = '%s'", (user_id,)
+                )
+                cursor.execute(
+                    "DELETE FROM quiz_submission_sessions WHERE author = %s", (user_id,)
                 )
                 connection.commit()
 
@@ -1573,6 +1625,9 @@ class MathProblemCache:
                 )  # Delete all quiz problems from the guild
                 await cursor.execute(
                     "DELETE FROM quiz_submissions WHERE guild_id = ?", (guild_id,)
+                )
+                await cursor.execute(
+                    "DELETE FROM quiz_submission_sessions WHERE guild_id = ?", (guild_id,)
                 )  # Delete all quiz submissions from the guild!
                 await conn.commit()  # Otherwise, nothing happens!
         else:
@@ -1590,8 +1645,11 @@ class MathProblemCache:
                     "DELETE FROM quizzes WHERE guild_id = %s", (guild_id,)
                 )  # Remove all quizzes from the guild
                 cursor.execute(
-                    "DELETE FROM quiz_submissions WHERE guild_id = ?", (guild_id,)
+                    "DELETE FROM quiz_submissions WHERE guild_id = %s", (guild_id,)
                 )  # Remove all quiz submissions as well
+                cursor.execute(
+                    "DELETE FROM quiz_submission_sessions WHERE guild_id = %s", (guild_id,)
+                )
                 connection.commit()
 
     def __bool__(self):
