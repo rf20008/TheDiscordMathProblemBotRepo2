@@ -1212,6 +1212,7 @@ class MathProblemCache:
                         session.start_time,
                         session.expire_time,
                         session.special_id,
+                        session.attempt_num
                     ),
                 )
                 await conn.commit()
