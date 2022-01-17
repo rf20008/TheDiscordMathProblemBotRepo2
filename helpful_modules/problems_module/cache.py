@@ -168,7 +168,7 @@ class MathProblemCache:
                                                time_limit INT,
                                                intensity FLOAT,
                                                license VARCHAR,
-                                               category VARCHAR
+                                               category VARCHAR,
                                                author INT,
                                                guild_id INT
                                                )
@@ -250,7 +250,9 @@ class MathProblemCache:
                                time_limit INT,
                                intensity FLOAT,
                                license VARCHAR,
-                               category VARCHAR
+                               category VARCHAR,
+                               author INT,
+                               guild_id INT,
                                )
                                """
                 )
@@ -1601,12 +1603,12 @@ class MathProblemCache:
                     "SELECT * FROM problems WHERE author = ?", (author_id,)
                 )
                 problems = [
-                    BaseProblem.from_row(dict_factory(cursor, row))
+                    BaseProblem.from_row(row)
                     for row in await cursor.fetchall()
                 ]
                 await cursor.execute(
                     """SELECT * FROM quiz_submission_sessions WHERE user_id = ?""",
-                    (user_id,),
+                    (author_id,),
                 )
 
                 sessions = [
@@ -1614,7 +1616,7 @@ class MathProblemCache:
                     for item in await cursor.fetchall()
                 ]
                 await cursor.execute(
-                    "SELECT * FROM quiz_description WHERE author = ?", (user_id,)
+                    "SELECT * FROM quiz_description WHERE author = ?", (author_id,)
                 )
                 descriptions = [
                     QuizDescription.from_dict(data, cache=self)

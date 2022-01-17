@@ -186,6 +186,10 @@ venv/*
 # I'm willing to un-gitignore error_logs (for debugging purposes)
 
 
+# Ignore the DB
+*.db
+MathProblemCache1.db
+
 #Whitelists
 #never ignore any python file :)
 !**/*.py
