@@ -1895,7 +1895,7 @@ class MathProblemCache:
                 cursor.execute(
                     """UPDATE quiz_description
                     SET description = %s, license = %s, time_limit = %s, intensity = %s, category = %s, quiz_id = %s, author = %s, guild_id = %s
-                    WHERE quiz_id = %s"""(
+                    WHERE quiz_id = %s""", (
                         description.description,
                         description.license,
                         description.time_limit,
