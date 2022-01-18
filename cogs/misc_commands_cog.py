@@ -394,14 +394,14 @@ class MiscCommandsCog(HelperCog):
             return
 
         async def deny_callback(
-            _self: BasicButton, interaction: disnake.MessageInteraction
+            button: BasicButton, interaction: disnake.MessageInteraction
         ):
             """A function that runs when the deny button is pressed"""
             await interaction.response.reply(
                 "Your data is safe! It has not been deleted."
             )
-            _self.disable()
-            _self.view.stop()
+            button.disable()
+            button.view.stop()
             return
 
         _extra_data = {
@@ -411,7 +411,10 @@ class MiscCommandsCog(HelperCog):
         }
         if save_data_before_deletion:
             _extra_data["file"] = file_version
+        def check(interaction: disnake.MessageInteraction):
+            return interaction.author.id == inter.author.id
         confirmation_button = ConfirmationButton(
+            check=check,
             callback=confirm_callback,
             style=disnake.ButtonStyle.danger,
             label="I'm 100\% \sure I want to delete my data!",
@@ -419,7 +422,7 @@ class MiscCommandsCog(HelperCog):
             _extra_data=_extra_data,
         )
         deny_button = BasicButton(
-            check=lambda Self, interaction: interaction.user.id == Self.user_for,
+            check=check,
             callback=deny_callback,
             style=disnake.ButtonStyle.green,
             disabled=False,

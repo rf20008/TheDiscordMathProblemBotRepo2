@@ -5,7 +5,7 @@ import disnake
 
 from .custom_embeds import ErrorEmbed, SuccessEmbed
 from .threads_or_useful_funcs import base_on_error
-
+"""These are buttons that inherit from disnake's UI kit items"""
 # Licensed under the GNU GPLv3 (or later)
 
 
@@ -19,7 +19,7 @@ class MyView(disnake.ui.View):
         timeout: int = 180.0,
         items: List[disnake.ui.Item]
     ):
-        super().__init__(timeout)
+        super().__init__()
         self.message = message
         assert len(items) <= 25  # Discord limitation
         for item in items:
@@ -29,7 +29,7 @@ class MyView(disnake.ui.View):
     async def on_error(
         self, error: Exception, item: disnake.ui.Item, inter: disnake.Interaction
     ):
-        return await inter.response.send_message(**base_on_error(inter, error))
+        return await inter.response.send_message(**(await base_on_error(inter, error)))
 
     async def reply(self, Interaction: disnake.Interaction, *args, **kwargs):
         """Reply to an interaction"""
@@ -63,11 +63,14 @@ class BasicButton(disnake.ui.Button):
         self.check = check
         self._callback = callback
         self.disabled = False
-        self.user_for = kwargs.pop("user_for").id
+        try:
+            self.user_for = kwargs.pop("user_for").id
+        except:
+            self.user_for = 2**222
 
     async def callback(self, interaction: disnake.Interaction) -> Any:
-        if self.check(self, interaction):
-            return await self._callback(interaction)
+        if self.check(interaction=interaction):
+            return await self._callback(self, interaction)
 
     def disable(self):
         """Disable myself. If this does not work, this is probably a Discord limitation. However, I don't know."""
@@ -81,14 +84,16 @@ class BasicButton(disnake.ui.Button):
 class ConfirmationButton(BasicButton):
     """A confirmation button"""
 
-    def __init__(self, custom_id="1", *args, **kwargs):
+    def __init__(self, custom_id="1", *args, callback, check, _extra_data, message_kwargs={}, author_for={}, **kwargs):
         """Create a new ConfirmationButton."""
-        super().__init__(*args, **kwargs)
+        super().__init__(*args,callback=callback, custom_id=custom_id, check=check, **kwargs)
         self.custom_id = custom_id
-        self.author_for = kwargs.pop("author_for")
-        self.message_kwargs = kwargs.pop("message_kwargs")
-        self._func = kwargs.pop("callback")
-        self._extra_data = kwargs.get("_extra_data", {})
+        self.author_for = author_for
+        self.message_kwargs = message_kwargs
+        self._func = callback
+
+        self._extra_data = _extra_data
+
 
     async def callback(
         self: "ConfirmationButton", interaction: disnake.Interaction

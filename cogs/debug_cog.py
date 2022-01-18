@@ -159,7 +159,7 @@ class DebugCog(HelperCog):
         if (
             "func" not in globals().keys()
             and "func" not in locals().keys()
-            and compiled == True
+            and compiled is True
         ):
             raise RuntimeError("func is not defined")
         if compiled:
