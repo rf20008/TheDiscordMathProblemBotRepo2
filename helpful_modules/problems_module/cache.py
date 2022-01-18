@@ -1699,7 +1699,7 @@ class MathProblemCache:
                     "DELETE FROM quiz_submission_sessions WHERE user_id = ?", (user_id,)
                 )
                 await cursor.execute(
-                    "DELETE FROM quiz_description WHERE user_id = ?", (user_id,)
+                    "DELETE FROM quiz_description WHERE author= ?", (user_id,)
                 )
 
                 await conn.commit()  # Otherwise, nothing happens and it rolls back!!
@@ -1720,7 +1720,7 @@ class MathProblemCache:
                     "DELETE FROM quiz_submission_sessions WHERE author = %s", (user_id,)
                 )
                 cursor.execute(
-                    "DELETE FROM quiz_description WHERE user_id = %s", (user_id,)
+                    "DELETE FROM quiz_description WHERE author = %s", (user_id,)
                 )
                 connection.commit()
 

@@ -397,7 +397,7 @@ class MiscCommandsCog(HelperCog):
             button: BasicButton, interaction: disnake.MessageInteraction
         ):
             """A function that runs when the deny button is pressed"""
-            await interaction.response.reply(
+            await interaction.response.send_message(
                 "Your data is safe! It has not been deleted."
             )
             button.disable()
@@ -417,7 +417,7 @@ class MiscCommandsCog(HelperCog):
             check=check,
             callback=confirm_callback,
             style=disnake.ButtonStyle.danger,
-            label="I'm 100\% \sure I want to delete my data!",
+            label="I'm 100% sure I want to delete my data!",
             disabled=False,
             _extra_data=_extra_data,
         )
