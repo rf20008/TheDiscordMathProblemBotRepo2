@@ -157,7 +157,7 @@ class MathProblemCache:
                     expire_time INT,
                     guild_id INT,
                     answers BLOB,
-                    special_id INT,
+                    special_id VARCHAR,
                     attempt_num INT
                     )"""
                 )  # Special_id is for avoiding the weird bug with 'and' not working in SQL statements
@@ -239,7 +239,7 @@ class MathProblemCache:
                     expire_time INT,
                     guild_id INT,
                     answers BLOB,
-                    special_id INT,
+                    special_id VARCHAR,
                     attempt_num INT
                     )"""
                 )
