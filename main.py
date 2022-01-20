@@ -63,9 +63,8 @@ else:
 disnake_log = logging.getLogger("disnake")
 log.addHandler(TRFHB)
 disnake_log.addHandler(TRFHD)
-log.setLevel(5)
+log.setLevel(-1)
 disnake_log.setLevel(logging.INFO)
-log.debug("test!")
 
 
 def the_daemon_file_saver():
