@@ -1214,7 +1214,7 @@ class MathProblemCache:
                         session.start_time,
                         session.expire_time,
                         session.special_id,
-                        session.attempt_num
+                        session.attempt_num,
                     ),
                 )
                 await conn.commit()
@@ -1241,7 +1241,7 @@ class MathProblemCache:
                         session.start_time,
                         session.expire_time,
                         session.special_id,
-                        session.attempt_num
+                        session.attempt_num,
                     ),
                 )
                 connection.commit()
@@ -1275,7 +1275,7 @@ class MathProblemCache:
                         int(session.is_finished),
                         session.special_id,
                         session.attempt_num,
-                        session.special_id
+                        session.special_id,
                     ),
                 )
                 await conn.commit()
@@ -1603,8 +1603,7 @@ class MathProblemCache:
                     "SELECT * FROM problems WHERE author = ?", (author_id,)
                 )
                 problems = [
-                    BaseProblem.from_row(row)
-                    for row in await cursor.fetchall()
+                    BaseProblem.from_row(row) for row in await cursor.fetchall()
                 ]
                 await cursor.execute(
                     """SELECT * FROM quiz_submission_sessions WHERE user_id = ?""",
@@ -1895,7 +1894,8 @@ class MathProblemCache:
                 cursor.execute(
                     """UPDATE quiz_description
                     SET description = %s, license = %s, time_limit = %s, intensity = %s, category = %s, quiz_id = %s, author = %s, guild_id = %s
-                    WHERE quiz_id = %s""", (
+                    WHERE quiz_id = %s""",
+                    (
                         description.description,
                         description.license,
                         description.time_limit,
@@ -1905,7 +1905,7 @@ class MathProblemCache:
                         description.author,
                         description.guild_id,
                         description.quiz_id,
-                    )
+                    ),
                 )
                 connection.commit()
 
