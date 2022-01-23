@@ -126,3 +126,14 @@ def get_log(name: Optional[str]) -> logging.Logger:
     )
     _log.addHandler(TRFH)
     return _log
+
+
+def _generate_special_id(guild_id, quiz_id, user_id, attempt_num):
+    return str(
+        {
+            "quiz_id": quiz_id,
+            "guild_id": guild_id,
+            "user_id": user_id,
+            "attempt_num": attempt_num,
+        }
+    )

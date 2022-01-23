@@ -415,8 +415,10 @@ class MiscCommandsCog(HelperCog):
         }
         if save_data_before_deletion:
             _extra_data["file"] = file_version
+
         def check(interaction: disnake.MessageInteraction):
             return interaction.author.id == inter.author.id
+
         confirmation_button = ConfirmationButton(
             check=check,
             callback=confirm_callback,

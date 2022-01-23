@@ -25,6 +25,8 @@ Full problem data will be shown to people who solved a problem and used /user_da
 Problem data (except the answers) will be shown to people who voted for a problem and used /user_data get_data
 If other kinds of data are disclosed, then either I intend this (and will notify you and update this document accordingly), or it's a bug. If it's a bug, please notify me.
 
+If the law requires so, or the situation requires so (such as crimes occurring via the platform of my bot, or I get subpoenaed because of this application), we may share your data with the government.
+
 ## Seeing and deleting your data
 
 You can see *all* of your data using the command /user_data get_data.
@@ -37,8 +39,9 @@ It is possible to delete data about whether you voted or solved problems.
 
 ## Updates and notification
 
-I may update this policy at any time. We don't store contact information (such as Discord usernames, emails, etc.), so we can't contact users individually. However, we can notify you through the official Discord server or through the bot's status. 
+I may update this policy at any time. We don't store contact information (such as Discord usernames, emails, etc.), so we can't contact users individually. However, we can notify you through the official Discord server or through the bot's status.
 
+If there are signifigant changes to the Terms, we'll notify you :-). However, I often forget; please check the Policy every so often as we won't notify you for every change.
 # Contributions
 
 For legal reasons, all contributions to this application *must* be licensed under GPLv3 or later. I am not legally allowed to accept contributions licensed under any other license. I greatly appreciate your contributions!

@@ -27,7 +27,7 @@ The trusted users/guild administrators (if the problem isn't global) also have t
 <li> Disrespecting/targeting/etc... people through problems</li>
 <li> Sending NSFW/NSFL content through problems.</li>
 <li> Sending copyrighted things that the author does not have the correct rights to license to this bot. </li>
-</ul>People with the authority to delete problems reserve the right to use their own discretion on whether to delete a problem or not. (This covers edge cases!) I also do not have control over guild administrators (as they are not me).
+</ul> People with the authority to delete problems reserve the right to use their own discretion on whether to delete a problem or not. (This covers edge cases!) I also do not have control over guild administrators (as they are not me).
 
 ## Disclaimers (because they don't belong in the Privacy Policy)
 ### LIABILITY DISCLAIMER
@@ -55,9 +55,15 @@ If this is not allowed, the above section is rendered null. If it's rendered nul
 
 I may change the Terms at any time and for any reason. We won't notify you individually (because we don't store contact data about you with the express purpose of contacting you). However, we might use the bot's status/the official server/other ways to notify you.
 
-### Suggestions
+However, when the changes are significant, we will notify you, as required by U.S. law.
+
+### Suggestions to the TOS
 
 Suggestions to this are welcome (as of right now)! If you make any TOS changes that will affect people's usage of the bot, please let me know through the commit message. PR's containing TOS/Privacy policies will be considered more strictly.
+
+## A disclaimer because of GPLv3
+
+These Terms shall not be construed to prevent you from doing anything that the GPLv3 License allows you to do.  
 
 ## Contributions/ Derivatives / Forks of the project
 

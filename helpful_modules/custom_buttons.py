@@ -16,11 +16,11 @@ class MyView(disnake.ui.View):
     """A better? view for my bot (which is easier for my bot to work with)"""
 
     def __init__(
-            self,
-            message: disnake.Message = None,
-            *,
-            timeout: int = 180.0,
-            items: List[disnake.ui.Item]
+        self,
+        message: disnake.Message = None,
+        *,
+        timeout: int = 180.0,
+        items: List[disnake.ui.Item]
     ):
         super().__init__()
         self.message = message
@@ -30,13 +30,13 @@ class MyView(disnake.ui.View):
             self.add_item(item)
 
     async def on_error(
-            self, error: Exception, item: disnake.ui.Item, inter: disnake.Interaction
+        self, error: Exception, item: disnake.ui.Item, inter: disnake.Interaction
     ):
         return await inter.response.send_message(**(await base_on_error(inter, error)))
 
-#    async def reply(self, Interaction: disnake.Interaction, *args, **kwargs):
-#        """Reply to an interaction"""
-#        return await Interaction.response.send_message(*args, **kwargs)
+    #    async def reply(self, Interaction: disnake.Interaction, *args, **kwargs):
+    #        """Reply to an interaction"""
+    #        return await Interaction.response.send_message(*args, **kwargs)
 
     async def stop_all_items(self):
         """Stop all items. However, this does not work, because the bot will not know the message before it's sent"""
@@ -87,7 +87,17 @@ class BasicButton(disnake.ui.Button):
 class ConfirmationButton(BasicButton):
     """A confirmation button"""
 
-    def __init__(self, custom_id="1", *args, callback, check, _extra_data, message_kwargs={}, author_for={}, **kwargs):
+    def __init__(
+        self,
+        custom_id="1",
+        *args,
+        callback,
+        check,
+        _extra_data,
+        message_kwargs={},
+        author_for={},
+        **kwargs
+    ):
         """Create a new ConfirmationButton."""
         super().__init__(*args, callback=callback, custom_id=custom_id, check=check, **kwargs)  # type: ignore
         self.custom_id = custom_id
@@ -98,7 +108,7 @@ class ConfirmationButton(BasicButton):
         self._extra_data = _extra_data
 
     async def callback(
-            self: "ConfirmationButton", interaction: disnake.Interaction
+        self: "ConfirmationButton", interaction: disnake.Interaction
     ) -> Any:
         if not self.check(interaction):
             embed = ErrorEmbed(

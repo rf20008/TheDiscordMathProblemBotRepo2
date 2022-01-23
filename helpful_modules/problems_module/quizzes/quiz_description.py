@@ -7,6 +7,7 @@ from .related_enums import QuizIntensity, QuizTimeLimit
 @dataclass
 class QuizDescription:
     """A dataclass that holds quiz description"""
+
     category: str
     intensity: t.Union[QuizIntensity, int]
     description: str
