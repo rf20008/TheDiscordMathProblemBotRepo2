@@ -1,3 +1,4 @@
+import logging
 import sqlite3
 import typing
 import warnings
@@ -11,15 +12,16 @@ import disnake
 from helpful_modules.dict_factory import dict_factory
 from helpful_modules.threads_or_useful_funcs import get_log
 
-from helpful_modules.problems_module.base_problem import BaseProblem
-from helpful_modules.errors import *
-from .quizzes import Quiz, QuizProblem, QuizSolvingSession, QuizSubmission
-from .quizzes.quiz_description import QuizDescription
-from .user_data import UserData
+from ..base_problem import BaseProblem
+from ..errors import *
+from ..quizzes import Quiz, QuizProblem, QuizSolvingSession, QuizSubmission
+from ..quizzes.quiz_description import QuizDescription
+from ..user_data import UserData
 from .user_data_related_cache import UserDataRelatedCache
 
+log = logging.getLogger(__name__)
 
-class MiscRelatedCache(UserDataRelatedCache):
+class MathProblemCache(UserDataRelatedCache):
 
     async def update_cache(self: "MathProblemCache") -> None:
         """Method revamped! This method updates the cache of the guilds, the guild problems, and the cache of the global problems. Takes O(N) time"""

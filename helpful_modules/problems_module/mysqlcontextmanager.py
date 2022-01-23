@@ -1,6 +1,7 @@
 import contextlib
-from mysql import connector as mysql_connector
+
 import mysql
+from mysql import connector as mysql_connector
 
 
 @contextlib.contextmanager

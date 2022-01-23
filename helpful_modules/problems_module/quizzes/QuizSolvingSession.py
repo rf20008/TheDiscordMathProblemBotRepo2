@@ -9,7 +9,6 @@ from helpful_modules.threads_or_useful_funcs import generate_new_id
 from .quiz_problem import QuizProblem
 from .quiz_submissions import QuizSubmission, QuizSubmissionAnswer
 
-
 # Licensed under GPLv3 (as all other code in this repository is)
 
 
