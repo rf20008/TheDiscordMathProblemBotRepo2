@@ -336,6 +336,10 @@ class MiscCommandsCog(HelperCog):
         If save_data_before_deletion, the data about you will be sent as a json file
         This has a 500-second cooldown.
 
+        You cannot use this command if you are blacklisted.
+
+        This command will delete your permissions -- 
+
         By using this command, you agree to being DMed!"""
         if save_data_before_deletion:
             json_data: dict = await self._get_json_data_by_user(
