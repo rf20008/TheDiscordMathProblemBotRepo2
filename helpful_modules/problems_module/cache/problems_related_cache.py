@@ -1,7 +1,7 @@
-import sqlite3
 import asyncio
-import typing
 import logging
+import sqlite3
+import typing
 import warnings
 from copy import copy, deepcopy
 from types import FunctionType
@@ -16,31 +16,33 @@ from helpful_modules.threads_or_useful_funcs import get_log
 from ..base_problem import BaseProblem
 from ..errors import *
 from ..mysql_connector_with_stmt import *
+from ..mysql_connector_with_stmt import mysql_connection
 from ..quizzes import Quiz, QuizProblem, QuizSolvingSession, QuizSubmission
 from ..quizzes.quiz_description import QuizDescription
 from ..user_data import UserData
 
 log = logging.getLogger(__name__)
 
+
 class ProblemsRelatedCache:
     def __init__(
-            self,
-            *,
-            mysql_username: str,
-            mysql_password: str,
-            mysql_db_ip: str,
-            mysql_db_name: str,
-            use_sqlite: bool = False,
-            max_answer_length: int = 100,
-            max_question_limit: int = 250,
-            max_guild_problems: int = 125,
-            max_answers_per_problem: int = 25,
-            max_problems_per_quiz: int = 50,
-            max_quizzes_per_guild: int = 50,
-            warnings_or_errors: Union[Literal["warnings"], Literal["errors"]] = "warnings",
-            db_name: str = "problems_module.db",
-            update_cache_by_default_when_requesting: bool = True,
-            use_cached_problems: bool = False,
+        self,
+        *,
+        mysql_username: str,
+        mysql_password: str,
+        mysql_db_ip: str,
+        mysql_db_name: str,
+        use_sqlite: bool = False,
+        max_answer_length: int = 100,
+        max_question_limit: int = 250,
+        max_guild_problems: int = 125,
+        max_answers_per_problem: int = 25,
+        max_problems_per_quiz: int = 50,
+        max_quizzes_per_guild: int = 50,
+        warnings_or_errors: Union[Literal["warnings"], Literal["errors"]] = "warnings",
+        db_name: str = "problems_module.db",
+        update_cache_by_default_when_requesting: bool = True,
+        use_cached_problems: bool = False,
     ):
         """Create a new MathProblemCache. The arguments should be self-explanatory.
         Many methods are async!"""
@@ -58,7 +60,7 @@ class ProblemsRelatedCache:
                 f"warnings_or_errors is {warnings_or_errors}, not 'warnings' or 'errors'"
             )
         self.warnings = (
-                warnings_or_errors == "warnings"
+            warnings_or_errors == "warnings"
         )  # Whether to raise TypeErrors or warn
         if max_answers_per_problem < 1:
             raise ValueError("max_answers_per_problem must be at least 1!")
@@ -88,7 +90,6 @@ class ProblemsRelatedCache:
         self._guilds: typing.List[disnake.Guild] = []
         asyncio.run(self.update_cache())
         self.cached_sessions = {}
-
 
     async def convert_to_dict(self) -> dict:
         """A method that converts self to a dictionary (not used, will probably be removed soon)"""
@@ -129,7 +130,7 @@ class ProblemsRelatedCache:
         return problem2
 
     async def get_problem(
-            self, guild_id: typing.Optional[int], problem_id: int
+        self, guild_id: typing.Optional[int], problem_id: int
     ) -> BaseProblem:
         """Gets the problem with this guild id and problem id. If the problem is not found, a ProblemNotFound exception will be raised."""
         # This isn't working
@@ -203,10 +204,10 @@ class ProblemsRelatedCache:
                     return BaseProblem.from_row(row, cache=copy(self))
             else:
                 with mysql_connection(
-                        host=self.mysql_db_ip,
-                        password=self.mysql_password,
-                        user=self.mysql_username,
-                        database=self.mysql_db_name,
+                    host=self.mysql_db_ip,
+                    password=self.mysql_password,
+                    user=self.mysql_username,
+                    database=self.mysql_db_name,
                 ) as connection:
                     cursor = connection.cursor(dictionaries=True)
                     cursor.execute(
@@ -222,7 +223,7 @@ class ProblemsRelatedCache:
                     return BaseProblem.from_row(cache=copy(self), row=rows[0])
 
     async def get_guild_problems(
-            self, guild: disnake.Guild
+        self, guild: disnake.Guild
     ) -> typing.Dict[int, BaseProblem]:
         """Gets the guild problems! Guild must be a Guild object. If you are trying to get global problems, use get_global_problems."""
         assert isinstance(guild, disnake.Guild)
@@ -234,7 +235,7 @@ class ProblemsRelatedCache:
             return {}
 
     async def get_problems_by_guild_id(
-            self, guild_id: int
+        self, guild_id: int
     ) -> typing.Dict[int, BaseProblem]:
         if not isinstance(guild_id, int) and guild_id is not None:
             raise AssertionError
@@ -246,12 +247,11 @@ class ProblemsRelatedCache:
         except KeyError:
             return {}
 
-
     async def get_problems_by_func(
-            self: "MathProblemCache",
-            func: FunctionType = lambda problem: False,
-            args: typing.Optional[typing.Union[tuple, list]] = None,
-            kwargs: Optional[dict] = None,
+        self: "MathProblemCache",
+        func: FunctionType = lambda problem: False,
+        args: typing.Optional[typing.Union[tuple, list]] = None,
+        kwargs: Optional[dict] = None,
     ) -> typing.List[BaseProblem]:
         """Returns the list of all problems that match the given function. args and kwargs are extra parameters to give to the function"""
         if args is None:
@@ -299,7 +299,7 @@ class ProblemsRelatedCache:
         # self._dict[Guild.id] = {}
 
     async def add_problem(
-            self, problem_id: int, problem: BaseProblem
+        self, problem_id: int, problem: BaseProblem
     ) -> Optional[BaseProblem]:
         """Adds a problem and returns the added MathProblem"""
         # Preliminary checks -otherwise SQL bugs
@@ -321,16 +321,16 @@ class ProblemsRelatedCache:
         except ProblemNotFound:  # an exception raised when the problem does not exist! That means we're good to add the problem!
             pass
         if (
-                self.update_cache_by_default_when_requesting
+            self.update_cache_by_default_when_requesting
         ):  # Used to determine whether it has reached the limit! Takes O(N) time
             await self.update_cache()
         try:
             if (
-                    guild_id is None
+                guild_id is None
             ):  # There is no limit for global problems (which could be exploited!)
                 pass
             elif (
-                    len(self.guild_problems[guild_id]) >= self.max_guild_problems
+                len(self.guild_problems[guild_id]) >= self.max_guild_problems
             ):  # Make sure this doesn't go over the max guild problem limit (which is 150)
                 raise TooManyProblems(
                     f"There are already {self.max_guild_problems} problems!"
@@ -338,7 +338,7 @@ class ProblemsRelatedCache:
         except KeyError:  # New guild creating first problem
             pass
         if not isinstance(
-                problem, BaseProblem
+            problem, BaseProblem
         ):  # Make sure it's actually a Problem and not something else
             raise TypeError("Problem is not a valid Problem object.")
         # All the checks passed, hooray! Now let's add the problem.
@@ -379,10 +379,10 @@ class ProblemsRelatedCache:
             return problem
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 await cursor.execute(
@@ -400,7 +400,7 @@ class ProblemsRelatedCache:
                 )
 
     async def remove_problem(
-            self, guild_id: typing.Optional[int], problem_id: int
+        self, guild_id: typing.Optional[int], problem_id: int
     ) -> BaseProblem:
         """Removes a problem. Returns the deleted problem"""
         Problem = await self.get_problem(guild_id, problem_id)
@@ -408,9 +408,9 @@ class ProblemsRelatedCache:
         return Problem
 
     async def remove_problem_without_returning(
-            self,
-            guild_id: typing.Optional[int],
-            problem_id: int,
+        self,
+        guild_id: typing.Optional[int],
+        problem_id: int,
     ) -> None:
         """Remove a problem without returning! Saves time."""
         assert isinstance(guild_id, int) or guild_id is None
@@ -453,10 +453,10 @@ class ProblemsRelatedCache:
 
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
@@ -476,7 +476,7 @@ class ProblemsRelatedCache:
         """Deletes duplicate problems. Takes O(N^2) time which is slow"""
         if self.use_sqlite:
             async with aiosqlite.connect(
-                    self.db_name
+                self.db_name
             ) as conn:  # Fetch the list of problems
                 cursor = await conn.cursor()
                 await cursor.execute("SELECT * FROM problems")
@@ -487,10 +487,10 @@ class ProblemsRelatedCache:
                 await conn.commit()
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 await cursor.execute("SELECT * FROM Problems")
@@ -508,7 +508,7 @@ class ProblemsRelatedCache:
                     )  # Delete the problem
 
     async def get_guilds(
-            self, bot: disnake.ext.commands.Bot = None
+        self, bot: disnake.ext.commands.Bot = None
     ) -> List[Union[int, Optional[disnake.Guild]]]:
         """Get the guilds (due to using sql, it must return the guild id, bot is needed to return guilds. takes O(n) time)"""
         try:
@@ -575,10 +575,10 @@ class ProblemsRelatedCache:
                 )
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
@@ -597,7 +597,6 @@ class ProblemsRelatedCache:
                     ),
                 )
 
-
     @property
     def max_question_length(self):
         return self._max_question_length
@@ -609,8 +608,6 @@ class ProblemsRelatedCache:
     @property
     def max_answers_per_problem(self):
         return self._max_answers_per_problem
-
-
 
     @property
     def max_answer_length(self):

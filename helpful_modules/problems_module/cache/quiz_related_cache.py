@@ -24,7 +24,7 @@ log = logging.getLogger(__name__)
 
 
 class QuizRelatedCache(ProblemsRelatedCache):
-    """An extension of ProblemsRelatedCache that contains """
+    """An extension of ProblemsRelatedCache that contains"""
 
     async def get_quiz_sessions(self, quiz_id: int) -> List[QuizSolvingSession]:
         """Get the quiz sessions for a quiz"""
@@ -41,10 +41,10 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 ]
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
@@ -89,10 +89,10 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 return
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
@@ -150,10 +150,10 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 return
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(  # Connect to SQL and actually change it
@@ -191,10 +191,10 @@ class QuizRelatedCache(ProblemsRelatedCache):
 
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
@@ -204,7 +204,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 connection.commit()
 
     async def get_quiz_session_by_special_id(
-            self, special_id: int
+        self, special_id: int
     ) -> QuizSolvingSession:
         """Get a quiz submission by its special id"""
         assert isinstance(special_id, int)  # Basic type-checking
@@ -231,10 +231,10 @@ class QuizRelatedCache(ProblemsRelatedCache):
                     )
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
@@ -275,10 +275,10 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 log.debug("Finished adding user data!")
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
@@ -300,10 +300,10 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 await conn.commit()
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute("DELETE FROM user_data WHERE user_id = %s", (user_id,))
@@ -375,10 +375,10 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 await conn.commit()
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 for item in quiz.problems:
@@ -453,10 +453,10 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 ]
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute("SELECT * FROM quizzes WHERE quiz_id = '%s'", (quiz_id,))
@@ -514,10 +514,10 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 await conn.commit()  # Commit
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
@@ -553,10 +553,10 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 )
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
@@ -607,10 +607,10 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 await conn.commit()
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
@@ -662,10 +662,10 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 await conn.commit()
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
@@ -700,10 +700,10 @@ class QuizRelatedCache(ProblemsRelatedCache):
 
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
@@ -711,12 +711,11 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 )  # Delete it
                 connection.commit()
 
-
     async def get_quizzes_by_func(
-            self: "MathProblemCache",
-            func: typing.Callable[[Quiz, Any], bool] = lambda quiz: False,
-            args: typing.Union[tuple, list] = None,
-            kwargs: dict = None,
+        self: "MathProblemCache",
+        func: typing.Callable[[Quiz, Any], bool] = lambda quiz: False,
+        args: typing.Union[tuple, list] = None,
+        kwargs: dict = None,
     ) -> typing.List[Quiz]:
         """Get the quizzes that match the function.
         Function is a function that takes in the quiz, and the provided arguments and keyword arguments.
@@ -727,4 +726,3 @@ class QuizRelatedCache(ProblemsRelatedCache):
             kwargs = {}
         await self.update_cache()
         return [quiz for quiz in self.cached_quizzes if func(quiz, *args, **kwargs)]  # type: ignore
-

@@ -12,6 +12,7 @@ import disnake
 from helpful_modules.dict_factory import dict_factory
 from helpful_modules.threads_or_useful_funcs import get_log
 
+from ..mysql_connector_with_stmt import mysql_connection
 from ..base_problem import BaseProblem
 from ..errors import *
 from ..quizzes import Quiz, QuizProblem, QuizSolvingSession, QuizSubmission
@@ -23,7 +24,6 @@ log = logging.getLogger(__name__)
 
 
 class MathProblemCache(UserDataRelatedCache):
-
     async def update_cache(self: "MathProblemCache") -> None:
         """Method revamped! This method updates the cache of the guilds, the guild problems, and the cache of the global problems. Takes O(N) time"""
         guild_problems = {}
@@ -44,7 +44,7 @@ class MathProblemCache(UserDataRelatedCache):
                     else:
                         problem = BaseProblem.from_row(row=row, cache=copy(self))
                     if (
-                            problem.guild_id not in guild_ids
+                        problem.guild_id not in guild_ids
                     ):  # Similar logic: Make sure it's there!
                         guild_ids.append(problem.guild_id)
                         guild_problems[
@@ -83,17 +83,17 @@ class MathProblemCache(UserDataRelatedCache):
 
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute("SELECT * FROM problems")  # Get all problems
                 for row in cursor.fetchall():
                     problem = BaseProblem.from_row(row, cache=copy(self))
                     if (
-                            problem.guild_id not in guild_ids
+                        problem.guild_id not in guild_ids
                     ):  # Similar logic: Make sure it's there!
                         guild_ids.append(problem.guild_id)
                         guild_problems[
@@ -241,10 +241,10 @@ class MathProblemCache(UserDataRelatedCache):
 
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
@@ -321,10 +321,10 @@ class MathProblemCache(UserDataRelatedCache):
                 await conn.commit()  # Otherwise, nothing happens and it rolls back!!
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute("DELETE FROM problems WHERE author = '%s'", (user_id,))
@@ -369,10 +369,10 @@ class MathProblemCache(UserDataRelatedCache):
                 await conn.commit()  # Otherwise, nothing happens!
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
@@ -400,7 +400,7 @@ class MathProblemCache(UserDataRelatedCache):
         return True
 
     async def run_sql(
-            self, sql: str, placeholders: typing.Optional[typing.List[Any]] = None
+        self, sql: str, placeholders: typing.Optional[typing.List[Any]] = None
     ) -> dict:
         """Run arbitrary SQL. Only used in /sql"""
         assert isinstance(sql, str)
@@ -416,10 +416,10 @@ class MathProblemCache(UserDataRelatedCache):
                 return await cursor.fetchall()
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(sql, placeholders)
@@ -506,16 +506,26 @@ class MathProblemCache(UserDataRelatedCache):
                                                )
                                                """
                 )
+                await cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS guild_data (
+                    blacklisted INT,
+                    guild_id INT PRIMARY KEY,
+                    can_create_problems_check VARCHAR,
+                    can_create_quizzes_check VARCHAR,
+                    mod_check VARCHAR,
+                    )
+                    """
+                )
                 # Maybe SQL won't understand enums... but that's ok :)
                 log.debug("Created user_data table")
                 await conn.commit()  # Otherwise, when this closes, the database just reverted!
                 log.debug("Saved!")
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 log.debug("Created cursor")
@@ -587,6 +597,16 @@ class MathProblemCache(UserDataRelatedCache):
                                guild_id INT,
                                )
                                """
+                )
+                cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS guild_data (
+                    blacklisted INT,
+                    guild_id INT,
+                    can_create_problems_check VARCHAR,
+                    can_create_quizzes_check VARCHAR,
+                    mod_check VARCHAR,
+                    )
+                    """
                 )
                 # TODO: test whether SQL can serialize enums
                 # I don't know whether SQL can serialize enums

@@ -12,6 +12,7 @@ import disnake
 from helpful_modules.dict_factory import dict_factory
 from helpful_modules.threads_or_useful_funcs import get_log
 
+from ..mysql_connector_with_stmt import mysql_connection
 from ..base_problem import BaseProblem
 from ..errors import *
 from ..quizzes import Quiz, QuizProblem, QuizSolvingSession, QuizSubmission
@@ -21,12 +22,13 @@ from .quiz_related_cache import QuizRelatedCache
 
 log = logging.getLogger(__name__)
 
+
 class UserDataRelatedCache(QuizRelatedCache):
     def __str__(self):
         raise RuntimeError("I don't want to be string-ified")
 
     async def get_user_data(
-            self, user_id: int, default: typing.Optional[UserData] = None
+        self, user_id: int, default: typing.Optional[UserData] = None
     ):
         log.debug(
             f"get_user_data method called. user_id: {user_id}, default: {default}"
@@ -61,10 +63,10 @@ class UserDataRelatedCache(QuizRelatedCache):
                     )
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 log.debug("Connected to MySQL")
                 cursor = connection.cursor(dictionaries=True)
@@ -111,10 +113,10 @@ class UserDataRelatedCache(QuizRelatedCache):
                 log.debug("Finished!")
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 log.debug("Connected to MySQL")
                 cursor = connection.cursor(dictionaries=True)

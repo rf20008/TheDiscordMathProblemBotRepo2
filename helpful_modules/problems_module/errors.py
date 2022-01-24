@@ -126,3 +126,16 @@ class QuizDescriptionNotFoundException(MathProblemsModuleException):
     """Raised when Quiz Description is not found"""
 
     pass
+
+
+class InvalidDictionaryInDatabaseException(MathProblemsModuleException):
+    """Raised when a dictionary is expected in the database as part of a string data type, but it could not be compiled"""
+
+    def __init__(self, msg: str):
+        super().__init__(msg)
+
+    @classmethod
+    def from_invalid_data(cls, invalid_data: str):
+        return cls(
+            f"""I expected a dictionary here, but instead I got {invalid_data} -- OH NO!"""
+        )
