@@ -710,3 +710,21 @@ class QuizRelatedCache(ProblemsRelatedCache):
                     "DELETE * FROM quiz_description WHERE quiz_id = ?", (quiz_id,)
                 )  # Delete it
                 connection.commit()
+
+
+    async def get_quizzes_by_func(
+            self: "MathProblemCache",
+            func: typing.Callable[[Quiz, Any], bool] = lambda quiz: False,
+            args: typing.Union[tuple, list] = None,
+            kwargs: dict = None,
+    ) -> typing.List[Quiz]:
+        """Get the quizzes that match the function.
+        Function is a function that takes in the quiz, and the provided arguments and keyword arguments.
+        Return something True-like to signify you want the quiz in the list, and False-like to signify you don't."""
+        if args is None:
+            args = []
+        if kwargs is None:
+            kwargs = {}
+        await self.update_cache()
+        return [quiz for quiz in self.cached_quizzes if func(quiz, *args, **kwargs)]  # type: ignore
+

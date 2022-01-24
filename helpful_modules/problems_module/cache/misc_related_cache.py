@@ -21,6 +21,7 @@ from .user_data_related_cache import UserDataRelatedCache
 
 log = logging.getLogger(__name__)
 
+
 class MathProblemCache(UserDataRelatedCache):
 
     async def update_cache(self: "MathProblemCache") -> None:
@@ -182,7 +183,6 @@ class MathProblemCache(UserDataRelatedCache):
                 )
         self.cached_submissions = quiz_submissions_dict.values()
         self.cached_submissions_organized_by_dict = quiz_submissions_dict
-
 
     async def get_all_by_author_id(self, author_id: int) -> dict:
         """Return a dictionary containing everything that was created by the author"""
@@ -426,3 +426,170 @@ class MathProblemCache(UserDataRelatedCache):
                 connection.commit()
                 return cursor.fetchall()
 
+    async def initialize_sql_table(self):
+        """Initialize my internal SQL tables. This does nothing if the internal SQL tables already exist!"""
+        log.info("Initializing my internal SQL tables")
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db_name) as conn:
+                cursor = await conn.cursor()
+                await cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS problems (
+                        guild_id INT,
+                        problem_id INT,
+                        question TEXT(2000) NOT NULL,
+                        answers BLOB NOT NULL, 
+                        author INT NOT NULL,
+                        voters BLOB NOT NULL,
+                        solvers BLOB NOT NULL
+                        )"""
+                )  # Blob types will be compiled with pickle.loads() and pickle.dumps() (they are lists)
+                # author: int = user_id
+                # Create table of problems
+                log.debug("Created problems table")
+                await cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS quizzes (
+                    guild_id INT,
+                    quiz_id INT NOT NULL PRIMARY KEY,
+                    problem_id INT NOT NULL,
+                    question TEXT(500) NOT NULL,
+                    answer BLOB NOT NULL,
+                    voters BLOB NOT NULL,
+                    author INT NOT NULL,
+                    solvers INT NOT NULL
+                )"""
+                )
+                # Used for quizzes
+                # answer: Blob (a list)
+                # voters: Blob (a list)
+                # solvers: Blob (a list)
+                # submissions: Blob (a dictionary)
+                log.debug("Created quizzes table")
+                await cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS quiz_submissions (
+                    guild_id INT,
+                    quiz_id INT NOT NULL,
+                    user_id INT NOT NULL,
+                    submissions BLOB NOT NULL
+                    )"""
+                )  # as dictionary
+                # Used to store submissions!
+                log.debug("Created submissions table")
+                await cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS user_data (
+                    USER_ID INT,
+                    trusted INT NOT NULL,
+                    blacklisted INT NOT NULL)"""  # will use bool(val) because SQLite doesn't support booleans
+                )
+                await cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS quiz_submission_sessions (
+                    quiz_id INT NOT NULL,
+                    user_id INT NOT NULL,
+                    is_finished INT,
+                    start_time INT,
+                    expire_time INT,
+                    guild_id INT,
+                    answers BLOB,
+                    special_id VARCHAR,
+                    attempt_num INT
+                    )"""
+                )  # Special_id is for avoiding the weird bug with 'and' not working in SQL statements
+                await cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS quiz_description (
+                                               description VARCHAR,
+                                               quiz_id INT PRIMARY KEY,
+                                               time_limit INT,
+                                               intensity FLOAT,
+                                               license VARCHAR,
+                                               category VARCHAR,
+                                               author INT,
+                                               guild_id INT
+                                               )
+                                               """
+                )
+                # Maybe SQL won't understand enums... but that's ok :)
+                log.debug("Created user_data table")
+                await conn.commit()  # Otherwise, when this closes, the database just reverted!
+                log.debug("Saved!")
+        else:
+            with mysql_connection(
+                    host=self.mysql_db_ip,
+                    password=self.mysql_password,
+                    user=self.mysql_username,
+                    database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                log.debug("Created cursor")
+                cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS problems (
+                        guild_id BIGINT,
+                        problem_id BIGINT NOT NULL,
+                        question TEXT(2000) NOT NULL,
+                        answers BLOB NOT NULL, 
+                        author BIGINT NOT NULL,
+                        voters BLOB NOT NULL,
+                        solvers BLOB NOT NULL
+                        )"""
+                )  # Blob types will be compiled with pickle.loads() and pickle.dumps() (they are lists)
+                # author: int = user_id
+                log.debug("Created problems table!")
+                cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS quizzes (
+                    guild_id BIGINT,
+                    quiz_id BIGINT NOT NULL PRIMARY KEY,
+                    problem_id BIGINT NOT NULL,
+                    question TEXT(500) NOT NULL,
+                    answer BLOB NOT NULL,
+                    voters BLOB NOT NULL,
+                    author BIGINT NOT NULL,
+                    solvers BLOB NOT NULL
+                )"""
+                )
+                log.debug("Created quizzes table")
+                cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS quiz_submissions (
+                    guild_id BIGINT,
+                    quiz_id BIGINT NOT NULL,
+                    user_id BIGINT NOT NULL,
+                    submissions BLOB NOT NULL
+                    )"""
+                )  # as dictionary
+                # Used to store submissions
+                log.debug("Created submissions table")
+                cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS user_data (
+                    user_id INT,
+                    trusted BOOLEAN DEFAULT false,
+                    blacklisted BOOLEAN DEFAULT false
+                    )"""
+                )
+                cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS quiz_submission_sessions (
+                    quiz_id INT NOT NULL,
+                    user_id INT NOT NULL,
+                    is_finished INT,
+                    start_time INT,
+                    expire_time INT,
+                    guild_id INT,
+                    answers BLOB,
+                    special_id VARCHAR,
+                    attempt_num INT
+                    )"""
+                )
+                cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS quiz_description ("
+                               description VARCHAR,
+                               quiz_id INT PRIMARY KEY,
+                               time_limit INT,
+                               intensity FLOAT,
+                               license VARCHAR,
+                               category VARCHAR,
+                               author INT,
+                               guild_id INT,
+                               )
+                               """
+                )
+                # TODO: test whether SQL can serialize enums
+                # I don't know whether SQL can serialize enums
+                log.debug("Created user data table")
+                connection.commit()
+                log.debug("Saved tables!")
