@@ -27,8 +27,3 @@ def mysql_connection(*args, **kwargs) -> None:
     finally:
         connection.commit()
         connection.close()
-
-pool = pooling.MySQLConnectionPool()
-@contextlib.contextmanager
-def mysql_connection_with_a_pool(*args, **kwargs):
-
