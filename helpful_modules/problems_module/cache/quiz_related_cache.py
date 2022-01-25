@@ -40,12 +40,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                     for item in await cursor.fetchall()
                 ]
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     "SELECT * FROM quiz_submission_sessions WHERE quiz_id = %s",
@@ -88,12 +83,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 await conn.commit()
                 return
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     """INSERT INTO quiz_submission_sessions (user_id, quiz_id, guild_id, is_finished, answers, start_time, expire_time, special_id, attempt_num)
@@ -149,12 +139,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 await conn.commit()
                 return
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(  # Connect to SQL and actually change it
                     """UPDATE quiz_submission_sessions 
@@ -190,12 +175,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 await conn.commit()
 
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     "DELETE FROM quiz_submission_session WHERE special_id=%s",
@@ -230,12 +210,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                         potential_sessions[0], cache=self
                     )
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     "SELECT * FROM quiz_submission_sessions WHERE special_id = %s",
@@ -274,12 +249,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 await conn.commit()
                 log.debug("Finished adding user data!")
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     """INSERT INTO user_data (user_id, trusted, blacklisted)
@@ -299,12 +269,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 )
                 await conn.commit()
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute("DELETE FROM user_data WHERE user_id = %s", (user_id,))
                 connection.commit()
@@ -374,12 +339,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
 
                 await conn.commit()
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 for item in quiz.problems:
                     cursor.execute(
@@ -452,12 +412,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                     for row in problems
                 ]
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute("SELECT * FROM quizzes WHERE quiz_id = '%s'", (quiz_id,))
                 problems = [
@@ -513,12 +468,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 )
                 await conn.commit()  # Commit
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     "DELETE FROM quizzes WHERE quiz_id = '?'", (quiz_id,)
@@ -552,12 +502,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                     possible_quiz_descriptions[0], cache=self
                 )
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     "SELECT * FROM quiz_description WHERE quiz_id = ?", (quiz_id,)
@@ -606,12 +551,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 )
                 await conn.commit()
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     """UPDATE quiz_description
@@ -661,12 +601,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 )
                 await conn.commit()
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     """INSERT INTO quiz_description (description, license, time_limit, intensity, quiz_id, author, category, guild_id)
@@ -699,12 +634,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 await conn.commit()
 
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     "DELETE * FROM quiz_description WHERE quiz_id = ?", (quiz_id,)

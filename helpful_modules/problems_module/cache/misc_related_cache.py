@@ -12,6 +12,7 @@ import disnake
 from helpful_modules.dict_factory import dict_factory
 from helpful_modules.threads_or_useful_funcs import get_log
 
+from mysql.connector import MySQLConnection
 from ..mysql_connector_with_stmt import mysql_connection
 from ..base_problem import BaseProblem
 from ..errors import *
@@ -23,7 +24,114 @@ from .user_data_related_cache import UserDataRelatedCache
 log = logging.getLogger(__name__)
 
 
-class MathProblemCache(UserDataRelatedCache):
+class MiscRelatedCache:
+    def __init__(
+        self,
+        *,
+        mysql_username: str,
+        mysql_password: str,
+        mysql_db_ip: str,
+        mysql_db_name: str,
+        use_sqlite: bool = False,
+        max_answer_length: int = 100,
+        max_question_limit: int = 250,
+        max_guild_problems: int = 125,
+        max_answers_per_problem: int = 25,
+        max_problems_per_quiz: int = 50,
+        max_quizzes_per_guild: int = 50,
+        warnings_or_errors: Union[Literal["warnings"], Literal["errors"]] = "warnings",
+        db_name: str = "problems_module.db",
+        update_cache_by_default_when_requesting: bool = True,
+        use_cached_problems: bool = False,
+        pool_size: int = 20
+    ):
+        """Create a new MathProblemCache. The arguments should be self-explanatory.
+        Many methods are async!"""
+        if use_sqlite:
+            self._pool = mysql.connector.pooling.MySQLConnectionPool(
+                pool_name = 'BotPool1',
+                pool_size = pool_size,
+                host = mysql_db_ip,
+                username = mysql_username,
+                password = mysql_password,
+                database = mysql_db_name
+            )
+
+        self.cached_submissions_organized_by_dict = None
+        log.info("Initializing the MathProblemCache object.")
+        # make_sql_table([], db_name = sql_dict_db_name)
+        # make_sql_table([], db_name = "MathProblemCache1.db", table_name="kv_store")
+        if use_sqlite:
+            warnings.warn("Sqlite has been deprecated. Use MySQL instead.")
+        self.db_name = db_name
+        self.db = db_name
+        if warnings_or_errors not in ["warnings", "errors"]:
+            log.critical("Uh oh; warnings_or_errors is bad")
+            raise ValueError(
+                f"warnings_or_errors is {warnings_or_errors}, not 'warnings' or 'errors'"
+            )
+        self.warnings = (
+            warnings_or_errors == "warnings"
+        )  # Whether to raise TypeErrors or warn
+        if max_answers_per_problem < 1:
+            raise ValueError("max_answers_per_problem must be at least 1!")
+        self._max_answers_per_problem = max_answers_per_problem
+        self.use_sqlite = use_sqlite
+        self.use_cached_problems = use_cached_problems
+        self._max_answer_length = max_answer_length
+        self._max_question_length = max_question_limit
+        self._max_guild_limit = max_guild_problems
+        self.mysql_username = mysql_username
+        self.max_quizzes_per_guild = max_quizzes_per_guild
+        self.max_problems_per_quiz = max_problems_per_quiz
+        self.mysql_password = mysql_password
+        self.mysql_db_ip = mysql_db_ip
+        self.mysql_db_name = mysql_db_name
+        asyncio.run(
+            self.initialize_sql_table()
+        )  # Initialize the SQL tables (but asyncio.run() has to be used because __init__ cannot be async)
+        self.update_cache_by_default_when_requesting = (
+            update_cache_by_default_when_requesting
+        )
+        self.guild_ids = []
+        self.global_problems = {}
+        self.cached_submissions = []
+        self.cached_quizzes = []
+        self.guild_problems = {}
+        self._guilds: typing.List[disnake.Guild] = []
+        asyncio.run(self.update_cache())
+        self.cached_sessions = {}
+
+    def _request_connection(self) -> typing.Optional[MySQLConnection]:
+        """Request a connection from my internal pool. I will raise exceptions (including PoolError's if there are no more connections in the pool)"""
+        if self.use_sqlite:
+            raise MathProblemsModuleException("I don't use MySQL!")
+
+        try:
+            return self._pool.get_connection()
+        except PoolError as pe:
+            try:
+                self._pool.add_connection()
+                return self._pool.get_connection()
+            except PoolError as pe2:
+                raise NoConnectionException("Pool full, and all connections are used") from pe2
+
+    @contextlib.contextmamanger
+    def get_a_connection(self):
+        if self.use_sqlite:
+            raise MathProblemsModuleException("MySQL is not used")
+        try:
+            conn = self._request_connection()
+        except NoConnectionException as exc:
+            raise NoConnectionException("I couldn't get a connection from my internal pool! This is because I'm too popular!!!") from exc
+
+        try:
+            yield conn
+        finally:
+            conn.commit()
+            conn.close()
+            return
+
     async def update_cache(self: "MathProblemCache") -> None:
         """Method revamped! This method updates the cache of the guilds, the guild problems, and the cache of the global problems. Takes O(N) time"""
         guild_problems = {}
@@ -82,12 +190,7 @@ class MathProblemCache(UserDataRelatedCache):
                             quiz_sessions_dict[session.quiz_id] = [session]
 
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute("SELECT * FROM problems")  # Get all problems
                 for row in cursor.fetchall():
@@ -240,12 +343,7 @@ class MathProblemCache(UserDataRelatedCache):
                 ]
 
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     "SELECT * FROM quizzes WHERE author = '%s'", (author_id,)
@@ -320,12 +418,7 @@ class MathProblemCache(UserDataRelatedCache):
 
                 await conn.commit()  # Otherwise, nothing happens and it rolls back!!
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute("DELETE FROM problems WHERE author = '%s'", (user_id,))
                 cursor.execute("DELETE FROM quizzes WHERE author = '%s'", (user_id,))
@@ -368,12 +461,7 @@ class MathProblemCache(UserDataRelatedCache):
                 )
                 await conn.commit()  # Otherwise, nothing happens!
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     "DELETE FROM problems WHERE guild_id = %s", (guild_id,)
@@ -521,12 +609,7 @@ class MathProblemCache(UserDataRelatedCache):
                 await conn.commit()  # Otherwise, when this closes, the database just reverted!
                 log.debug("Saved!")
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 log.debug("Created cursor")
                 cursor.execute(
@@ -601,7 +684,7 @@ class MathProblemCache(UserDataRelatedCache):
                 cursor.execute(
                     """CREATE TABLE IF NOT EXISTS guild_data (
                     blacklisted INT,
-                    guild_id INT,
+                    guild_id INT PRIMARY KEY,
                     can_create_problems_check VARCHAR,
                     can_create_quizzes_check VARCHAR,
                     mod_check VARCHAR,

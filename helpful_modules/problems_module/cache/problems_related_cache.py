@@ -17,79 +17,16 @@ from ..base_problem import BaseProblem
 from ..errors import *
 from ..mysql_connector_with_stmt import *
 from ..mysql_connector_with_stmt import mysql_connection
+from .
 from ..quizzes import Quiz, QuizProblem, QuizSolvingSession, QuizSubmission
 from ..quizzes.quiz_description import QuizDescription
 from ..user_data import UserData
-
+from .misc_related_cache import MiscRelatedProblemCache
 log = logging.getLogger(__name__)
 
 
-class ProblemsRelatedCache:
-    def __init__(
-        self,
-        *,
-        mysql_username: str,
-        mysql_password: str,
-        mysql_db_ip: str,
-        mysql_db_name: str,
-        use_sqlite: bool = False,
-        max_answer_length: int = 100,
-        max_question_limit: int = 250,
-        max_guild_problems: int = 125,
-        max_answers_per_problem: int = 25,
-        max_problems_per_quiz: int = 50,
-        max_quizzes_per_guild: int = 50,
-        warnings_or_errors: Union[Literal["warnings"], Literal["errors"]] = "warnings",
-        db_name: str = "problems_module.db",
-        update_cache_by_default_when_requesting: bool = True,
-        use_cached_problems: bool = False,
-    ):
-        """Create a new MathProblemCache. The arguments should be self-explanatory.
-        Many methods are async!"""
-        self.cached_submissions_organized_by_dict = None
-        log.info("Initializing the MathProblemCache object.")
-        # make_sql_table([], db_name = sql_dict_db_name)
-        # make_sql_table([], db_name = "MathProblemCache1.db", table_name="kv_store")
-        if use_sqlite:
-            warnings.warn("Sqlite has been deprecated. Use MySQL instead.")
-        self.db_name = db_name
-        self.db = db_name
-        if warnings_or_errors not in ["warnings", "errors"]:
-            log.critical("Uh oh; warnings_or_errors is bad")
-            raise ValueError(
-                f"warnings_or_errors is {warnings_or_errors}, not 'warnings' or 'errors'"
-            )
-        self.warnings = (
-            warnings_or_errors == "warnings"
-        )  # Whether to raise TypeErrors or warn
-        if max_answers_per_problem < 1:
-            raise ValueError("max_answers_per_problem must be at least 1!")
-        self._max_answers_per_problem = max_answers_per_problem
-        self.use_sqlite = use_sqlite
-        self.use_cached_problems = use_cached_problems
-        self._max_answer_length = max_answer_length
-        self._max_question_length = max_question_limit
-        self._max_guild_limit = max_guild_problems
-        self.mysql_username = mysql_username
-        self.max_quizzes_per_guild = max_quizzes_per_guild
-        self.max_problems_per_quiz = max_problems_per_quiz
-        self.mysql_password = mysql_password
-        self.mysql_db_ip = mysql_db_ip
-        self.mysql_db_name = mysql_db_name
-        asyncio.run(
-            self.initialize_sql_table()
-        )  # Initialize the SQL tables (but asyncio.run() has to be used because __init__ cannot be async)
-        self.update_cache_by_default_when_requesting = (
-            update_cache_by_default_when_requesting
-        )
-        self.guild_ids = []
-        self.global_problems = {}
-        self.cached_submissions = []
-        self.cached_quizzes = []
-        self.guild_problems = {}
-        self._guilds: typing.List[disnake.Guild] = []
-        asyncio.run(self.update_cache())
-        self.cached_sessions = {}
+class ProblemsRelatedCache(MiscRelatedProblemCache):
+
 
     async def convert_to_dict(self) -> dict:
         """A method that converts self to a dictionary (not used, will probably be removed soon)"""
@@ -203,12 +140,7 @@ class ProblemsRelatedCache:
                         row = rows[0]
                     return BaseProblem.from_row(row, cache=copy(self))
             else:
-                with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
-                ) as connection:
+                with self.get_a_connection() as connection:
                     cursor = connection.cursor(dictionaries=True)
                     cursor.execute(
                         "SELECT * from problems WHERE problem_id = %s", (problem_id,)
@@ -378,12 +310,7 @@ class ProblemsRelatedCache:
                 await conn.commit()
             return problem
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 await cursor.execute(
                     """INSERT INTO problems (guild_id, problem_id, question, answer, voters, solvers, author)
@@ -452,12 +379,7 @@ class ProblemsRelatedCache:
                 await conn.commit()
 
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     "DELETE FROM problems WHERE problem_id = %s",
@@ -486,12 +408,7 @@ class ProblemsRelatedCache:
                 ]
                 await conn.commit()
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 await cursor.execute("SELECT * FROM Problems")
                 all_problems = [
@@ -574,12 +491,7 @@ class ProblemsRelatedCache:
                     ),
                 )
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     """UPDATE problems 

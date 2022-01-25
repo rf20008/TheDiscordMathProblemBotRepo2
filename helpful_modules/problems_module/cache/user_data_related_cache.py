@@ -62,12 +62,7 @@ class UserDataRelatedCache(QuizRelatedCache):
                         f"Too much user data; found {len(cursor_results)} results; expected either 1 or 0"
                     )
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
+            with self.get_a_connection() as connection:
                 log.debug("Connected to MySQL")
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
@@ -129,3 +124,48 @@ class UserDataRelatedCache(QuizRelatedCache):
                 connection.commit()
                 log.debug("Finished!")
                 return
+
+    async def add_user_data(self, user_id: int, thing_to_add: UserData) -> None:
+        assert isinstance(user_id, int)
+        assert isinstance(thing_to_add, UserData)
+        if (await self.get_user_data(user_id, default=Exception)) != Exception:  # type: ignore
+            # This is because the user_id is None. Then it will return the default instead
+            raise MathProblemsModuleException(
+                "User data already exists"
+            )  # Make sure the user data doesn't already exist
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db_name) as conn:
+                cursor = await conn.cursor()
+                await cursor.execute(
+                    """INSERT INTO user_data (user_id, trusted, blacklisted)
+                VALUES (?,?,?)""",
+                    (user_id, thing_to_add.trusted, thing_to_add.blacklisted),
+                )  # add the user data
+                await conn.commit()
+                log.debug("Finished adding user data!")
+        else:
+            with self.get_a_connection() as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
+                    """INSERT INTO user_data (user_id, trusted, blacklisted)
+                VALUES (%s, %s, %s)""",
+                    (user_id, thing_to_add.trusted, thing_to_add.blacklisted),
+                )
+                connection.commit()
+
+    async def del_user_data(self, user_id: int):
+        """Delete user data given the user id"""
+        assert isinstance(user_id, int)
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db_name) as conn:
+                cursor = await conn.cursor()
+                await cursor.execute(
+                    "DELETE FROM user_data WHERE user_id = ?", (user_id,)
+                )
+                await conn.commit()
+        else:
+            with self.get_a_connection() as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute("DELETE FROM user_data WHERE user_id = %s", (user_id,))
+                connection.commit()
+                connection.close()
