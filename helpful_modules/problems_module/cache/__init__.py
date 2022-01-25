@@ -1,5 +1,5 @@
 from . import *
-from .misc_related_cache import MathProblemCache
+from .final_cache import MathProblemCache
 
 # from .problems_related_cache import ProblemsRelatedCache
 # from .quiz_related_cache import QuizRelatedCache

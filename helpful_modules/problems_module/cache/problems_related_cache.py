@@ -17,17 +17,15 @@ from ..base_problem import BaseProblem
 from ..errors import *
 from ..mysql_connector_with_stmt import *
 from ..mysql_connector_with_stmt import mysql_connection
-from .
 from ..quizzes import Quiz, QuizProblem, QuizSolvingSession, QuizSubmission
 from ..quizzes.quiz_description import QuizDescription
 from ..user_data import UserData
-from .misc_related_cache import MiscRelatedProblemCache
+from .misc_related_cache import MiscRelatedCache
+
 log = logging.getLogger(__name__)
 
 
-class ProblemsRelatedCache(MiscRelatedProblemCache):
-
-
+class ProblemsRelatedCache(MiscRelatedCache):
     async def convert_to_dict(self) -> dict:
         """A method that converts self to a dictionary (not used, will probably be removed soon)"""
         e = {}

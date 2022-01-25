@@ -1,3 +1,5 @@
+import asyncio
+import contextlib
 import logging
 import sqlite3
 import typing
@@ -8,18 +10,17 @@ from typing import *
 
 import aiosqlite
 import disnake
+from mysql.connector import MySQLConnection
 
 from helpful_modules.dict_factory import dict_factory
 from helpful_modules.threads_or_useful_funcs import get_log
 
-from mysql.connector import MySQLConnection
-from ..mysql_connector_with_stmt import mysql_connection
 from ..base_problem import BaseProblem
 from ..errors import *
+from ..mysql_connector_with_stmt import mysql_connection
 from ..quizzes import Quiz, QuizProblem, QuizSolvingSession, QuizSubmission
 from ..quizzes.quiz_description import QuizDescription
 from ..user_data import UserData
-from .user_data_related_cache import UserDataRelatedCache
 
 log = logging.getLogger(__name__)
 
@@ -43,18 +44,18 @@ class MiscRelatedCache:
         db_name: str = "problems_module.db",
         update_cache_by_default_when_requesting: bool = True,
         use_cached_problems: bool = False,
-        pool_size: int = 20
+        pool_size: int = 20,
     ):
         """Create a new MathProblemCache. The arguments should be self-explanatory.
         Many methods are async!"""
-        if use_sqlite:
+        if not use_sqlite:
             self._pool = mysql.connector.pooling.MySQLConnectionPool(
-                pool_name = 'BotPool1',
-                pool_size = pool_size,
-                host = mysql_db_ip,
-                username = mysql_username,
-                password = mysql_password,
-                database = mysql_db_name
+                pool_name="BotPool1",
+                pool_size=pool_size,
+                host=mysql_db_ip,
+                username=mysql_username,
+                password=mysql_password,
+                database=mysql_db_name,
             )
 
         self.cached_submissions_organized_by_dict = None
@@ -114,16 +115,20 @@ class MiscRelatedCache:
                 self._pool.add_connection()
                 return self._pool.get_connection()
             except PoolError as pe2:
-                raise NoConnectionException("Pool full, and all connections are used") from pe2
+                raise NoConnectionException(
+                    "Pool full, and all connections are used"
+                ) from pe2
 
-    @contextlib.contextmamanger
+    @contextlib.contextmanager
     def get_a_connection(self):
         if self.use_sqlite:
             raise MathProblemsModuleException("MySQL is not used")
         try:
             conn = self._request_connection()
         except NoConnectionException as exc:
-            raise NoConnectionException("I couldn't get a connection from my internal pool! This is because I'm too popular!!!") from exc
+            raise NoConnectionException(
+                "I couldn't get a connection from my internal pool! This is because I'm too popular!!!"
+            ) from exc
 
         try:
             yield conn
@@ -600,7 +605,7 @@ class MiscRelatedCache:
                     guild_id INT PRIMARY KEY,
                     can_create_problems_check VARCHAR,
                     can_create_quizzes_check VARCHAR,
-                    mod_check VARCHAR,
+                    mod_check VARCHAR
                     )
                     """
                 )

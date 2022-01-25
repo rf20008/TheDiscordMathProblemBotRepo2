@@ -2,11 +2,14 @@ import asyncio
 import copy
 
 import aiosqlite
+
 from ...dict_factory import dict_factory
-from ..mysql_connector_with_stmt import mysql_connection
 from ..GuildData.guild_data import GuildData
 from ..mysql_connector_with_stmt import *
+from ..mysql_connector_with_stmt import mysql_connection
 from .user_data_related_cache import UserDataRelatedCache
+
+
 class GuildDataRelatedCache:
     def set_guild_data(self, data: GuildData):
         assert isinstance(data, GuildData)  # Basic type-checking
@@ -29,9 +32,9 @@ class GuildDataRelatedCache:
                         int(data.blacklisted),
                         str(data.can_create_problems_check.to_dict()),
                         str(data.can_create_quizzes_check.to_dict()),
-                        str(data.mods_check.to_dict())
-                    )
-                ) # TODO: test
+                        str(data.mods_check.to_dict()),
+                    ),
+                )  # TODO: test
                 await conn.commit()
         else:
             with self.get_a_connection() as connection:
@@ -51,8 +54,8 @@ class GuildDataRelatedCache:
                         int(data.blacklisted),
                         str(data.can_create_problems_check.to_dict()),
                         str(data.can_create_quizzes_check.to_dict()),
-                        str(data.mods_check.to_dict())
-                    )
+                        str(data.mods_check.to_dict()),
+                    ),
                 )  # TODO: test this
 
     async def get_guild_data(self, guild_id: int, default: GuildData):
@@ -72,7 +75,9 @@ class GuildDataRelatedCache:
                 elif len(results) == 1:
                     return GuildData.from_dict(results[0])
                 else:
-                    raise SQLException("There were too many rows with the same guild id in guild data")
+                    raise SQLException(
+                        "There were too many rows with the same guild id in guild data"
+                    )
         else:
             with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
@@ -86,8 +91,6 @@ class GuildDataRelatedCache:
                 elif len(results) == 1:
                     return GuildData.from_dict(results[0])
                 else:
-                    raise SQLException("There were too many rows with the same guild id in guild data")
-
-
-
-
+                    raise SQLException(
+                        "There were too many rows with the same guild id in guild data"
+                    )
