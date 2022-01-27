@@ -639,7 +639,7 @@ JSON error: {e}"""
             )
         ],
     )
-    def initialize_quiz_solving(
+    async def initialize_quiz_solving(
         self, inter: disnake.ApplicationCommandInteraction, quiz_id: int
     ):
         """/quiz solve initalize_quiz_solving

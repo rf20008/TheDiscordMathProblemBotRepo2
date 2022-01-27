@@ -79,14 +79,14 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
 
     async def close(self):
         self.is_closing = True
-        for task in self._tasks:
+        for task in self.tasks:
             task.stop()
         await asyncio.sleep(5)
         self.is_closing = False
         await asyncio.gather(*self.closing_things)
         await super.close()
 
-    def add_closing_thing(self, thing: types.FunctionType) -> None:
+    def add_closing_thing(self, thing: FunctionType) -> None:
 
         assert asyncio.iscoroutinefunction(thing)
         self.closing_things.append(thing)
