@@ -1,5 +1,7 @@
+import asyncio
 import logging
 import time
+from types import FunctionType
 
 import disnake
 
@@ -12,6 +14,7 @@ from helpful_modules.problems_module.cache import MathProblemCache
 class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.is_closing = False
         try:
             self.tasks = kwargs.pop("tasks")
         except:
@@ -44,6 +47,7 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
         if not self.trusted_users and self.trusted_users != []:
             raise TypeError("trusted_users was not found")
         self.blacklisted_users = kwargs.get("blacklisted_users", [])
+        self.closing_things = []
 
     def get_task(self, task_name):
         return self.tasks[task_name]
@@ -68,3 +72,21 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
         if not hasattr(self, "owner_id") or not self.owner_id or self.owner_id == None:
             return False
         return user.id in self.trusted_users and user.id == self.owner_id
+
+    def add_task(self, task):
+        self.tasks.append(task)
+        task.start()
+
+    async def close(self):
+        self.is_closing = True
+        for task in self._tasks:
+            task.stop()
+        await asyncio.sleep(5)
+        self.is_closing = False
+        await asyncio.gather(*self.closing_things)
+        await super.close()
+
+    def add_closing_thing(self, thing: types.FunctionType) -> None:
+
+        assert asyncio.iscoroutinefunction(thing)
+        self.closing_things.append(thing)

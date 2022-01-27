@@ -8,6 +8,7 @@ from helpful_modules import problems_module
 from helpful_modules.custom_embeds import ErrorEmbed, SuccessEmbed
 from helpful_modules.problems_module import *
 from helpful_modules.problems_module import MathProblemCache, Quiz, QuizProblem
+from helpful_modules.problems_module.quizzes import QuizSolvingSession, QuizSubmission
 from helpful_modules.threads_or_useful_funcs import generate_new_id, get_log
 
 from .helper_cog import HelperCog
@@ -570,3 +571,128 @@ JSON error: {e}"""
             return await inter.send("You have successfully modified the problem!")
 
         # TODO: use QuizSessions to keep track of people solving quizzes!
+
+    @quiz.sub_command_group(name="view", description="View quizzes!")
+    def view(self, inter: disnake.ApplicationCommandInteraction):
+        """/quiz view
+
+        View quizzes
+
+        Subcommands:
+        /quiz view entire_quiz
+        ---
+        View the entire quiz. You must have an existing session for this to work!
+
+
+        /quiz view ids
+        ---
+        View the avaliable Quiz IDs
+
+
+        /quiz view problem
+
+        View the specific quiz problems!"""
+        pass
+
+    @view.sub_command(
+        name="entire_quiz", description="View the entire quiz. You must have a session!"
+    )
+    async def entire_quiz(self, inter: disnake.ApplicationCommandInteraction, quiz_id):
+        raise NotImplementedError()
+        session: QuizSolvingSession = await self._get_quiz_submission(
+            inter.author.id, quiz_id
+        )
+
+    async def _get_quiz_submission(
+        self, user_id: int, quiz_id: int, attempt_num: typing.Optional[int] = None
+    ) -> typing.Optional[
+        typing.Union[QuizSolvingSession, typing.List[QuizSolvingSession]]
+    ]:
+        quiz: Quiz = await self.cache.get_quiz(quiz_id)
+
+        def check(session: QuizSolvingSession) -> bool:
+            works: bool = True
+            if attempt_num is not None:
+                works = session.attempt_num == attempt_num
+            return session.user_id == user_id and works
+
+        sessions = filter(check, quiz.existing_sessions)
+        return (
+            None
+            if sessions == []
+            else (sessions[0] if len(sessions) == 1 else sessions)
+        )
+
+    @quiz.sub_command_group(name="solve", description="Solve quizzes")
+    def solve(self, inter: disnake.ApplicationCommandInteraction):
+        pass
+
+    @solve.sub_command(
+        name="initialize_quiz_solving",
+        description="Initialize solving a quiz",
+        options=[
+            disnake.Option(
+                name="quiz_id",
+                description="The ID of the quiz you wish to initialize solving",
+                type=disnake.OptionType.integer,
+                required=True,
+            )
+        ],
+    )
+    def initialize_quiz_solving(
+        self, inter: disnake.ApplicationCommandInteraction, quiz_id: int
+    ):
+        """/quiz solve initalize_quiz_solving
+        Initalize quiz solving. This will create a session for you!"""
+        # Make sure the quiz exists before creating the session
+        try:
+            quiz: Quiz = await self.bot.cache.get_quiz(quiz_id)
+            if quiz.guild_id != inter.guild_id and quiz.guild_id is not None:
+                await inter.send(
+                    embed=ErrorEmbed(
+                        "This quiz exists, but it doesn't belong to this guild."
+                    )
+                )
+                return
+        except problems_module.errors.QuizNotFound:
+            await inter.send(embed=ErrorEmbed("Quiz not found"))
+        attempt_num: int = (
+            await self._get_attempt_num_for_user(inter.author.id, quiz_id=quiz_id) + 1
+        )
+        submission_to_add = problems_module.QuizSolvingSession(
+            user_id=inter.author.id,
+            guild_id=inter.guild_id,
+            quiz_id=quiz_id,
+            attempt_num=attempt_num,
+        )
+        quiz.existing_sessions.append(submission_to_add)
+        await quiz.update_self()
+        await inter.send("I have successfully created a session for you!")
+
+    async def _get_attempt_num_for_user(self, user_id: int, quiz_id: int) -> int:
+        """Get the latest attempt number for the user for this quiz"""
+        quiz: Quiz = await self.cache.get_quiz(quiz_id)
+
+        def check(session: QuizSolvingSession) -> bool:
+            """A function to determine whether this submission should be included"""
+            return session.user_id == user_id
+
+        # basically: use filter() to make sure the sessions we check only are from the user.
+        # From that, we use list comprehension to create a list of the attempt numbers of the sessions given
+        # Then we use max() to find the maximum of that created list and return it
+        return max([item.attempt_num for item in filter(check, quiz.existing_sessions)])
+
+    @solve.sub_command(
+        name="solve_quiz_problem_given_id",
+        description="Solve a quiz problem given the id",
+        options=[
+            disnake.Option(
+                name="quiz_id",
+                description="The Quiz ID containing the problem to solve",
+                type=disnake.OptionType.integer,
+                required=True,
+            ),
+        ],
+    )
+    def solve_quiz_problem_given_id(self, inter: disnake.ApplicationCommandInteraction):
+        raise NotImplementedError()
