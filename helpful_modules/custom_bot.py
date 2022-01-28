@@ -1,9 +1,11 @@
 import asyncio
 import logging
 import time
+import inspect
 from types import FunctionType
 
 import disnake
+
 
 import helpful_modules
 from helpful_modules import problems_module
@@ -74,19 +76,29 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
         return user.id in self.trusted_users and user.id == self.owner_id
 
     def add_task(self, task):
+        assert isinstance(task, disnake.tasks.Loop)
         self.tasks.append(task)
         task.start()
 
     async def close(self):
         self.is_closing = True
+        for cog_name in list(self.cogs):
+            self.remove_cog(cog_name)
+        for extension in list(self.extensions):
+            self.unload_extension(extension)
         for task in self.tasks:
             task.stop()
         await asyncio.sleep(5)
-        self.is_closing = False
         await asyncio.gather(*self.closing_things)
+        self.is_closing = False
         await super.close()
 
     def add_closing_thing(self, thing: FunctionType) -> None:
+        if asyncio.iscoroutinefunction(thing):
+            self.closing_things.append(thing())
 
-        assert asyncio.iscoroutinefunction(thing)
-        self.closing_things.append(thing)
+        elif inspect.isawaitable(thing):
+            self.closing_things.append(thing)
+
+        else:
+            raise TypeError()
