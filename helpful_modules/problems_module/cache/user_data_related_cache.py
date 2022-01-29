@@ -169,3 +169,4 @@ class UserDataRelatedCache(QuizRelatedCache):
                 cursor.execute("DELETE FROM user_data WHERE user_id = %s", (user_id,))
                 connection.commit()
                 connection.close()
+

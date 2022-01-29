@@ -68,7 +68,7 @@ class QuizCog(HelperCog):
         ],
     )
     async def from_json(
-        self, inter: disnake.ApplicationCommandInteraction, data: str
+            self, inter: disnake.ApplicationCommandInteraction, data: str
     ) -> None:
         """/quiz create from_json [json: str]
         Create a Quiz from JSON. This is not user-friendly, but it's quick.
@@ -272,11 +272,11 @@ JSON error: {e}"""
         ],
     )
     async def add_answer(
-        self: "QuizCog",
-        inter: disnake.ApplicationCommandInteraction,
-        quiz_id: int,
-        problem_num: int,
-        answer: str,
+            self: "QuizCog",
+            inter: disnake.ApplicationCommandInteraction,
+            quiz_id: int,
+            problem_num: int,
+            answer: str,
     ):
         """/quiz edit add_answer (quiz_id: int) (problem_num: int) (answer: str)
 
@@ -356,15 +356,15 @@ JSON error: {e}"""
         ],
     )
     async def add_problem(
-        self,
-        inter: disnake.ApplicationCommandInteraction,
-        quiz_id: int,
-        problem_to_insert_before: int,
-        question: str,
-        answer: typing.Optional[str] = None,
-        is_written: bool = False,
-        points: typing.Optional[float] = 0.5
-        # ...
+            self,
+            inter: disnake.ApplicationCommandInteraction,
+            quiz_id: int,
+            problem_to_insert_before: int,
+            question: str,
+            answer: typing.Optional[str] = None,
+            is_written: bool = False,
+            points: typing.Optional[float] = 0.5
+            # ...
     ) -> None:
         """/quiz edit add_problem (quiz_id: int) (problem_to_insert_before: int) (question: str) [answer: str = None], [is_written: bool = False] [points: float = 0.5]
         Add a problem to a quiz. You must be an author of the quiz (which means that you are one of the people who created a problem for the quiz) to add the problem to the quiz.
@@ -428,10 +428,10 @@ JSON error: {e}"""
         ],
     )
     async def delete_problem(
-        self,
-        inter: disnake.ApplicationCommandInteraction,
-        quiz_id: int,
-        problem_to_delete: int,
+            self,
+            inter: disnake.ApplicationCommandInteraction,
+            quiz_id: int,
+            problem_to_delete: int,
     ):
         """/quiz edit delete_problem (quiz_id: int) (problem_to_delete: int)
         Delete a problem in a quiz, provided that you authored the problem, have the `Administrator` permission the guild, or are a trusted user.
@@ -526,14 +526,14 @@ JSON error: {e}"""
         ],
     )
     async def modify_problem(
-        self,
-        inter: disnake.ApplicationCommandInteraction,
-        quiz_id: int,
-        problem_num: int,
-        new_question: str = None,
-        new_answer: str = None,
-        points_worth: int = None,
-        is_written: bool = None,
+            self,
+            inter: disnake.ApplicationCommandInteraction,
+            quiz_id: int,
+            problem_num: int,
+            new_question: str = None,
+            new_answer: str = None,
+            points_worth: int = None,
+            is_written: bool = None,
     ):
         """/quiz edit modify problem (quiz_id: int) (problem_num: int) [new_question: str = None] [new_answer: str= None] [points_worth: int = None] [is_written: bool = None]
         Edit the problem with the given quiz id and problem number, replacing the question, answer, points worth, etc. with what is provided.
@@ -586,7 +586,7 @@ JSON error: {e}"""
 
         /quiz view ids
         ---
-        View the avaliable Quiz IDs
+        View the available Quiz IDs
 
 
         /quiz view problem
@@ -595,16 +595,119 @@ JSON error: {e}"""
         pass
 
     @view.sub_command(
-        name="entire_quiz", description="View the entire quiz. You must have a session!"
+        name="entire_quiz", description="View the entire quiz. You must have a session!",
+        options=[
+            disnake.Option(
+                name='quiz_id',
+                description="The Quiz ID of the quiz you wish to view",
+                type=disnake.OptionType.integer,
+                required=True
+            ),
+            disnake.Option(
+                name="raw",
+                description="Whether to view the problem raw. You must either be a moderator or be a trusted user to do this!",
+                type=disnake.OptionType.boolean,
+                required=False
+            ),
+            disnake.Option(
+                name="show_all_info",
+                description="Whether to show all the info (you must have solved the problem, be a moderator, or be a trusted user to do this)",
+                # TODO: shorten
+                type=disnake.OptionType.boolean,
+                required=False
+
+            )
+        ]
     )
-    async def entire_quiz(self, inter: disnake.ApplicationCommandInteraction, quiz_id):
-        raise NotImplementedError()
-        session: QuizSolvingSession = await self._get_quiz_submission(
-            inter.author.id, quiz_id
-        )
+    async def entire_quiz(self, inter: disnake.ApplicationCommandInteraction, quiz_id: int, raw: bool = False,
+                          show_all_info: bool = False):
+        """/quiz view entire_quiz
+
+        View the entire quiz. Due to Discord limitations, it will be sent in multiple embeds and multiple messages, which might trigger spam filters."""
+        await inter.response.defer()
+        allowed = False
+        if raw or show_all_info:
+            allowed = False
+            if show_all_info:
+                # Did they solve it?
+                try:
+                    quiz: Quiz = await self.cache.get_quiz(quiz_id)
+                except QuizNotFoundException:
+                    await inter.send(embed=ErrorEmbed("Quiz not found"))
+                solved_quiz: bool = (
+
+                    len(filter(lambda submission: submission.user_id == inter.author.id, quiz.submissions)) != 0
+                ) or (
+                    len(filter(lambda session: session.overtime and session.user_id == inter.author.id, quiz.existing_sessions)) != 0
+                )
+                if quiz.description.solvers_can_view_quiz and solved_quiz:
+                    allowed = True
+                else:
+                    # Are they a mod?
+                    data: problems_module.GuildData = await self.bot.cache.get_guild_data(
+                        inter.guild.id,
+                        default = problems_module.GuildData.default(guild_id=inter.guild.id)
+                    )
+                    if data.mod_check.check_for_user_passage(inter.author):
+                        # They're a mod!
+                        allowed = True
+                    else:
+                        user_data: problems_module.UserData = await self.bot.cache.get_user_data(
+                            user_id=inter.author.id,
+                            default = problems_module.UserData(
+                                user_id=inter.author.id,
+                                trusted=False,
+                                blacklisted=False
+                            )
+                        )
+                        if user_data.trusted:
+                            allowed = True
+            if not allowed:
+                await inter.send(embed=ErrorEmbed("""You didn't pass the checks required to pass. Firstly, you didn't solve the quiz, or you did, but people who solve this quiz can't see the answers.
+                Secondly, you're not a moderator.
+                Finally, you're not trusted. 
+                For these reasons, you are not allowed to see all data for the quiz"""))
+            if raw:
+                raise NotImplementedError("I have not implemented this yet!")
+
+
+        try:
+            session: QuizSolvingSession = await self._get_quiz_submission(
+                inter.author.id, quiz_id
+            )
+        except problems_module.errors.SessionNotFoundException:
+            await inter.send(embed=ErrorEmbed("Session not found!"))
+            pass
+
+        if session.overtime:
+            await inter.send(embed=ErrorEmbed("Sorry, but you ran out of time, so you'll need to try again!"))
+            return
+
+        thing_to_send: str = f"Quiz id #{quiz_id}"
+        try:
+            quiz_problems: typing.List[QuizProblem] = list((await self.cache.get_quiz(quiz_id)).quiz_problems)
+        except problems_module.QuizNotFound:
+            await inter.send(embed=ErrorEmbed("Apparently the quiz was deleted while you were solving... :("))
+            return
+        await inter.send(embed=disnake.Embed(thing_to_send))
+        for problem_num, problem in quiz_problems.items():
+            problem_str = f"""
+            Question: {problem.question}
+            Is Written: {'yes' if problem.is_written else 'no'}
+            Max Score: {problem.max_score}
+            Problem Number: {problem_num}
+"""
+            await inter.send(embed=disnake.Embed(
+                title = f"Problem #{problem_num}",
+                description = problem_str,
+                color=disnake.Color.from_rgb(20, 200, 30)
+            ))
+
+        if show_all_info and allowed:
+            raise NotImplementedError("Showing quiz submissions and quiz sessions and quiz description is not implemented yet!")
 
     async def _get_quiz_submission(
-        self, user_id: int, quiz_id: int, attempt_num: typing.Optional[int] = None
+            self, user_id: int, quiz_id: int, attempt_num: typing.Optional[int] = None
     ) -> typing.Optional[
         typing.Union[QuizSolvingSession, typing.List[QuizSolvingSession]]
     ]:
@@ -617,11 +720,14 @@ JSON error: {e}"""
             return session.user_id == user_id and works
 
         sessions = filter(check, quiz.existing_sessions)
+        if sessions is []:
+            raise problems_module.QuizSessionNotFoundException("Quiz session not found")
+
         return (
-            None
-            if sessions == []
-            else (sessions[0] if len(sessions) == 1 else sessions)
-        )
+            sessions[0] if len(sessions) == 1 else max(
+                sessions,
+                key=lambda session: session.attempt_num
+            ))
 
     @quiz.sub_command_group(name="solve", description="Solve quizzes")
     def solve(self, inter: disnake.ApplicationCommandInteraction):
@@ -640,7 +746,7 @@ JSON error: {e}"""
         ],
     )
     async def initialize_quiz_solving(
-        self, inter: disnake.ApplicationCommandInteraction, quiz_id: int
+            self, inter: disnake.ApplicationCommandInteraction, quiz_id: int
     ):
         """/quiz solve initalize_quiz_solving
         Initalize quiz solving. This will create a session for you!"""
@@ -657,7 +763,7 @@ JSON error: {e}"""
         except problems_module.errors.QuizNotFound:
             await inter.send(embed=ErrorEmbed("Quiz not found"))
         attempt_num: int = (
-            await self._get_attempt_num_for_user(inter.author.id, quiz_id=quiz_id) + 1
+                await self._get_attempt_num_for_user(inter.author.id, quiz_id=quiz_id) + 1
         )
         submission_to_add = problems_module.QuizSolvingSession(
             user_id=inter.author.id,
@@ -692,6 +798,18 @@ JSON error: {e}"""
                 type=disnake.OptionType.integer,
                 required=True,
             ),
+            disnake.Option(
+                name='problem_num',
+                description='The problem number of the problem you intend to solve',
+                type=disnake.OptionType.integer,
+                required=True
+            ),
+            disnake.Option(
+                name='answer',
+                description='The answer you give',
+                type=disnake.OptionType.integer,
+                required=True
+            )
         ],
     )
     def solve_quiz_problem_given_id(self, inter: disnake.ApplicationCommandInteraction):

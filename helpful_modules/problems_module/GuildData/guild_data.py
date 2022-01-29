@@ -83,3 +83,13 @@ class GuildData:
             dict_to_return["cache"] = self.cache
 
         return dict_to_return
+
+    @classmethod
+    def default(cls, guild_id: int) -> "GuildData":
+        return cls(
+            guild_id=guild_id,
+            blacklisted=False,
+            can_create_quizzes_check=CheckForUserPassage.default(),
+            can_create_problems_check=CheckForUserPassage.default(),
+            mods_check=CheckForUserPassage.default_mod_check()
+        )

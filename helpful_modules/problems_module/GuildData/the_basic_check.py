@@ -71,3 +71,21 @@ class CheckForUserPassage:
             and self.roles_allowed == []
             and self.permissions_needed == []
         )
+
+    @classmethod
+    def default(cls) -> "CheckForUserPassage":
+        return cls(
+            blacklisted_users=[],
+            whitelisted_users=[],
+            roles_allowed=[],
+            permissions_needed=[]
+        )
+
+    @classmethod
+    def default_mod_check(cls) -> "CheckForUserPassage":
+        return cls(
+            blacklisted_users=[],
+            whitelisted_users=[],
+            roles_allowed=[],
+            permissions_needed=['administrator']
+        )
