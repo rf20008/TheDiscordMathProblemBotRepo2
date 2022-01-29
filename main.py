@@ -164,8 +164,9 @@ async def on_ready(bot: TheDiscordMathProblemBot):
     )
     if bot.owner_id is None and app_info.owner.id is not None:
         bot.owner_id = app_info.owner.id
-
+    
     print(f"My owner ids are {bot.owner_ids}")
+
 
 
 # Bot creation
