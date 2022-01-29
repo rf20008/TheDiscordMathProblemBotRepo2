@@ -230,51 +230,6 @@ class QuizRelatedCache(ProblemsRelatedCache):
                         potential_sessions[0], cache=self
                     )
 
-    async def add_user_data(self, user_id: int, thing_to_add: UserData) -> None:
-        assert isinstance(user_id, int)
-        assert isinstance(thing_to_add, UserData)
-        if (await self.get_user_data(user_id, default=Exception)) != Exception:  # type: ignore
-            # This is because the user_id is None. Then it will return the default instead
-            raise MathProblemsModuleException(
-                "User data already exists"
-            )  # Make sure the user data doesn't already exist
-        if self.use_sqlite:
-            async with aiosqlite.connect(self.db_name) as conn:
-                cursor = await conn.cursor()
-                await cursor.execute(
-                    """INSERT INTO user_data (user_id, trusted, blacklisted)
-                VALUES (?,?,?)""",
-                    (user_id, thing_to_add.trusted, thing_to_add.blacklisted),
-                )  # add the user data
-                await conn.commit()
-                log.debug("Finished adding user data!")
-        else:
-            with self.get_a_connection() as connection:
-                cursor = connection.cursor(dictionaries=True)
-                cursor.execute(
-                    """INSERT INTO user_data (user_id, trusted, blacklisted)
-                VALUES (%s, %s, %s)""",
-                    (user_id, thing_to_add.trusted, thing_to_add.blacklisted),
-                )
-                connection.commit()
-
-    async def del_user_data(self, user_id: int):
-        """Delete user data given the user id"""
-        assert isinstance(user_id, int)
-        if self.use_sqlite:
-            async with aiosqlite.connect(self.db_name) as conn:
-                cursor = await conn.cursor()
-                await cursor.execute(
-                    "DELETE FROM user_data WHERE user_id = ?", (user_id,)
-                )
-                await conn.commit()
-        else:
-            with self.get_a_connection() as connection:
-                cursor = connection.cursor(dictionaries=True)
-                cursor.execute("DELETE FROM user_data WHERE user_id = %s", (user_id,))
-                connection.commit()
-                connection.close()
-
     async def add_quiz(self, quiz: Quiz) -> Quiz:
         """Add a quiz"""
         assert isinstance(quiz, Quiz)
@@ -367,6 +322,16 @@ class QuizRelatedCache(ProblemsRelatedCache):
                             pickle.dumps(item.to_dict()),
                         ),
                     )
+
+        # Update the description and sessions as well
+        await self.add_quiz_description(description=quiz.description)
+
+        for session in quiz.existing_sessions:
+            try:
+                await self.update_quiz_description(quiz.id, session)
+            except QuizSessionNotFoundException:
+                await self.add_quiz_session(session)
+
         return quiz
 
     def __str__(self):
@@ -535,7 +500,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 cursor = await conn.cursor()
                 await cursor.execute(
                     """UPDATE quiz_description
-                    SET description = ?, license = ?, time_limit = ?, intensity = ?, category = ?, quiz_id = ?, author = ?, guild_id = ?
+                    SET description = ?, license = ?, time_limit = ?, intensity = ?, category = ?, quiz_id = ?, author = ?, guild_id = ?, solvers_can_view_quiz=?
                     WHERE quiz_id = ?""",
                     (
                         description.description,
@@ -546,6 +511,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                         description.quiz_id,
                         description.author,
                         description.guild_id,
+                        int(description.solvers_can_view_quiz),
                         description.quiz_id,
                     ),
                 )
@@ -555,7 +521,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     """UPDATE quiz_description
-                    SET description = %s, license = %s, time_limit = %s, intensity = %s, category = %s, quiz_id = %s, author = %s, guild_id = %s
+                    SET description = %s, license = %s, time_limit = %s, intensity = %s, category = %s, quiz_id = %s, author = %s, guild_id = %s, solvers_can_view_quiz=%s
                     WHERE quiz_id = %s""",
                     (
                         description.description,
@@ -566,6 +532,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                         description.quiz_id,
                         description.author,
                         description.guild_id,
+                        int(description.solvers_can_view_quiz),
                         description.quiz_id,
                     ),
                 )

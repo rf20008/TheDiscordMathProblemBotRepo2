@@ -1,11 +1,10 @@
 import asyncio
+import inspect
 import logging
 import time
-import inspect
 from types import FunctionType
 
 import disnake
-
 
 import helpful_modules
 from helpful_modules import problems_module

@@ -595,7 +595,8 @@ class MiscRelatedCache:
                                                license VARCHAR,
                                                category VARCHAR,
                                                author INT,
-                                               guild_id INT
+                                               guild_id INT,
+                                               solvers_can_view_quiz INT
                                                )
                                                """
                 )
@@ -683,6 +684,7 @@ class MiscRelatedCache:
                                category VARCHAR,
                                author INT,
                                guild_id INT,
+                               solvers_can_view_quiz INT
                                )
                                """
                 )

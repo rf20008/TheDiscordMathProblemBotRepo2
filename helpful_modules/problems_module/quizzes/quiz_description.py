@@ -16,6 +16,7 @@ class QuizDescription:
     time_limit: t.Union[int, QuizTimeLimit]
     guild_id: int
     author: int
+    solvers_can_view_quiz: bool
 
     def __init__(
         self,
@@ -28,8 +29,10 @@ class QuizDescription:
         intensity: t.Union[QuizIntensity, float] = QuizIntensity.IMPOSSIBLE,
         description="No description given",
         license="Unspecified (the default is GNU GDL)",
-        time_limit=QuizTimeLimit.UNLIMITED
+        time_limit=QuizTimeLimit.UNLIMITED,
+        solvers_can_view_quiz: bool = False
     ):
+        self.solvers_can_view_quiz = solvers_can_view_quiz
         self.guild_id = guild_id
         self.author = author
         self.quiz_id = quiz_id
@@ -52,4 +55,5 @@ class QuizDescription:
             license=data["license"],
             time_limit=data["timelimit"],
             guild_id=data["guild_id"],
+            solvers_can_view_quiz=bool(data["solvers_can_view_quiz"]),
         )
