@@ -3,7 +3,6 @@ import typing as t
 import disnake
 
 
-
 class CheckForUserPassage:
     def __init__(
         self,
@@ -78,7 +77,7 @@ class CheckForUserPassage:
             blacklisted_users=[],
             whitelisted_users=[],
             roles_allowed=[],
-            permissions_needed=[]
+            permissions_needed=[],
         )
 
     @classmethod
@@ -87,5 +86,5 @@ class CheckForUserPassage:
             blacklisted_users=[],
             whitelisted_users=[],
             roles_allowed=[],
-            permissions_needed=['administrator']
+            permissions_needed=["administrator"],
         )

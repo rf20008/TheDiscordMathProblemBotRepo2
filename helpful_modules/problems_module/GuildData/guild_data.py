@@ -91,5 +91,5 @@ class GuildData:
             blacklisted=False,
             can_create_quizzes_check=CheckForUserPassage.default(),
             can_create_problems_check=CheckForUserPassage.default(),
-            mods_check=CheckForUserPassage.default_mod_check()
+            mods_check=CheckForUserPassage.default_mod_check(),
         )

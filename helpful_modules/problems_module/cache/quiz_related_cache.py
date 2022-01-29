@@ -184,7 +184,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 connection.commit()
 
     async def get_quiz_session_by_special_id(
-            self, special_id: int
+        self, special_id: int
     ) -> QuizSolvingSession:
         """Get a quiz submission by its special id"""
         assert isinstance(special_id, int)  # Basic type-checking
@@ -534,7 +534,6 @@ class QuizRelatedCache(ProblemsRelatedCache):
                         description.guild_id,
                         int(description.solvers_can_view_quiz),
                         description.quiz_id,
-
                     ),
                 )
                 connection.commit()
@@ -610,10 +609,10 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 connection.commit()
 
     async def get_quizzes_by_func(
-            self: "MathProblemCache",
-            func: typing.Callable[[Quiz, Any], bool] = lambda quiz: False,
-            args: typing.Union[tuple, list] = None,
-            kwargs: dict = None,
+        self: "MathProblemCache",
+        func: typing.Callable[[Quiz, Any], bool] = lambda quiz: False,
+        args: typing.Union[tuple, list] = None,
+        kwargs: dict = None,
     ) -> typing.List[Quiz]:
         """Get the quizzes that match the function.
         Function is a function that takes in the quiz, and the provided arguments and keyword arguments.

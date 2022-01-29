@@ -55,5 +55,5 @@ class QuizDescription:
             license=data["license"],
             time_limit=data["timelimit"],
             guild_id=data["guild_id"],
-            solvers_can_view_quiz=bool(data['solvers_can_view_quiz'])
+            solvers_can_view_quiz=bool(data["solvers_can_view_quiz"]),
         )
