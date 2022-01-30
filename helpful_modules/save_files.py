@@ -51,9 +51,6 @@ class FileSaver:
             print(
                 f"{str(self)}: Attempting to load vote_threshold from vote_threshold.txt, trusted_users_list from trusted_users.txt, and math_problems  from math_problems.json..."
             )
-        with open("math_problems.json", "r") as file:
-            mathProblems = json.load(fp=file)
-
         vote_threshold = False
         with open("vote_threshold.txt", "r") as file3:
             for line in file3:
@@ -64,8 +61,6 @@ class FileSaver:
         if not vote_threshold:
             raise RuntimeError("vote_threshold not given!!")
 
-        with open("guild_math_problems.json", "r") as file4:
-            guildMathProblems = json.load(fp=file4)
         if (
             printSuccessMessages
             or printSuccessMessages is None
@@ -74,9 +69,6 @@ class FileSaver:
             print(f"{self.name}: Successfully loaded files.")
 
         return {
-            "guildMathProblems": guildMathProblems,
-            "trusted_users": trusted_users,
-            "mathProblems": mathProblems,
             "vote_threshold": vote_threshold,
         }
 
@@ -84,10 +76,7 @@ class FileSaver:
         self,
         main_cache=None,
         printSuccessMessages=None,
-        guild_math_problems_dict={},
         vote_threshold=3,
-        math_problems_dict={},
-        trusted_users_list={},
     ):
         """Saves files to file names specified in __init__."""
 
@@ -107,9 +96,6 @@ class FileSaver:
 
         with open("vote_threshold.txt", "w") as file3:
             file3.write(str(vote_threshold))
-        with open("guild_math_problems.json", "w") as file4:
-            e = json.dumps(obj=guild_math_problems_dict)
-            file4.write(e)
         if (
             printSuccessMessages
             or printSuccessMessages is None
