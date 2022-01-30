@@ -54,9 +54,6 @@ class FileSaver:
         with open("math_problems.json", "r") as file:
             mathProblems = json.load(fp=file)
 
-        with open("trusted_users.txt", "r") as file2:
-            for line in file2:
-                trusted_users.append(int(line))
         vote_threshold = False
         with open("vote_threshold.txt", "r") as file3:
             for line in file3:
@@ -107,12 +104,6 @@ class FileSaver:
                 f"{str(self)}: Attempting to save math problems vote_threshold to vote_threshold.txt, trusted_users_list to  trusted_users.txt..."
             )
         # main_cache.update_file_cache() #Removed method
-
-        with open("trusted_users.txt", "w") as file2:
-            for user in trusted_users_list:
-                file2.write(str(user))
-                file2.write("\n")
-                # print(user)
 
         with open("vote_threshold.txt", "w") as file3:
             file3.write(str(vote_threshold))

@@ -614,7 +614,6 @@ JSON error: {e}"""
             disnake.Option(
                 name="show_all_info",
                 description="Whether to show all the info. This permission is normally not granted to normal users.",
-                # TODO: shorten
                 type=disnake.OptionType.boolean,
                 required=False,
             ),
@@ -646,6 +645,7 @@ JSON error: {e}"""
                     quiz: Quiz = await self.cache.get_quiz(quiz_id)
                 except QuizNotFoundException:
                     await inter.send(embed=ErrorEmbed("Quiz not found"))
+                    return
                 solved_quiz: bool = (
                     len(
                         filter(
@@ -657,8 +657,8 @@ JSON error: {e}"""
                 ) or (
                     len(
                         filter(
-                            lambda session: session.overtime
-                            and session.user_id == inter.author.id,
+                            lambda session: (session.overtime
+                            and session.user_id == inter.author.id),
                             quiz.existing_sessions,
                         )
                     )
@@ -702,7 +702,15 @@ JSON error: {e}"""
                     )
                 )
             if raw:
-                raise NotImplementedError("I have not implemented this yet!")
+                allowed = False
+                user_data: problems_module.UserData = await self.bot.cache.get_user_data(
+                    user_id = inter.author.id,
+                    default = problems_module.UserData(
+                        user_id=inter.author.id,trusted=False,blacklisted=False
+                    )
+                )
+                if user_data.trusted:
+                    allowed = True
 
         try:
             session: QuizSolvingSession = await self._get_quiz_submission(
@@ -710,7 +718,7 @@ JSON error: {e}"""
             )
         except problems_module.errors.SessionNotFoundException:
             await inter.send(embed=ErrorEmbed("Session not found!"))
-            pass
+            return
 
         if session.overtime:
             await inter.send(
@@ -809,6 +817,7 @@ JSON error: {e}"""
                 return
         except problems_module.errors.QuizNotFound:
             await inter.send(embed=ErrorEmbed("Quiz not found"))
+            return
         attempt_num: int = (
             await self._get_attempt_num_for_user(inter.author.id, quiz_id=quiz_id) + 1
         )
