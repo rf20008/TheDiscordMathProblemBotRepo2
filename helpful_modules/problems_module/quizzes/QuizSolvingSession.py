@@ -19,13 +19,13 @@ class QuizSolvingSession:
         self.user_id = user_id
         self.quiz_id = quiz_id
         self.special_id = generate_new_id()
-        self.is_final = False
         self.cache: "MathProblemCache" = cache
         self.answers: typing.Dict[int, QuizSubmissionAnswer] = {}
         self.start_time = time.time()
         self._quiz = self._get_quiz()
         self.guild_id = guild_id
         self.attempt_num = attempt_num
+        self.is_finished=False
 
         try:
             self.expire_time: int = self.start_time + self._quiz.time_limit
@@ -65,6 +65,10 @@ class QuizSolvingSession:
     def overtime(self: "QuizSolvingSession") -> bool:
         return time.time() > self.expire_time
 
+    @property
+    def done(self) -> bool:
+        return self.is_finished or self.overtime
+
     @classmethod
     def better_init(
         cls,
@@ -72,6 +76,7 @@ class QuizSolvingSession:
         user_id: int,
         quiz_id: int,
         cache,
+        attempt_num: int,
         is_finished: bool,
         answers: typing.List[QuizSubmissionAnswer],
         guild_id: int,
@@ -80,7 +85,7 @@ class QuizSolvingSession:
         special_id: int
     ) -> "QuizSolvingSession":
         QuizSession: "QuizSolvingSession" = cls(
-            cache=cache, quiz_id=quiz_id, user_id=user_id
+            cache=cache, quiz_id=quiz_id, user_id=user_id, attempt_num=attempt_num
         )
         QuizSession.is_finished = is_finished
         QuizSession.answers = answers
@@ -105,6 +110,7 @@ class QuizSolvingSession:
             answers=pickle.loads(dict["answers"]),  # TODO: don't use pickle because RCE
             special_id=dict["special_id"],
             attempt_num=dict["attempt_num"],
+            is_finished=bool(dict['is_finished'])
         )
 
     @classmethod
@@ -121,6 +127,7 @@ class QuizSolvingSession:
             answers=pickle.loads(dict["answers"]),
             special_id=dict["special_id"],
             attempt_num=dict["attempt_num"],
+            is_finished=bool(dict['is_finished'])
         )
 
     def to_dict(self) -> dict:

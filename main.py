@@ -18,9 +18,14 @@ from sys import exc_info, exit, stdout
 from disnake.ext import commands
 
 from cogs import *
-from helpful_modules import (checks, custom_embeds, problems_module,
-                             return_intents, save_files,
-                             the_documentation_file_loader)
+from helpful_modules import (
+    checks,
+    custom_embeds,
+    problems_module,
+    return_intents,
+    save_files,
+    the_documentation_file_loader,
+)
 from helpful_modules.constants_loader import *
 from helpful_modules.cooldowns import check_for_cooldown
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
@@ -76,9 +81,7 @@ def the_daemon_file_saver():
     )
     print("Loading files...")
     FileSaverDict = FileSaverObj.load_files(bot.cache, True)
-    (bot.vote_threshold) = (
-        int(FileSaverDict["vote_threshold"]),
-    )
+    (bot.vote_threshold) = (int(FileSaverDict["vote_threshold"]),)
     while True:
         sleep(45)
         print("Saving files")
@@ -155,9 +158,8 @@ async def on_ready(bot: TheDiscordMathProblemBot):
     )
     if bot.owner_id is None and app_info.owner.id is not None:
         bot.owner_id = app_info.owner.id
-    
-    print(f"My owner ids are {bot.owner_ids}")
 
+    print(f"My owner ids are {bot.owner_ids}")
 
 
 # Bot creation

@@ -583,7 +583,8 @@ class MiscRelatedCache:
                     guild_id INT,
                     answers BLOB,
                     special_id VARCHAR,
-                    attempt_num INT
+                    attempt_num INT,
+                    is_finished INT
                     )"""
                 )  # Special_id is for avoiding the weird bug with 'and' not working in SQL statements
                 await cursor.execute(
@@ -671,7 +672,8 @@ class MiscRelatedCache:
                     guild_id INT,
                     answers BLOB,
                     special_id VARCHAR,
-                    attempt_num INT
+                    attempt_num INT,
+                    is_finished INT
                     )"""
                 )
                 cursor.execute(

@@ -66,7 +66,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 conn.row_factory = dict_factory
                 cursor = await conn.cursor()
                 await cursor.execute(
-                    """INSERT INTO quiz_submission_sessions (user_id, quiz_id, guild_id, is_finished, answers, start_time, expire_time, special_id, attempt_num)
+                    """INSERT INTO quiz_submission_sessions (user_id, quiz_id, guild_id, is_finished, answers, start_time, expire_time, special_id, attempt_num, is_finished)
                     VALUES (?,?,?,?,?,?,?,?)""",
                     (
                         session.user_id,
@@ -78,6 +78,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                         session.expire_time,
                         session.special_id,
                         session.attempt_num,
+                        int(session.is_finished)
                     ),
                 )
                 await conn.commit()
@@ -86,7 +87,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
             with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
-                    """INSERT INTO quiz_submission_sessions (user_id, quiz_id, guild_id, is_finished, answers, start_time, expire_time, special_id, attempt_num)
+                    """INSERT INTO quiz_submission_sessions (user_id, quiz_id, guild_id, is_finished, answers, start_time, expire_time, special_id, attempt_num, is_finished)
                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""",
                     (
                         session.user_id,
@@ -100,6 +101,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                         session.expire_time,
                         session.special_id,
                         session.attempt_num,
+                        int(session.is_finished),
                     ),
                 )
                 connection.commit()
@@ -121,7 +123,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 cursor = await conn.cursor()
                 await cursor.execute(
                     """UPDATE quiz_submission_sessions 
-                    SET guild_id = ?, quiz_id = ?, user_id = ?, answers = ?, start_time = ?, expire_time = ?, is_finished = ?, special_id = ?, attempt_num = ?
+                    SET guild_id = ?, quiz_id = ?, user_id = ?, answers = ?, start_time = ?, expire_time = ?, is_finished = ?, special_id = ?, attempt_num = ?,
                     WHERE special_id = ?""",
                     (
                         session.guild_id,
