@@ -123,7 +123,6 @@ class QuizSolvingSession:
             quiz_id=dict["quiz_id"],
             guild_id=dict["guild_id"],
             expire_time=dict["expire_time"],
-            is_finished=dict["is_finished"],
             answers=pickle.loads(dict["answers"]),
             special_id=dict["special_id"],
             attempt_num=dict["attempt_num"],
