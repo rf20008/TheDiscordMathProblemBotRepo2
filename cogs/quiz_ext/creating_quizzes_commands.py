@@ -1,3 +1,4 @@
+import warnings
 import asyncio
 import json
 import typing
@@ -77,7 +78,7 @@ class CreatingQuizzesCommandsCog(HelperCog):
             _data: dict = json.loads(data)
         except json.JSONDecodeError as e:
             return await inter.send(
-                f"""You didn't provide valid JSON, so I don't understand what you mean :(
+                f"""You didn't provide valid JSON, so I don't understand what you mean 
 
     JSON error: {e}"""
             )
@@ -194,9 +195,12 @@ class CreatingQuizzesCommandsCog(HelperCog):
         """/quiz create blank
         Create a blank quiz. This is more user-friendly than /quiz create from_json, but it's slower!
 
-        There is currently a bug. Don't use this because there is a bug that makes the quiz not actually be created because there are no problems."""
+        There is currently a bug. Don't use this because there is a bug that makes the quiz not actually be created because there are no problems.
+
+        This command has been deprecated and will be removed in v1 in favor of /create with_existing_problem. """
 
         # TODO: only some people can create quizzes
+        warnings.warn("This command has been deprecated", DeprecationWarning)
         already_existing_quiz_ids = [
             quiz.id
             for quiz in await self.cache.get_quizzes_by_func(func=lambda quiz: True)
@@ -216,3 +220,47 @@ class CreatingQuizzesCommandsCog(HelperCog):
         # TODO: fix
         await self.bot.cache.add_quiz(quiz)
         await inter.send("Successfully created quiz!")
+
+    @create.sub_command(
+        name='with_existing_problem',
+        description="Create quizzes with existing problems",
+        options=[
+            disnake.Option(
+                name='question',
+                description="The question for the initial problem in the quiz to have",
+                type=disnake.OptionType.string,
+                required=True
+            ),
+            disnake.Option(
+                name='answer',
+                description="The answer for this problem to have (not required if this is manually graded)",
+                # TODO: SHORTEN!
+                type=disnake.OptionType.string,
+                required=False
+            ),
+            disnake.Option(
+                name='max_points',
+                description="The maximum number of points this question is worth. Defaults to 100",
+                type=disnake.OptionType.number,
+                required=False
+            ),
+            disnake.Option(
+                name='is_written',
+                description="Whether this problem is written (defaults to False)",
+                type=disnake.OptionType.boolean,
+                required=False
+            )
+        ]
+    )
+    async def with_existing_problem(
+            self,
+            inter: disnake.ApplicationCommandInteraction,
+            question: str,
+            answer: str = None,
+            max_points: float = 100.0,
+            is_written: bool = False
+    ):
+        if answer is None and is_written is False:
+            await inter.send(embed=ErrorEmbed("You must provide an answer or set is_written to True!"))
+            return
+        raise NotImplementedError("I've not been implemented fully!")  # TODO: fully implement
