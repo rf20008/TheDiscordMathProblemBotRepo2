@@ -101,3 +101,18 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
 
         else:
             raise TypeError()
+
+    async def is_trusted(self, user: disnake.User) -> bool:
+        return await self.is_trusted_by_id(user.id)
+
+    async def is_trusted_by_id(self, user_id: int) -> bool:
+        data = await self.cache.get_user_data(
+            user_id =user_id,
+            default=problems_module.UserData(
+                user_id=user_id,
+                trusted=False,
+                blacklisted=False
+            )
+        )
+        return data.trusted
+
