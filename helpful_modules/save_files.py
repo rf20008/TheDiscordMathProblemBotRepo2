@@ -59,7 +59,7 @@ class FileSaver:
                 ).isnumeric():  # Make sure that an empty string does not become the new vote threshold
                     vote_threshold = int(line)
         if not vote_threshold:
-            raise RuntimeError("vote_threshold not given!!")
+            raise RuntimeError("vote_threshold not found!!!")
 
         if (
             printSuccessMessages
@@ -76,7 +76,7 @@ class FileSaver:
         self,
         main_cache=None,
         printSuccessMessages=None,
-        vote_threshold=3,
+        vote_threshold: int=3,
     ):
         """Saves files to file names specified in __init__."""
 
@@ -93,7 +93,8 @@ class FileSaver:
                 f"{str(self)}: Attempting to save math problems vote_threshold to vote_threshold.txt, trusted_users_list to  trusted_users.txt..."
             )
         # main_cache.update_file_cache() #Removed method
-
+        if not isinstance(vote_threshold, int):
+            raise RuntimeError("Vote Threshold is not an integer!")
         with open("vote_threshold.txt", "w") as file3:
             file3.write(str(vote_threshold))
         if (
