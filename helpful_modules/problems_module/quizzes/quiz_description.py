@@ -57,3 +57,16 @@ class QuizDescription:
             guild_id=data["guild_id"],
             solvers_can_view_quiz=bool(data["solvers_can_view_quiz"]),
         )
+
+    def to_dict(self) -> dict:
+        return {
+            'author': self.author,
+            'quiz_id': self.quiz_id,
+            'category': self.category,
+            'intensity': self.intensity,
+            'description': self.description,
+            'license': self.license,
+            'time_limit': self.time_limit,
+            'guild_id': self.guild_id,
+            'solvers_can_view_quiz': self.solvers_can_view_quiz
+        }

@@ -23,8 +23,8 @@ class UserData:
         """Get UserData from a dictionary"""
         return cls(
             user_id=dict["user_id"],
-            trusted=dict["trusted"],
-            blacklisted=dict["blacklisted"],
+            trusted=bool(dict["trusted"]),
+            blacklisted=bool(dict["blacklisted"]),
         )
 
     def to_dict(self) -> dict:

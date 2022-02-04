@@ -21,7 +21,7 @@ from ..mysql_connector_with_stmt import mysql_connection
 from ..quizzes import Quiz, QuizProblem, QuizSolvingSession, QuizSubmission
 from ..quizzes.quiz_description import QuizDescription
 from ..user_data import UserData
-
+from ..GuildData import GuildData
 log = logging.getLogger(__name__)
 
 
@@ -102,6 +102,8 @@ class MiscRelatedCache:
         self._guilds: typing.List[disnake.Guild] = []
         asyncio.run(self.update_cache())
         self.cached_sessions = {}
+        self.cached_user_data = {}
+        self.cached_guild_data = {}
 
     def _request_connection(self) -> typing.Optional[MySQLConnection]:
         """Request a connection from my internal pool. I will raise exceptions (including PoolError's if there are no more connections in the pool)"""
@@ -110,7 +112,7 @@ class MiscRelatedCache:
 
         try:
             return self._pool.get_connection()
-        except PoolError as pe:
+        except PoolError:
             try:
                 self._pool.add_connection()
                 return self._pool.get_connection()
@@ -144,6 +146,8 @@ class MiscRelatedCache:
         quiz_problems_dict = {}
         quiz_sessions_dict = {}
         quiz_submissions_dict = {}
+        user_data_dict: typing.Dict[int, UserData] = {}
+        guild_data_dict: typing.Dict[int, GuildData] = {}
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
                 conn.row_factory = dict_factory
@@ -193,6 +197,15 @@ class MiscRelatedCache:
                             quiz_sessions_dict[session.quiz_id].append(session)
                         except KeyError:
                             quiz_sessions_dict[session.quiz_id] = [session]
+                    await cursor.execute("SELECT * FROM user_data")
+                    for _Row in await cursor.fetchall():
+                        data = UserData.from_dict(_Row)
+                        user_id_dict[data.user_id] = data
+                    await cursor.execute("SELECT * FROM guild_data")
+
+                    for _Row in await cursor.fetchall():
+                        data = GuildData.from_dict(_Row,cache=self)
+                        guild_data_dict[data.guild_id] = data
 
         else:
             with self.get_a_connection() as connection:
@@ -243,6 +256,16 @@ class MiscRelatedCache:
                         quiz_sessions_dict[session.quiz_id].append(session)
                     except KeyError:
                         quiz_sessions_dict[session.quiz_id] = [session]
+
+                cursor.execute("SELECT * FROM user_data")
+                for row in cursor.fetchall():
+                    data = UserData.from_dict(row)
+                    user_id_dict[data.user_id] = data
+                cursor.execute("SELECT * FROM guild_data")
+
+                for row in cursor.fetchall():
+                    data = GuildData.from_dict(row,cache=self)
+                    guild_data_dict[data.guild_id] = data
         try:
             global_problems = deepcopy(
                 guild_problems[None]
@@ -291,6 +314,8 @@ class MiscRelatedCache:
                 )
         self.cached_submissions = quiz_submissions_dict.values()
         self.cached_submissions_organized_by_dict = quiz_submissions_dict
+        self.cached_user_data = user_data_dict
+        self.cached_guild_data = guild_data_dict
 
     async def get_all_by_author_id(self, author_id: int) -> dict:
         """Return a dictionary containing everything that was created by the author"""

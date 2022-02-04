@@ -13,7 +13,10 @@ from helpful_modules.custom_embeds import ErrorEmbed, SuccessEmbed
 from helpful_modules.problems_module import *
 from helpful_modules.problems_module import MathProblemCache, Quiz, QuizProblem
 from helpful_modules.problems_module.quizzes import (QuizSolvingSession,
-                                                     QuizSubmission)
+                                                     QuizSubmission,
+                                                     QuizDescription
+                                                     )
+from helpful_modules.problems_module.quizzes.related_enums import QuizIntensity, QuizTimeLimit
 from helpful_modules.threads_or_useful_funcs import generate_new_id, get_log
 
 from ..helper_cog import HelperCog
@@ -263,4 +266,39 @@ class CreatingQuizzesCommandsCog(HelperCog):
         if answer is None and is_written is False:
             await inter.send(embed=ErrorEmbed("You must provide an answer or set is_written to True!"))
             return
-        raise NotImplementedError("I've not been implemented fully!")  # TODO: fully implement
+        if max_points < 0:
+            return await inter.send(embed=ErrorEmbed("Quiz questions must be worth at least 0 points!"))
+        problem: QuizProblem = QuizProblem(question=question, answer=answer, max_points=max_points,
+                                           is_written=is_written)
+        await self.cache.update_cache()
+        already_existing_quiz_ids = [quiz.id for quiz in self.cache.cached_quizzes]
+        while True:
+            quiz_id = generate_new_id()
+            if quiz_id not in already_existing_quiz_ids:
+                break
+            else:
+                continue
+
+        quiz: Quiz = Quiz(
+            authors=[inter.author.id],
+            problems=[problem],
+            id=quiz_id,
+            submissions=[],
+            existing_sessions=[],
+            description=QuizDescription(
+                author=inter.author.id,
+                quiz_id=quiz_id,
+                cache=self.cache,
+                intensity=QuizIntensity.CUSTOM,
+                time_limit=QuizTimeLimit.UNLIMITED,
+                description="**This quiz has just been created; there is no description yet**",
+                license="""** This quiz has just been created; there is no license yet. 
+                By default, a license that allows the bot to process the quiz + allows people to solve the quiz, but doesn't allow people to copy it is used.
+                **""",
+                # TODO: add to ToS
+                guild_id=inter.guild_id,
+                solvers_can_view_quiz=True
+            )
+
+        )
+        await self.bot.cache.add_quiz(quiz)
