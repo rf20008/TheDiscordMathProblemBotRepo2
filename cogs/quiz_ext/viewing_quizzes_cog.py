@@ -15,6 +15,47 @@ class ViewingQuizzesCog(HelperCog):
         super().__init__(bot)
         self.bot = bot
         self.cache = bot.cache
+    async def can_view_quiz_given_inter(self, inter: disnake.ApplicationCommandInteraction) -> bool:
+        can_view_quiz: bool = False
+        if await self.bot.is_trusted(inter.author):
+            # Trusted users are global moderators, so they can view quizzes
+            can_view_quiz = True
+        else:
+            data = await self.cache.get_guild_data(inter.guild.id, default=problems_module.GuildData.default())
+            if data.mod_check.check_for_user_passage(inter.author):
+                # Mods can view quizzes
+                can_view_quiz = True
+        if not can_view_quiz:
+            try:
+                session: problems_module.QuizSolvingSession = await get_quiz_submission(
+                    self, inter.author.id, quiz_id
+                )
+            except problems_module.errors.SessionNotFoundException:
+                await inter.send(embed=ErrorEmbed("You don't have a session for this quiz!!"))
+                return False
+
+            if session.done:
+                # Mods can view quizzes, even if they don't have a session
+                await inter.send(
+                    embed=ErrorEmbed(
+                        "You're not allowed to see this quiz because you're not a moderator or a trusted user and your session expired!"
+                    )
+                )
+                return False
+            else:
+                can_view_quiz = True
+
+        if not can_view_quiz:
+            await inter.send(
+                embed=ErrorEmbed(
+                    "You can't see this quiz! Firstly, you're not a moderator."
+                    "Secondly, you're not a trusted user."
+                    "Thirdly, you don't have a session, which is required to solve quizzes."
+                )
+            )
+            return False
+        return True
+
 
     @commands.slash_command(name="quiz_view", description="View quizzes!")
     async def quiz_view(self, inter: disnake.ApplicationCommandInteraction):
@@ -146,37 +187,23 @@ class ViewingQuizzesCog(HelperCog):
                     )
                 )
             if raw:
-                allowed = False
-                user_data: problems_module.UserData = await self.bot.cache.get_user_data(
-                    user_id=inter.author.id,
-                    default=problems_module.UserData(
-                        user_id=inter.author.id, trusted=False, blacklisted=False
-                    )
-                )
-                if user_data.trusted:
-                    allowed = True
+                if inter.guild is not None:
+                    _me: disnake.Member = inter.guild.me
+                    if not inter.channel.permissions_for(_me).attach_files:
+                        return await inter.send("I don't have the attach files permission. Therefore, I can't send the raw quiz (as it is as sent in a file).")
+                    allowed = False
 
+                if await self.bot.is_trusted(inter.author):
+                    allowed = True
         try:
             quiz: Quiz = await self.cache.get_quiz(quiz_id)
         except QuizNotFound:
             await inter.send(embed=ErrorEmbed("Quiz not found"))
             return
 
-        try:
-            session: problems_module.QuizSolvingSession = await get_quiz_submission(
-                self, inter.author.id, quiz_id
-            )
-        except problems_module.errors.SessionNotFoundException:
-            await inter.send(embed=ErrorEmbed("You don't have a session for this quiz!!"))
+        if not await self.can_view_quiz_given_inter(inter):
             return
 
-        if session.done:
-            await inter.send(
-                embed=ErrorEmbed(
-                    "Sorry, but you ran out of time, so you'll need to try again!"
-                )
-            )
-            return
 
         thing_to_send: str = f"Quiz id #{quiz_id}"
         try:
@@ -238,3 +265,13 @@ class ViewingQuizzesCog(HelperCog):
             del file
 
     # TODO: /quiz_view single_problem
+    #@quiz_view.slash_command(
+    #    name = 'single_problem',
+    #    description = "View a single problem in a quiz"
+    #    options = [
+    #        disnake.Option(
+    #            name = "quiz_id",
+    #            description='The Quiz ID of the quiz to view a single problem from'
+    #        )
+    #    ]
+    #)

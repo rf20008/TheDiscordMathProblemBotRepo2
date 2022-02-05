@@ -8,6 +8,8 @@ from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from .helper_cog import HelperCog
 
 
+# TODO: make this an extension :-)
+
 class TaskCog(HelperCog):
     def __init__(self, bot: TheDiscordMathProblemBot):
         self.bot = bot
@@ -29,21 +31,7 @@ class TaskCog(HelperCog):
     @tasks.loop(minutes=15)
     async def leaving_blacklisted_guilds_task(self):
         for guild in self.bot.guilds:
-            data: problems_module.GuildData = await self.bot.cache.get_guild_data(
-                guild.id,
-                default=problems_module.GuildData(
-                    guild_id=guild_id,
-                    blacklisted=False,
-                    mod_check=problems_module.CheckForUserPassage(
-                        [], [], [], ["administrator"]
-                    ),
-                    can_create_quizzes_check=problems_module.CheckForUserPassage(
-                        [], [], [], []
-                    ),
-                    can_create_problems_check=problems_module.CheckForUserPassage(
-                        [], [], [], []
-                    ),
-                ),
-            )
-            if data.blacklisted:
-                await guild.leave()
+            if await self.bot.is_guild_blacklisted(guild):
+                await self.bot.notify_guild_on_guild_leave_because_guild_blacklist(guild)
+
+

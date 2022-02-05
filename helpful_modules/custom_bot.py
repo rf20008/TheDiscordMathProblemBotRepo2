@@ -1,25 +1,24 @@
+import random
 import asyncio
+import disnake
+import helpful_modules
+import typing
 import inspect
 import logging
+import random
 import time
-from types import FunctionType
-
-import disnake
-
-import helpful_modules
 from helpful_modules import problems_module
 from helpful_modules.constants_loader import BotConstants
 from helpful_modules.problems_module.cache import MathProblemCache
+from types import FunctionType
 
 
 class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.is_closing = False
-        try:
-            self.tasks = kwargs.pop("tasks")
-        except:
-            raise KeyError("Uh oh")
+
+        self.tasks = kwargs.pop("tasks")
         self._on_ready_func = kwargs.pop(
             "on_ready_func"
         )  # Will be called when the bot is ready (with an argument of itself)
@@ -70,7 +69,7 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
         await self._on_ready_func(self)
 
     def owns_and_is_trusted(self, user: disnake.User):
-        if not hasattr(self, "owner_id") or not self.owner_id or self.owner_id == None:
+        if not hasattr(self, "owner_id") or not self.owner_id or self.owner_id is None:
             return False
         return user.id in self.trusted_users and user.id == self.owner_id
 
@@ -102,12 +101,12 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
         else:
             raise TypeError()
 
-    async def is_trusted(self, user: disnake.User) -> bool:
+    async def is_trusted(self, user: typing.Union[disnake.User, disnake.Member]) -> bool:
         return await self.is_trusted_by_id(user.id)
 
     async def is_trusted_by_id(self, user_id: int) -> bool:
         data = await self.cache.get_user_data(
-            user_id =user_id,
+            user_id=user_id,
             default=problems_module.UserData(
                 user_id=user_id,
                 trusted=False,
@@ -115,4 +114,98 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
             )
         )
         return data.trusted
+
+    async def is_blacklisted_by_user_id(self, user_id: int) -> bool:
+        data = await self.cache.get_user_data(
+            user_id=user_id,
+            default=problems_module.UserData(
+                user_id=user_id,
+                trusted=False,
+                blacklisted=False
+            )
+        )
+        return data.blacklisted
+
+    async def is_user_blacklisted(self, user: typing.Union[disnake.User, disnake.Member]) -> bool:
+        return await self.is_blacklisted_by_user_id(user.id)
+
+    async def is_guild_blacklisted(self, guild: disnake.Guild) -> bool:
+        return await self.is_blacklisted_by_guild_id(guild.id)
+
+    async def is_blacklisted_by_guild_id(self, guild_id: int) -> bool:
+        data: GuildData = await self.cache.get_guild_data(
+            guild_id=guild_id,
+            default=problems_module.GuildData.default()
+        )
+        return data.blacklisted
+
+    async def notify_guild_on_guild_leave_because_guild_blacklist(self, guild: disnake.Guild) -> None:
+        """Notify the guild about the bot leaving the guild because the guild is blacklisted.
+        Throws RuntimeError if the guild is not actually blacklisted.
+        Throws HTTPException if sending the message failed, or leaving the guild failed."""
+        if not await self.is_guild_blacklisted(guild):
+            raise RuntimeError("The guild isn't blacklisted!")
+        _me: disnake.Member = guild.me
+        channels_that_we_could_send_to = [channel for channel in guild.channels if
+                                          channel.permissions_for(me).send_messages]
+        if len(channels_that_we_could_send_to) == 0:
+            # Bypass trying to send the message - We don't have any channels we could send this message to anyway
+
+            await guild.leave()
+            return
+
+        # Let's try to send the message to a channel that everyone can see
+        everyone_role = guild.get_role(guild.id)
+        channels_that_we_can_send_to_and_everyone_can_see = [
+            channel for channel in channels_that_we_could_send_to
+            if channel.permissions_for(everyone_role).view_channel
+        ]
+        if len(channels_that_we_can_send_to_and_everyone_can_see) != 0:
+            channel_to_send_to = random.choice(channels_that_we_can_send_to_and_everyone_can_see)
+            await channel_to_send_to.send(f"""I have left the guild because the guild is blacklisted, under my terms and conditions.
+            However, I'm available under the GPL. My source code is at {self.constants.SOURCE_CODE_LINK}, so you could self-host the bot if you wish.
+            """)
+            await guild.leave()
+            return
+
+        else:
+            # There is no channel that we can send to and everyone can see
+            # So we try to send it to a channel that mods can see
+            guild_data: problems_module.GuildData = await self.cache.get_guild_data(
+                guild_id=guild.id,
+                default=problems_module.GuildData.default()
+            )
+            channels_that_mods_can_see = channels_that_we_could_send_to
+            for role_id in guild_data.mod_check.roles_allowed:
+                role: disnake.Role = guild.get_role(role_id)
+                channels_that_mods_can_see = [
+                    channel for channel in channels_that_mods_can_see
+                    if channel.permissions_for(role).view_channel
+                ]
+            if len(channels_that_mods_can_see) == 0 and len(channels_that_we_could_send_to) != 0:
+                # No channels that mods can see, but we could send to some channels
+                channel_to_send_to = random.choice(channels_that_we_could_send_to)
+                await channel_to_send_to.send(f"""I have left this guild because the guild is blacklisted, under my terms and conditions.
+                            However, I'm available under the GPL. My source code is at {self.constants.SOURCE_CODE_LINK}, so you could self-host the bot if you wish.
+                            """)
+                await guild.leave()
+                return
+
+            channel_to_send_to = random.choice(channels_that_mods_can_see)
+            await channel_to_send_to.send(f"""I have left this guild because the guild is blacklisted, under my terms and conditions.
+                        However, I'm available under the GPL. My source code is at {self.constants.SOURCE_CODE_LINK}, so you could self-host the bot if you wish.
+                        """)
+            await guild.leave()
+            return
+        # Fallback
+
+        await guild.leave()
+        return
+
+    #async def on_application_command(self, inter: disnake.ApplicationCommandInteraction):
+    #    await super().on_application_command(inter)
+    #    if await self.is_guild_blacklisted(inter.guild):
+    #        await inter.send("This command has been executed in a b")
+    #       await self.notify_guild_on_guild_leave_because_guild_blacklist(inter.guild)
+
 

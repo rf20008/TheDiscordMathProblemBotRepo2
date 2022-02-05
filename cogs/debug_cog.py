@@ -28,7 +28,7 @@ class DebugCog(HelperCog):
         """A check that makes sure only bot owners can use this cog!"""
         if self.bot.owner_id in [None, [], set()] and self.bot.owner_ids is None:
             raise commands.CheckFailure(
-                "Failing to protect myself (neither owner_id nor owner_ids are defined)"
+                "Warning: neither owner_id or owner_ids is defined..."
             )
         if self.bot.owner_id in [None, [], set()]:
             raise commands.CheckFailure(
