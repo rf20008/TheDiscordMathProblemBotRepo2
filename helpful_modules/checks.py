@@ -36,7 +36,7 @@ def custom_check(
     """A check template :-)"""
 
     def predicate(inter):
-        f = function(*args)
+        f = function(inter)
         if not f:
             raise exceptionToRaiseIfFailed
         return True
@@ -114,7 +114,7 @@ def guild_not_blacklisted():
             raise TypeError("Uh oh! inter.bot isn't TheDiscordMathProblemBot")
         if await inter.bot.is_guild_blacklisted(inter.guild):
             await inter.send("This guild has just been blacklisted -- therefore I'm leaving."
-                             f"However, my source code is avaliable at {inter.bot.constants.SOURCE_CODE_LINK}",
+                             f"However, my source code is available at {inter.bot.constants.SOURCE_CODE_LINK}",
                              ephemeral=True)
             await inter.bot.notify_guild_on_guild_leave_because_guild_blacklist(inter.guild)
             return False

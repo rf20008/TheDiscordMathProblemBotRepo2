@@ -1,14 +1,17 @@
 import random
 import asyncio
 import disnake
+from disnake.ext import commands, tasks
 import helpful_modules
 import typing
 import inspect
 import logging
 import random
+from functools import wraps, partial
 import time
 from helpful_modules import problems_module
 from helpful_modules.constants_loader import BotConstants
+from .threads_or_useful_funcs import modified_async_wrap
 from helpful_modules.problems_module.cache import MathProblemCache
 from types import FunctionType
 
@@ -44,9 +47,9 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
         if self.constants is False:
             raise TypeError("Constants is not a BotConstants object")
         self.trusted_users = kwargs.get("trusted_users", None)
-        if not self.trusted_users and self.trusted_users != []:
-            raise TypeError("trusted_users was not found")
-        self.blacklisted_users = kwargs.get("blacklisted_users", [])
+        # if not self.trusted_users and self.trusted_users != []:
+        #    raise TypeError("trusted_users was not found")
+        # self.blacklisted_users = kwargs.get("blacklisted_users", [])
         self.closing_things = []
 
     def get_task(self, task_name):
@@ -89,7 +92,7 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
         await asyncio.sleep(5)
         await asyncio.gather(*self.closing_things)
         self.is_closing = False
-        await super.close()
+        await super().close()
 
     def add_closing_thing(self, thing: FunctionType) -> None:
         if asyncio.iscoroutinefunction(thing):
@@ -199,13 +202,55 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
             return
         # Fallback
 
-        await guild.leave()
+        await guild.leave()  # noqa
         return
 
-    #async def on_application_command(self, inter: disnake.ApplicationCommandInteraction):
+    # async def on_application_command(self, inter: disnake.ApplicationCommandInteraction):
     #    await super().on_application_command(inter)
     #    if await self.is_guild_blacklisted(inter.guild):
     #        await inter.send("This command has been executed in a b")
     #       await self.notify_guild_on_guild_leave_because_guild_blacklist(inter.guild)
 
+    def task(self) -> typing.Callable[
+        [
+            typing.Callable[
+                [
+                    typing.Any
+                ],
+                typing.Any
+            ],
+            typing.Any
+        ],
+        typing.Callable[
+            [
+                typing.Any
+            ],
+            typing.Any
+        ]
+    ]:
+        """Add a task to my internal list of tasks + return it  (this is a decorator :-))"""
 
+        def decorator(_self, func: types.FunctionType, *args, **kwargs):
+            task: tasks.Loop(
+                func=func,
+                *args,
+                **kwargs
+            )
+            _self.tasks.append(task)
+            return func
+
+        return decorator
+
+    def closing_task(self):
+        """Add a closing task to my internal list of closing tasks"""
+
+        def decorator(_self, func: types.FunctionType):
+            if isinstance(func, types.FunctionType):
+                _self.closing_things.append(modified_async_wrap(func))
+                return func
+            elif inspect.isawaitable(func):
+                _self.closing_things.append(func)
+                return func
+            raise TypeError("func is not awaitable!!")
+
+        return decorator

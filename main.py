@@ -205,7 +205,6 @@ _the_daemon_file_saver.start()
 bot.add_cog(DebugCog(bot))
 bot.add_cog(DeveloperCommands(bot))
 bot.add_cog(ProblemsCog(bot))
-bot.add_cog(QuizCog(bot))
 bot.add_cog(MiscCommandsCog(bot))
 bot.load_extension('cogs.quiz_ext')
 bot.CONSTANTS = bot_constants

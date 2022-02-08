@@ -15,11 +15,13 @@ class ViewingQuizzesCog(HelperCog):
         super().__init__(bot)
         self.bot = bot
         self.cache = bot.cache
-    async def can_view_quiz_given_inter(self, inter: disnake.ApplicationCommandInteraction) -> bool:
+
+    async def can_view_quiz_given_inter(self, inter: disnake.ApplicationCommandInteraction, quiz_id) -> bool:
         can_view_quiz: bool = False
         if await self.bot.is_trusted(inter.author):
             # Trusted users are global moderators, so they can view quizzes
             can_view_quiz = True
+            return True
         else:
             data = await self.cache.get_guild_data(inter.guild.id, default=problems_module.GuildData.default())
             if data.mod_check.check_for_user_passage(inter.author):
@@ -55,7 +57,6 @@ class ViewingQuizzesCog(HelperCog):
             )
             return False
         return True
-
 
     @commands.slash_command(name="quiz_view", description="View quizzes!")
     async def quiz_view(self, inter: disnake.ApplicationCommandInteraction):
@@ -153,29 +154,21 @@ class ViewingQuizzesCog(HelperCog):
                     allowed = True
                 else:
                     # Are they a mod?
-                    data: problems_module.GuildData = (
-                        await self.bot.cache.get_guild_data(
-                            inter.guild.id,
-                            default=problems_module.GuildData.default(
-                                guild_id=inter.guild.id
-                            ),
-                        )
-                    )
-                    if data.mod_check.check_for_user_passage(inter.author):
-                        # They're a mod!
-                        allowed = True
-                    else:
-                        user_data: problems_module.UserData = (
-                            await self.bot.cache.get_user_data(
-                                user_id=inter.author.id,
-                                default=problems_module.UserData(
-                                    user_id=inter.author.id,
-                                    trusted=False,
-                                    blacklisted=False,
+                    if inter.guild.id is not None:
+                        data: problems_module.GuildData = (
+                            await self.bot.cache.get_guild_data(
+                                inter.guild.id,
+                                default=problems_module.GuildData.default(
+                                    guild_id=inter.guild.id
                                 ),
                             )
                         )
-                        if user_data.trusted:
+                        if data.mod_check.check_for_user_passage(inter.author):
+                            # They're a mod!
+                            allowed = True
+
+                    if not allowed:
+                        if await self.bot.is_trusted(inter.author):
                             allowed = True
             if not allowed:
                 await inter.send(
@@ -190,7 +183,8 @@ class ViewingQuizzesCog(HelperCog):
                 if inter.guild is not None:
                     _me: disnake.Member = inter.guild.me
                     if not inter.channel.permissions_for(_me).attach_files:
-                        return await inter.send("I don't have the attach files permission. Therefore, I can't send the raw quiz (as it is as sent in a file).")
+                        return await inter.send(
+                            "I don't have the attach files permission. Therefore, I can't send the raw quiz (as it is as sent in a file).")
                     allowed = False
 
                 if await self.bot.is_trusted(inter.author):
@@ -201,9 +195,8 @@ class ViewingQuizzesCog(HelperCog):
             await inter.send(embed=ErrorEmbed("Quiz not found"))
             return
 
-        if not await self.can_view_quiz_given_inter(inter):
+        if not await self.can_view_quiz_given_inter(inter, quiz_id):
             return
-
 
         thing_to_send: str = f"Quiz id #{quiz_id}"
         try:
@@ -244,6 +237,7 @@ class ViewingQuizzesCog(HelperCog):
     Question: {problem.question}
     Answer: {problem.answer if problem.is_written else '(This problem is a written problem)'}
     Is Written: {problem.is_written}
+    Author: <@{problem.author}>
     Max Score: {problem.max_score}
     Problem Number: {problem_num}"""
                 await inter.send(
@@ -251,7 +245,9 @@ class ViewingQuizzesCog(HelperCog):
                         title=f"Problem #{problem_num}",
                         description=problem_str,
                         color=disnake.Color.from_rgb(90, 90, 250)
-                    )
+                    ),
+                    allowed_mentions = disnake.AllowedMentions(users=False),
+                    ephemeral=False
                 )
                 await asyncio.sleep(1)
         elif raw and show_all_info and allowed:
@@ -261,17 +257,114 @@ class ViewingQuizzesCog(HelperCog):
                 ),
                 'utf-8'),
                 filename='raw_quiz.json')
-            await inter.send('I have attached the file!', file=file)
+            await inter.send('I have attached the file!', file=file, ephemeral=True)
             del file
 
     # TODO: /quiz_view single_problem
-    #@quiz_view.slash_command(
-    #    name = 'single_problem',
-    #    description = "View a single problem in a quiz"
-    #    options = [
-    #        disnake.Option(
-    #            name = "quiz_id",
-    #            description='The Quiz ID of the quiz to view a single problem from'
-    #        )
-    #    ]
-    #)
+    @quiz_view.sub_command(
+        name='single_problem',
+        description="View a single problem in a quiz",
+        options=[
+            disnake.Option(
+                name="quiz_id",
+                description='The Quiz ID of the quiz to view a single problem from',
+                type=disnake.OptionType.integer,
+                required=True
+            ),
+            disnake.Option(
+                name='problem_num',
+                description='The problem #',
+                type=disnake.OptionType.integer,
+                required=True
+            ),
+            disnake.Option(
+                name='show_all_info',
+                description="Whether to show all info about the problem",
+                type=disnake.OptionType.boolean,
+                required=False
+            ),
+            disnake.Option(
+                name='raw',
+                description="Whether to show JSON-ified problem data",
+                type=disnake.OptionType.boolean,
+                required=False
+            )
+        ]
+    )
+    async def single_problem(self, inter: disnake.ApplicationCommandInteraction, quiz_id: int, problem_id,
+                             show_all_info: bool = False, raw: bool = False):
+        """/quiz view single_problem
+        View a single problem
+        Ra"""
+        if raw and not show_all_info:
+            await inter.send("show_all_info must be set to True if raw is true!")
+            return
+
+        allowed = False
+
+        if raw and await self.bot.is_trusted(inter.author):
+            allowed = True
+        # get the quiz
+        try:
+            quiz = await self.cache.get_quiz(quiz_id)
+        except QuizNotFound:
+            await inter.end("Quiz not found!")
+            return
+
+        if show_all_info:
+            if inter.author.id in quiz.authors:
+                allowed = True
+
+            else:
+                if inter.guild is not None:
+                    data: GuildData = await self.cache.get_guild_data(guild_id,
+                                                                      default=problems_module.GuildData.default())
+                    if data.mod_check.check_for_user_passage(inter.author):
+                        allowed = True
+
+                if allowed is False:
+                    if await self.bot.is_trusted(inter.author):
+                        allowed = True
+
+        try:
+            problem: QuizProblem = quiz.quiz_problems[problem_id]
+        except KeyError:
+            await inter.send("Problem number out of range")
+            return
+
+        if raw is False and show_all_info is False:
+
+
+            session = await get_quiz_submission(self, inter.author.id, quiz_id)
+            if session.done:
+                await inter.send("Your session is done!")
+                return
+            problem_str = f"""Problem number: {problem_id}
+Question: {problem.question}
+Author: <@{problem.author}>
+Is written: {problem.is_written}
+Max Score: {problem.max_score}
+"""
+            await inter.send(embed=SuccessEmbed(title="Here is the problem information!", description = problem_str), ephemeral=False)
+            return
+        elif raw and allowed:
+            data: dict =problem.to_dict()
+            file = disnake.File(BytesIO(json.dumps(data), 'utf-8'), filename = 'the_problem.json')
+            await inter.send("The problem information is attached", file=file)
+            return
+
+        elif show_all_info and raw and allowed:
+            problem_str = f"""Problem number: {problem_id}
+            Question: {problem.question}
+            Author: <@{problem.author}>
+            Answer: {problem.answer}
+            Is written: {problem.is_written}
+            Max Score: {problem.max_score}
+            """
+            await inter.send(embed=SuccessEmbed(title="Here is the problem information!", description=problem_str), allowed_mentions=disnake.AllowedMentions(users=False))
+            return
+
+        else:
+            await inter.send("You're not allowed to do this!")
+            return
+

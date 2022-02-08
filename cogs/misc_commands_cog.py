@@ -745,16 +745,19 @@ class MiscCommandsCog(HelperCog):
                 return None
             await inter.send(_documentation)
         elif documentation_type == "privacy_policy":
-            with open("PRIVACY_POLICY.md") as file:
-                await inter.send(
-                    embed=SuccessEmbed("".join([str(line) for line in file]))
-                )  # Concatenate the lines in the file and send them
+            await inter.send("The link to the privacy policy is [https://github.com/rf20008/TheDiscordMathProblemBotRepo/blob/beta/TERMS_AND_CONDITIONS.md](here)")
             return
         elif documentation_type == "terms_of_service":
-            with open("TERMS_AND_CONDITIONS.md") as file:
-                await inter.send(
-                    embed=SuccessEmbed("".join([line for line in file]))
-                )  # Concatenate the lines in the file + send them
+            #TODO: softcode this in a config.json file
+            await inter.send("The link to the terms of service is here: [https://github.com/rf20008/TheDiscordMathProblemBotRepo/blob/beta/TERMS_AND_CONDITIONS.md](Terms of Service Link)")
+            return
+
+
+
+            # with open("TERMS_AND_CONDITIONS.md") as file:
+            #    await inter.send(
+            #        embed=SuccessEmbed("".join([line for line in file]))
+            #    )  # Concatenate the lines in the file + send them
         else:
             raise NotImplementedError(
                 "This hasn't been implemented yet. Please contribute something!"
