@@ -27,6 +27,7 @@ class DeveloperCommands(HelperCog):
         # checks = self.checks
         checks.setup(bot)
 
+    @checks.has_privileges(blacklisted=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.slash_command(
         name="force_load_files",
@@ -66,12 +67,13 @@ class DeveloperCommands(HelperCog):
             # return
             raise  # I actually want to fix this bug!
 
+    @checks.has_privileges(blacklisted=False)
     @commands.cooldown(1, 5)
+    @checks.trusted_users_only()
     @commands.slash_command(
         name="force_save_files",
         description="Forcefully saves files (can only be used by trusted users).",
     )
-    @checks.trusted_users_only()
     async def force_save_files(self, inter: disnake.ApplicationCommandInteraction):
         """/force_save_files.
         Forcefully saves files. Takes no arguments. Mostly for debugging purposes.
@@ -103,6 +105,7 @@ class DeveloperCommands(HelperCog):
 
     @commands.is_owner()
     @checks.trusted_users_only()
+    @checks.has_privileges(blacklisted=False)
     @commands.cooldown(1, 5, type=disnake.ext.commands.BucketType.user)
     @commands.slash_command(
         name="raise_error",
@@ -159,6 +162,7 @@ class DeveloperCommands(HelperCog):
         )
         raise error
 
+    @checks.has_privileges(blacklisted=False)
     @commands.slash_command(
         name="debug",
         description="Helpful for debugging :-)",
@@ -235,6 +239,7 @@ class DeveloperCommands(HelperCog):
 
         await inter.send(text, ephemeral=send_ephermally)
 
+    @commands.cooldown(1, 30, commands.BucketType.user)
     @commands.slash_command(
         name="generate_new_problems",
         description="Generates new problems",
@@ -247,7 +252,6 @@ class DeveloperCommands(HelperCog):
             )
         ],
     )
-    @commands.cooldown(1, 30, commands.BucketType.user)
     async def generate_new_problems(
         self,
         inter: disnake.ApplicationCommandInteraction,
@@ -333,6 +337,10 @@ class DeveloperCommands(HelperCog):
             ephemeral=True,
         )
 
+    @checks.trusted_users_only()
+    @checks.is_not_blacklisted()
+    @commands.cooldown(1, 600, commands.BucketType.user)
+    @checks.has_privileges(blacklisted=False)
     @commands.slash_command(
         name="add_trusted_user",
         description="Adds a trusted user",
@@ -345,9 +353,6 @@ class DeveloperCommands(HelperCog):
             )
         ],
     )
-    @checks.trusted_users_only()
-    @checks.is_not_blacklisted()
-    @commands.cooldown(1, 600, commands.BucketType.user)
     async def add_trusted_user(
         self,
         inter: disnake.ApplicationCommandInteraction,
@@ -387,6 +392,9 @@ class DeveloperCommands(HelperCog):
         )
         return
 
+    @commands.cooldown(1, 600, commands.BucketType.user)
+    @checks.trusted_users_only()
+    @checks.has_privileges(blacklisted=False)
     @commands.slash_command(
         name="remove_trusted_user",
         description="removes a trusted user",
@@ -399,8 +407,6 @@ class DeveloperCommands(HelperCog):
             )
         ],
     )
-    @commands.cooldown(1, 600, commands.BucketType.user)
-    @checks.trusted_users_only()
     async def remove_trusted_user(
         self: "DeveloperCommands",
         inter: disnake.ApplicationCommandInteraction,

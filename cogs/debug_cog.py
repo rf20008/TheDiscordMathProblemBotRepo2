@@ -47,6 +47,7 @@ class DebugCog(HelperCog):
         except AttributeError:
             raise commands.CheckFailure("You don't own this bot!")
 
+    @checks.has_privileges(trusted=True)
     @commands.is_owner()
     @checks.trusted_users_only()
     @commands.slash_command(
@@ -87,6 +88,7 @@ class DebugCog(HelperCog):
         await inter.send(f"Result: {result}")
         return
 
+    @checks.has_privileges(blacklisted=False)
     @commands.is_owner()
     @checks.trusted_users_only()
     @commands.slash_command(

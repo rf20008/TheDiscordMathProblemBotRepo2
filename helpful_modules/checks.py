@@ -82,7 +82,7 @@ def administrator_or_trusted_users_only():
 def always_failing_check():
     """This check will never pass"""
 
-    def predicate(inter):
+    def predicate(_):
         raise CustomCheckFailure("This check (test) will never pass")
 
     return commands.check(predicate)
@@ -121,3 +121,26 @@ def guild_not_blacklisted():
         return True
 
     return commands.check(predicate)
+
+def has_privileges(**privileges_required):
+    """Make sure the user running this has the privileges required to run this command (not permissions, but bot privileges).
+
+    Right now, the only privileges that can be checked are:
+        -`trusted`,
+        -`blacklisted`
+
+    As this is the internal API of my bot, this may change at any time; don't rely on it :-)"""
+    async def predicate(inter: disnake.ApplicationCommandInteraction):
+        """The actual check"""
+        if not isinstance(inter.bot, TheDiscordMathProblemBot):
+            raise TypeError("Uh oh - inter.bot isn't TheDiscordMathProblemBot")
+        if privileges_required == {}:
+            if await inter.bot.cache.user_meets_permissions_required_to_use_command(inter.author.id): # This uses the values defined in config.json
+                return True
+            raise CustomCheckFailure("You don't have the permissions required!")
+        if await inter.bot.cache.user_meets_permissions_required_to_use_command(inter.author.id, privileges_required):
+            return True
+        raise CustomCheckFailure("You don't have the required privileges!")
+
+    return commands.check(predicate)
+

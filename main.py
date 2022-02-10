@@ -209,8 +209,11 @@ bot.add_cog(MiscCommandsCog(bot))
 bot.load_extension('cogs.quiz_ext')
 bot.CONSTANTS = bot_constants
 bot.add_app_command_check(checks.is_not_blacklisted())
+bot.add_app_command_check(checks.has_privileges())
 bot.add_app_command_check(checks.guild_not_blacklisted())
 
+
+# TODO: add /appeal and use modals once Disnake supports them
 
 # Events
 

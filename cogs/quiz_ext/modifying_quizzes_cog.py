@@ -13,12 +13,13 @@ from helpful_modules.problems_module import MathProblemCache, Quiz, QuizProblem
 from helpful_modules.problems_module.quizzes import (QuizSolvingSession,
                                                      QuizSubmission)
 from helpful_modules.threads_or_useful_funcs import generate_new_id, get_log
-
+from helpful_modules import checks
 from ..helper_cog import HelperCog
 
 
 class ModifyingQuizzesCog(HelperCog):
 
+    @checks.has_privileges(blacklisted=False)
     @commands.slash_command(name="quiz_edit", description="Edit quizzes")
     async def quiz_edit(self, inter: disnake.ApplicationCommandInteraction):
         """/quiz edit
@@ -31,7 +32,7 @@ class ModifyingQuizzesCog(HelperCog):
         /quiz edit modify_problem (quiz_id: int) (problem_num: int) [new_question: str = None] [new_answer: str = None] [points_worth: int = None] [is_written: bool = None]
         /quiz edit delete_problem (quiz_id: int) (problem_num: int) """
         pass
-
+    @checks.has_privileges(blacklisted=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @quiz_edit.sub_command(
         name="add_answer",
@@ -97,6 +98,7 @@ class ModifyingQuizzesCog(HelperCog):
         problem.add_answer(answer)
         await inter.send("Successfully added an answer!")
 
+    @checks.has_privileges(blacklisted=False)
     @commands.cooldown(1, 30, commands.BucketType.user)
     @quiz_edit.sub_command(
         name="add_problem",
@@ -194,6 +196,7 @@ class ModifyingQuizzesCog(HelperCog):
             await quiz.add_problem(problem, problem_to_insert_before)
             return await inter.send("Successfully added the problem!")
 
+    @checks.has_privileges(blacklisted=False)
     @commands.cooldown(1, 60, commands.BucketType.user)
     @quiz_edit.sub_command(
         name="delete_problem",
@@ -269,6 +272,7 @@ class ModifyingQuizzesCog(HelperCog):
         except IndexError:
             return await inter.send("This problem in the quiz was not found.")
 
+    @checks.has_privileges(blacklisted=False)
     @quiz_edit.sub_command(
         name="modify_problem",
         description="Modify a problem, changing its question/answer/point worth/etc...",

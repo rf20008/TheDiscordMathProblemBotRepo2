@@ -9,7 +9,7 @@ import typing
 
 from ..helper_cog import HelperCog
 from ._utils import get_attempt_num_for_user, get_quiz_submission
-
+from helpful_modules import checks
 
 class ViewingQuizzesCog(HelperCog):
     def __init__(self, bot: TheDiscordMathProblemBot):
@@ -85,6 +85,7 @@ class ViewingQuizzesCog(HelperCog):
             return False
         return True
 
+    @checks.has_privileges(blacklisted=False)
     @commands.slash_command(name="quiz_view", description="View quizzes!")
     async def quiz_view(self, inter: disnake.ApplicationCommandInteraction):
         """/quiz_view
@@ -287,7 +288,7 @@ class ViewingQuizzesCog(HelperCog):
             await inter.send('I have attached the file!', file=file, ephemeral=True)
             del file
 
-    # TODO: /quiz_view single_problem
+    @checks.has_privileges(blacklisted=False)
     @quiz_view.sub_command(
         name='single_problem',
         description="View a single problem in a quiz",
@@ -395,6 +396,7 @@ Max Score: {problem.max_score}
             await inter.send("You're not allowed to do this!")
             return
 
+    @checks.has_privileges(blacklisted=False)
     @quiz_view.sub_command(
         name='ids',
         description = "View the Quiz IDs of the available quizzes and a short description",
@@ -407,7 +409,7 @@ Max Score: {problem.max_score}
             )
         ]
     )
-    async def ids(self, inter, page_num: int) -> None:
+    async def ids(self, inter, page_num: int = 1) -> None:
         """/quiz_view ids [page_num: int=0]
         View the Quiz IDs and a
         Page num is the page number"""

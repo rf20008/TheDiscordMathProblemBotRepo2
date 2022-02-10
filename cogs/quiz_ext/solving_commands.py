@@ -14,7 +14,7 @@ from helpful_modules.problems_module.quizzes import (QuizSolvingSession,
                                                      QuizSubmission)
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.threads_or_useful_funcs import generate_new_id, get_log
-
+from helpful_modules import checks
 from ..helper_cog import HelperCog
 
 
@@ -24,6 +24,7 @@ class QuizSolveCog(HelperCog):
         self.bot = bot
         self.cache = bot.cache
 
+    @checks.has_privileges(blacklisted=False)
     @commands.slash_command(name="solve_quiz", description="Solve quizzes")
     async def solve_quiz(self, inter: disnake.ApplicationCommandInteraction):
         """This is a command used to solve quizzes
@@ -93,6 +94,7 @@ class QuizSolveCog(HelperCog):
         await inter.send("You have successfully set your answer to the one specified.", ephemeral=True)
         return
 
+    @checks.has_privileges(blacklisted=False)
     @solve_quiz.sub_command(
         name="initialize_quiz_solving",
         description="Initialize solving a quiz",

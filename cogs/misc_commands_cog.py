@@ -28,6 +28,7 @@ class MiscCommandsCog(HelperCog):
         self.bot: TheDiscordMathProblemBot = bot
         self.cache: problems_module.MathProblemCache = bot.cache
 
+    @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.slash_command(
         name="info",
         description="Bot info!",
@@ -40,7 +41,6 @@ class MiscCommandsCog(HelperCog):
             )
         ],
     )
-    @commands.cooldown(1, 15, commands.BucketType.user)
     async def info(
         self,
         inter: disnake.ApplicationCommandInteraction,
@@ -99,14 +99,14 @@ class MiscCommandsCog(HelperCog):
 
         await inter.send(embed=embed)
 
-    @commands.slash_command(
-        name="list_trusted_users", description="list all trusted users"
-    )
     @commands.cooldown(1, 5, commands.BucketType.user)  # 5 second user cooldown
     @commands.cooldown(
         20, 50, commands.BucketType.default
     )  # 20 times before a global cooldown of 50 seconds is established
     @commands.guild_only()  # Due to bugs, it doesn't work in DM's
+    @commands.slash_command(
+        name="list_trusted_users", description="list all trusted users"
+    )
     async def list_trusted_users(self, inter):
         """/list_trusted_users
         List all trusted users in username#discriminator format (takes no arguments)"""
@@ -164,6 +164,7 @@ class MiscCommandsCog(HelperCog):
 
         await inter.send(__trusted_users, ephemeral=True)
 
+    @checks.has_privileges(blacklisted=False)
     @commands.cooldown(1, 30, commands.BucketType.user)
     @commands.slash_command(
         name="ping", description="Prints latency and takes no arguments"
@@ -177,7 +178,7 @@ class MiscCommandsCog(HelperCog):
             ),
             ephemeral=True,
         )
-
+    @checks.is_not_blacklisted()
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.slash_command(
         name="what_is_vote_threshold",
@@ -193,6 +194,7 @@ class MiscCommandsCog(HelperCog):
             ephemeral=True,
         )
 
+    @checks.has_privileges(blacklisted=False)
     @commands.slash_command(
         name="generate_invite_link",
         description="Generates a invite link for this bot! Takes no arguments",
@@ -235,6 +237,13 @@ class MiscCommandsCog(HelperCog):
             )
         )
 
+    @checks.trusted_users_only()
+    @commands.cooldown(
+        1, 50, commands.BucketType.user
+    )  # Don't overload the bot (although trusted users will probably not)
+    @commands.cooldown(
+        15, 500, commands.BucketType.default
+    )  # To prevent wars! If you want your own version, self host it :-)
     @commands.slash_command(
         name="set_vote_threshold",
         description="Sets the vote threshold",
@@ -247,13 +256,6 @@ class MiscCommandsCog(HelperCog):
             )
         ],
     )
-    @checks.trusted_users_only()
-    @commands.cooldown(
-        1, 50, commands.BucketType.user
-    )  # Don't overload the bot (although trusted users will probably not)
-    @commands.cooldown(
-        15, 500, commands.BucketType.default
-    )  # To prevent wars! If you want your own version, self host it :-)
     async def set_vote_threshold(
         self, inter: disnake.ApplicationCommandInteraction, threshold: int
     ):
@@ -298,7 +300,7 @@ class MiscCommandsCog(HelperCog):
         print(
             f"The user_data command has been invoked by {inter.author.name}#{inter.author.discriminator}"
         )
-
+    @checks.has_privileges(blacklisted=False)
     @disnake.ext.commands.cooldown(1, 500, commands.BucketType.user)  # To prevent abuse
     @user_data.sub_command(
         name="delete_all",
@@ -636,6 +638,7 @@ class MiscCommandsCog(HelperCog):
         await channel.send(embed=embed, content=content)
         await inter.send("Your request has been submitted!")
 
+    @checks.has_privileges(blacklisted=False)
     @commands.cooldown(1, 1, commands.BucketType.user)
     @commands.slash_command(
         name="documentation",
@@ -762,7 +765,10 @@ class MiscCommandsCog(HelperCog):
             raise NotImplementedError(
                 "This hasn't been implemented yet. Please contribute something!"
             )
-
+    @checks.has_privileges(blacklisted=False)
+    @checks.trusted_users_only()
+    @checks.is_not_blacklisted()
+    @commands.cooldown(1, 1, commands.BucketType.user)
     @commands.slash_command(
         name="blacklist",
         description="Blacklist someone from the bot!",
@@ -775,9 +781,6 @@ class MiscCommandsCog(HelperCog):
             )
         ],
     )
-    @checks.trusted_users_only()
-    @checks.is_not_blacklisted()
-    @commands.cooldown(1, 1, commands.BucketType.user)
     async def blacklist(
         self: "MiscCommandsCog",
         inter: disnake.ApplicationCommandInteraction,
@@ -806,6 +809,9 @@ class MiscCommandsCog(HelperCog):
 
             # TODO: what do I do after a user gets blacklisted? Do I delete their data?
 
+    @checks.trusted_users_only()
+    @checks.is_not_blacklisted()
+    @commands.cooldown(1, 1, commands.BucketType.user)
     @commands.slash_command(
         name="unblacklist",
         description="Remove someone's blacklist",
@@ -818,9 +824,6 @@ class MiscCommandsCog(HelperCog):
             )
         ],
     )
-    @checks.trusted_users_only()
-    @checks.is_not_blacklisted()
-    @commands.cooldown(1, 1, commands.BucketType.user)
     async def unblacklist(
         self: "MiscCommandsCog",
         inter: disnake.ApplicationCommandInteraction,
@@ -848,3 +851,10 @@ class MiscCommandsCog(HelperCog):
             await inter.send("Successfully un-blacklisted the user!")
 
             # TODO: what do I do after a user gets blacklisted? Do I delete their data?
+
+
+def setup(bot):
+    bot.add_cog(MiscCommandsCog(bot))
+
+def teardown(bot):
+    bot.remove_cog('MiscCommandsCog')

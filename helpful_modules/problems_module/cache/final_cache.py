@@ -1,8 +1,7 @@
 from . import *
-from .user_data_related_cache import UserDataRelatedCache
 
 "Mainly used for backwards compatibility"
 
-
-class MathProblemCache(UserDataRelatedCache):
+from .permissions_required_related_cache import PermissionsRequiredRelatedCache
+class MathProblemCache(PermissionsRequiredRelatedCache):
     pass

@@ -25,6 +25,7 @@ class ProblemsCog(HelperCog):
         super().__init__(bot)
         checks.setup(bot)
 
+    @checks.has_privileges(blacklisted=False)
     @commands.cooldown(1, 1, commands.BucketType.user)
     @checks.is_not_blacklisted()
     @commands.slash_command(name="edit_problem", description="edit a problem")
@@ -32,6 +33,7 @@ class ProblemsCog(HelperCog):
         """The base command to edit problems."""
         pass
 
+    @checks.has_privileges(blacklisted=False)
     @commands.cooldown(1, 1, commands.BucketType.user)
     @checks.is_not_blacklisted()
     @edit_problem.sub_command(
@@ -118,6 +120,7 @@ class ProblemsCog(HelperCog):
 
         await inter.send(embed=SuccessEmbed(e), ephemeral=True)
 
+    @checks.has_privileges(blacklisted=False)
     @edit_problem.sub_command(
         name="add_answer",
         description="Add an answer to an existing problem",
@@ -171,6 +174,7 @@ class ProblemsCog(HelperCog):
         await problem.update_self()
         await inter.reply("Successfully added the answer!")
 
+    @checks.has_privileges(blacklisted=False)
     @commands.slash_command(
         name="show_problem_info",
         description="Show problem info",
@@ -284,6 +288,7 @@ class ProblemsCog(HelperCog):
             await inter.send(embed=SuccessEmbed(Problem_as_str), ephemeral=True)
         await inter.send(embed=SuccessEmbed(Problem_as_str), ephemeral=True)
 
+    @checks.has_privileges(blacklisted=False)
     @commands.cooldown(1, 2.5, commands.BucketType.user)
     @commands.slash_command(
         name="list_all_problem_ids",
@@ -332,6 +337,7 @@ class ProblemsCog(HelperCog):
         thing_to_write = "\n".join([str(problem.id) for problem in global_problems])
         await inter.send(embed=SuccessEmbed(thing_to_write))
 
+    @checks.has_privileges(blacklisted=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.slash_command(
         name="list_all_problems",
@@ -357,7 +363,6 @@ class ProblemsCog(HelperCog):
             ),
         ],
     )
-    @checks.is_not_blacklisted()
     async def list_all_problems(
         self,
         inter,
@@ -434,12 +439,13 @@ class ProblemsCog(HelperCog):
             problem_info_as_str += str(len(problem.get_solvers())) + "\t"
         await inter.send(embed=SuccessEmbed(problem_info_as_str[:1930]))
 
+    @checks.trusted_users_only()
+    @disnake.ext.commands.cooldown(1, 15, commands.BucketType.user)
+    @checks.has_privileges(blacklisted=False, trusted=True)
     @commands.slash_command(
         name="delallbotproblems",
         description="delete all automatically generated problems",
     )
-    @checks.trusted_users_only()
-    @disnake.ext.commands.cooldown(1, 15, commands.BucketType.user)
     async def delallbotproblems(self, inter: disnake.ApplicationCommandInteraction):
         """/delallbotproblems
         Delete all automatically generated problems."""
@@ -460,7 +466,7 @@ class ProblemsCog(HelperCog):
                 f"Successfully deleted all automatically generated problems!"
             )
         )
-
+    @checks.has_privileges(blacklisted=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.slash_command(
         name="submit_problem",
@@ -688,6 +694,7 @@ class ProblemsCog(HelperCog):
     #
 
     # Commented out: duplicate
+    @checks.has_privileges(blacklisted=False)
     @commands.slash_command(
         name="check_answer",
         description="Check if you are right",
@@ -776,6 +783,8 @@ class ProblemsCog(HelperCog):
             await problem.update_self()
             return
 
+    @checks.has_privileges(blacklisted=False)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.slash_command(
         name="vote",
         description="Vote for the deletion of a problem!",
@@ -794,7 +803,6 @@ class ProblemsCog(HelperCog):
             ),
         ],
     )
-    @commands.cooldown(1, 5, commands.BucketType.user)
     async def vote(self, inter, problem_id: int, is_guild_problem: bool = False):
         """/vote [problem_id: int] [is_guild_problem: bool = False]
         Vote for the deletion of the problem with the given problem_id.
@@ -848,6 +856,7 @@ class ProblemsCog(HelperCog):
             )
             return
 
+    @checks.has_privileges(blacklisted=False)
     @commands.slash_command(
         name="unvote",
         description="Vote for the deletion of a problem",
@@ -913,6 +922,9 @@ class ProblemsCog(HelperCog):
             ephemeral=True,
         )  # Tell the user of the successful un-vote.
 
+    @commands.cooldown(1, 0.5, commands.BucketType.user)
+    @commands.guild_only()
+    @checks.has_privileges(blacklisted=False)
     @commands.slash_command(
         name="delete_problem",
         description="Delete a problem",
@@ -925,8 +937,6 @@ class ProblemsCog(HelperCog):
             ),
         ],
     )
-    @commands.cooldown(1, 0.5, commands.BucketType.user)
-    @commands.guild_only()
     async def delete_problem(
         self: "ProblemsCog",
         inter: disnake.ApplicationCommandInteraction,
