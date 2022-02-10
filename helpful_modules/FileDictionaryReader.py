@@ -1,5 +1,5 @@
 import aiofiles
-import orjson
+import json
 import asyncio
 """
 This is used to read config.json, but it could also be used to read any JSON files and treat it like a dictionary, but not like a dictionary
