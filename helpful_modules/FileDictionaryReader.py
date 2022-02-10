@@ -18,11 +18,11 @@ class AsyncFileDict:
 
     async def update_my_file(self):
         async with aiofiles.open(self.filename, 'wb') as file:
-            await file.write(orjson.dumps(self.dict))
+            await file.write(bytes(json.dumps(self.dict), 'utf-8'))
             return
     async def read_from_file(self) -> dict:
         async with aiofiles.open(self.filename, 'r') as file:
-            self._dict = orjson.loads(await file.read())
+            self._dict = json.loads(await file.read())
             return self.dict
 
     async def get_key(self, key):
