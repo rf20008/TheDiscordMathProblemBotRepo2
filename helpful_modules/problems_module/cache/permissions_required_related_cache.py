@@ -13,7 +13,7 @@ Also, most of the logic is delegated either to UserDataRequiredCache or AsyncFil
 from .user_data_related_cache import UserDataRelatedCache
 from ...FileDictionaryReader import AsyncFileDict
 import typing
-
+from ..user_data import UserData
 
 class PermissionsRequiredRelatedCache(UserDataRelatedCache):
     def __init__(self, *args, **kwargs):
@@ -31,14 +31,14 @@ class PermissionsRequiredRelatedCache(UserDataRelatedCache):
 
         await self.update_cache()
         if 'trusted' in permissions_required.keys():
-            if self.cached_user_data[user_id].trusted != permissions_required['trusted']:
+            if await self.get_user_data(user_id, default=UserData.defualt(user_id=user_id)).trusted != permissions_required['trusted']:
                 return False
 
         if 'blacklisted' in permissions_required.keys():
-            if self.cached_user_data[user_id].blacklisted != permissions_required['blacklisted']:
+            if (await self.get_user_data(user_id, default=UserData.default(user_id=user_id))).blacklisted != permissions_required['blacklisted']:
                 return False
 
-        for key, val in permissions_required:
+        for key, val in permissions_required.items():
             try:
                 if self.cached_user_data[user_id].to_dict()[key] != val:
                     return False

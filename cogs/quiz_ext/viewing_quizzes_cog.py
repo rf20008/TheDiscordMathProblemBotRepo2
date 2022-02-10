@@ -409,11 +409,11 @@ Max Score: {problem.max_score}
             )
         ]
     )
-    async def ids(self, inter, page_num: int = 1) -> None:
+    async def ids(self, inter, page_num: int = 0) -> None:
         """/quiz_view ids [page_num: int=0]
         View the Quiz IDs and a
         Page num is the page number"""
         try:
             return await inter.send(embed=SuccessEmbed((await self.quiz_pages(inter.guild_id))[page_num]))
         except IndexError:
-            return await inter.send(embed=ErrorEmbed(f"Page number out of range (there are only f{len(await self.quiz_pages(inter.guild_id))} pages)"))
+            return await inter.send(embed=ErrorEmbed(f"Page number out of range (there are only {len(await self.quiz_pages(inter.guild_id))} pages)"))
