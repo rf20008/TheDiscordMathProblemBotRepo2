@@ -5,6 +5,7 @@ from helpful_modules import problems_module
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.custom_embeds import *
 from helpful_modules.problems_module import *
+import typing
 
 from ..helper_cog import HelperCog
 from ._utils import get_attempt_num_for_user, get_quiz_submission
@@ -16,7 +17,7 @@ class ViewingQuizzesCog(HelperCog):
         self.bot = bot
         self.cache = bot.cache
 
-    async def quiz_pages(self, guild_id: int) -> typing.List[String]:
+    async def quiz_pages(self, guild_id: int) -> typing.List[str]:
         await self.cache.update_cache()
         pages_list=[]
         cur_page=''
