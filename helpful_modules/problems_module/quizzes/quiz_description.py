@@ -19,18 +19,18 @@ class QuizDescription:
     solvers_can_view_quiz: bool
 
     def __init__(
-        self,
-        *,
-        cache: "MathProblemCache",
-        quiz_id: int,
-        author: int,
-        guild_id: int,
-        category: str = "Unspecified",
-        intensity: t.Union[QuizIntensity, float] = QuizIntensity.IMPOSSIBLE,
-        description="No description given",
-        license="Unspecified (the default is GNU GDL)",
-        time_limit=QuizTimeLimit.UNLIMITED,
-        solvers_can_view_quiz: bool = False
+            self,
+            *,
+            cache: "MathProblemCache",
+            quiz_id: int,
+            author: int,
+            guild_id: int,
+            category: str = "Unspecified",
+            intensity: t.Union[QuizIntensity, float] = QuizIntensity.IMPOSSIBLE,
+            description="No description given",
+            license="Unspecified (the default is GNU GDL)",
+            time_limit=QuizTimeLimit.UNLIMITED,
+            solvers_can_view_quiz: bool = False
     ):
         self.solvers_can_view_quiz = solvers_can_view_quiz
         self.guild_id = guild_id
@@ -70,3 +70,18 @@ class QuizDescription:
             'guild_id': self.guild_id,
             'solvers_can_view_quiz': self.solvers_can_view_quiz
         }
+
+    def time_limit_to_int(self) -> int:
+        if isinstance(self.time_limit, int):
+            return self.time_limit
+        return self.time_limit.value
+
+    def __str__(self) -> str:
+        return f"""**Quiz ID:** {self.quiz_id},
+**Time Limit:** {self.time_limit_to_int()} seconds
+**Description:** {self.description}
+**License:** {self.license}
+**Guild ID:** {self.guild_id},
+**Author:** <@{self.author}>
+**Category:** {self.category.name}
+**Solvers Can View Quiz:** {self.solvers_can_view_quiz}"""

@@ -16,6 +16,32 @@ class ViewingQuizzesCog(HelperCog):
         self.bot = bot
         self.cache = bot.cache
 
+    async def quiz_pages(self, guild_id: int) -> typing.List[String]:
+        await self.cache.update_cache()
+        pages_list=[]
+        cur_page=''
+        page_num=0
+        for quiz in filter(lambda quiz: quiz.guild_id is None, self.cache.cached_quizzes):
+            thing_to_add = str(quiz.description)
+            if (len(cur_page) + len(thing_to_add) < 4000):
+                cur_page += '----------------------'
+                cur_page += thing_to_add
+            else:
+                pages_list[page_num] = cur_page
+                cur_page=''
+                page_num+=1
+
+        for quiz in filter(lambda quiz: quiz.guild_id == guild_id, self.cache.cached_quizzes):
+            thing_to_add = str(quiz.description)
+            if (len(cur_page) + len(thing_to_add) < 4000):
+                cur_page += '----------------------'
+                cur_page += thing_to_add
+            else:
+                pages_list[page_num] = cur_page
+                cur_page=''
+                page_num+=1
+        return pages_list
+
     async def can_view_quiz_given_inter(self, inter: disnake.ApplicationCommandInteraction, quiz_id) -> bool:
         can_view_quiz: bool = False
         if await self.bot.is_trusted(inter.author):
@@ -65,7 +91,7 @@ class ViewingQuizzesCog(HelperCog):
         View quizzes
 
         Subcommands:
-        /quiz view entire_quiz
+        /quiz_view entire_quiz
         ---
         View the entire quiz. You must have an existing session for this to work!
 
@@ -368,3 +394,23 @@ Max Score: {problem.max_score}
             await inter.send("You're not allowed to do this!")
             return
 
+    @quiz_view.sub_command(
+        name='ids',
+        description = "View the Quiz IDs of the available quizzes and a short description",
+        options = [
+            disnake.Option(
+                name='page_num',
+                description='The page #',
+                type=disnake.OptionType.integer,
+                required=False
+            )
+        ]
+    )
+    async def ids(self, inter, page_num: int) -> None:
+        """/quiz_view ids [page_num: int=0]
+        View the Quiz IDs and a
+        Page num is the page number"""
+        try:
+            return await inter.send(embed=SuccessEmbed((await self.quiz_pages(inter.guild_id))[page_num]))
+        except IndexError:
+            return await inter.send(embed=ErrorEmbed(f"Page number out of range (there are only f{len(await self.quiz_pages(inter.guild_id))} pages)"))
