@@ -12,6 +12,7 @@ from helpful_modules import checks, problems_module
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.custom_embeds import ErrorEmbed, SimpleEmbed, SuccessEmbed
 from helpful_modules.threads_or_useful_funcs import get_log
+from helpful_modules.my_modals import MyModal
 
 from .helper_cog import HelperCog
 from os import urandom
