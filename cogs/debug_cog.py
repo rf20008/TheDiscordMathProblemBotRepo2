@@ -26,9 +26,13 @@ class DebugCog(HelperCog):
         super().__init__(bot)
 
     async def eval_code(self, inter, code: str):
+        """Evaluate code"""
+        new_stdout = io.StringIO()
+        new_stderr = io.StringIO()
+
         thing_to_run = """async def func(): 
                 """  # maybe: just exec() directly
-        thing_to_run += textwrap.indent(code_, "    ", predicate=lambda l: True)
+        thing_to_run += textwrap.indent(code, "    ", predicate=lambda l: True)
         compiled = False
         new_globals = {
             "bot": self.bot,
@@ -172,9 +176,7 @@ class DebugCog(HelperCog):
         Only the owner can run this command!
         This requires both the owner and the bot to have the Administrator permission.
         """
-        new_stdout = io.StringIO()
-        new_stderr = io.StringIO()
-
+        
         if (
             self.bot.owner_ids not in [None, [], set()]
             and inter.author.id not in self.bot.owner_ids
@@ -224,7 +226,7 @@ class DebugCog(HelperCog):
                 custom_id = the_custom_id,
                 style=disnake.TextInputStyle.paragraph,
                 required=True,
-                max_length=5000
+                max_length=4000
 
             )
         ]
@@ -239,10 +241,11 @@ class DebugCog(HelperCog):
 
 
         modal_custom_id = urandom(20).hex()
-        modal: MyModal = MyModal(timeout=180,title="What code do you want to run?", custom_id=modal_custom_id, callback=callback, inter=inter)
+        modal: MyModal = MyModal(timeout=180,title="What code do you want to run?", custom_id=modal_custom_id, callback=callback, inter=inter,components=[])
         modal.append_component(text_inputs)
         await inter.response.send_modal(modal)
         modal_inter = await self.bot.wait_for('modal_submit', check=lambda modal_inter: modal_inter.custom_id == modal_custom_id)
+        #await modal_inter.send("Yes!")
 
         await self.eval_code(inter, code_to_run)
 
