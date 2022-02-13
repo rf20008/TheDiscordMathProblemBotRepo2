@@ -455,14 +455,16 @@ class ModifyingQuizzesCog(HelperCog):
             ]
 
             async def _callback(s, inter: disnake.ModalInteraction):
-                if not inter.text_inputs[quiz_difficulty_custom_id].isnumeric():
+                diff = inter.text_inputs[quiz_difficulty_custom_id]
+                if not diff.isnumeric():
                     await inter.send(embed=ErrorEmbed("You didn't type in a number"))
                     return
-                nonlocal difficulty
-                difficulty = int(inter.text_inputs[quiz_difficulty_custom_id])
-                if difficulty < 0:
+                if int(diff) < 0:
                     await inter.send("Difficulty is too small")
                     return
+                nonlocal difficulty
+                difficulty = int(diff)
+                
                 await inter.send("Thanks for clarifying!")
                 return
 
@@ -479,6 +481,8 @@ class ModifyingQuizzesCog(HelperCog):
             try:
                 modal_inter = await self.bot.wait_for('modal_submit', check=lambda
                     modal_inter: modal_inter.custom_id == modal_custom_id, timeout=35)
+                if modal_inter == -1:
+                    raise RuntimeError("Uh oh - modal_inter is still -1")
             except asyncio.TimeoutError:
                 await inter.send("You didn't send the modal fast enough!")
                 return
