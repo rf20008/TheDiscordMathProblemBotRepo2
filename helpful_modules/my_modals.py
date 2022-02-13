@@ -22,8 +22,8 @@ class MyModal(Modal):
         
 
     async def callback(self, inter: disnake.ModalInteraction):
-        if await self._check(inter):
-            await self._callback(inter)
+        if await self._check(self, inter):
+            await self._callback(self, inter)
     async def on_error(self, error, inter):
         await inter.send(**(await base_on_error(inter, error)))
 

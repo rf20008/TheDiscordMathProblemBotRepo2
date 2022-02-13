@@ -30,9 +30,9 @@ class DebugCog(HelperCog):
         new_stdout = io.StringIO()
         new_stderr = io.StringIO()
 
-        thing_to_run = """async def func(): 
-                """  # maybe: just exec() directly
-        thing_to_run += textwrap.indent(code, "    ", predicate=lambda l: True)
+        thing_to_run = """async def func(): """  # maybe: just exec() directly
+        thing_to_run+='\n'
+        thing_to_run += textwrap.indent(code, " "* 4, predicate=lambda l: True)
         compiled = False
         new_globals = {
             "bot": self.bot,
@@ -235,7 +235,7 @@ class DebugCog(HelperCog):
             if modal_inter.author.id != inter.author.id:
                 raise RuntimeError
             nonlocal code_to_run
-            code_to_run = modal_inter.text_inputs[the_custom_id]
+            code_to_run = modal_inter.text_values[the_custom_id]
             await modal_inter.send("Thanks for providing the code to run :-)")
 
 
