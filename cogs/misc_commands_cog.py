@@ -586,7 +586,8 @@ class MiscCommandsCog(HelperCog):
 
         Submit a request! I will know! It uses a channel in my discord server and posts an embed.
         I will probably deprecate this and replace it with emailing me.
-        Therefore, this command has been deprecated and will be removed in a future version of the bot!"""
+        Therefore, this command has been deprecated and will be removed in a future version of the bot!
+        This command has been deprecated."""
         if (
             extra_info is None
             and type == ""

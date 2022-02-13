@@ -319,7 +319,7 @@ class ViewingQuizzesCog(HelperCog):
             )
         ]
     )
-    async def single_problem(self, inter: disnake.ApplicationCommandInteraction, quiz_id: int, problem_id,
+    async def single_problem(self, inter: disnake.ApplicationCommandInteraction, quiz_id: int, problem_num,
                              show_all_info: bool = False, raw: bool = False):
         """/quiz view single_problem
         View a single problem

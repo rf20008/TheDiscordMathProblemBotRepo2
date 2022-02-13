@@ -134,7 +134,7 @@ voice = ["PyNaCl (>=1.3.0,<1.5)"]
 
 [[package]]
 name = "disnake"
-version = "2.3.1"
+version = "2.3.2"
 description = "A Python wrapper for the Discord API"
 category = "main"
 optional = false
@@ -154,7 +154,7 @@ voice = ["PyNaCl (>=1.3.0,<1.5)"]
 type = "git"
 url = "https://github.com/DisnakeDev/disnake.git"
 reference = "master"
-resolved_reference = "3d550a4954218df72346c6eec5605e14af0f11d9"
+resolved_reference = "e4096b318884e90fdb1bbd04f07603e6b1019468"
 
 [[package]]
 name = "idna"
@@ -217,7 +217,7 @@ develop = false
 type = "git"
 url = "https://github.com/ijl/orjson.git"
 reference = "master"
-resolved_reference = "c196f0e55bd51d3693d381ccc06f2fd4b5443d86"
+resolved_reference = "ab633b6d0fa064b0c4b248bee8dc1062f0fe9d32"
 
 [[package]]
 name = "protobuf"
