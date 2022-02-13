@@ -174,9 +174,8 @@ class DebugCog(HelperCog):
                             )  # Get the 'func' from the global variables and call it
                             log.info("/eval ran (found in globals)")
                         elif "func" in locals().keys():
-                            print(
-                                await locals()["func"](), file=new_stdout
-                            )  # Get func() from locals and call it
+
+                            print(await (locals()["func"]()), file=new_stdout)  # Get func() from locals and call it
                             log.info("/eval ran (found in locals)")
                         else:
                             raise Exception(f"""fatal: func() not defined""")

@@ -8,6 +8,7 @@ import asyncio
 import logging
 import threading
 import typing
+import subprocess
 import warnings
 from asyncio import sleep as asyncio_sleep
 from copy import copy

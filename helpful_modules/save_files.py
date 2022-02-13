@@ -94,7 +94,7 @@ class FileSaver:
             )
         # main_cache.update_file_cache() #Removed method
         if not isinstance(vote_threshold, int):
-            raise RuntimeError("Vote Threshold is not an integer!")
+            raise RuntimeError(f"Vote Threshold is not an integer! Instead it's {vote_threshold} (which is of type {type(vote_threshold).__name__})")
         with open("vote_threshold.txt", "w") as file3:
             file3.write(str(vote_threshold))
         if (
