@@ -31,7 +31,7 @@ class PermissionsRequiredRelatedCache(UserDataRelatedCache):
 
         await self.update_cache()
         if 'trusted' in permissions_required.keys():
-            if await self.get_user_data(user_id, default=UserData.defualt(user_id=user_id)).trusted != permissions_required['trusted']:
+            if await self.get_user_data(user_id, default=UserData.default(user_id=user_id)).trusted != permissions_required['trusted']:
                 return False
 
         if 'blacklisted' in permissions_required.keys():
