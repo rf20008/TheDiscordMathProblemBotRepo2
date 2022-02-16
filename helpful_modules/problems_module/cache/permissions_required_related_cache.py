@@ -15,6 +15,7 @@ from ...FileDictionaryReader import AsyncFileDict
 import typing
 from ..user_data import UserData
 
+
 class PermissionsRequiredRelatedCache(UserDataRelatedCache):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -24,18 +25,21 @@ class PermissionsRequiredRelatedCache(UserDataRelatedCache):
         await self._async_file_dict.read_from_file()
         return self._async_file_dict.dict['permissions_required'][command_name]
 
-    async def user_meets_permissions_required_to_use_command(self, user_id: int, permissions_required: typing.Optional[typing.Dict[str, bool]] = None) -> bool:
+    async def user_meets_permissions_required_to_use_command(self, user_id: int, permissions_required: typing.Optional[
+        typing.Dict[str, bool]] = None) -> bool:
         """Return whether the user meets permissions required to use the command"""
         if permissions_required is None:
             permissions_required = await self.get_permissions_required_for_command(command_name)
 
         await self.update_cache()
         if 'trusted' in permissions_required.keys():
-            if (await self.get_user_data(user_id, default=UserData.default(user_id=user_id))).trusted != permissions_required['trusted']:
+            if (await self.get_user_data(user_id, default=UserData.default(user_id=user_id))).trusted != \
+                    permissions_required['trusted']:
                 return False
 
         if 'blacklisted' in permissions_required.keys():
-            if ((await self.get_user_data(user_id, default=UserData.default(user_id=user_id)))).blacklisted != permissions_required['blacklisted']:
+            if ((await self.get_user_data(user_id, default=UserData.default(user_id=user_id)))).blacklisted != \
+                    permissions_required['blacklisted']:
                 return False
 
         for key, val in permissions_required.items():
@@ -46,5 +50,3 @@ class PermissionsRequiredRelatedCache(UserDataRelatedCache):
                 pass
 
         return True
-
-

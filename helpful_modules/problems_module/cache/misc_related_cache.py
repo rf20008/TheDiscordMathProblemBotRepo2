@@ -22,29 +22,30 @@ from ..quizzes import Quiz, QuizProblem, QuizSolvingSession, QuizSubmission
 from ..quizzes.quiz_description import QuizDescription
 from ..user_data import UserData
 from ..GuildData import GuildData
+
 log = logging.getLogger(__name__)
 
 
 class MiscRelatedCache:
     def __init__(
-        self,
-        *,
-        mysql_username: str,
-        mysql_password: str,
-        mysql_db_ip: str,
-        mysql_db_name: str,
-        use_sqlite: bool = False,
-        max_answer_length: int = 100,
-        max_question_limit: int = 250,
-        max_guild_problems: int = 125,
-        max_answers_per_problem: int = 25,
-        max_problems_per_quiz: int = 50,
-        max_quizzes_per_guild: int = 50,
-        warnings_or_errors: Union[Literal["warnings"], Literal["errors"]] = "warnings",
-        db_name: str = "problems_module.db",
-        update_cache_by_default_when_requesting: bool = True,
-        use_cached_problems: bool = False,
-        pool_size: int = 20,
+            self,
+            *,
+            mysql_username: str,
+            mysql_password: str,
+            mysql_db_ip: str,
+            mysql_db_name: str,
+            use_sqlite: bool = False,
+            max_answer_length: int = 100,
+            max_question_limit: int = 250,
+            max_guild_problems: int = 125,
+            max_answers_per_problem: int = 25,
+            max_problems_per_quiz: int = 50,
+            max_quizzes_per_guild: int = 50,
+            warnings_or_errors: Union[Literal["warnings"], Literal["errors"]] = "warnings",
+            db_name: str = "problems_module.db",
+            update_cache_by_default_when_requesting: bool = True,
+            use_cached_problems: bool = False,
+            pool_size: int = 20,
     ):
         """Create a new MathProblemCache. The arguments should be self-explanatory.
         Many methods are async!"""
@@ -72,7 +73,7 @@ class MiscRelatedCache:
                 f"warnings_or_errors is {warnings_or_errors}, not 'warnings' or 'errors'"
             )
         self.warnings = (
-            warnings_or_errors == "warnings"
+                warnings_or_errors == "warnings"
         )  # Whether to raise TypeErrors or warn
         if max_answers_per_problem < 1:
             raise ValueError("max_answers_per_problem must be at least 1!")
@@ -161,7 +162,7 @@ class MiscRelatedCache:
                     else:
                         problem = BaseProblem.from_row(row=row, cache=copy(self))
                     if (
-                        problem.guild_id not in guild_ids
+                            problem.guild_id not in guild_ids
                     ):  # Similar logic: Make sure it's there!
                         guild_ids.append(problem.guild_id)
                         guild_problems[
@@ -204,7 +205,7 @@ class MiscRelatedCache:
                     await cursor.execute("SELECT * FROM guild_data")
 
                     for _Row in await cursor.fetchall():
-                        data = GuildData.from_dict(_Row,cache=self)
+                        data = GuildData.from_dict(_Row, cache=self)
                         guild_data_dict[data.guild_id] = data
 
         else:
@@ -214,7 +215,7 @@ class MiscRelatedCache:
                 for row in cursor.fetchall():
                     problem = BaseProblem.from_row(row, cache=copy(self))
                     if (
-                        problem.guild_id not in guild_ids
+                            problem.guild_id not in guild_ids
                     ):  # Similar logic: Make sure it's there!
                         guild_ids.append(problem.guild_id)
                         guild_problems[
@@ -264,7 +265,7 @@ class MiscRelatedCache:
                 cursor.execute("SELECT * FROM guild_data")
 
                 for row in cursor.fetchall():
-                    data = GuildData.from_dict(row,cache=self)
+                    data = GuildData.from_dict(row, cache=self)
                     guild_data_dict[data.guild_id] = data
         try:
             global_problems = deepcopy(
@@ -518,7 +519,7 @@ class MiscRelatedCache:
         return True
 
     async def run_sql(
-        self, sql: str, placeholders: typing.Optional[typing.List[Any]] = None
+            self, sql: str, placeholders: typing.Optional[typing.List[Any]] = None
     ) -> dict:
         """Run arbitrary SQL. Only used in /sql"""
         assert isinstance(sql, str)
@@ -534,10 +535,10 @@ class MiscRelatedCache:
                 return await cursor.fetchall()
         else:
             with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
+                    host=self.mysql_db_ip,
+                    password=self.mysql_password,
+                    user=self.mysql_username,
+                    database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(sql, placeholders)
@@ -636,6 +637,15 @@ class MiscRelatedCache:
                     )
                     """
                 )
+                await cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS appeals (
+                    special_id INT PRIMARY KEY,
+                    appeal_str VARCHAR,
+                    appeal_num INT,
+                    user_id INT,
+                    timestamp INT
+                    )"""
+                )
                 # Maybe SQL won't understand enums... but that's ok :)
                 log.debug("Created user_data table")
                 await conn.commit()  # Otherwise, when this closes, the database just reverted!
@@ -724,6 +734,15 @@ class MiscRelatedCache:
                     mod_check VARCHAR,
                     )
                     """
+                )
+                cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS appeals (
+                    special_id INT PRIMARY KEY,
+                    appeal_str VARCHAR,
+                    appeal_num INT,
+                    user_id INT,
+                    timestamp INT,
+                    )"""
                 )
                 # TODO: test whether SQL can serialize enums
                 # I don't know whether SQL can serialize enums

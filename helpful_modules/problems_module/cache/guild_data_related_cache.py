@@ -7,11 +7,10 @@ from ...dict_factory import dict_factory
 from ..GuildData.guild_data import GuildData
 from ..mysql_connector_with_stmt import *
 from ..mysql_connector_with_stmt import mysql_connection
-from .user_data_related_cache import UserDataRelatedCache
+from .permissions_required_related_cache import PermissionsRequiredRelatedCache
 
-
-class GuildDataRelatedCache:
-    def set_guild_data(self, data: GuildData):
+class GuildDataRelatedCache(PermissionsRequiredRelatedCache):
+    async def set_guild_data(self, data: GuildData):
         assert isinstance(data, GuildData)  # Basic type-checking
 
         if self.use_sqlite:
