@@ -8,13 +8,13 @@ from sys import version, version_info
 from time import asctime
 from typing import Union
 
-from disnake import *
+import disnake
 from disnake.ext import commands
 
-from helpful_modules import checks, cooldowns, problems_module
+from helpful_modules import checks, problems_module, the_documentation_file_loader
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
-from helpful_modules.custom_buttons import *
-from helpful_modules.custom_embeds import SimpleEmbed
+from helpful_modules.custom_buttons import BasicButton, ConfirmationButton, MyView
+from helpful_modules.custom_embeds import SimpleEmbed, SuccessEmbed, ErrorEmbed
 from helpful_modules.save_files import FileSaver
 from helpful_modules.threads_or_useful_funcs import get_git_revision_hash
 
@@ -33,11 +33,11 @@ class MiscCommandsCog(HelperCog):
         name="info",
         description="Bot info!",
         options=[
-            Option(
+            disnake.Option(
                 name="include_extra_info",
                 description="Whether to include extra, technical info",
                 required=False,
-                type=OptionType.boolean,
+                type=disnake.OptionType.boolean,
             )
         ],
     )
@@ -66,7 +66,14 @@ class MiscCommandsCog(HelperCog):
             inline=False,
         )
         current_version_info = version_info
-        python_version_as_str = f"Python {current_version_info.major}.{current_version_info.minor}.{current_version_info.micro}{current_version_info.releaselevel}"
+        python_version_as_str = f"""Python {
+            current_version_info.major
+        }.{
+            current_version_info.minor
+        }.{
+            current_version_info.micro}{
+            current_version_info.releaselevel
+        }"""
 
         embed = embed.add_field(
             name="Python version", value=python_version_as_str, inline=False
@@ -82,19 +89,23 @@ class MiscCommandsCog(HelperCog):
             embed = embed.add_field(
                 name="Disnake version", value=str(disnake.__version__)
             )
-
             embed = embed.add_field(
-                name="CPU count (which may not necessarily be the amount of CPU available to the bot due to a Python limitation)",
+                name="""CPU count 
+                (which may not necessarily be the amount of CPU available to the bot due to a Python limitation)""",
                 value=str(cpu_count()),
             )
             embed = embed.add_field(
                 name="License",
                 value="""This bot is licensed under GPLv3. 
-                Please see [the official GPLv3 website that explains the GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html) for more details.""",
+                Please see [the official GPLv3 website that explains the GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html) for more details.""", # noqa: E501
             )
             embed = embed.add_field(
                 name="Uptime",
-                value=f"The bot started at {disnake.utils.format_dt(self.bot.timeStarted)} and has been up for {round(self.bot.uptime)} seconds.",
+                value=(
+                    f"""The bot started at" 
+                    f"{disnake.utils.format_dt(self.bot.timeStarted)}"
+                    f"and has been up for {   round(self.bot.uptime)} seconds."""
+                ),
             )
 
         await inter.send(embed=embed)
@@ -135,22 +146,21 @@ class MiscCommandsCog(HelperCog):
             """
             except (disnake.NotFound, disnake.NotFound):
                 # A user with this ID does not exist
-                self.bot.trusted_users.remove(user_id)  # delete the user!
                 try:
-                    f = FileSaver(name=4, enabled=True)
-                    f.save_files(
-                        self.bot.cache,
-                        vote_threshold=self.bot.vote_threshold,
-                        trusted_users_list=self.bot.trusted_users,
+                    user_data = await self.bot.cache.get_user_data(
+                        user_id,
+                        default=problems_module.UserData.default()
                     )
-                    f.goodbye()  # This should delete it
+                    user_data.trusted=False
+                    await self.cache.set_user_data(user_id, user_data)
+
                     try:
                         del f
                     except NameError:
                         pass
                 except BaseException as e:
                     raise RuntimeError(
-                        "Could not save the files after removing the trusted user with ID that does not exist!"
+                        "Could not save the files after removing the nonexistant trusted user!!"
                     ) from e
             except (
                 disnake.Forbidden,
@@ -189,7 +199,8 @@ class MiscCommandsCog(HelperCog):
         self, inter: disnake.ApplicationCommandInteraction
     ):
         """/what_is_vote_threshold
-        Returns the vote threshold. Takes no arguments. There is a 5-second cooldown on this command."""
+        Returns the vote threshold. Takes no arguments.
+        There is a 5-second cooldown on this command."""
         await inter.send(
             embed=SuccessEmbed(f"The vote threshold is {self.bot.vote_threshold}."),
             ephemeral=True,
@@ -228,7 +239,7 @@ class MiscCommandsCog(HelperCog):
     async def github_repo(self, inter: disnake.ApplicationCommandInteraction):
         """/github_repo
         Gives you the link to the bot's GitHub repo.
-        If you are modifying this, because of the GPLv3 license, you must change this to reflect the new location of the bot's source code.
+        If you fork this, you must link the new source code link due to the GPL.
         There is a 2-minute cooldown on this command (after it has been executed 2 times)
         """
         await inter.send(
@@ -249,10 +260,10 @@ class MiscCommandsCog(HelperCog):
         name="set_vote_threshold",
         description="Sets the vote threshold",
         options=[
-            Option(
+            disnake.Option(
                 name="threshold",
                 description="the threshold you want to change it to",
-                type=OptionType.integer,
+                type=disnake.OptionType.integer,
                 required=True,
             )
         ],
@@ -285,7 +296,9 @@ class MiscCommandsCog(HelperCog):
         for problem in await self.bot.cache.get_global_problems():
             if (
                 problem.get_num_voters() >= vote_threshold
-            ):  # Delete the problem if the number of votes the problem has is above the new threshold.
+            ):
+                # If the number of the voters of the problem exceeds the vote threshold,
+                # delete the problem.
                 await self.cache.remove_problem(problem.id)
         await inter.send(
             embed=SuccessEmbed(
@@ -297,10 +310,9 @@ class MiscCommandsCog(HelperCog):
 
     @commands.slash_command(description="Interact with your user data")
     async def user_data(self, inter: disnake.ApplicationCommandInteraction):
-        """The base command to interact with your user data. This doesn't do anything (you need to call a subcommand)"""
-        print(
-            f"The user_data command has been invoked by {inter.author.name}#{inter.author.discriminator}"
-        )
+        """The base command to interact with your user data.
+        This doesn't do anything (you need to call a subcommand)"""
+        pass
 
     @checks.has_privileges(blacklisted=False)
     @disnake.ext.commands.cooldown(1, 500, commands.BucketType.user)  # To prevent abuse
@@ -308,22 +320,25 @@ class MiscCommandsCog(HelperCog):
         name="delete_all",
         description="Delete all problems, quizzes, and quiz submissions you created!",
         options=[
-            Option(
+            disnake.Option(
                 name="save_data_before_deletion",
-                description="Whether to give you your problems or submissions, in JSON format! Defaults to True",
-                type=OptionType.boolean,
+                description=(
+                        "Whether to give you your problems or submissions in JSON format!"
+                        "Defaults to True"
+                ),
+                type=disnake.OptionType.boolean,
                 required=False,
             ),
-            Option(
+            disnake.Option(
                 name="delete_votes",
                 description="Whether to delete your votes. ",
-                type=OptionType.boolean,
+                type=disnake.OptionType.boolean,
                 required=False,
             ),
-            Option(
+            disnake.Option(
                 name="delete_solves",
                 description="Whether to erase whether you have solved a problem or not",
-                type=OptionType.boolean,
+                type=disnake.OptionType.boolean,
                 required=False,
             ),
         ],
@@ -449,7 +464,9 @@ class MiscCommandsCog(HelperCog):
     async def _get_json_data_by_user(
         self, author: Union[disnake.User, disnake.Member]
     ) -> typing.Dict[str, typing.Any]:
-        """A helper function to obtain a user's stored data and return a version of it that is a dictionary."""
+        """
+        Return a user's stored data as a dictionary.
+        """
         raw_data = await self.cache.get_all_by_author_id(author.id)
         problems_user_voted_for = await self.cache.get_problems_by_func(
             func=lambda problem, user_id: user_id in problem.voters, args=(author,)
@@ -493,12 +510,17 @@ class MiscCommandsCog(HelperCog):
                 "trusted_user": is_trusted_user,
                 "blacklisted": is_blacklisted,
             },
+            "Appeals": [
+                appeal.to_dict() for appeal in raw_data['appeals']
+            ]
         }
         return new_data
 
     @staticmethod
     def _file_version_of_item(item: str, file_name: str) -> disnake.File:
-        """Return str in a disnake.File with the specified filename and containing the string in it."""
+        """
+        Return a disnake.File with the specified filename that contains the string provided.
+        """
         assert isinstance(item, str)
         return disnake.File(BytesIO(bytes(item, "utf-8")), filename=file_name)
 
@@ -510,7 +532,6 @@ class MiscCommandsCog(HelperCog):
     async def get_data(self, inter):
         """/user_data get_data
         Get all the data the bot stores about you.
-        Due to a Discord limitation, the bot cannot send the file in the interaction response, so you will be DMed instead.
         To prevent spam and getting rate limited, there is a 100-second cooldown."""
         await inter.response.defer()
         file = disnake.File(
@@ -543,35 +564,35 @@ class MiscCommandsCog(HelperCog):
         name="submit_a_request",
         description="Submit a request. I will know!",
         options=[
-            Option(
+            disnake.Option(
                 name="offending_problem_guild_id",
-                description="The guild id of the problem you are trying to remove. The guild id of a global problem is null",
-                type=OptionType.integer,
+                description="The guild id of the problem you are trying to remove.",
+                type=disnake.OptionType.integer,
                 required=False,
             ),
-            Option(
+            disnake.Option(
                 name="offending_problem_id",
                 description="The problem id of the problem. Very important (so I know which problem to check)",
-                type=OptionType.integer,
+                type=disnake.OptionType.integer,
                 required=False,
             ),
-            Option(
+            disnake.Option(
                 name="extra_info",
                 description="A up to 5000 character description (about 2 pages) Use this wisely!",
-                type=OptionType.string,
+                type=disnake.OptionType.string,
                 required=False,
             ),
-            Option(
+            disnake.Option(
                 name="copyrighted_thing",
                 description="The copyrighted thing that this problem is violating",
-                type=OptionType.string,
+                type=disnake.OptionType.string,
                 required=False,
             ),
-            Option(
+            disnake.Option(
                 name="type",
                 description="Request type",
                 required=False,
-                type=OptionType.string,
+                type=disnake.OptionType.string,
             ),
         ],
     )
@@ -587,9 +608,9 @@ class MiscCommandsCog(HelperCog):
         """/submit_a_request [offending_problem_guild_id: int = None] [offending_problem_id: int = None]
 
         Submit a request! I will know! It uses a channel in my discord server and posts an embed.
+        If you do not provide a guild id, it will be None.
         I will probably deprecate this and replace it with emailing me.
-        Therefore, this command has been deprecated and will be removed in a future version of the bot!
-        This command has been deprecated."""
+        This command has been deprecated. """
         if (
             extra_info is None
             and type == ""
@@ -604,7 +625,7 @@ class MiscCommandsCog(HelperCog):
         try:
             channel = await self.bot.fetch_channel(
                 901464948604039209
-            )  # CHANGE THIS IF YOU HAVE A DIFFERENT REQUESTS CHANNEL! (the part after id)\
+            )  # CHANGE THIS IF YOU HAVE A DIFFERENT REQUESTS CHANNEL! (the part after id)
             # TODO: make this an env var
         except (disnake.ext.commands.ChannelNotReadable, disnake.Forbidden):
             raise RuntimeError("The bot cannot send messages to the channel!")
@@ -617,7 +638,9 @@ class MiscCommandsCog(HelperCog):
             # Problem not found
             problem_found = False
         embed = disnake.Embed(
-            title=f"A new {type} request has been received from {inter.author.name}#{inter.author.discriminator}!",
+            title=(
+                f"A new {type} request has been received from {inter.author.name}#{inter.author.discriminator}!"
+            ),
             description="",
         )
 
@@ -647,23 +670,23 @@ class MiscCommandsCog(HelperCog):
         name="documentation",
         description="Returns help!",
         options=[
-            Option(
+            disnake.Option(
                 name="documentation_type",
                 description="What kind of help you want",
                 choices=[
-                    OptionChoice(name="documentation_link", value="documentation_link"),
-                    OptionChoice(name="command_help", value="command_help"),
-                    OptionChoice(name="function_help", value="function_help"),
-                    OptionChoice(name="privacy_policy", value="privacy_policy"),
-                    OptionChoice(name="terms_of_service", value="terms_of_service"),
+                    disnake.OptionChoice(name="documentation_link", value="documentation_link"),
+                    disnake.OptionChoice(name="command_help", value="command_help"),
+                    disnake.OptionChoice(name="function_help", value="function_help"),
+                    disnake.OptionChoice(name="privacy_policy", value="privacy_policy"),
+                    disnake.OptionChoice(name="terms_of_service", value="terms_of_service"),
                 ],
                 required=True,
             ),
-            Option(
+            disnake.Option(
                 name="help_obj",
                 description="What you want help on",
                 required=False,
-                type=OptionType.string,
+                type=disnake.OptionType.string,
             ),
         ],
     )
@@ -686,10 +709,15 @@ class MiscCommandsCog(HelperCog):
         help_obj will be ignored if documentation_type is privacy_policy or documentation_link.
         Legend (for other documentation)
         /command_name: the command
-        {argument_name: type |choice1|choice2|...} (for a required argument with choices of the given type, and the available choices are choice1, choice 2, etc.)
-        {argument_name: type |choice1|choice2|... = default} (an optional argument that defaults to default if not specified. Arguments must be a choice specified(from choice 1 etc.) and must be of the type specified.)
-        [argument_name: type = default] (an argument with choices of the given type, and defaults to default if not specified. Strings are represented without quotation marks.)
-        (argument_name: type) A required argument of the given type"""
+        {argument_name: type |choice1|choice2|...} -
+        A required argument with choices of the given type, and the available choices are choice1, choice 2, etc.)
+        {argument_name: type |choice1|choice2|... = default} -
+        An optional argument that defaults to default if not specified.
+        Arguments must be a choice specified (from choice 1 etc.) and must be of the type specified.
+        [argument_name: type = default] -
+        An argument with choices of the given type, and defaults to default if not specified. Strings are represented without quotation marks.
+        (argument_name: type) -
+        A required argument of the given type"""
         if help_obj is None and documentation_type in ["command_help", "function_help"]:
             return await inter.send(
                 embed=ErrorEmbed(
@@ -727,6 +755,7 @@ class MiscCommandsCog(HelperCog):
                 # My experiment failed
                 raise Exception("uh oh...") from exc  # My experiment failed!
         elif documentation_type == "function_help":
+            warnings.warn(DeprecationWarning("This has been deprecated"))
             documentation_loader = (
                 the_documentation_file_loader.DocumentationFileLoader()
             )
@@ -779,10 +808,10 @@ class MiscCommandsCog(HelperCog):
         name="blacklist",
         description="Blacklist someone from the bot!",
         options=[
-            Option(
+            disnake.Option(
                 name="user",
                 description="The user to blacklist",
-                type=OptionType.user,
+                type=disnake.OptionType.user,
                 required=True,
             )
         ],
@@ -807,10 +836,10 @@ class MiscCommandsCog(HelperCog):
         else:
             user_data.blacklisted = True
             try:
-                await self.cache.update_user_data(user_id=user_id, new=user_data)
+                await self.cache.update_user_data(user_id=user.id, new=user_data)
             except problems_module.MathProblemsModuleException:
-                await self.cache.add_user_data(user_id=user_id, new=user_data)
-            bot.log.info(f"Successfully blacklisted the user with id {user.id}")
+                await self.cache.add_user_data(user_id=user.id, new=user_data)
+            self.bot.log.info(f"Successfully blacklisted the user with id {user.id}")
             await inter.send("Successfully blacklisted the user!")
 
             # TODO: what do I do after a user gets blacklisted? Do I delete their data?
@@ -822,10 +851,10 @@ class MiscCommandsCog(HelperCog):
         name="unblacklist",
         description="Remove someone's blacklist",
         options=[
-            Option(
+            disnake.Option(
                 name="user",
                 description="The user to un-blacklist",
-                type=OptionType.user,
+                type=disnake.OptionType.user,
                 required=True,
             )
         ],
@@ -850,10 +879,10 @@ class MiscCommandsCog(HelperCog):
         else:
             user_data.blacklisted = False
             try:
-                await self.cache.update_user_data(user_id=user_id, new=user_data)
+                await self.cache.update_user_data(user_id=user.id, new=user_data)
             except problems_module.MathProblemsModuleException:
-                await self.cache.add_user_data(user_id=user_id, new=user_data)
-            bot.log.info(f"Successfully un-blacklisted the user with id {user.id}")
+                await self.cache.add_user_data(user_id=user.id, new=user_data)
+            self.bot.log.info(f"Successfully un-blacklisted the user with id {user.id}")
             await inter.send("Successfully un-blacklisted the user!")
 
             # TODO: what do I do after a user gets blacklisted? Do I delete their data?

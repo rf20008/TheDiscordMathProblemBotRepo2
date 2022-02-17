@@ -1,4 +1,3 @@
-import asyncio
 import contextlib
 import copy
 import io
@@ -10,7 +9,7 @@ from disnake.ext import commands
 
 from helpful_modules import checks, problems_module
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
-from helpful_modules.custom_embeds import ErrorEmbed, SimpleEmbed, SuccessEmbed
+from helpful_modules.custom_embeds import SuccessEmbed
 from helpful_modules.threads_or_useful_funcs import get_log
 from helpful_modules.my_modals import MyModal
 
@@ -44,7 +43,7 @@ class DebugCog(HelperCog):
         }
         new_globals.update(
             globals()
-        )  # credit: https://github.com/Rapptz/RoboDanny/blob/rewrite/cogs/admin.py#L234
+        )  # credit: https://github.com/Rapptz/RoboDanny/blob/rewrite/cogs/admin.py#L234 (for the idea)
         try:
             exec(thing_to_run, new_globals, locals())
             compiled = True
@@ -74,7 +73,7 @@ class DebugCog(HelperCog):
                             )  # Get func() from locals and call it
                             log.info("/eval ran (found in locals)")
                         else:
-                            raise Exception(f"""fatal: func() not defined""")
+                            raise Exception("fatal: func() not defined")
             except BaseException as e:
                 new_stderr.write("".join(format_exception(e)))
                 err = None
@@ -204,7 +203,7 @@ class DebugCog(HelperCog):
                 "We must both have the administrator permission to /eval!"
             )
         code_ = "\n".join(code.split("\\n"))  # Split the code by `\n`
-        await self.eval_code(inter, code)
+        await self.eval_code(inter, code_)
 
     @commands.is_owner()
     @checks.has_privileges(
@@ -254,7 +253,7 @@ class DebugCog(HelperCog):
         )
         modal.append_component(text_inputs)
         await inter.response.send_modal(modal)
-        modal_inter = await self.bot.wait_for(
+        _ = await self.bot.wait_for(
             "modal_submit",
             check=lambda modal_inter: modal_inter.custom_id == modal_custom_id,
         )

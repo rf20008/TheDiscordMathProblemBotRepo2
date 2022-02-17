@@ -1,6 +1,7 @@
 # The cogs folder! This contains all my cogs
 "A folder containing all the cogs!"
-from . import *
+from .appeals_cog import AppealsCog
+from .task_cog import TaskCog
 from .debug_cog import DebugCog
 from .developer_commands import DeveloperCommands
 from .helper_cog import HelperCog

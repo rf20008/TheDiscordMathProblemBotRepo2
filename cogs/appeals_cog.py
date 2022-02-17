@@ -1,4 +1,3 @@
-from helpful_modules import checks
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 import disnake
 from disnake.ext import commands
