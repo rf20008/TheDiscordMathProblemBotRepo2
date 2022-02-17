@@ -178,6 +178,7 @@ class MiscCommandsCog(HelperCog):
             ),
             ephemeral=True,
         )
+
     @checks.is_not_blacklisted()
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.slash_command(
@@ -300,6 +301,7 @@ class MiscCommandsCog(HelperCog):
         print(
             f"The user_data command has been invoked by {inter.author.name}#{inter.author.discriminator}"
         )
+
     @checks.has_privileges(blacklisted=False)
     @disnake.ext.commands.cooldown(1, 500, commands.BucketType.user)  # To prevent abuse
     @user_data.sub_command(
@@ -749,14 +751,16 @@ class MiscCommandsCog(HelperCog):
                 return None
             await inter.send(_documentation)
         elif documentation_type == "privacy_policy":
-            await inter.send("The link to the privacy policy is [https://github.com/rf20008/TheDiscordMathProblemBotRepo/blob/beta/TERMS_AND_CONDITIONS.md](here)")
+            await inter.send(
+                "The link to the privacy policy is [https://github.com/rf20008/TheDiscordMathProblemBotRepo/blob/beta/TERMS_AND_CONDITIONS.md](here)"
+            )
             return
         elif documentation_type == "terms_of_service":
-            #TODO: softcode this in a config.json file
-            await inter.send("The link to the terms of service is here: [https://github.com/rf20008/TheDiscordMathProblemBotRepo/blob/beta/TERMS_AND_CONDITIONS.md](Terms of Service Link)")
+            # TODO: softcode this in a config.json file
+            await inter.send(
+                "The link to the terms of service is here: [https://github.com/rf20008/TheDiscordMathProblemBotRepo/blob/beta/TERMS_AND_CONDITIONS.md](Terms of Service Link)"
+            )
             return
-
-
 
             # with open("TERMS_AND_CONDITIONS.md") as file:
             #    await inter.send(
@@ -766,6 +770,7 @@ class MiscCommandsCog(HelperCog):
             raise NotImplementedError(
                 "This hasn't been implemented yet. Please contribute something!"
             )
+
     @checks.has_privileges(blacklisted=False)
     @checks.trusted_users_only()
     @checks.is_not_blacklisted()
@@ -857,5 +862,6 @@ class MiscCommandsCog(HelperCog):
 def setup(bot):
     bot.add_cog(MiscCommandsCog(bot))
 
+
 def teardown(bot):
-    bot.remove_cog('MiscCommandsCog')
+    bot.remove_cog("MiscCommandsCog")

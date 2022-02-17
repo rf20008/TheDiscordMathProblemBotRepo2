@@ -9,6 +9,7 @@ from ..mysql_connector_with_stmt import *
 from ..mysql_connector_with_stmt import mysql_connection
 from .permissions_required_related_cache import PermissionsRequiredRelatedCache
 
+
 class GuildDataRelatedCache(PermissionsRequiredRelatedCache):
     async def set_guild_data(self, data: GuildData):
         assert isinstance(data, GuildData)  # Basic type-checking

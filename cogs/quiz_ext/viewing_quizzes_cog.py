@@ -11,6 +11,7 @@ from ..helper_cog import HelperCog
 from ._utils import get_attempt_num_for_user, get_quiz_submission
 from helpful_modules import checks
 
+
 class ViewingQuizzesCog(HelperCog):
     def __init__(self, bot: TheDiscordMathProblemBot):
         super().__init__(bot)
@@ -19,38 +20,46 @@ class ViewingQuizzesCog(HelperCog):
 
     async def quiz_pages(self, guild_id: int) -> typing.List[str]:
         await self.cache.update_cache()
-        pages_list=[]
-        cur_page=''
-        page_num=0
-        for quiz in filter(lambda quiz: quiz.guild_id is None, self.cache.cached_quizzes):
+        pages_list = []
+        cur_page = ""
+        page_num = 0
+        for quiz in filter(
+            lambda quiz: quiz.guild_id is None, self.cache.cached_quizzes
+        ):
             thing_to_add = str(quiz.description)
-            if (len(cur_page) + len(thing_to_add) < 4000):
-                cur_page += '----------------------'
+            if len(cur_page) + len(thing_to_add) < 4000:
+                cur_page += "----------------------"
                 cur_page += thing_to_add
             else:
                 pages_list[page_num] = cur_page
-                cur_page=''
-                page_num+=1
+                cur_page = ""
+                page_num += 1
 
-        for quiz in filter(lambda quiz: quiz.guild_id == guild_id, self.cache.cached_quizzes):
+        for quiz in filter(
+            lambda quiz: quiz.guild_id == guild_id, self.cache.cached_quizzes
+        ):
             thing_to_add = str(quiz.description)
-            if (len(cur_page) + len(thing_to_add) < 4000):
-                cur_page += '----------------------'
+            if len(cur_page) + len(thing_to_add) < 4000:
+                cur_page += "----------------------"
                 cur_page += thing_to_add
             else:
                 pages_list[page_num] = cur_page
-                cur_page=''
-                page_num+=1
+                cur_page = ""
+                page_num += 1
         return pages_list
 
-    async def can_view_quiz_given_inter(self, inter: disnake.ApplicationCommandInteraction, quiz_id) -> bool:
+    async def can_view_quiz_given_inter(
+        self, inter: disnake.ApplicationCommandInteraction, quiz_id
+    ) -> bool:
         can_view_quiz: bool = False
         if await self.bot.is_trusted(inter.author):
             # Trusted users are global moderators, so they can view quizzes
             can_view_quiz = True
             return True
         else:
-            data = await self.cache.get_guild_data(inter.guild.id, default=problems_module.GuildData.default())
+            data = await self.cache.get_guild_data(
+                inter.guild.id, default=problems_module.GuildData.default()
+            )
             if data.mod_check.check_for_user_passage(inter.author):
                 # Mods can view quizzes
                 can_view_quiz = True
@@ -60,7 +69,9 @@ class ViewingQuizzesCog(HelperCog):
                     self, inter.author.id, quiz_id
                 )
             except problems_module.errors.SessionNotFoundException:
-                await inter.send(embed=ErrorEmbed("You don't have a session for this quiz!!"))
+                await inter.send(
+                    embed=ErrorEmbed("You don't have a session for this quiz!!")
+                )
                 return False
 
             if session.done:
@@ -134,11 +145,11 @@ class ViewingQuizzesCog(HelperCog):
     )
     @commands.max_concurrency(7, commands.BucketType.default, wait=True)
     async def entire_quiz(
-            self,
-            inter: disnake.ApplicationCommandInteraction,
-            quiz_id: int,
-            raw: bool = False,
-            show_all_info: bool = False,
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        quiz_id: int,
+        raw: bool = False,
+        show_all_info: bool = False,
     ):
         """/quiz view entire_quiz [quiz_id: int] (raw: bool = False) (show_all_data: bool = False)
         Raw: Show the data as JSON. You must be trusted to do this!
@@ -148,7 +159,9 @@ class ViewingQuizzesCog(HelperCog):
         View the entire quiz. Due to Discord limitations, it will be sent in multiple embeds and multiple messages, which might trigger spam filters."""
         await inter.response.defer()
         if raw and not show_all_info:
-            await inter.send(embed=ErrorEmbed("You must enable show_all_info to see raw data!"))
+            await inter.send(
+                embed=ErrorEmbed("You must enable show_all_info to see raw data!")
+            )
             return
         allowed = False
         if raw or show_all_info:
@@ -161,23 +174,25 @@ class ViewingQuizzesCog(HelperCog):
                     await inter.send(embed=ErrorEmbed("Quiz not found"))
                     return
                 solved_quiz: bool = (
-                                            len(
-                                                filter(
-                                                    lambda submission: submission.user_id == inter.author.id,
-                                                    quiz.submissions,
-                                                )
-                                            )
-                                            != 0
-                                    ) or (
-                                            len(
-                                                filter(
-                                                    lambda _session: (_session.overtime
-                                                                      and _session.user_id == inter.author.id),
-                                                    quiz.existing_sessions,
-                                                )
-                                            )
-                                            != 0
-                                    )
+                    len(
+                        filter(
+                            lambda submission: submission.user_id == inter.author.id,
+                            quiz.submissions,
+                        )
+                    )
+                    != 0
+                ) or (
+                    len(
+                        filter(
+                            lambda _session: (
+                                _session.overtime
+                                and _session.user_id == inter.author.id
+                            ),
+                            quiz.existing_sessions,
+                        )
+                    )
+                    != 0
+                )
                 if quiz.description.solvers_can_view_quiz and solved_quiz:
                     allowed = True
                 else:
@@ -212,7 +227,8 @@ class ViewingQuizzesCog(HelperCog):
                     _me: disnake.Member = inter.guild.me
                     if not inter.channel.permissions_for(_me).attach_files:
                         return await inter.send(
-                            "I don't have the attach files permission. Therefore, I can't send the raw quiz (as it is as sent in a file).")
+                            "I don't have the attach files permission. Therefore, I can't send the raw quiz (as it is as sent in a file)."
+                        )
                     allowed = False
 
                 if await self.bot.is_trusted(inter.author):
@@ -272,55 +288,58 @@ class ViewingQuizzesCog(HelperCog):
                     embed=disnake.Embed(
                         title=f"Problem #{problem_num}",
                         description=problem_str,
-                        color=disnake.Color.from_rgb(90, 90, 250)
+                        color=disnake.Color.from_rgb(90, 90, 250),
                     ),
-                    allowed_mentions = disnake.AllowedMentions(users=False),
-                    ephemeral=False
+                    allowed_mentions=disnake.AllowedMentions(users=False),
+                    ephemeral=False,
                 )
                 await asyncio.sleep(1)
         elif raw and show_all_info and allowed:
-            file: disnake.File = disnake.File(BytesIO(
-                json.dumps(
-                    quiz.to_dict()
-                ),
-                'utf-8'),
-                filename='raw_quiz.json')
-            await inter.send('I have attached the file!', file=file, ephemeral=True)
+            file: disnake.File = disnake.File(
+                BytesIO(json.dumps(quiz.to_dict()), "utf-8"), filename="raw_quiz.json"
+            )
+            await inter.send("I have attached the file!", file=file, ephemeral=True)
             del file
 
     @checks.has_privileges(blacklisted=False)
     @quiz_view.sub_command(
-        name='single_problem',
+        name="single_problem",
         description="View a single problem in a quiz",
         options=[
             disnake.Option(
                 name="quiz_id",
-                description='The Quiz ID of the quiz to view a single problem from',
+                description="The Quiz ID of the quiz to view a single problem from",
                 type=disnake.OptionType.integer,
-                required=True
+                required=True,
             ),
             disnake.Option(
-                name='problem_num',
-                description='The problem #',
+                name="problem_num",
+                description="The problem #",
                 type=disnake.OptionType.integer,
-                required=True
+                required=True,
             ),
             disnake.Option(
-                name='show_all_info',
+                name="show_all_info",
                 description="Whether to show all info about the problem",
                 type=disnake.OptionType.boolean,
-                required=False
+                required=False,
             ),
             disnake.Option(
-                name='raw',
+                name="raw",
                 description="Whether to show JSON-ified problem data",
                 type=disnake.OptionType.boolean,
-                required=False
-            )
-        ]
+                required=False,
+            ),
+        ],
     )
-    async def single_problem(self, inter: disnake.ApplicationCommandInteraction, quiz_id: int, problem_num,
-                             show_all_info: bool = False, raw: bool = False):
+    async def single_problem(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        quiz_id: int,
+        problem_num,
+        show_all_info: bool = False,
+        raw: bool = False,
+    ):
         """/quiz view single_problem
         View a single problem
         Ra"""
@@ -345,8 +364,9 @@ class ViewingQuizzesCog(HelperCog):
 
             else:
                 if inter.guild is not None:
-                    data: GuildData = await self.cache.get_guild_data(guild_id,
-                                                                      default=problems_module.GuildData.default())
+                    data: GuildData = await self.cache.get_guild_data(
+                        guild_id, default=problems_module.GuildData.default()
+                    )
                     if data.mod_check.check_for_user_passage(inter.author):
                         allowed = True
 
@@ -362,7 +382,6 @@ class ViewingQuizzesCog(HelperCog):
 
         if raw is False and show_all_info is False:
 
-
             session = await get_quiz_submission(self, inter.author.id, quiz_id)
             if session.done:
                 await inter.send("Your session is done!")
@@ -373,11 +392,18 @@ Author: <@{problem.author}>
 Is written: {problem.is_written}
 Max Score: {problem.max_score}
 """
-            await inter.send(embed=SuccessEmbed(title="Here is the problem information!", description = problem_str), ephemeral=False)
+            await inter.send(
+                embed=SuccessEmbed(
+                    title="Here is the problem information!", description=problem_str
+                ),
+                ephemeral=False,
+            )
             return
         elif raw and allowed:
-            data: dict =problem.to_dict()
-            file = disnake.File(BytesIO(json.dumps(data), 'utf-8'), filename = 'the_problem.json')
+            data: dict = problem.to_dict()
+            file = disnake.File(
+                BytesIO(json.dumps(data), "utf-8"), filename="the_problem.json"
+            )
             await inter.send("The problem information is attached", file=file)
             return
 
@@ -389,7 +415,12 @@ Max Score: {problem.max_score}
             Is written: {problem.is_written}
             Max Score: {problem.max_score}
             """
-            await inter.send(embed=SuccessEmbed(title="Here is the problem information!", description=problem_str), allowed_mentions=disnake.AllowedMentions(users=False))
+            await inter.send(
+                embed=SuccessEmbed(
+                    title="Here is the problem information!", description=problem_str
+                ),
+                allowed_mentions=disnake.AllowedMentions(users=False),
+            )
             return
 
         else:
@@ -398,22 +429,28 @@ Max Score: {problem.max_score}
 
     @checks.has_privileges(blacklisted=False)
     @quiz_view.sub_command(
-        name='ids',
-        description = "View the Quiz IDs of the available quizzes and a short description",
-        options = [
+        name="ids",
+        description="View the Quiz IDs of the available quizzes and a short description",
+        options=[
             disnake.Option(
-                name='page_num',
-                description='The page #',
+                name="page_num",
+                description="The page #",
                 type=disnake.OptionType.integer,
-                required=False
+                required=False,
             )
-        ]
+        ],
     )
     async def ids(self, inter, page_num: int = 0) -> None:
         """/quiz_view ids [page_num: int=0]
         View the Quiz IDs and a
         Page num is the page number"""
         try:
-            return await inter.send(embed=SuccessEmbed((await self.quiz_pages(inter.guild_id))[page_num]))
+            return await inter.send(
+                embed=SuccessEmbed((await self.quiz_pages(inter.guild_id))[page_num])
+            )
         except IndexError:
-            return await inter.send(embed=ErrorEmbed(f"Page number out of range (there are only {len(await self.quiz_pages(inter.guild_id))} pages)"))
+            return await inter.send(
+                embed=ErrorEmbed(
+                    f"Page number out of range (there are only {len(await self.quiz_pages(inter.guild_id))} pages)"
+                )
+            )

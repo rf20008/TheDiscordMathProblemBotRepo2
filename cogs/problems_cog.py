@@ -466,6 +466,7 @@ class ProblemsCog(HelperCog):
                 f"Successfully deleted all automatically generated problems!"
             )
         )
+
     @checks.has_privileges(blacklisted=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.slash_command(

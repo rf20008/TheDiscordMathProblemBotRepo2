@@ -4,6 +4,7 @@ from disnake import Color, Embed
 
 # This is mostly just easier ways for me to use commonly used embeds :)
 
+
 class SimpleEmbed(Embed):
     def __init__(
         self,

@@ -7,8 +7,12 @@ import disnake
 from disnake import *
 from disnake.ext import commands
 
-from helpful_modules import (checks, cooldowns, problems_module,
-                             the_documentation_file_loader)
+from helpful_modules import (
+    checks,
+    cooldowns,
+    problems_module,
+    the_documentation_file_loader,
+)
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.custom_embeds import *
 from helpful_modules.save_files import FileSaver
@@ -287,7 +291,7 @@ class DeveloperCommands(HelperCog):
 
             if operation == "^":
                 try:
-                    answer = num1 ** num2
+                    answer = num1**num2
 
                 except OverflowError:  # Too big?
                     try:

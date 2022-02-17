@@ -12,12 +12,16 @@ from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.custom_embeds import ErrorEmbed, SuccessEmbed
 from helpful_modules.problems_module import *
 from helpful_modules.problems_module import MathProblemCache, Quiz, QuizProblem
-from helpful_modules.problems_module.quizzes import (QuizSolvingSession,
-                                                     QuizSubmission,
-                                                     QuizDescription
-                                                     )
+from helpful_modules.problems_module.quizzes import (
+    QuizSolvingSession,
+    QuizSubmission,
+    QuizDescription,
+)
 from helpful_modules import checks
-from helpful_modules.problems_module.quizzes.related_enums import QuizIntensity, QuizTimeLimit
+from helpful_modules.problems_module.quizzes.related_enums import (
+    QuizIntensity,
+    QuizTimeLimit,
+)
 from helpful_modules.threads_or_useful_funcs import generate_new_id, get_log
 
 from ..helper_cog import HelperCog
@@ -43,7 +47,6 @@ class CreatingQuizzesCommandsCog(HelperCog):
         /quiz create blank
         Creates a blank quiz."""
 
-
     @checks.has_privileges(blacklisted=False)
     @create.sub_command(
         name="from_json",
@@ -58,7 +61,7 @@ class CreatingQuizzesCommandsCog(HelperCog):
         ],
     )
     async def from_json(
-            self, inter: disnake.ApplicationCommandInteraction, data: str
+        self, inter: disnake.ApplicationCommandInteraction, data: str
     ) -> None:
         """/quiz create from_json [json: str]
         Create a Quiz from JSON. This is not user-friendly, but it's quick.
@@ -205,7 +208,7 @@ class CreatingQuizzesCommandsCog(HelperCog):
 
         There is currently a bug. Don't use this because there is a bug that makes the quiz not actually be created because there are no problems.
 
-        This command has been deprecated and will be removed in v1 in favor of /create with_existing_problem. """
+        This command has been deprecated and will be removed in v1 in favor of /create with_existing_problem."""
 
         # TODO: only some people can create quizzes
         warnings.warn("This command has been deprecated", DeprecationWarning)
@@ -231,51 +234,61 @@ class CreatingQuizzesCommandsCog(HelperCog):
 
     @checks.has_privileges(blacklisted=False)
     @create.sub_command(
-        name='with_existing_problem',
+        name="with_existing_problem",
         description="Create quizzes with existing problems",
         options=[
             disnake.Option(
-                name='question',
+                name="question",
                 description="The question for the initial problem in the quiz to have",
                 type=disnake.OptionType.string,
-                required=True
+                required=True,
             ),
             disnake.Option(
-                name='answer',
+                name="answer",
                 description="The answer for this problem to have (not required if this is manually graded)",
                 # TODO: SHORTEN!
                 type=disnake.OptionType.string,
-                required=False
+                required=False,
             ),
             disnake.Option(
-                name='max_points',
+                name="max_points",
                 description="The maximum number of points this question is worth. Defaults to 100",
                 type=disnake.OptionType.number,
-                required=False
+                required=False,
             ),
             disnake.Option(
-                name='is_written',
+                name="is_written",
                 description="Whether this problem is written (defaults to False)",
                 type=disnake.OptionType.boolean,
-                required=False
-            )
-        ]
+                required=False,
+            ),
+        ],
     )
     async def with_existing_problem(
-            self,
-            inter: disnake.ApplicationCommandInteraction,
-            question: str,
-            answer: str = None,
-            max_points: float = 100.0,
-            is_written: bool = False
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        question: str,
+        answer: str = None,
+        max_points: float = 100.0,
+        is_written: bool = False,
     ):
         if answer is None and is_written is False:
-            await inter.send(embed=ErrorEmbed("You must provide an answer or set is_written to True!"))
+            await inter.send(
+                embed=ErrorEmbed(
+                    "You must provide an answer or set is_written to True!"
+                )
+            )
             return
         if max_points < 0:
-            return await inter.send(embed=ErrorEmbed("Quiz questions must be worth at least 0 points!"))
-        problem: QuizProblem = QuizProblem(question=question, answer=answer, max_points=max_points,
-                                           is_written=is_written)
+            return await inter.send(
+                embed=ErrorEmbed("Quiz questions must be worth at least 0 points!")
+            )
+        problem: QuizProblem = QuizProblem(
+            question=question,
+            answer=answer,
+            max_points=max_points,
+            is_written=is_written,
+        )
         await self.cache.update_cache()
         already_existing_quiz_ids = [quiz.id for quiz in self.cache.cached_quizzes]
         while True:
@@ -303,8 +316,7 @@ class CreatingQuizzesCommandsCog(HelperCog):
                 **""",
                 # TODO: add to ToS
                 guild_id=inter.guild_id,
-                solvers_can_view_quiz=True
-            )
-
+                solvers_can_view_quiz=True,
+            ),
         )
         await self.bot.cache.add_quiz(quiz)

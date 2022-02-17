@@ -16,6 +16,7 @@ from helpful_modules.my_modals import MyModal
 
 from .helper_cog import HelperCog
 from os import urandom
+
 log = get_log(__name__)
 
 
@@ -31,8 +32,8 @@ class DebugCog(HelperCog):
         new_stderr = io.StringIO()
 
         thing_to_run = """async def func(): """  # maybe: just exec() directly
-        thing_to_run+='\n'
-        thing_to_run += textwrap.indent(code, " "* 4, predicate=lambda l: True)
+        thing_to_run += "\n"
+        thing_to_run += textwrap.indent(code, " " * 4, predicate=lambda l: True)
         compiled = False
         new_globals = {
             "bot": self.bot,
@@ -51,9 +52,9 @@ class DebugCog(HelperCog):
             compiled = False
             new_stderr.write("".join(format_exception(e)))
         if (
-                "func" not in globals().keys()
-                and "func" not in locals().keys()
-                and compiled is True
+            "func" not in globals().keys()
+            and "func" not in locals().keys()
+            and compiled is True
         ):
             raise RuntimeError("func is not defined")
         err = None
@@ -68,7 +69,9 @@ class DebugCog(HelperCog):
                             log.info("/eval ran (found in globals)")
                         elif "func" in locals().keys():
 
-                            print(await (locals()["func"]()), file=new_stdout)  # Get func() from locals and call it
+                            print(
+                                await (locals()["func"]()), file=new_stdout
+                            )  # Get func() from locals and call it
                             log.info("/eval ran (found in locals)")
                         else:
                             raise Exception(f"""fatal: func() not defined""")
@@ -176,7 +179,7 @@ class DebugCog(HelperCog):
         Only the owner can run this command!
         This requires both the owner and the bot to have the Administrator permission.
         """
-        
+
         if (
             self.bot.owner_ids not in [None, [], set()]
             and inter.author.id not in self.bot.owner_ids
@@ -204,10 +207,12 @@ class DebugCog(HelperCog):
         await self.eval_code(inter, code)
 
     @commands.is_owner()
-    @checks.has_privileges(trusted=True,)
+    @checks.has_privileges(
+        trusted=True,
+    )
     @commands.slash_command(
-        name='eval2',
-        description = "Evaluate Python code (for owners only)- this uses a modal"
+        name="eval2",
+        description="Evaluate Python code (for owners only)- this uses a modal",
     )
     async def eval2(self, inter):
         """/eval2
@@ -222,15 +227,15 @@ class DebugCog(HelperCog):
         the_custom_id = urandom(20).hex()
         text_inputs = [
             disnake.ui.TextInput(
-                label = "What code do you want to run?",
-                custom_id = the_custom_id,
+                label="What code do you want to run?",
+                custom_id=the_custom_id,
                 style=disnake.TextInputStyle.paragraph,
                 required=True,
-                max_length=4000
-
+                max_length=4000,
             )
         ]
         code_to_run = ""
+
         async def callback(s, modal_inter: disnake.ModalInteraction):
             if modal_inter.author.id != inter.author.id:
                 raise RuntimeError
@@ -238,19 +243,29 @@ class DebugCog(HelperCog):
             code_to_run = modal_inter.text_values[the_custom_id]
             await modal_inter.send("Thanks for providing the code to run :-)")
 
-
-
         modal_custom_id = urandom(20).hex()
-        modal: MyModal = MyModal(timeout=180,title="What code do you want to run?", custom_id=modal_custom_id, callback=callback, inter=inter,components=[])
+        modal: MyModal = MyModal(
+            timeout=180,
+            title="What code do you want to run?",
+            custom_id=modal_custom_id,
+            callback=callback,
+            inter=inter,
+            components=[],
+        )
         modal.append_component(text_inputs)
         await inter.response.send_modal(modal)
-        modal_inter = await self.bot.wait_for('modal_submit', check=lambda modal_inter: modal_inter.custom_id == modal_custom_id)
-        #await modal_inter.send("Yes!")
+        modal_inter = await self.bot.wait_for(
+            "modal_submit",
+            check=lambda modal_inter: modal_inter.custom_id == modal_custom_id,
+        )
+        # await modal_inter.send("Yes!")
 
         await self.eval_code(inter, code_to_run)
 
+
 def setup(bot: TheDiscordMathProblemBot):
     bot.add_cog(DebugCog(bot))
+
 
 def teardown(bot: TheDiscordMathProblemBot):
     bot.remove_cog("DebugCog")

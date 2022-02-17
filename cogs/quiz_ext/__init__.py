@@ -17,7 +17,7 @@ def setup(bot: TheDiscordMathProblemBot) -> None:
 
 
 def teardown(bot: TheDiscordMathProblemBot) -> None:
-    bot.remove_cog('QuizSolveCog')
-    bot.remove_cog('CreatingQuizzesCommandsCog')
-    bot.remove_cog('ViewingQuizzesCog')
-    bot.remove_cog('ModifyingQuizzesCog')
+    bot.remove_cog("QuizSolveCog")
+    bot.remove_cog("CreatingQuizzesCommandsCog")
+    bot.remove_cog("ViewingQuizzesCog")
+    bot.remove_cog("ModifyingQuizzesCog")

@@ -104,17 +104,17 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
         else:
             raise TypeError()
 
-    async def is_trusted(self, user: typing.Union[disnake.User, disnake.Member]) -> bool:
+    async def is_trusted(
+        self, user: typing.Union[disnake.User, disnake.Member]
+    ) -> bool:
         return await self.is_trusted_by_id(user.id)
 
     async def is_trusted_by_id(self, user_id: int) -> bool:
         data = await self.cache.get_user_data(
             user_id=user_id,
             default=problems_module.UserData(
-                user_id=user_id,
-                trusted=False,
-                blacklisted=False
-            )
+                user_id=user_id, trusted=False, blacklisted=False
+            ),
         )
         return data.trusted
 
@@ -122,14 +122,14 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
         data = await self.cache.get_user_data(
             user_id=user_id,
             default=problems_module.UserData(
-                user_id=user_id,
-                trusted=False,
-                blacklisted=False
-            )
+                user_id=user_id, trusted=False, blacklisted=False
+            ),
         )
         return data.blacklisted
 
-    async def is_user_blacklisted(self, user: typing.Union[disnake.User, disnake.Member]) -> bool:
+    async def is_user_blacklisted(
+        self, user: typing.Union[disnake.User, disnake.Member]
+    ) -> bool:
         return await self.is_blacklisted_by_user_id(user.id)
 
     async def is_guild_blacklisted(self, guild: disnake.Guild) -> bool:
@@ -137,20 +137,24 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
 
     async def is_blacklisted_by_guild_id(self, guild_id: int) -> bool:
         data: GuildData = await self.cache.get_guild_data(
-            guild_id=guild_id,
-            default=problems_module.GuildData.default()
+            guild_id=guild_id, default=problems_module.GuildData.default()
         )
         return data.blacklisted
 
-    async def notify_guild_on_guild_leave_because_guild_blacklist(self, guild: disnake.Guild) -> None:
+    async def notify_guild_on_guild_leave_because_guild_blacklist(
+        self, guild: disnake.Guild
+    ) -> None:
         """Notify the guild about the bot leaving the guild because the guild is blacklisted.
         Throws RuntimeError if the guild is not actually blacklisted.
         Throws HTTPException if sending the message failed, or leaving the guild failed."""
         if not await self.is_guild_blacklisted(guild):
             raise RuntimeError("The guild isn't blacklisted!")
         _me: disnake.Member = guild.me
-        channels_that_we_could_send_to = [channel for channel in guild.channels if
-                                          channel.permissions_for(me).send_messages]
+        channels_that_we_could_send_to = [
+            channel
+            for channel in guild.channels
+            if channel.permissions_for(me).send_messages
+        ]
         if len(channels_that_we_could_send_to) == 0:
             # Bypass trying to send the message - We don't have any channels we could send this message to anyway
 
@@ -160,14 +164,19 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
         # Let's try to send the message to a channel that everyone can see
         everyone_role = guild.get_role(guild.id)
         channels_that_we_can_send_to_and_everyone_can_see = [
-            channel for channel in channels_that_we_could_send_to
+            channel
+            for channel in channels_that_we_could_send_to
             if channel.permissions_for(everyone_role).view_channel
         ]
         if len(channels_that_we_can_send_to_and_everyone_can_see) != 0:
-            channel_to_send_to = random.choice(channels_that_we_can_send_to_and_everyone_can_see)
-            await channel_to_send_to.send(f"""I have left the guild because the guild is blacklisted, under my terms and conditions.
+            channel_to_send_to = random.choice(
+                channels_that_we_can_send_to_and_everyone_can_see
+            )
+            await channel_to_send_to.send(
+                f"""I have left the guild because the guild is blacklisted, under my terms and conditions.
             However, I'm available under the GPL. My source code is at {self.constants.SOURCE_CODE_LINK}, so you could self-host the bot if you wish.
-            """)
+            """
+            )
             await guild.leave()
             return
 
@@ -175,29 +184,36 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
             # There is no channel that we can send to and everyone can see
             # So we try to send it to a channel that mods can see
             guild_data: problems_module.GuildData = await self.cache.get_guild_data(
-                guild_id=guild.id,
-                default=problems_module.GuildData.default()
+                guild_id=guild.id, default=problems_module.GuildData.default()
             )
             channels_that_mods_can_see = channels_that_we_could_send_to
             for role_id in guild_data.mod_check.roles_allowed:
                 role: disnake.Role = guild.get_role(role_id)
                 channels_that_mods_can_see = [
-                    channel for channel in channels_that_mods_can_see
+                    channel
+                    for channel in channels_that_mods_can_see
                     if channel.permissions_for(role).view_channel
                 ]
-            if len(channels_that_mods_can_see) == 0 and len(channels_that_we_could_send_to) != 0:
+            if (
+                len(channels_that_mods_can_see) == 0
+                and len(channels_that_we_could_send_to) != 0
+            ):
                 # No channels that mods can see, but we could send to some channels
                 channel_to_send_to = random.choice(channels_that_we_could_send_to)
-                await channel_to_send_to.send(f"""I have left this guild because the guild is blacklisted, under my terms and conditions.
+                await channel_to_send_to.send(
+                    f"""I have left this guild because the guild is blacklisted, under my terms and conditions.
                             However, I'm available under the GPL. My source code is at {self.constants.SOURCE_CODE_LINK}, so you could self-host the bot if you wish.
-                            """)
+                            """
+                )
                 await guild.leave()
                 return
 
             channel_to_send_to = random.choice(channels_that_mods_can_see)
-            await channel_to_send_to.send(f"""I have left this guild because the guild is blacklisted, under my terms and conditions.
+            await channel_to_send_to.send(
+                f"""I have left this guild because the guild is blacklisted, under my terms and conditions.
                         However, I'm available under the GPL. My source code is at {self.constants.SOURCE_CODE_LINK}, so you could self-host the bot if you wish.
-                        """)
+                        """
+            )
             await guild.leave()
             return
         # Fallback
@@ -211,31 +227,16 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
     #        await inter.send("This command has been executed in a b")
     #       await self.notify_guild_on_guild_leave_because_guild_blacklist(inter.guild)
 
-    def task(self) -> typing.Callable[
-        [
-            typing.Callable[
-                [
-                    typing.Any
-                ],
-                typing.Any
-            ],
-            typing.Any
-        ],
-        typing.Callable[
-            [
-                typing.Any
-            ],
-            typing.Any
-        ]
+    def task(
+        self,
+    ) -> typing.Callable[
+        [typing.Callable[[typing.Any], typing.Any], typing.Any],
+        typing.Callable[[typing.Any], typing.Any],
     ]:
         """Add a task to my internal list of tasks + return it  (this is a decorator :-))"""
 
         def decorator(_self, func: types.FunctionType, *args, **kwargs):
-            task: tasks.Loop(
-                func=func,
-                *args,
-                **kwargs
-            )
+            task: tasks.Loop(func=func, *args, **kwargs)
             _self.tasks.append(task)
             return func
 

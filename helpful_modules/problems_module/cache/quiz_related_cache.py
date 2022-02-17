@@ -78,7 +78,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                         session.expire_time,
                         session.special_id,
                         session.attempt_num,
-                        int(session.is_finished)
+                        int(session.is_finished),
                     ),
                 )
                 await conn.commit()

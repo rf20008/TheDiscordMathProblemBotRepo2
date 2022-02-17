@@ -23,7 +23,7 @@ log = logging.getLogger(__name__)
 
 def generate_new_id():
     """Generate a random number from 0 to 2**53-1"""
-    return random.randint(0, 2 ** 53 - 1)
+    return random.randint(0, 2**53 - 1)
 
 
 def get_git_revision_hash() -> str:
@@ -138,6 +138,7 @@ def _generate_special_id(guild_id, quiz_id, user_id, attempt_num):
         }
     )
 
+
 def async_wrap(func):
     """Turn a sync function into an asynchronous function
     Source: https://dev.to/0xbf/turn-sync-function-to-async-python-tips-58nn
@@ -152,6 +153,8 @@ def async_wrap(func):
         return await loop.run_in_executor(executor, pfunc)
 
     return run
+
+
 def modified_async_wrap(func):
     assert isinstance(func, types.FunctionType)
     if asyncio.iscoroutinefunction(func):

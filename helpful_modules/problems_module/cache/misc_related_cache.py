@@ -28,24 +28,24 @@ log = logging.getLogger(__name__)
 
 class MiscRelatedCache:
     def __init__(
-            self,
-            *,
-            mysql_username: str,
-            mysql_password: str,
-            mysql_db_ip: str,
-            mysql_db_name: str,
-            use_sqlite: bool = False,
-            max_answer_length: int = 100,
-            max_question_limit: int = 250,
-            max_guild_problems: int = 125,
-            max_answers_per_problem: int = 25,
-            max_problems_per_quiz: int = 50,
-            max_quizzes_per_guild: int = 50,
-            warnings_or_errors: Union[Literal["warnings"], Literal["errors"]] = "warnings",
-            db_name: str = "problems_module.db",
-            update_cache_by_default_when_requesting: bool = True,
-            use_cached_problems: bool = False,
-            pool_size: int = 20,
+        self,
+        *,
+        mysql_username: str,
+        mysql_password: str,
+        mysql_db_ip: str,
+        mysql_db_name: str,
+        use_sqlite: bool = False,
+        max_answer_length: int = 100,
+        max_question_limit: int = 250,
+        max_guild_problems: int = 125,
+        max_answers_per_problem: int = 25,
+        max_problems_per_quiz: int = 50,
+        max_quizzes_per_guild: int = 50,
+        warnings_or_errors: Union[Literal["warnings"], Literal["errors"]] = "warnings",
+        db_name: str = "problems_module.db",
+        update_cache_by_default_when_requesting: bool = True,
+        use_cached_problems: bool = False,
+        pool_size: int = 20,
     ):
         """Create a new MathProblemCache. The arguments should be self-explanatory.
         Many methods are async!"""
@@ -73,7 +73,7 @@ class MiscRelatedCache:
                 f"warnings_or_errors is {warnings_or_errors}, not 'warnings' or 'errors'"
             )
         self.warnings = (
-                warnings_or_errors == "warnings"
+            warnings_or_errors == "warnings"
         )  # Whether to raise TypeErrors or warn
         if max_answers_per_problem < 1:
             raise ValueError("max_answers_per_problem must be at least 1!")
@@ -162,7 +162,7 @@ class MiscRelatedCache:
                     else:
                         problem = BaseProblem.from_row(row=row, cache=copy(self))
                     if (
-                            problem.guild_id not in guild_ids
+                        problem.guild_id not in guild_ids
                     ):  # Similar logic: Make sure it's there!
                         guild_ids.append(problem.guild_id)
                         guild_problems[
@@ -215,7 +215,7 @@ class MiscRelatedCache:
                 for row in cursor.fetchall():
                     problem = BaseProblem.from_row(row, cache=copy(self))
                     if (
-                            problem.guild_id not in guild_ids
+                        problem.guild_id not in guild_ids
                     ):  # Similar logic: Make sure it's there!
                         guild_ids.append(problem.guild_id)
                         guild_problems[
@@ -519,7 +519,7 @@ class MiscRelatedCache:
         return True
 
     async def run_sql(
-            self, sql: str, placeholders: typing.Optional[typing.List[Any]] = None
+        self, sql: str, placeholders: typing.Optional[typing.List[Any]] = None
     ) -> dict:
         """Run arbitrary SQL. Only used in /sql"""
         assert isinstance(sql, str)
@@ -535,10 +535,10 @@ class MiscRelatedCache:
                 return await cursor.fetchall()
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(sql, placeholders)

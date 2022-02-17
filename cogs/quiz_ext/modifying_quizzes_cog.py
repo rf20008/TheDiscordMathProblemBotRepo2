@@ -10,8 +10,7 @@ from helpful_modules import problems_module
 from helpful_modules.custom_embeds import ErrorEmbed, SuccessEmbed
 from helpful_modules.problems_module import *
 from helpful_modules.problems_module import MathProblemCache, Quiz, QuizProblem
-from helpful_modules.problems_module.quizzes import (QuizSolvingSession,
-                                                     QuizSubmission)
+from helpful_modules.problems_module.quizzes import QuizSolvingSession, QuizSubmission
 from helpful_modules.threads_or_useful_funcs import generate_new_id, get_log
 from helpful_modules import checks
 from ..helper_cog import HelperCog
@@ -20,7 +19,6 @@ from helpful_modules.my_modals import MyModal
 
 
 class ModifyingQuizzesCog(HelperCog):
-
     @checks.has_privileges(blacklisted=False)
     @commands.slash_command(name="quiz_edit", description="Edit quizzes")
     async def quiz_edit(self, inter: disnake.ApplicationCommandInteraction):
@@ -32,7 +30,7 @@ class ModifyingQuizzesCog(HelperCog):
         /quiz edit add_problem (quiz_id: int) (insert_loc: int) (question: str) (answer1: str) [numPoints: int=1]
         /quiz edit add_answer (quiz_id: int) (problem_num: int) (answer: str)
         /quiz edit modify_problem (quiz_id: int) (problem_num: int) [new_question: str = None] [new_answer: str = None] [points_worth: int = None] [is_written: bool = None]
-        /quiz edit delete_problem (quiz_id: int) (problem_num: int) """
+        /quiz edit delete_problem (quiz_id: int) (problem_num: int)"""
         pass
 
     @checks.has_privileges(blacklisted=False)
@@ -62,11 +60,11 @@ class ModifyingQuizzesCog(HelperCog):
         ],
     )
     async def add_answer(
-            self: "QuizCog",
-            inter: disnake.ApplicationCommandInteraction,
-            quiz_id: int,
-            problem_num: int,
-            answer: str,
+        self: "QuizCog",
+        inter: disnake.ApplicationCommandInteraction,
+        quiz_id: int,
+        problem_num: int,
+        answer: str,
     ):
         """/quiz edit add_answer (quiz_id: int) (problem_num: int) (answer: str)
 
@@ -147,15 +145,15 @@ class ModifyingQuizzesCog(HelperCog):
         ],
     )
     async def add_problem(
-            self,
-            inter: disnake.ApplicationCommandInteraction,
-            quiz_id: int,
-            problem_to_insert_before: int,
-            question: str,
-            answer: typing.Optional[str] = None,
-            is_written: bool = False,
-            points: typing.Optional[float] = 0.5
-            # ...
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        quiz_id: int,
+        problem_to_insert_before: int,
+        question: str,
+        answer: typing.Optional[str] = None,
+        is_written: bool = False,
+        points: typing.Optional[float] = 0.5
+        # ...
     ) -> None:
         """/quiz edit add_problem (quiz_id: int) (problem_to_insert_before: int) (question: str) [answer: str = None], [is_written: bool = False] [points: float = 0.5]
         Add a problem to a quiz. You must be an author of the quiz (which means that you are one of the people who created a problem for the quiz) to add the problem to the quiz.
@@ -220,10 +218,10 @@ class ModifyingQuizzesCog(HelperCog):
         ],
     )
     async def delete_problem(
-            self,
-            inter: disnake.ApplicationCommandInteraction,
-            quiz_id: int,
-            problem_to_delete: int,
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        quiz_id: int,
+        problem_to_delete: int,
     ):
         """/quiz edit delete_problem (quiz_id: int) (problem_to_delete: int)
         Delete a problem in a quiz, provided that you authored the problem, have the `Administrator` permission the guild, or are a trusted user.
@@ -319,14 +317,14 @@ class ModifyingQuizzesCog(HelperCog):
         ],
     )
     async def modify_problem(
-            self,
-            inter: disnake.ApplicationCommandInteraction,
-            quiz_id: int,
-            problem_num: int,
-            new_question: str = None,
-            new_answer: str = None,
-            points_worth: int = None,
-            is_written: bool = None,
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        quiz_id: int,
+        problem_num: int,
+        new_question: str = None,
+        new_answer: str = None,
+        points_worth: int = None,
+        is_written: bool = None,
     ):
         """/quiz edit modify problem (quiz_id: int) (problem_num: int) [new_question: str = None] [new_answer: str= None] [points_worth: int = None] [is_written: bool = None]
         Edit the problem with the given quiz id and problem number, replacing the question, answer, points worth, etc. with what is provided.
@@ -371,62 +369,67 @@ class ModifyingQuizzesCog(HelperCog):
         description="Modify the quiz description of a quiz",
         options=[
             disnake.Option(
-                name='quiz_id',
+                name="quiz_id",
                 description="The quiz id of the quiz you wish to modify",
                 type=disnake.OptionType.integer,
-                required=True
+                required=True,
             ),
             disnake.Option(
-                name='new_description',
+                name="new_description",
                 description="A new description for the quiz - this will be shown to others",  # TODO: add to ToS
                 type=disnake.OptionType.string,
-                required=False
+                required=False,
             ),
             disnake.Option(
-                name='time_limit',
+                name="time_limit",
                 description="A new time limit for this quiz (the amount of time allowed in seconds)",
                 type=disnake.OptionType.integer,
-                required=False
+                required=False,
             ),
             disnake.Option(
-                name='difficulty',
+                name="difficulty",
                 description="The new difficulty of this quiz",
                 choices={
-                    'IMPOSSIBLE': "225179981368524800",
-                    'ONLY_GENIUSES_CAN_SOLVE_THIS': "219902325555200",
-                    'EXTREMELY_CHALLENGING': "10000.0",
-                    'EXTREMELY_HARD': "5000.0",
-                    'VERY_HARD': "2000.0",
-                    'CHALLENGING': "1000.0",
-                    'HARD': "500.0",
-                    'MEDIUM_HARD': "400.0",
-                    'MEDIUM': "300.0",
-                    'BETWEEN_EASY_AND_MEDIUM': "200.0",
-                    'EASY': "100.0",
-                    'VERY_EASY': "50.0",
-                    'VERY_VERY_EASY': "25",
-                    'TRIVIAL': "0",
-                    'CUSTOM': "-1",
-                    'TOO_EASY': "-219902325555200"
+                    "IMPOSSIBLE": "225179981368524800",
+                    "ONLY_GENIUSES_CAN_SOLVE_THIS": "219902325555200",
+                    "EXTREMELY_CHALLENGING": "10000.0",
+                    "EXTREMELY_HARD": "5000.0",
+                    "VERY_HARD": "2000.0",
+                    "CHALLENGING": "1000.0",
+                    "HARD": "500.0",
+                    "MEDIUM_HARD": "400.0",
+                    "MEDIUM": "300.0",
+                    "BETWEEN_EASY_AND_MEDIUM": "200.0",
+                    "EASY": "100.0",
+                    "VERY_EASY": "50.0",
+                    "VERY_VERY_EASY": "25",
+                    "TRIVIAL": "0",
+                    "CUSTOM": "-1",
+                    "TOO_EASY": "-219902325555200",
                 },
-                required=False
+                required=False,
             ),
             disnake.Option(
-                name='solvers_can_view_quiz',
+                name="solvers_can_view_quiz",
                 description="Whether solvers can view the quiz, including answers",
                 type=disnake.OptionType.boolean,
-                required=False
-
-            )
-        ]
+                required=False,
+            ),
+        ],
     )
-    async def modify_description(self, inter, quiz_id: int, new_description: str = None, time_limit: int = None,
-                                 difficulty: int = None, solvers_can_view_quiz: bool = None):
+    async def modify_description(
+        self,
+        inter,
+        quiz_id: int,
+        new_description: str = None,
+        time_limit: int = None,
+        difficulty: int = None,
+        solvers_can_view_quiz: bool = None,
+    ):
         """/quiz_edit modify_description [quiz_id: int] [new_description: str] [time_limit: int] [difficulty:IMPOSSIBLE|ONLY_GENIUSES_CAN_SOLVE_THIS|EXTREMELY_CHALLENGING|EXTREMELY_HARD|VERY_HARD|CHALLENGING|HARD|MEDIUM_HARD|MEDIUM|BETWEEN_EASY_AND_MEDIUM|EASY|VERY_EASY|VERY_VERY_EASY|TRIVIAL|CUSTOM|TOO_EASY] [solvers_can_view_quiz: bool]'
         Modify the description of a quiz
 
-        If you set difficulty to -1, it will send a modal asking you to clarify (which you'll have 30 seconds to answer
-"""
+        If you set difficulty to -1, it will send a modal asking you to clarify (which you'll have 30 seconds to answer"""
         difficulty = int(difficulty)
         # Make sure the quiz exists
         try:
@@ -436,9 +439,16 @@ class ModifyingQuizzesCog(HelperCog):
             return
         # Make sure the user can actually modify the quiz
         if inter.author.id not in quiz.authors:
-            await inter.send(embed=ErrorEmbed("You don't have permission to modify this quiz!"))
+            await inter.send(
+                embed=ErrorEmbed("You don't have permission to modify this quiz!")
+            )
             return
-        if difficulty is None and solvers_can_view_quiz is None and time_limit is None and solvers_can_view_quiz is None:
+        if (
+            difficulty is None
+            and solvers_can_view_quiz is None
+            and time_limit is None
+            and solvers_can_view_quiz is None
+        ):
             await inter.send("You need to provide inputs!")
             return
 
@@ -450,7 +460,7 @@ class ModifyingQuizzesCog(HelperCog):
                     label="The integer value of this quiz's difficulty",
                     custom_id=quiz_difficulty_custom_id,
                     placeholder="Type in an integer representing this quiz's difficulty!",
-                    max_length='200'
+                    max_length="200",
                 )
             ]
 
@@ -464,7 +474,7 @@ class ModifyingQuizzesCog(HelperCog):
                     return
                 nonlocal difficulty
                 difficulty = int(diff)
-                
+
                 await inter.send("Thanks for clarifying!")
                 return
 
@@ -474,26 +484,37 @@ class ModifyingQuizzesCog(HelperCog):
                 custom_id=modal_custom_id,
                 components=[],
                 timeout=30,
-                inter=inter
+                inter=inter,
             )
             modal_to_send.append_component(text_inputs)
             await inter.response.send_modal(modal_to_send)
             try:
-                modal_inter = await self.bot.wait_for('modal_submit', check=lambda
-                    modal_inter: modal_inter.custom_id == modal_custom_id, timeout=35)
+                modal_inter = await self.bot.wait_for(
+                    "modal_submit",
+                    check=lambda modal_inter: modal_inter.custom_id == modal_custom_id,
+                    timeout=35,
+                )
                 if modal_inter == -1:
                     raise RuntimeError("Uh oh - modal_inter is still -1")
             except asyncio.TimeoutError:
                 await inter.send("You didn't send the modal fast enough!")
                 return
         new_description = QuizDescription(
-            description=quiz.description.description if new_description is None else new_description,
-            time_limit=quiz.description.time_limit if time_limit is None else time_limit,
-            difficulty=quiz.description.difficulty if difficulty is None else difficulty,
+            description=quiz.description.description
+            if new_description is None
+            else new_description,
+            time_limit=quiz.description.time_limit
+            if time_limit is None
+            else time_limit,
+            difficulty=quiz.description.difficulty
+            if difficulty is None
+            else difficulty,
             cache=self.cache,
             guild_id=quiz.guild_id,
             author=inter.author.id,
-            solvers_can_view_quiz=quiz.description.solvers_can_view_quiz if solvers_can_view_quiz is None else solvers_can_view_quiz,
+            solvers_can_view_quiz=quiz.description.solvers_can_view_quiz
+            if solvers_can_view_quiz is None
+            else solvers_can_view_quiz,
         )
         quiz.description = new_description
         await quiz.update_self()

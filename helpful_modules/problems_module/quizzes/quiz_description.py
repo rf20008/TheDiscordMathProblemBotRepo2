@@ -19,18 +19,18 @@ class QuizDescription:
     solvers_can_view_quiz: bool
 
     def __init__(
-            self,
-            *,
-            cache: "MathProblemCache",
-            quiz_id: int,
-            author: int,
-            guild_id: int,
-            category: str = "Unspecified",
-            intensity: t.Union[QuizIntensity, float] = QuizIntensity.IMPOSSIBLE,
-            description="No description given",
-            license="Unspecified (the default is GNU GDL)",
-            time_limit=QuizTimeLimit.UNLIMITED,
-            solvers_can_view_quiz: bool = False
+        self,
+        *,
+        cache: "MathProblemCache",
+        quiz_id: int,
+        author: int,
+        guild_id: int,
+        category: str = "Unspecified",
+        intensity: t.Union[QuizIntensity, float] = QuizIntensity.IMPOSSIBLE,
+        description="No description given",
+        license="Unspecified (the default is GNU GDL)",
+        time_limit=QuizTimeLimit.UNLIMITED,
+        solvers_can_view_quiz: bool = False,
     ):
         self.solvers_can_view_quiz = solvers_can_view_quiz
         self.guild_id = guild_id
@@ -60,15 +60,15 @@ class QuizDescription:
 
     def to_dict(self) -> dict:
         return {
-            'author': self.author,
-            'quiz_id': self.quiz_id,
-            'category': self.category,
-            'intensity': self.intensity,
-            'description': self.description,
-            'license': self.license,
-            'time_limit': self.time_limit,
-            'guild_id': self.guild_id,
-            'solvers_can_view_quiz': self.solvers_can_view_quiz
+            "author": self.author,
+            "quiz_id": self.quiz_id,
+            "category": self.category,
+            "intensity": self.intensity,
+            "description": self.description,
+            "license": self.license,
+            "time_limit": self.time_limit,
+            "guild_id": self.guild_id,
+            "solvers_can_view_quiz": self.solvers_can_view_quiz,
         }
 
     def time_limit_to_int(self) -> int:

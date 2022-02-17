@@ -8,11 +8,19 @@ class Appeal:
         "timestamp",
         "appeal_num",
         "cache",
-        "special_id"
+        "special_id",
     )
 
-    def __init__(self, *, user_id: int, appeal_msg: str, timestamp: int, appeal_num: int, special_id: int,
-                 cache: "MathProblemCache"):
+    def __init__(
+        self,
+        *,
+        user_id: int,
+        appeal_msg: str,
+        timestamp: int,
+        appeal_num: int,
+        special_id: int,
+        cache: "MathProblemCache",
+    ):
         self.user_id = user_id
         self.appeal_msg = appeal_msg
         self.timestamp = timestamp
@@ -23,21 +31,21 @@ class Appeal:
     @classmethod
     def from_dict(cls, data: dict, cache: "MathProblemCache"):
         return cls(
-            user_id=data['user_id'],
-            appeal_msg=data['appeal_msg'],
-            timestamp=data['timestamp'],
-            appeal_num=data['appeal_num'],
-            special_id=data['special_id'],
-            cache=cache
+            user_id=data["user_id"],
+            appeal_msg=data["appeal_msg"],
+            timestamp=data["timestamp"],
+            appeal_num=data["appeal_num"],
+            special_id=data["special_id"],
+            cache=cache,
         )
 
     def to_dict(self) -> dict:
         return {
-            'user_id': self.user_id,
-            'appeal_msg': self.appeal_num,
-            'timestamp': self.timestamp,
-            'appeal_num': self.appeal_num,
-            'special_id': self.special_id
+            "user_id": self.user_id,
+            "appeal_msg": self.appeal_num,
+            "timestamp": self.timestamp,
+            "appeal_num": self.appeal_num,
+            "special_id": self.special_id,
         }
 
     def __str__(self):
