@@ -1,7 +1,7 @@
 from typing import *
 from enum import Enum
 
-class AppealType(Enum, int):
+class AppealType(Enum):
     BLACKLIST_APPEAL = 0
     GUILD_BLACKLIST_APPEAL = 1
     SUPPORT_SERVER_BAN = 2
