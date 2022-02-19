@@ -17,6 +17,7 @@ from helpful_modules.threads_or_useful_funcs import get_log
 
 from ..base_problem import BaseProblem
 from ..errors import *
+from ..appeal import Appeal
 from ..mysql_connector_with_stmt import mysql_connection
 from ..quizzes import Quiz, QuizProblem, QuizSolvingSession, QuizSubmission
 from ..quizzes.quiz_description import QuizDescription
@@ -28,24 +29,24 @@ log = logging.getLogger(__name__)
 
 class MiscRelatedCache:
     def __init__(
-            self,
-            *,
-            mysql_username: str,
-            mysql_password: str,
-            mysql_db_ip: str,
-            mysql_db_name: str,
-            use_sqlite: bool = False,
-            max_answer_length: int = 100,
-            max_question_limit: int = 250,
-            max_guild_problems: int = 125,
-            max_answers_per_problem: int = 25,
-            max_problems_per_quiz: int = 50,
-            max_quizzes_per_guild: int = 50,
-            warnings_or_errors: Union[Literal["warnings"], Literal["errors"]] = "warnings",
-            db_name: str = "problems_module.db",
-            update_cache_by_default_when_requesting: bool = True,
-            use_cached_problems: bool = False,
-            pool_size: int = 20,
+        self,
+        *,
+        mysql_username: str,
+        mysql_password: str,
+        mysql_db_ip: str,
+        mysql_db_name: str,
+        use_sqlite: bool = False,
+        max_answer_length: int = 100,
+        max_question_limit: int = 250,
+        max_guild_problems: int = 125,
+        max_answers_per_problem: int = 25,
+        max_problems_per_quiz: int = 50,
+        max_quizzes_per_guild: int = 50,
+        warnings_or_errors: Union[Literal["warnings"], Literal["errors"]] = "warnings",
+        db_name: str = "problems_module.db",
+        update_cache_by_default_when_requesting: bool = True,
+        use_cached_problems: bool = False,
+        pool_size: int = 20,
     ):
         """Create a new MathProblemCache. The arguments should be self-explanatory.
         Many methods are async!"""
@@ -73,7 +74,7 @@ class MiscRelatedCache:
                 f"warnings_or_errors is {warnings_or_errors}, not 'warnings' or 'errors'"
             )
         self.warnings = (
-                warnings_or_errors == "warnings"
+            warnings_or_errors == "warnings"
         )  # Whether to raise TypeErrors or warn
         if max_answers_per_problem < 1:
             raise ValueError("max_answers_per_problem must be at least 1!")
@@ -105,6 +106,7 @@ class MiscRelatedCache:
         self.cached_sessions = {}
         self.cached_user_data = {}
         self.cached_guild_data = {}
+        self.cached_appeals={}
 
     def _request_connection(self) -> typing.Optional[MySQLConnection]:
         """Request a connection from my internal pool. I will raise exceptions (including PoolError's if there are no more connections in the pool)"""
@@ -149,6 +151,7 @@ class MiscRelatedCache:
         quiz_submissions_dict = {}
         user_data_dict: typing.Dict[int, UserData] = {}
         guild_data_dict: typing.Dict[int, GuildData] = {}
+        appeals={}
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
                 conn.row_factory = dict_factory
@@ -162,7 +165,7 @@ class MiscRelatedCache:
                     else:
                         problem = BaseProblem.from_row(row=row, cache=copy(self))
                     if (
-                            problem.guild_id not in guild_ids
+                        problem.guild_id not in guild_ids
                     ):  # Similar logic: Make sure it's there!
                         guild_ids.append(problem.guild_id)
                         guild_problems[
@@ -208,6 +211,11 @@ class MiscRelatedCache:
                         data = GuildData.from_dict(_Row, cache=self)
                         guild_data_dict[data.guild_id] = data
 
+                    await cursor.execute("SELECT * FROM appeals")
+                    for row in await cursor.fetchall():
+                        appeal = Appeal.from_dict(row, cache=self)
+                        appeals[appeal.special_id] = appeal
+
         else:
             with self.get_a_connection() as connection:
                 cursor = connection.cursor(dictionaries=True)
@@ -215,7 +223,7 @@ class MiscRelatedCache:
                 for row in cursor.fetchall():
                     problem = BaseProblem.from_row(row, cache=copy(self))
                     if (
-                            problem.guild_id not in guild_ids
+                        problem.guild_id not in guild_ids
                     ):  # Similar logic: Make sure it's there!
                         guild_ids.append(problem.guild_id)
                         guild_problems[
@@ -267,6 +275,11 @@ class MiscRelatedCache:
                 for row in cursor.fetchall():
                     data = GuildData.from_dict(row, cache=self)
                     guild_data_dict[data.guild_id] = data
+                cursor.execute("SELECT * FROM appeals")
+                for row in await cursor.fetchall():
+                    appeal = Appeal.from_dict(row, cache=self)
+                    appeals[appeal.special_id] = appeal
+
         try:
             global_problems = deepcopy(
                 guild_problems[None]
@@ -317,6 +330,7 @@ class MiscRelatedCache:
         self.cached_submissions_organized_by_dict = quiz_submissions_dict
         self.cached_user_data = user_data_dict
         self.cached_guild_data = guild_data_dict
+        self.cached_appeals = appeals
 
     async def get_all_by_author_id(self, author_id: int) -> dict:
         """Return a dictionary containing everything that was created by the author"""
@@ -372,6 +386,13 @@ class MiscRelatedCache:
                     QuizDescription.from_dict(data, cache=self)
                     for data in await cursor.fetchall()
                 ]
+                await cursor.execute(
+                    "SELECT * FROM appeals WHERE user_id = ?", (author_id,)
+                )
+                appeals = [
+                    Appeal.from_dict(data, cache=self)
+                    for data in await cursor.fetchall()
+                ]
 
         else:
             with self.get_a_connection() as connection:
@@ -415,6 +436,13 @@ class MiscRelatedCache:
                     QuizDescription.from_dict(cache=self, data=data)
                     for data in cursor.fetchall()
                 ]
+                cursor.execute(
+                    "SELECT * FROM appeals WHERE user_id = %s", (author_id,)
+                )
+                appeals = [
+                    Appeal.from_dict(data, cache=self)
+                    for data in await cursor.fetchall()
+                ]
 
         return {
             "quiz_problems": quiz_problems,
@@ -422,6 +450,7 @@ class MiscRelatedCache:
             "problems": problems,
             "sessions": sessions,
             "descriptions_created": descriptions,
+            'appeals': appeals
         }
 
     async def delete_all_by_user_id(self, user_id: int) -> None:
@@ -446,7 +475,12 @@ class MiscRelatedCache:
                 await cursor.execute(
                     "DELETE FROM quiz_description WHERE author= ?", (user_id,)
                 )
-
+                await cursor.execute(
+                    "DELETE FROM user_data WHERE user_id=?", (user_id,)
+                )
+                cursor.execute(
+                    "DELETE FROM appeals WHERE user_id=?", (user_id,)
+                )
                 await conn.commit()  # Otherwise, nothing happens and it rolls back!!
         else:
             with self.get_a_connection() as connection:
@@ -461,6 +495,12 @@ class MiscRelatedCache:
                 )
                 cursor.execute(
                     "DELETE FROM quiz_description WHERE author = %s", (user_id,)
+                )
+                cursor.execute(
+                    "DELETE FROM user_data WHERE user_id=%s", (user_id,)
+                )
+                cursor.execute(
+                    "DELETE FROM appeals WHERE user_id=%s", (user_id,)
                 )
                 connection.commit()
 
@@ -488,7 +528,10 @@ class MiscRelatedCache:
                     (guild_id,),
                 )  # Delete all quiz submissions from the guild!
                 await cursor.execute(
-                    "DELETE FROM quiz_description WHERE guild_id = %s", (guild_id,)
+                    "DELETE FROM quiz_description WHERE guild_id = ?", (guild_id,)
+                )
+                await cursor.execute(
+                    "DELETE FROM guild_data WHERE guild_id = ?", (guild_id,)
                 )
                 await conn.commit()  # Otherwise, nothing happens!
         else:
@@ -510,8 +553,9 @@ class MiscRelatedCache:
                 cursor.execute(
                     "DELETE FROM quiz_description WHERE guild_id = %s", (guild_id,)
                 )
-
-                # uh oh - we don't have a guild id
+                cursor.execute(
+                    "DELETE FROM guild_data WHERE guild_id = %s", (guild_id,)
+                )
                 connection.commit()
 
     def __bool__(self):
@@ -519,7 +563,7 @@ class MiscRelatedCache:
         return True
 
     async def run_sql(
-            self, sql: str, placeholders: typing.Optional[typing.List[Any]] = None
+        self, sql: str, placeholders: typing.Optional[typing.List[Any]] = None
     ) -> dict:
         """Run arbitrary SQL. Only used in /sql"""
         assert isinstance(sql, str)
@@ -535,10 +579,10 @@ class MiscRelatedCache:
                 return await cursor.fetchall()
         else:
             with mysql_connection(
-                    host=self.mysql_db_ip,
-                    password=self.mysql_password,
-                    user=self.mysql_username,
-                    database=self.mysql_db_name,
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
             ) as connection:
                 cursor = connection.cursor(dictionaries=True)
                 cursor.execute(sql, placeholders)
@@ -639,11 +683,12 @@ class MiscRelatedCache:
                 )
                 await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS appeals (
-                    special_id INT PRIMARY KEY,
+                    special_id VARCHAR PRIMARY KEY,
                     appeal_str VARCHAR,
                     appeal_num INT,
                     user_id INT,
-                    timestamp INT
+                    timestamp INT,
+                    type INT
                     )"""
                 )
                 # Maybe SQL won't understand enums... but that's ok :)
@@ -737,11 +782,12 @@ class MiscRelatedCache:
                 )
                 cursor.execute(
                     """CREATE TABLE IF NOT EXISTS appeals (
-                    special_id INT PRIMARY KEY,
+                    special_id VARCHAR PRIMARY KEY,
                     appeal_str VARCHAR,
                     appeal_num INT,
                     user_id INT,
                     timestamp INT,
+                    type INT,
                     )"""
                 )
                 # TODO: test whether SQL can serialize enums

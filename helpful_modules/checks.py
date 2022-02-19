@@ -31,7 +31,7 @@ class BlacklistedException(CustomCheckFailure):
 
 
 def custom_check(
-        function=lambda inter: True, args: list = [], exceptionToRaiseIfFailed=None
+    function=lambda inter: True, args: list = [], exceptionToRaiseIfFailed=None
 ):
     """A check template :-)"""
 
@@ -113,14 +113,19 @@ def guild_not_blacklisted():
         if not isinstance(inter.bot, TheDiscordMathProblemBot):
             raise TypeError("Uh oh! inter.bot isn't TheDiscordMathProblemBot")
         if await inter.bot.is_guild_blacklisted(inter.guild):
-            await inter.send("This guild has just been blacklisted -- therefore I'm leaving."
-                             f"However, my source code is available at {inter.bot.constants.SOURCE_CODE_LINK}",
-                             ephemeral=True)
-            await inter.bot.notify_guild_on_guild_leave_because_guild_blacklist(inter.guild)
+            await inter.send(
+                "This guild has just been blacklisted -- therefore I'm leaving."
+                f"However, my source code is available at {inter.bot.constants.SOURCE_CODE_LINK}",
+                ephemeral=True,
+            )
+            await inter.bot.notify_guild_on_guild_leave_because_guild_blacklist(
+                inter.guild
+            )
             return False
         return True
 
     return commands.check(predicate)
+
 
 def has_privileges(**privileges_required):
     """Make sure the user running this has the privileges required to run this command (not permissions, but bot privileges).
@@ -130,17 +135,21 @@ def has_privileges(**privileges_required):
         -`blacklisted`
 
     As this is the internal API of my bot, this may change at any time; don't rely on it :-)"""
+
     async def predicate(inter: disnake.ApplicationCommandInteraction):
         """The actual check"""
         if not isinstance(inter.bot, TheDiscordMathProblemBot):
             raise TypeError("Uh oh - inter.bot isn't TheDiscordMathProblemBot")
         if privileges_required == {}:
-            if await inter.bot.cache.user_meets_permissions_required_to_use_command(inter.author.id): # This uses the values defined in config.json
+            if await inter.bot.cache.user_meets_permissions_required_to_use_command(
+                inter.author.id
+            ):  # This uses the values defined in config.json
                 return True
             raise CustomCheckFailure("You don't have the permissions required!")
-        if await inter.bot.cache.user_meets_permissions_required_to_use_command(inter.author.id, privileges_required):
+        if await inter.bot.cache.user_meets_permissions_required_to_use_command(
+            inter.author.id, privileges_required
+        ):
             return True
         raise CustomCheckFailure("You don't have the required privileges!")
 
     return commands.check(predicate)
-

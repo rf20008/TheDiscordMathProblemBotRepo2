@@ -12,7 +12,7 @@ class HelperCog(ext.commands.Cog):
     """A helper cog :-) However, by itself, it does not implement any commands."""
 
     def __init__(self, bot: TheDiscordMathProblemBot):
-        """Helpful __init__, the entire reason I decided to make this, so I could transfer modules"""
+        """Helpful __init__ that is used in other cogs :)"""
         # self.b = bot._transport_modules
         # checks.setup(bot)
         # (

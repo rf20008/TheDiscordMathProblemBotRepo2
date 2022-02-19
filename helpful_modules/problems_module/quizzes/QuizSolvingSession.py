@@ -25,7 +25,7 @@ class QuizSolvingSession:
         self._quiz = self._get_quiz()
         self.guild_id = guild_id
         self.attempt_num = attempt_num
-        self.is_finished=False
+        self.is_finished = False
 
         try:
             self.expire_time: int = self.start_time + self._quiz.time_limit
@@ -110,7 +110,7 @@ class QuizSolvingSession:
             answers=pickle.loads(dict["answers"]),  # TODO: don't use pickle because RCE
             special_id=dict["special_id"],
             attempt_num=dict["attempt_num"],
-            is_finished=bool(dict['is_finished'])
+            is_finished=bool(dict["is_finished"]),
         )
 
     @classmethod
@@ -126,7 +126,7 @@ class QuizSolvingSession:
             answers=pickle.loads(dict["answers"]),
             special_id=dict["special_id"],
             attempt_num=dict["attempt_num"],
-            is_finished=bool(dict['is_finished'])
+            is_finished=bool(dict["is_finished"]),
         )
 
     def to_dict(self) -> dict:

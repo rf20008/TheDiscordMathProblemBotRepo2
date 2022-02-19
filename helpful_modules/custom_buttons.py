@@ -69,7 +69,7 @@ class BasicButton(disnake.ui.Button):
         try:
             self.user_for = kwargs.pop("user_for").id
         except KeyError:
-            self.user_for = 2 ** 222
+            self.user_for = 2**222
 
     async def callback(self, interaction: disnake.Interaction) -> Any:
         if self.check(interaction=interaction):

@@ -41,8 +41,4 @@ class UserData:
 
     @classmethod
     def default(cls, user_id):
-        return cls(user_id=user_id,
-                   trusted=False,
-                   blacklisted=False
-                   
-                )
+        return cls(user_id=user_id, trusted=False, blacklisted=False)

@@ -4,13 +4,14 @@ import typing
 from copy import copy
 
 import disnake
-from disnake import *
 from disnake.ext import commands
 
-from helpful_modules import (checks, cooldowns, problems_module,
-                             the_documentation_file_loader)
+from helpful_modules import (
+    checks,
+    problems_module,
+)
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
-from helpful_modules.custom_embeds import *
+from helpful_modules.custom_embeds import SuccessEmbed, ErrorEmbed, SimpleEmbed
 from helpful_modules.save_files import FileSaver
 from helpful_modules.threads_or_useful_funcs import generate_new_id
 
@@ -111,16 +112,16 @@ class DeveloperCommands(HelperCog):
         name="raise_error",
         description="⚠ This command will raise an error. Useful for testing on_slash_command_error",
         options=[
-            Option(
+            disnake.Option(
                 name="error_type",
                 description="The type of error",
-                choices=[OptionChoice(name="Exception", value="Exception")],
+                choices=[disnake.OptionChoice(name="Exception", value="Exception")],
                 required=True,
             ),
-            Option(
+            disnake.Option(
                 name="error_description",
                 description="The description of the error",
-                type=OptionType.string,
+                type=disnake.OptionType.string,
                 required=False,
             ),
         ],
@@ -132,7 +133,7 @@ class DeveloperCommands(HelperCog):
         error_description: str = None,
     ) -> None:
         """/raise_error {error_type: str|Exception} [error_description: str = None]
-        This command raises an error (of type error_type) that has the description of the error_description.
+        This command raises an error (of type error_type) that has the description provided.
         You must be a trusted user and the bot owner to run this command!
         The purpose of this command is to test the bot's on_slash_command_error event!"""
         # if (
@@ -148,6 +149,8 @@ class DeveloperCommands(HelperCog):
         #        ),
         #    )
         #    return
+        if not await self.bot.is_trusted(inter.author):
+            return await inter.send("You don't have permission!")
         if error_description is None:
             error_description = f"Manually raised error by {inter.author.mention}"
         if error_type == "Exception":
@@ -167,16 +170,16 @@ class DeveloperCommands(HelperCog):
         name="debug",
         description="Helpful for debugging :-)",
         options=[
-            Option(
+            disnake.Option(
                 name="raw",
                 description="raw debug data?",
-                type=OptionType.boolean,
+                type=disnake.OptionType.boolean,
                 required=False,
             ),
-            Option(
+            disnake.Option(
                 name="send_ephemerally",
                 description="Send the debug message ephemerally?",
-                type=OptionType.boolean,
+                type=disnake.OptionType.boolean,
                 required=False,
             ),
         ],
@@ -244,10 +247,10 @@ class DeveloperCommands(HelperCog):
         name="generate_new_problems",
         description="Generates new problems",
         options=[
-            Option(
+            disnake.Option(
                 name="num_new_problems_to_generate",
                 description="the number of problems that should be generated",
-                type=OptionType.integer,
+                type=disnake.OptionType.integer,
                 required=True,
             )
         ],
@@ -261,13 +264,14 @@ class DeveloperCommands(HelperCog):
         Generate new Problems."""
         # TODO: problem_generator class (and use formulas :-))
         await inter.response.defer()
-        if inter.author.id not in self.bot.trusted_users:
+        if not await self.bot.is_trusted(inter.author):
             await inter.send(embed=ErrorEmbed("You aren't trusted!"), ephemeral=True)
             return
         if num_new_problems_to_generate > 200:
             return await inter.send(
                 embed=ErrorEmbed(
-                    "You are trying to create too many problems. Try something smaller than or equal to 200."
+                    "You are trying to create too many problems." 
+                    "Try something smaller than or equal to 200."
                 ),
                 ephemeral=True,
             )
@@ -287,7 +291,7 @@ class DeveloperCommands(HelperCog):
 
             if operation == "^":
                 try:
-                    answer = num1 ** num2
+                    answer = num1**num2
 
                 except OverflowError:  # Too big?
                     try:
@@ -345,10 +349,10 @@ class DeveloperCommands(HelperCog):
         name="add_trusted_user",
         description="Adds a trusted user",
         options=[
-            Option(
+            disnake.Option(
                 name="user",
                 description="The user you want to give super special bot access to",
-                type=OptionType.user,
+                type=disnake.OptionType.user,
                 required=True,
             )
         ],
@@ -360,7 +364,7 @@ class DeveloperCommands(HelperCog):
     ) -> None:
         """/add_trusted_user [user: User]
         This slash commands adds a trusted user!
-        You must be a trusted user to add a trusted user, and the user you are trying to make a trusted user must not be a trusted user.
+        You must be a trusted user to add a trusted user.
         You must also share a server with the new trusted user."""
         user_data = await self.bot.cache.get_user_data(
             user_id=user.id,
@@ -399,10 +403,10 @@ class DeveloperCommands(HelperCog):
         name="remove_trusted_user",
         description="removes a trusted user",
         options=[
-            Option(
+            disnake.Option(
                 name="user",
                 description="The user you want to take super special bot access from",
-                type=OptionType.user,
+                type=disnake.OptionType.user,
                 required=True,
             )
         ],
@@ -441,7 +445,7 @@ class DeveloperCommands(HelperCog):
         try:
             await self.cache.set_user_data(user_id=user.id, new=their_user_data)
         except problems_module.UserDataNotExistsException:
-            await self.cache.add_user_data(user_id=user_id, thing_to_add=user_data)
+            await self.cache.add_user_data(user_id=user.id, thing_to_add=their_user_data)
         await inter.send(
             embed=ErrorEmbed(
                 f"Successfully made {user.display_name} no longer a trusted user!"

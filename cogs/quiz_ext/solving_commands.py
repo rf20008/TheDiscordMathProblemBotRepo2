@@ -10,8 +10,7 @@ from helpful_modules import problems_module
 from helpful_modules.custom_embeds import ErrorEmbed, SuccessEmbed
 from helpful_modules.problems_module import *
 from helpful_modules.problems_module import MathProblemCache, Quiz, QuizProblem
-from helpful_modules.problems_module.quizzes import (QuizSolvingSession,
-                                                     QuizSubmission)
+from helpful_modules.problems_module.quizzes import QuizSolvingSession, QuizSubmission
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.threads_or_useful_funcs import generate_new_id, get_log
 from helpful_modules import checks
@@ -59,9 +58,13 @@ class QuizSolveCog(HelperCog):
             ),
         ],
     )
-    async def solve_quiz_problem_given_id(self, inter: disnake.ApplicationCommandInteraction, quiz_id: int,
-                                          problem_num: int,
-                                          answer: str):
+    async def solve_quiz_problem_given_id(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        quiz_id: int,
+        problem_num: int,
+        answer: str,
+    ):
         """/quiz solve solve_quiz_problem_given_id (quiz_id: int) (problem_num: int) (answer: str)
 
         The only way to solve quizzes.
@@ -77,21 +80,31 @@ class QuizSolveCog(HelperCog):
 
         session = await get_quiz_submission(self, inter.author.id, quiz_id)
         if session.done:
-            await inter.send("Your session is done, so you are not allowed to solve this problem!")
+            await inter.send(
+                "Your session is done, so you are not allowed to solve this problem!"
+            )
             return
 
         try:
             _: QuizProblem = quiz.problems[problem_num]
         except KeyError:
             await inter.send(
-                embed=ErrorEmbed(f"Problem number out of range (the quiz does not have a problem #{problem_num})"))
+                embed=ErrorEmbed(
+                    f"Problem number out of range (the quiz does not have a problem #{problem_num})"
+                )
+            )
             return
 
-        answer = QuizSubmissionAnswer(answer=answer, problem_id=problem_num, quiz_id=quiz_id)
+        answer = QuizSubmissionAnswer(
+            answer=answer, problem_id=problem_num, quiz_id=quiz_id
+        )
 
         await session.modify_answer(answer_to_add=answer, index=problem_num)
 
-        await inter.send("You have successfully set your answer to the one specified.", ephemeral=True)
+        await inter.send(
+            "You have successfully set your answer to the one specified.",
+            ephemeral=True,
+        )
         return
 
     @checks.has_privileges(blacklisted=False)
@@ -108,7 +121,7 @@ class QuizSolveCog(HelperCog):
         ],
     )
     async def initialize_quiz_solving(
-            self, inter: disnake.ApplicationCommandInteraction, quiz_id: int
+        self, inter: disnake.ApplicationCommandInteraction, quiz_id: int
     ):
         """/quiz solve initialize_quiz_solving
         Initialize quiz solving. This will create a session for you!"""
@@ -126,7 +139,7 @@ class QuizSolveCog(HelperCog):
             await inter.send(embed=ErrorEmbed("Quiz not found"))
             return
         attempt_num: int = (
-                await get_attempt_num_for_user(self, inter.author.id, quiz_id=quiz_id) + 1
+            await get_attempt_num_for_user(self, inter.author.id, quiz_id=quiz_id) + 1
         )
         submission_to_add = problems_module.QuizSolvingSession(
             user_id=inter.author.id,

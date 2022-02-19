@@ -10,6 +10,7 @@ from .helper_cog import HelperCog
 
 # TODO: make this an extension :-)
 
+
 class TaskCog(HelperCog):
     def __init__(self, bot: TheDiscordMathProblemBot):
         self.bot = bot
@@ -32,6 +33,6 @@ class TaskCog(HelperCog):
     async def leaving_blacklisted_guilds_task(self):
         for guild in self.bot.guilds:
             if await self.bot.is_guild_blacklisted(guild):
-                await self.bot.notify_guild_on_guild_leave_because_guild_blacklist(guild)
-
-
+                await self.bot.notify_guild_on_guild_leave_because_guild_blacklist(
+                    guild
+                )

@@ -76,7 +76,7 @@ class FileSaver:
         self,
         main_cache=None,
         printSuccessMessages=None,
-        vote_threshold: int=3,
+        vote_threshold: int = 3,
     ):
         """Saves files to file names specified in __init__."""
 
@@ -94,7 +94,9 @@ class FileSaver:
             )
         # main_cache.update_file_cache() #Removed method
         if not isinstance(vote_threshold, int):
-            raise RuntimeError(f"Vote Threshold is not an integer! Instead it's {vote_threshold} (which is of type {type(vote_threshold).__name__})")
+            raise RuntimeError(
+                f"Vote Threshold is not an integer! Instead it's {vote_threshold} (which is of type {type(vote_threshold).__name__})"
+            )
         with open("vote_threshold.txt", "w") as file3:
             file3.write(str(vote_threshold))
         if (

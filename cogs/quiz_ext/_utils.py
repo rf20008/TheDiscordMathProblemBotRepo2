@@ -3,11 +3,13 @@ from helpful_modules.problems_module import *
 from ..helper_cog import HelperCog
 import typing
 
+
 async def get_quiz_submission(
-        self: HelperCog, user_id: int, quiz_id: int, attempt_num: typing.Optional[int] = None
-) -> typing.Optional[
-    typing.Union[QuizSolvingSession, typing.List[QuizSolvingSession]]
-]:
+    self: HelperCog,
+    user_id: int,
+    quiz_id: int,
+    attempt_num: typing.Optional[int] = None,
+) -> typing.Optional[typing.Union[QuizSolvingSession, typing.List[QuizSolvingSession]]]:
     quiz: Quiz = await self.cache.get_quiz(quiz_id)
 
     def check(session: QuizSolvingSession) -> bool:

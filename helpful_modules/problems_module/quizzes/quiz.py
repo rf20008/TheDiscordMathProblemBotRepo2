@@ -117,7 +117,7 @@ class Quiz(list):
             "existing_sessions": [
                 session.to_dict() for session in self.existing_sessions
             ],
-            'description': self._description.to_dict()
+            "description": self._description.to_dict(),
         }
 
     async def update_self(self):

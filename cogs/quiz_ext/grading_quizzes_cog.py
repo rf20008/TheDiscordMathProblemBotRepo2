@@ -8,14 +8,12 @@ from helpful_modules.problems_module import *
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.my_modal import MyModal
 
+
 class GradingQuizzesCog(HelperCog):
     def __init__(self, bot: TheDiscordMathProblemBot):
         super().__init__(bot)
 
-    @commands.slash_command(
-        name='quiz_grade',
-        description="Grade quizzes!"
-    )
+    @commands.slash_command(name="quiz_grade", description="Grade quizzes!")
     async def quiz_grade(self, inter: disnake.ApplicationCommandInteraction):
         """This is a slash command that is meant to be used to grade quizzes!"""
         raise NotImplementedError
