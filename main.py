@@ -19,14 +19,9 @@ from sys import exc_info, exit, stdout
 from disnake.ext import commands
 
 from cogs import *
-from helpful_modules import (
-    checks,
-    custom_embeds,
-    problems_module,
-    return_intents,
-    save_files,
-    the_documentation_file_loader,
-)
+from helpful_modules import (checks, custom_embeds, problems_module,
+                             return_intents, save_files,
+                             the_documentation_file_loader)
 from helpful_modules.constants_loader import *
 from helpful_modules.cooldowns import check_for_cooldown
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
@@ -35,7 +30,7 @@ from helpful_modules.threads_or_useful_funcs import *
 # Imports - 3rd party
 
 if (
-    not __debug__
+        not __debug__
 ):  # __debug__ must be true for the bot to run (because assert statements)
     exit("__debug__ must be True for the bot to run! (Don't run with -o or -OO)")
 del exit
@@ -143,8 +138,8 @@ def get_git_revision_hash() -> str:
     """A method that gets the git revision hash. Credit to https://stackoverflow.com/a/21901260 for the code :-)"""
     return (
         subprocess.check_output(["git", "rev-parse", "HEAD"])
-        .decode("ascii")
-        .strip()[:7]
+            .decode("ascii")
+            .strip()[:7]
     )  # [7:] is here because of the commit hash, the rest of this function is from stack overflow
 
 
@@ -212,7 +207,8 @@ bot.add_cog(DebugCog(bot))
 bot.add_cog(DeveloperCommands(bot))
 bot.add_cog(ProblemsCog(bot))
 bot.add_cog(MiscCommandsCog(bot))
-bot.load_extension("cogs.quiz_ext")
+bot.load_extension('cogs.appeals_cog')
+bot.load_extension('cogs.quiz_ext')
 bot.CONSTANTS = bot_constants
 bot.add_app_command_check(checks.is_not_blacklisted())
 bot.add_app_command_check(checks.has_privileges())
@@ -239,9 +235,9 @@ async def on_connect():
         guild.id for guild in bot.guilds
     ]  # The guild_ids of the guilds that the bot is in
     for (
-        guild_id
+            guild_id
     ) in (
-        await bot.cache.get_guilds()
+            await bot.cache.get_guilds()
     ):  # Obtain all guilds the cache stores data (will need to be upgraded.)
         if guild_id not in bot_guild_ids:  # It's not in the guild!!
             if guild_id is None:  # Don't delete global problems
