@@ -106,6 +106,7 @@ class MiscRelatedCache:
         self.cached_sessions = {}
         self.cached_user_data = {}
         self.cached_guild_data = {}
+        self.cached_appeals={}
 
     def _request_connection(self) -> typing.Optional[MySQLConnection]:
         """Request a connection from my internal pool. I will raise exceptions (including PoolError's if there are no more connections in the pool)"""
@@ -150,6 +151,7 @@ class MiscRelatedCache:
         quiz_submissions_dict = {}
         user_data_dict: typing.Dict[int, UserData] = {}
         guild_data_dict: typing.Dict[int, GuildData] = {}
+        appeals={}
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
                 conn.row_factory = dict_factory
@@ -208,6 +210,11 @@ class MiscRelatedCache:
                     for _Row in await cursor.fetchall():
                         data = GuildData.from_dict(_Row, cache=self)
                         guild_data_dict[data.guild_id] = data
+
+                    await cursor.execute("SELECT * FROM appeals")
+                    for row in await cursor.fetchall():
+                        appeal = Appeal.from_dict(row, cache=self)
+                        appeals[appeal.special_id] = appeal
 
         else:
             with self.get_a_connection() as connection:
@@ -268,6 +275,11 @@ class MiscRelatedCache:
                 for row in cursor.fetchall():
                     data = GuildData.from_dict(row, cache=self)
                     guild_data_dict[data.guild_id] = data
+                cursor.execute("SELECT * FROM appeals")
+                for row in await cursor.fetchall():
+                    appeal = Appeal.from_dict(row, cache=self)
+                    appeals[appeal.special_id] = appeal
+
         try:
             global_problems = deepcopy(
                 guild_problems[None]
@@ -318,6 +330,7 @@ class MiscRelatedCache:
         self.cached_submissions_organized_by_dict = quiz_submissions_dict
         self.cached_user_data = user_data_dict
         self.cached_guild_data = guild_data_dict
+        self.cached_appeals = appeals
 
     async def get_all_by_author_id(self, author_id: int) -> dict:
         """Return a dictionary containing everything that was created by the author"""
@@ -465,6 +478,9 @@ class MiscRelatedCache:
                 await cursor.execute(
                     "DELETE FROM user_data WHERE user_id=?", (user_id,)
                 )
+                cursor.execute(
+                    "DELETE FROM appeals WHERE user_id=?", (user_id,)
+                )
                 await conn.commit()  # Otherwise, nothing happens and it rolls back!!
         else:
             with self.get_a_connection() as connection:
@@ -482,6 +498,9 @@ class MiscRelatedCache:
                 )
                 cursor.execute(
                     "DELETE FROM user_data WHERE user_id=%s", (user_id,)
+                )
+                cursor.execute(
+                    "DELETE FROM appeals WHERE user_id=%s", (user_id,)
                 )
                 connection.commit()
 
@@ -664,11 +683,12 @@ class MiscRelatedCache:
                 )
                 await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS appeals (
-                    special_id INT PRIMARY KEY,
+                    special_id VARCHAR PRIMARY KEY,
                     appeal_str VARCHAR,
                     appeal_num INT,
                     user_id INT,
-                    timestamp INT
+                    timestamp INT,
+                    type INT
                     )"""
                 )
                 # Maybe SQL won't understand enums... but that's ok :)
@@ -762,11 +782,12 @@ class MiscRelatedCache:
                 )
                 cursor.execute(
                     """CREATE TABLE IF NOT EXISTS appeals (
-                    special_id INT PRIMARY KEY,
+                    special_id VARCHAR PRIMARY KEY,
                     appeal_str VARCHAR,
                     appeal_num INT,
                     user_id INT,
                     timestamp INT,
+                    type INT,
                     )"""
                 )
                 # TODO: test whether SQL can serialize enums

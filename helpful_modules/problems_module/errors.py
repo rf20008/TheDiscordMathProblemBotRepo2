@@ -142,7 +142,7 @@ class InvalidDictionaryInDatabaseException(MathProblemsModuleException):
 
 
 class NoConnectionException(SQLException):
-    """Raised when trying to connect to MySQL using the cache's internal pool but there is no connection avaliable in the pool. This is probably because of high bot usage!"""
+    """Raised when trying to connect to MySQL using the cache's internal pool but there is no connection available in the pool. This is probably because of high bot usage!"""
 
     def __init__(self, msg):
         super().__init__(msg)

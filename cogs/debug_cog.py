@@ -146,6 +146,9 @@ class DebugCog(HelperCog):
             return await inter.send(
                 "Neither owner_id or owner_ids is defined... exiting!"
             )
+        if not await self.bot.is_owner(inter.author) or not commands.is_owner().predicate(inter):
+            return await inter.send("You don't own this bot")
+
         try:
             result = await self.cache.run_sql(query)
         except BaseException as e:

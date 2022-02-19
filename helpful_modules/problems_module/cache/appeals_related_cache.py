@@ -19,21 +19,23 @@ class AppealsRelatedCache(GuildDataRelatedCache):
             async with aiosqlite.connect(self.db) as conn:
                 cursor = await conn.cursor()
                 await cursor.execute(
-                    """INSERT INTO appeals (special_id, appeal_str, appeal_num, user_id, timestamp) 
-                    VALUES (?,?,?,?,?) 
+                    """INSERT INTO appeals (special_id, appeal_str, appeal_num, user_id, timestamp,type) 
+                    VALUES (?,?,?,?,?,?) 
                     ON CONFLICT REPLACE 
-                    special_id=?, appeal_str=?, appeal_num=?, user_id=?, timestamp=?""",
+                    special_id=?, appeal_str=?, appeal_num=?, user_id=?, timestamp=?, type=?""",
                     (
                         data.special_id,
                         data.appeal_str,
                         data.appeal_num,
                         data.user_id,
                         data.timestamp,
+                        data.type,
                         data.special_id,
                         data.appeal_str,
                         data.appeal_num,
                         data.user_id,
                         data.timestamp,
+                        data.type
                     ),
                 )  # TODO: test
                 await conn.commit()
@@ -41,21 +43,24 @@ class AppealsRelatedCache(GuildDataRelatedCache):
             with self.get_a_connection() as connection:
                 cursor = connection.cursor()
                 cursor.execute(
-                    """INSERT INTO appeals (special_id, appeal_str, appeal_num, user_id, timestamp) 
-                    VALUES (?,?,?,?,?) 
+                    """INSERT INTO appeals (special_id, appeal_str, appeal_num, user_id, timestamp,type) 
+                    VALUES (%s,%s,%s,%s,%s,%s) 
                     ON DUPLICATE KEY UPDATE 
-                    special_id=?, appeal_str=?, appeal_num=?, user_id=?, timestamp=?""",
+                    special_id=%s, appeal_str=%s, appeal_num=%s, user_id=%s, timestamp=%s, type=%s""",
                     (
                         data.special_id,
                         data.appeal_str,
                         data.appeal_num,
                         data.user_id,
                         data.timestamp,
+                        data.type,
                         data.special_id,
                         data.appeal_str,
                         data.appeal_num,
                         data.user_id,
                         data.timestamp,
+                        data.type
+
                     ),
                 )  # TODO: test
 

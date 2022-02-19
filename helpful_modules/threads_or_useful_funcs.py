@@ -138,6 +138,13 @@ def _generate_special_id(guild_id, quiz_id, user_id, attempt_num):
         }
     )
 
+def _generate_appeal_id(user_id, appeal_num):
+    return str(
+        {
+            'appeal_num': appeal_num,
+            'user_id': user_id
+        }
+    )
 
 def async_wrap(func):
     """Turn a sync function into an asynchronous function
