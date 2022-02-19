@@ -81,4 +81,7 @@ class AppealsCog(HelperCog):
 
 
 def setup(bot):
-    bot.add_cog()
+    bot.add_cog(AppealsCog(bot))
+
+def teardown(bot):
+    bot.remove_cog('AppealsCog')
