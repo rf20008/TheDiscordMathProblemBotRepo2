@@ -200,7 +200,7 @@ class DebugCog(HelperCog):
             return await inter.send(
                 "We must both have the administrator permission to /eval!"
             )
-        code_ = "\n".join(code.split("\\n"))  # Split the code by `\n`
+        code = "\n".join(code.split("\\n"))  # Split the code by `\n`
         await self.eval_code(inter, code)
 
     @commands.is_owner()
