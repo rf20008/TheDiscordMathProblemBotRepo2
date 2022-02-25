@@ -107,8 +107,13 @@ mysql_db_name: Your MySQL database name
 source_code_link: link to the place that contains the bot's source code. This must be public and have the actual source code 
  Filling it out __should__ fulfill the "Disclose source" requirement of GPLv3, if it is valid). However, unless I am sued or legally obligated to check if it's valid, I won't check.
 
+## config.json
 
-## Attribution / Contributors
+
+
+
+
+# Attribution / Contributors
 
 MySQL: https://pypi.org/project/mysql-connector-python/#files <br>
 GPLv3 simplified: https://tldrlegal.com/license/gnu-general-public-license-v3-(gpl-3) <br>

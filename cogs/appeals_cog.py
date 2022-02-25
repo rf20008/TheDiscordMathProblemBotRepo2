@@ -54,7 +54,8 @@ class AppealsCog(HelperCog):
             callback=callback,
             title="Why should I un-blacklist you?",
             components=[],
-            timeout=1200
+            timeout=1200,
+            custom_id=modal_custom_id
         )
         modal.add_text_input(text_inputs)
         await inter.response.send_modal(modal)
