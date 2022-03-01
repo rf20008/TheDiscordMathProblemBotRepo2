@@ -8,6 +8,12 @@ from helpful_modules.problems_module import *
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.my_modal import MyModal
 
+async def on_grade_modal_callback(modal_inter: disnake.ModalInteraction, quiz_id: str, reasoning_input_custom_id: str, grade_input_custom_id: str, cache: MathProblemCache)
+    quiz = await cache.get_quiz(quiz_id)
+    if not modal_inter.text_values[reasoning_input_custom_id].isnumeric():
+        await modal_inter.send("Invalid input....")
+    raise NotImplementedError
+
 
 class GradingQuizzesCog(HelperCog):
     def __init__(self, bot: TheDiscordMathProblemBot):
@@ -73,7 +79,6 @@ class GradingQuizzesCog(HelperCog):
         del string_to_send
         return
 
-    # Quiz grading needs
     @quiz_grade.sub_command(
         name='manual_grade',
         description="Manually grade quizzes"
@@ -96,4 +101,13 @@ class GradingQuizzesCog(HelperCog):
             submission for submission in quiz.submissions
             if submission.user_id == user.id and submission.attempt_num == attempt_num and submission.done
         ][0]
-        raise NotImplementedError("I don't know what logic I will use to get data! Also QuizSubmissionSessions don't have reasoning")
+        for submission in user_submission.answers:
+            if quiz.problems[submission.problem_id].is_written is False:
+                # Automatically grade
+                if submission.answer in quiz_problems[submission.problem_id].answers:
+                    # Give them the full grade
+                    submission.set_grade(quiz.problems[submission.problem_id].max_score)
+                    submission.reasoning = "Matched one of the specified correct answers"
+            else:
+                # Send a modal
+

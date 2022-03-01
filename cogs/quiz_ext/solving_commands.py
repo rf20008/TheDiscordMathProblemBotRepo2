@@ -96,11 +96,11 @@ class QuizSolveCog(HelperCog):
             return
 
         answer = QuizSubmissionAnswer(
-            answer=answer, problem_id=problem_num, quiz_id=quiz_id
+            answer=answer, problem_id=problem_num, quiz_id=quiz_id, grade=None, reasoning=None
         )
 
         await session.modify_answer(answer_to_add=answer, index=problem_num)
-
+        await self.cache.update_quiz(quiz)
         await inter.send(
             "You have successfully set your answer to the one specified.",
             ephemeral=True,

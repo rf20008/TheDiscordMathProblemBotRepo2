@@ -22,6 +22,7 @@ class MyModal(Modal):
             else os.urandom(20).hex()
         )
         self._check = kwargs.pop("check", _check)
+        self._extra_args = kwargs.pop('extra_args', [])
         self._on_error = kwargs.pop("on_error", MyModal.on_error)
         self._inter: disnake.ApplicationCommandInteraction = kwargs.pop("inter", None)
 
@@ -29,7 +30,7 @@ class MyModal(Modal):
 
     async def callback(self, inter: disnake.ModalInteraction):
         if await self._check(self, inter):
-            await self._callback(self, inter)
+            await self._callback(self, inter, *self._extra_args)
 
     async def on_error(self, error, inter):
         await inter.send(**(await base_on_error(inter, error)))
