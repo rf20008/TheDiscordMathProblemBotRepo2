@@ -3,16 +3,12 @@ from ..helper_cog import HelperCog
 
 from disnake.ext import commands
 import disnake
-from helpful_modules import problems_module
+from helpful_modules import problems_module, checks
 from helpful_modules.problems_module import *
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.my_modal import MyModal
 
-async def on_grade_modal_callback(modal_inter: disnake.ModalInteraction, quiz_id: str, reasoning_input_custom_id: str, grade_input_custom_id: str, cache: MathProblemCache)
-    quiz = await cache.get_quiz(quiz_id)
-    if not modal_inter.text_values[reasoning_input_custom_id].isnumeric():
-        await modal_inter.send("Invalid input....")
-    raise NotImplementedError
+
 
 
 class GradingQuizzesCog(HelperCog):
@@ -50,6 +46,7 @@ class GradingQuizzesCog(HelperCog):
         """This is a slash command that is meant to be used to grade quizzes!"""
         pass
 
+    @checks.is_not_blacklisted()
     @quiz_grade.sub_command(
         name='view_submission_users',
         description="View the users who submitted submissions to this quiz")
