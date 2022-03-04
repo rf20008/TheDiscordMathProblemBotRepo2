@@ -36,3 +36,6 @@ class TaskCog(HelperCog):
                 await self.bot.notify_guild_on_guild_leave_because_guild_blacklist(
                     guild
                 )
+    @tasks.loop(seconds=15)
+    async def update_cache_task(self):
+        await self.cache.update_cache()

@@ -9,8 +9,6 @@ from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.my_modal import MyModal
 
 
-
-
 class GradingQuizzesCog(HelperCog):
     def __init__(self, bot: TheDiscordMathProblemBot):
         super().__init__(bot)
@@ -27,13 +25,20 @@ class GradingQuizzesCog(HelperCog):
             await inter.send(embed=ErrorEmbed("Quiz not found!"))
             return False
 
-        if quiz.guild_id is not None and quiz.guild_id not in [guild.id for guild in inter.author.mutual_guilds]:
+        if quiz.empty:
+            await inter.send("You can't grade this quiz because it's empty!")
+            return False
+
+        if quiz.guild_id is not None and quiz.guild_id not in [
+            guild.id for guild in inter.author.mutual_guilds
+        ]:
             await inter.send("This quiz isn't in any of your mutual guilds!")
             return False
 
         if quiz.guild_id is not None and quiz.guild_id != inter.guild_id:
             await inter.send(
-                f"This is the wrong guild for the quiz -- the right guild is the one with the id {quiz.guild_id}")
+                f"This is the wrong guild for the quiz -- the right guild is the one with the id {quiz.guild_id}"
+            )
             return False
 
         if inter.author.id not in quiz.authors:
@@ -48,13 +53,15 @@ class GradingQuizzesCog(HelperCog):
 
     @checks.is_not_blacklisted()
     @quiz_grade.sub_command(
-        name='view_submission_users',
-        description="View the users who submitted submissions to this quiz")
-    async def view_submission_users(self, inter, quiz_id: int = commands.Param(large=True)) -> typing.Optional[
-        typing.Union[
-            disnake.InteractionMessage, disnake.Message
-        ]
-    ]:
+        name="view_submission_users",
+        description="View the users who submitted submissions to this quiz",
+    )
+    async def view_submission_users(
+        self, inter, quiz_id: int = commands.Param(large=True)
+    ) -> typing.Optional[typing.Union[disnake.InteractionMessage, disnake.Message]]:
+        """/quiz_grade view_submission_users
+
+        View the list of users who did the quiz. You must be an author to run this command."""
         if not await self.can_grade_quiz(inter, quiz_id):
             return
         users_with_submissions = set()
@@ -67,26 +74,32 @@ class GradingQuizzesCog(HelperCog):
         """
         for user_id in users_with_submissions:
             string_to_send += f"<@{user_id}>\n"
-        string_to_send += f"({len(users_with_submissions)} users)"
+        string_to_send += f"({len(users_with_submissions)} users)"  # TODO: use a paginator
         await inter.send(
             embed=SuccessEmbed(string_to_send),
-            allowed_mentions=disnake.AllowedMentions(users=False)
+            allowed_mentions=disnake.AllowedMentions(users=False),
         )
         del users_with_submissions
         del string_to_send
         return
 
-    @quiz_grade.sub_command(
-        name='manual_grade',
-        description="Manually grade quizzes"
-    )
+    @quiz_grade.sub_command(name="manual_grade", description="Manually grade quizzes")
     async def manual_grade(
-            self,
-            inter: disnake.ApplicationCommandInteraction,
-            quiz_id: int = commands.Param(description="The quiz to grade"),
-            user: disnake.User = commands.Param(description="The user to grade"),
-            attempt_num: int = commands.Param(description="The attempt number to grade (defaults to 0)", le=0)
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        quiz_id: int = commands.Param(description="The quiz to grade"),
+        user: disnake.User = commands.Param(description="The user to grade"),
+        attempt_num: int = commands.Param(
+            description="The attempt number to grade (defaults to 0)", le=0
+        ),
     ):
+        """/quiz_grade manual_grade
+        
+        Manually grade a user's submission to a quiz. You must be an author of the quiz you want to grade! 
+        The bot will send modals about reasoning and grade, which you will have to complete in 1 hour.
+        After that, you will need to press a button that will send the next modal, labeled Continue Grading.
+        If you stop, your changes will be saved!
+        """  # noqa: E501
         if not await self.can_grade_quiz(inter, quiz_id):
             return
 
@@ -94,17 +107,25 @@ class GradingQuizzesCog(HelperCog):
         # Fetch the quiz again
         # It is known that the quiz exists, or it would have been handled in await self.can_grade_quiz
         quiz = await self.cache.get_quiz(quiz_id)
-        user_submission = [
-            submission for submission in quiz.submissions
-            if submission.user_id == user.id and submission.attempt_num == attempt_num and submission.done
-        ][0]
+        user_submissions = [
+            submission
+            for submission in quiz.submissions
+            if submission.user_id == user.id
+            and submission.attempt_num == attempt_num
+            and submission.done
+        ]
+        if user_submissions is []:
+            return await inter.send("That user didn't submit to this quiz with attempt number #" + attempt_num + " !")
+        user_submission = user_submissions[0]
         for submission in user_submission.answers:
             if quiz.problems[submission.problem_id].is_written is False:
                 # Automatically grade
                 if submission.answer in quiz_problems[submission.problem_id].answers:
                     # Give them the full grade
                     submission.set_grade(quiz.problems[submission.problem_id].max_score)
-                    submission.reasoning = "Matched one of the specified correct answers"
+                    submission.reasoning = (
+                        "Matched one of the specified correct answers"
+                    )
             else:
                 # Send a modal
-
+                raise NotImplementedError

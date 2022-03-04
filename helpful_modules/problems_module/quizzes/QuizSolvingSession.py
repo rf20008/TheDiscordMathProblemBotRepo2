@@ -13,7 +13,7 @@ from .quiz_submissions import QuizSubmission, QuizSubmissionAnswer
 
 
 class QuizSolvingSession:
-    __slots__= (
+    __slots__ = (
         '__dict__',
         'user_id',
         'quiz_id',
@@ -194,3 +194,12 @@ class QuizSolvingSession:
             return self.answers[index]
         except IndexError:
             raise MathProblemsModuleException("Index out of range")
+
+    def __copy__(self):
+
+        # inspired from https://stackoverflow.com/questions/1500718/how-to-override-the-copy-deepcopy-operations-for-a-python-object#15774013
+        # The next 3 lines are licensed under CC-BY-SA and the GPLv3
+        obj = self.__class__.__new__(self.__class__)
+        obj.__dict__.update(self.__dict__)
+        return obj
+    # After this, just the GPLv3 returns

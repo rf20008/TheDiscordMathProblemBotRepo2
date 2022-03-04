@@ -96,7 +96,11 @@ class QuizSolveCog(HelperCog):
             return
 
         answer = QuizSubmissionAnswer(
-            answer=answer, problem_id=problem_num, quiz_id=quiz_id, grade=None, reasoning=None
+            answer=answer,
+            problem_id=problem_num,
+            quiz_id=quiz_id,
+            grade=None,
+            reasoning=None,
         )
 
         await session.modify_answer(answer_to_add=answer, index=problem_num)
