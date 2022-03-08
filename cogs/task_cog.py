@@ -6,7 +6,8 @@ from helpful_modules._error_logging import log_error
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 
 from .helper_cog import HelperCog
-
+from typing import Union
+from disnake.ext.commands import Bot, InteractionBot, AutoShardedInteractionBot, AutoShardedBot
 
 # TODO: make this an extension :-)
 
@@ -39,3 +40,14 @@ class TaskCog(HelperCog):
     @tasks.loop(seconds=15)
     async def update_cache_task(self):
         await self.cache.update_cache()
+
+
+
+    def cog_unload(self):
+        super().cog_unload()
+        self.leaving_blacklisted_guilds_task.stop()
+        self.update_cache_task.stop()
+        self.report_tasks_task.stop()
+
+def setup(bot: TheDiscordMathProblemBot):
+    bot.add_cog(TaskCog(bot))

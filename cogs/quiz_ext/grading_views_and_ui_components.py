@@ -161,13 +161,17 @@ class GradingModal(ui.Modal):
     async def callback(self, inter: disnake.ModalInteraction):
         if inter.author.id is not self.grader_quiz_id:
             raise RuntimeError("Uh oh!")
-        raise NotImplementedError("I haven't fully implemented this yet!")
+        assert isinstance(inter.bot, TheDiscordMathProblemBot)
+
+        #raise NotImplementedError("I haven't fully implemented this yet!")
         return await on_grade_modal_callback(
             modal_inter=inter,
             quiz_id=self.quiz_id,
             grade_input_custom_id=self.grade_input_custom_id,
             reasoning_input_custom_id=self.reasoning_input_custom_id,
             problem_num=self.problem_num,
+            attempt_num=self._attempt_num,
+            cache=inter.bot.cache
         )
 
     async def on_error(self, error: Exception, inter: disnake.ModalInteraction):

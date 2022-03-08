@@ -887,6 +887,213 @@ class MiscCommandsCog(HelperCog):
 
             # TODO: what do I do after a user gets blacklisted? Do I delete their data?
 
+        ],
+    )
+    async def documentation(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        documentation_type: typing.Literal[
+            "documentation_link",  # type: ignore
+            "command_help",
+            "function_help",
+            "privacy_policy",
+            "terms_of_service",
+        ],
+        help_obj: str = None,
+    ) -> typing.Optional[disnake.Message]:
+        """/documentation {documentation_type: str|documentation_link|command_help|function_help} {help_obj}
+
+        Prints documentation :-). If the documentation is a command, it attempts to get its docstring.
+        Otherwise, it gets the cached documentation.
+        help_obj will be ignored if documentation_type is privacy_policy or documentation_link.
+        Legend (for other documentation)
+        /command_name: the command
+        {argument_name: type |choice1|choice2|...} -
+        A required argument with choices of the given type, and the available choices are choice1, choice 2, etc.)
+        {argument_name: type |choice1|choice2|... = default} -
+        An optional argument that defaults to default if not specified.
+        Arguments must be a choice specified (from choice 1 etc.) and must be of the type specified.
+        [argument_name: type = default] -
+        An argument with choices of the given type, and defaults to default if not specified. Strings are represented without quotation marks.
+        (argument_name: type) -
+        A required argument of the given type"""
+        if help_obj is None and documentation_type in ["command_help", "function_help"]:
+            return await inter.send(
+                embed=ErrorEmbed(
+                    "I can't help you with a command or function unless you tell me what you want help on!"
+                )
+            )
+        if documentation_type == "documentation_link":
+            await inter.send(
+                embed=SuccessEmbed(
+                    f"""<@{inter.author.id}> [Click here](https://github.com/rf20008/TheDiscordMathProblemBotRepo/tree/master/docs) for my documentation.
+        """
+                ),
+                ephemeral=True,
+            )
+            return None
+        if documentation_type == "command_help":
+            try:
+                command = self.bot.get_slash_command(help_obj)  # Get the command
+                if command is None:  # command not found
+                    return await inter.send(
+                        embed=ErrorEmbed(
+                            custom_title="I couldn't find your command!",
+                            description=":x: Could not find the command specified. ",
+                        )
+                    )
+                command_docstring = command.callback.__doc__
+                if command_docstring is None:
+                    return await inter.send(
+                        "Oh no! This command does not have documentation! Please report this bug."
+                    )
+                return await inter.send(
+                    embed=SuccessEmbed(description=str(command_docstring))
+                )
+            except AttributeError as exc:
+                # My experiment failed
+                raise Exception("uh oh...") from exc  # My experiment failed!
+        elif documentation_type == "function_help":
+            warnings.warn(DeprecationWarning("This has been deprecated"))
+            documentation_loader = (
+                the_documentation_file_loader.DocumentationFileLoader()
+            )
+            try:
+                _documentation = documentation_loader.get_documentation(
+                    {
+                        "function_help": "docs/misc-non-commands-documentation.md",
+                    }[documentation_type],
+                    help_obj,
+                )
+            except the_documentation_file_loader.DocumentationNotFound as e:
+                if isinstance(
+                    e, the_documentation_file_loader.DocumentationFileNotFound
+                ):
+                    await inter.send(
+                        embed=ErrorEmbed(
+                            "Documentation file was not found. Please report this error!"
+                        )
+                    )
+                    return None
+                await inter.send(embed=ErrorEmbed(str(e)))
+                return None
+            await inter.send(_documentation)
+        elif documentation_type == "privacy_policy":
+            await inter.send(
+                "The link to the privacy policy is [https://github.com/rf20008/TheDiscordMathProblemBotRepo/blob/beta/TERMS_AND_CONDITIONS.md](here)"
+            )
+            return
+        elif documentation_type == "terms_of_service":
+            # TODO: softcode this in a config.json file
+            await inter.send(
+                "The link to the terms of service is here: [https://github.com/rf20008/TheDiscordMathProblemBotRepo/blob/beta/TERMS_AND_CONDITIONS.md](Terms of Service Link)"
+            )
+            return
+
+            # with open("TERMS_AND_CONDITIONS.md") as file:
+            #    await inter.send(
+            #        embed=SuccessEmbed("".join([line for line in file]))
+            #    )  # Concatenate the lines in the file + send them
+        else:
+            raise NotImplementedError(
+                "This hasn't been implemented yet. Please contribute something!"
+            )
+
+    @checks.has_privileges(blacklisted=False)
+    @checks.trusted_users_only()
+    @checks.is_not_blacklisted()
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    @commands.slash_command(
+        name="blacklist",
+        description="Blacklist someone from the bot!",
+        options=[
+            disnake.Option(
+                name="user",
+                description="The user to blacklist",
+                type=disnake.OptionType.user,
+                required=True,
+            )
+        ],
+    )
+    async def blacklist(
+        self: "MiscCommandsCog",
+        inter: disnake.ApplicationCommandInteraction,
+        user: typing.Union[disnake.User, disnake.Member],
+    ):
+        """/blacklist [user: user]
+        Blacklist someone from the bot. You must be a trusted user to do this!
+        There is a 1-second cooldown."""
+        user_data = await self.cache.get_user_data(
+            user_id=user.id,
+            default=problems_module.UserData(
+                user_id=user.id, trusted=False, blacklisted=False
+            ),
+        )
+        if not user_data.blacklisted:
+            bot.log.debug("Can't blacklist user; user already blacklisted")
+            return await inter.send("Can't blacklist user; user already blacklisted")
+        else:
+            user_data.blacklisted = True
+            try:
+                await self.cache.update_user_data(user_id=user.id, new=user_data)
+            except problems_module.MathProblemsModuleException:
+                await self.cache.add_user_data(user_id=user.id, new=user_data)
+            self.bot.log.info(f"Successfully blacklisted the user with id {user.id}")
+            await inter.send("Successfully blacklisted the user!")
+
+            # TODO: what do I do after a user gets blacklisted? Do I delete their data?
+
+    @checks.trusted_users_only()
+    @checks.is_not_blacklisted()
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    @commands.slash_command(
+        name="unblacklist",
+        description="Remove someone's blacklist",
+        options=[
+            disnake.Option(
+                name="user",
+                description="The user to un-blacklist",
+                type=disnake.OptionType.user,
+                required=True,
+            )
+        ],
+    )
+    async def unblacklist(
+        self: "MiscCommandsCog",
+        inter: disnake.ApplicationCommandInteraction,
+        user: typing.Union[disnake.User, disnake.Member],
+    ):
+        """/unblacklist [user: user]
+        Remove a user's bot blacklist. You must be a trusted user to do this!
+        There is a 1-second cooldown."""
+        user_data = await self.cache.get_user_data(
+            user_id=user.id,
+            default=problems_module.UserData(
+                user_id=user.id, trusted=False, blacklisted=False
+            ),
+        )
+        if not user_data.blacklisted:
+            bot.log.debug("Can't un-blacklist user; user not blacklisted")
+            return await inter.send("Can't un-blacklist user; user not blacklisted")
+        else:
+            user_data.blacklisted = False
+            try:
+                await self.cache.update_user_data(user_id=user.id, new=user_data)
+            except problems_module.MathProblemsModuleException:
+                await self.cache.add_user_data(user_id=user.id, new=user_data)
+            self.bot.log.info(f"Successfully un-blacklisted the user with id {user.id}")
+            await inter.send("Successfully un-blacklisted the user!")
+
+            # TODO: what do I do after a user gets blacklisted? Do I delete their data?
+
+
+def setup(bot):
+    bot.add_cog(MiscCommandsCog(bot))
+
+
+def teardown(bot):
+    bot.remove_cog("MiscCommandsCog")
+
 
 def setup(bot):
     bot.add_cog(MiscCommandsCog(bot))
