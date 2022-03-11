@@ -887,8 +887,7 @@ class MiscCommandsCog(HelperCog):
 
             # TODO: what do I do after a user gets blacklisted? Do I delete their data?
 
-        ],
-    )
+    
     async def documentation(
         self,
         inter: disnake.ApplicationCommandInteraction,
