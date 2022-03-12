@@ -6,7 +6,6 @@ from helpful_modules.my_modals import MyModal
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from typing import Union, List, Optional
 
-
 class GradingQuizView(ui.View):
     def __init__(
         self,
@@ -29,6 +28,10 @@ class GradingQuizView(ui.View):
         self._attempt_num = attempt_num
         self.target = grader_user_id
         self.problem_num = problem_num
+
+    async def interaction_check(self, inter: disnake.Interaction):
+        """Make sure this view is only used by who it's intended to be used!"""
+        return inter.author.id == self.target
 
     def stop(self):
         super().__stop__()
@@ -55,8 +58,34 @@ class GradingQuizView(ui.View):
     async def continue_grading(
         self, button: disnake.ui.Button, inter: disnake.MessageInteraction
     ):
+        assert button == self.continue_grading
         assert isinstance(inter.bot, TheDiscordMathProblemBot)
-        await inter.response.send_modal(MyModal())
+        reasoning_input_custom_id = os.urandom(13).hex() + inter.id
+        grade_input_custom_id = os.urandom(14).hex() + inter.id
+        the_modal_custom_id = os.urandom(15).hex() + inter.id
+        modal_to_send = MyModal(
+                target_user_id = self.user_id,
+                bot = inter.bot,
+                quiz_id = self.quiz_id,
+                grader_user_id= inter.author.id,
+                attempt_num = self.attempt_num,
+                problem_num = self.problem_num,
+                channel = inter.channel,
+                reasoning_input_custom_id=reasoning_input_custom_id,
+                grade_input_custom_id=grade_input_custom_id,
+                title = "Grade this quiz's submission problem number #",
+                components= [],
+                custom_id = the_modal_custom_id,
+                timeout = 60 * 60
+            )
+        raise NotImplementedError("Oh No! This isn't fully implemented yet!!!")
+        modal_to_send.add_text_input(
+            label = "What will you choose?",
+
+        )
+        await inter.response.send_modal(
+            modal_to_send
+        )
 
     async def on_error(self, item: ui.Item, exc: Exception):
         await base_on_error(exc)

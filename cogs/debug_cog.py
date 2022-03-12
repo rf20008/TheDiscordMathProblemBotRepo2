@@ -91,8 +91,10 @@ class DebugCog(HelperCog):
         else:
             return
 
-    def cog_slash_command_check(self, inter: disnake.ApplicationCommandInteraction):
+    async def cog_slash_command_check(self, inter: disnake.ApplicationCommandInteraction):
         """A check that makes sure only bot owners can use this cog!"""
+        if not await self.bot.is_owner(inter.author):
+            raise commands.CheckFailure("You don't own this bot!")
         if self.bot.owner_id in [None, [], set()] and self.bot.owner_ids is None:
             raise commands.CheckFailure(
                 "Warning: neither owner_id or owner_ids is defined..."
