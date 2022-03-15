@@ -153,3 +153,22 @@ def has_privileges(**privileges_required):
         raise CustomCheckFailure("You don't have the required privileges!")
 
     return commands.check(predicate)
+
+
+def guild_owners_or_trusted_users_only():
+    """A check to make sure that only trusted users or users who own the guild that the command is running in can run the command"""
+    async def predicate(inter: disnake.ApplicationCommandInteraction):
+        if not isinstance(inter.bot, TheDiscordMathProblemBot):
+            raise TypeError("Uh oh - inter.bot isn't TheDiscordMathProblemBot")
+        if await inter.bot.is_trusted(inter.author):
+            return True # Trusted users can run this
+        if inter.guild is None:
+            raise commands.CheckFailure("You can't run this command because it's in a DM and you must be the guild owner to run the command!")
+        if inter.guild.owner_id is None:
+            raise Exception("The owner id is not defined!")
+
+        if inter.guild.owner_id == inter.author.id:
+            return True
+        else:
+            raise commands.CheckFailure("You don't own this guild!")
+    return commands.check(predicate)

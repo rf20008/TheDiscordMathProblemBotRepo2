@@ -1084,7 +1084,15 @@ class MiscCommandsCog(HelperCog):
             await inter.send("Successfully un-blacklisted the user!")
 
             # TODO: what do I do after a user gets blacklisted? Do I delete their data?
-
+    @checks.guild_owners_or_trusted_users_only()
+    @checks.is_not_blacklisted()
+    @checks.guild_not_blacklisted()
+    @commands.slash_command(description = "Request for your guild's data to be deleted")
+    async def request_guild_data_delete(
+        self,
+        inter: disnake.ApplicationCommandInteraction
+    ):
+        raise NotImplementedError()
 
 def setup(bot):
     bot.add_cog(MiscCommandsCog(bot))
@@ -1093,10 +1101,3 @@ def setup(bot):
 def teardown(bot):
     bot.remove_cog("MiscCommandsCog")
 
-
-def setup(bot):
-    bot.add_cog(MiscCommandsCog(bot))
-
-
-def teardown(bot):
-    bot.remove_cog("MiscCommandsCog")

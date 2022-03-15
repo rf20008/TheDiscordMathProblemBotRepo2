@@ -17,6 +17,16 @@ class TaskCog(HelperCog):
         self.bot = bot
         super().__init__(self, bot)
         self.cache = bot.cache
+    @commands.Cog.listener()
+    async def on_slash_command(self, inter: disnake.ApplicationCommandInteraction):
+        """Leave guilds because the guild is blacklisted"""
+        if not inter.guild:
+            return
+        if not isinstance(inter.bot, TheDiscordMathProblemBot):
+            raise TypeError()
+        if await inter.bot.is_guild_blacklisted(inter.guild):
+            await inter.send("Your guild is blacklisted - so I am leaving this guild")
+            await inter.bot.notify_guild_on_guild_leave_because_guild_blacklist()
 
     @tasks.loop(seconds=15)
     async def report_tasks_task(self):
