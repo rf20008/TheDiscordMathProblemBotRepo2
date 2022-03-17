@@ -11,6 +11,7 @@ from typing import Union
 import disnake
 from disnake.ext import commands
 
+from .deletion_view import GuildDataDeletionView
 from helpful_modules import checks, problems_module, the_documentation_file_loader
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.custom_buttons import BasicButton, ConfirmationButton, MyView
@@ -1092,7 +1093,15 @@ class MiscCommandsCog(HelperCog):
         self,
         inter: disnake.ApplicationCommandInteraction
     ):
-        raise NotImplementedError()
+        try:
+            assert inter.guild is not None
+            assert await self.bot.is_trusted(inter.author) or inter.author.id == inter.guild.owner_id
+        except AssertionError:
+            await inter.send("You don't have permission!")
+            raise
+        await inter.send(modal=GuildDataDeletionView(inter=inter,timeout=200,bot=self.bot))
+        _ = bot.wait_for(modal_submit, check=lambda modal_inter: modal_inter.author.id == inter.author.id)
+
 
 def setup(bot):
     bot.add_cog(MiscCommandsCog(bot))
