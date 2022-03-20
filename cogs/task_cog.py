@@ -7,7 +7,12 @@ from helpful_modules.custom_bot import TheDiscordMathProblemBot
 
 from .helper_cog import HelperCog
 from typing import Union
-from disnake.ext.commands import Bot, InteractionBot, AutoShardedInteractionBot, AutoShardedBot
+from disnake.ext.commands import (
+    Bot,
+    InteractionBot,
+    AutoShardedInteractionBot,
+    AutoShardedBot,
+)
 
 # TODO: make this an extension :-)
 
@@ -17,6 +22,7 @@ class TaskCog(HelperCog):
         self.bot = bot
         super().__init__(self, bot)
         self.cache = bot.cache
+
     @commands.Cog.listener()
     async def on_slash_command(self, inter: disnake.ApplicationCommandInteraction):
         """Leave guilds because the guild is blacklisted"""
@@ -47,17 +53,17 @@ class TaskCog(HelperCog):
                 await self.bot.notify_guild_on_guild_leave_because_guild_blacklist(
                     guild
                 )
+
     @tasks.loop(seconds=15)
     async def update_cache_task(self):
         await self.cache.update_cache()
-
-
 
     def cog_unload(self):
         super().cog_unload()
         self.leaving_blacklisted_guilds_task.stop()
         self.update_cache_task.stop()
         self.report_tasks_task.stop()
+
 
 def setup(bot: TheDiscordMathProblemBot):
     bot.add_cog(TaskCog(bot))

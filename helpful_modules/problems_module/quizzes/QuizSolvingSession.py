@@ -14,19 +14,20 @@ from .quiz_submissions import QuizSubmission, QuizSubmissionAnswer
 
 class QuizSolvingSession:
     __slots__ = (
-        '__dict__',
-        'user_id',
-        'quiz_id',
-        'special_id',
-        'cache',
-        'answer',
-        'start_time',
-        '_quiz',
-        'guild_id',
-        'answers',
-        'is_finished',
-        'expire_time'
+        "__dict__",
+        "user_id",
+        "quiz_id",
+        "special_id",
+        "cache",
+        "answer",
+        "start_time",
+        "_quiz",
+        "guild_id",
+        "answers",
+        "is_finished",
+        "expire_time",
     )
+
     def __init__(
         self, user_id: int, quiz_id: int, cache, guild_id: int, attempt_num: int
     ):
@@ -202,4 +203,5 @@ class QuizSolvingSession:
         obj = self.__class__.__new__(self.__class__)
         obj.__dict__.update(self.__dict__)
         return obj
+
     # After this, just the GPLv3 returns

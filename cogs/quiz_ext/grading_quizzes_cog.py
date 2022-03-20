@@ -74,7 +74,9 @@ class GradingQuizzesCog(HelperCog):
         """
         for user_id in users_with_submissions:
             string_to_send += f"<@{user_id}>\n"
-        string_to_send += f"({len(users_with_submissions)} users)"  # TODO: use a paginator
+        string_to_send += (
+            f"({len(users_with_submissions)} users)"  # TODO: use a paginator
+        )
         await inter.send(
             embed=SuccessEmbed(string_to_send),
             allowed_mentions=disnake.AllowedMentions(users=False),
@@ -94,8 +96,8 @@ class GradingQuizzesCog(HelperCog):
         ),
     ):
         """/quiz_grade manual_grade
-        
-        Manually grade a user's submission to a quiz. You must be an author of the quiz you want to grade! 
+
+        Manually grade a user's submission to a quiz. You must be an author of the quiz you want to grade!
         The bot will send modals about reasoning and grade, which you will have to complete in 1 hour.
         After that, you will need to press a button that will send the next modal, labeled Continue Grading.
         If you stop, your changes will be saved!
@@ -115,7 +117,11 @@ class GradingQuizzesCog(HelperCog):
             and submission.done
         ]
         if user_submissions is []:
-            return await inter.send("That user didn't submit to this quiz with attempt number #" + attempt_num + " !")
+            return await inter.send(
+                "That user didn't submit to this quiz with attempt number #"
+                + attempt_num
+                + " !"
+            )
         user_submission = user_submissions[0]
         for submission in user_submission.answers:
             if quiz.problems[submission.problem_id].is_written is False:

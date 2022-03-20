@@ -106,7 +106,7 @@ class MiscRelatedCache:
         self.cached_sessions = {}
         self.cached_user_data = {}
         self.cached_guild_data = {}
-        self.cached_appeals={}
+        self.cached_appeals = {}
 
     def _request_connection(self) -> typing.Optional[MySQLConnection]:
         """Request a connection from my internal pool. I will raise exceptions (including PoolError's if there are no more connections in the pool)"""
@@ -151,7 +151,7 @@ class MiscRelatedCache:
         quiz_submissions_dict = {}
         user_data_dict: typing.Dict[int, UserData] = {}
         guild_data_dict: typing.Dict[int, GuildData] = {}
-        appeals={}
+        appeals = {}
         if self.use_sqlite:
             async with aiosqlite.connect(self.db_name) as conn:
                 conn.row_factory = dict_factory
@@ -436,9 +436,7 @@ class MiscRelatedCache:
                     QuizDescription.from_dict(cache=self, data=data)
                     for data in cursor.fetchall()
                 ]
-                cursor.execute(
-                    "SELECT * FROM appeals WHERE user_id = %s", (author_id,)
-                )
+                cursor.execute("SELECT * FROM appeals WHERE user_id = %s", (author_id,))
                 appeals = [
                     Appeal.from_dict(data, cache=self)
                     for data in await cursor.fetchall()
@@ -450,7 +448,7 @@ class MiscRelatedCache:
             "problems": problems,
             "sessions": sessions,
             "descriptions_created": descriptions,
-            'appeals': appeals
+            "appeals": appeals,
         }
 
     async def delete_all_by_user_id(self, user_id: int) -> None:
@@ -478,9 +476,7 @@ class MiscRelatedCache:
                 await cursor.execute(
                     "DELETE FROM user_data WHERE user_id=?", (user_id,)
                 )
-                cursor.execute(
-                    "DELETE FROM appeals WHERE user_id=?", (user_id,)
-                )
+                cursor.execute("DELETE FROM appeals WHERE user_id=?", (user_id,))
                 await conn.commit()  # Otherwise, nothing happens and it rolls back!!
         else:
             with self.get_a_connection() as connection:
@@ -496,12 +492,8 @@ class MiscRelatedCache:
                 cursor.execute(
                     "DELETE FROM quiz_description WHERE author = %s", (user_id,)
                 )
-                cursor.execute(
-                    "DELETE FROM user_data WHERE user_id=%s", (user_id,)
-                )
-                cursor.execute(
-                    "DELETE FROM appeals WHERE user_id=%s", (user_id,)
-                )
+                cursor.execute("DELETE FROM user_data WHERE user_id=%s", (user_id,))
+                cursor.execute("DELETE FROM appeals WHERE user_id=%s", (user_id,))
                 connection.commit()
 
     async def delete_all_by_guild_id(self, guild_id: int) -> None:

@@ -21,6 +21,20 @@ from helpful_modules.threads_or_useful_funcs import get_git_revision_hash
 
 from .helper_cog import HelperCog
 
+CAN_SEND_MESSAGES_TO = (
+    disnake.MessageInteraction,
+    disnake.ApplicationCommandInteraction,
+    disnake.Interaction,
+    disnake.abc.Messageable,
+    disnake.TextChannel,
+    disnake.PartialMessageable,
+    commands.Context,
+    disnake.VoiceChannel,
+    disnake.Thread,
+    disnake.abc.GuildChannel,
+)
+GUILD_DATA_DELETION_TIMEOUT = 250
+
 
 class MiscCommandsCog(HelperCog):
     def __init__(self, bot: TheDiscordMathProblemBot):
@@ -68,12 +82,12 @@ class MiscCommandsCog(HelperCog):
         )
         current_version_info = version_info
         python_version_as_str = f"""Python {
-            current_version_info.major
+        current_version_info.major
         }.{
-            current_version_info.minor
+        current_version_info.minor
         }.{
-            current_version_info.micro}{
-            current_version_info.releaselevel
+        current_version_info.micro}{
+        current_version_info.releaselevel
         }"""
 
         embed = embed.add_field(
@@ -98,14 +112,15 @@ class MiscCommandsCog(HelperCog):
             embed = embed.add_field(
                 name="License",
                 value="""This bot is licensed under GPLv3. 
-                Please see [the official GPLv3 website that explains the GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html) for more details.""", # noqa: E501
+                Please see [the official GPLv3 website that explains the GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html) for more details.""",
+                # noqa: E501
             )
             embed = embed.add_field(
                 name="Uptime",
                 value=(
                     f"""The bot started at" 
                     f"{disnake.utils.format_dt(self.bot.timeStarted)}"
-                    f"and has been up for {   round(self.bot.uptime)} seconds."""
+                    f"and has been up for {round(self.bot.uptime)} seconds."""
                 ),
             )
 
@@ -149,10 +164,9 @@ class MiscCommandsCog(HelperCog):
                 # A user with this ID does not exist
                 try:
                     user_data = await self.bot.cache.get_user_data(
-                        user_id,
-                        default=problems_module.UserData.default()
+                        user_id, default=problems_module.UserData.default()
                     )
-                    user_data.trusted=False
+                    user_data.trusted = False
                     await self.cache.set_user_data(user_id, user_data)
 
                     try:
@@ -161,7 +175,7 @@ class MiscCommandsCog(HelperCog):
                         pass
                 except BaseException as e:
                     raise RuntimeError(
-                        "Could not save the files after removing the nonexistant trusted user!!"
+                        "Could not save the files after removing the nonexistent trusted user!!"
                     ) from e
             except (
                 disnake.Forbidden,
@@ -295,9 +309,7 @@ class MiscCommandsCog(HelperCog):
             return
         vote_threshold = int(threshold)  # Probably unnecessary
         for problem in await self.bot.cache.get_global_problems():
-            if (
-                problem.get_num_voters() >= vote_threshold
-            ):
+            if problem.get_num_voters() >= vote_threshold:
                 # If the number of the voters of the problem exceeds the vote threshold,
                 # delete the problem.
                 await self.cache.remove_problem(problem.id)
@@ -324,8 +336,8 @@ class MiscCommandsCog(HelperCog):
             disnake.Option(
                 name="save_data_before_deletion",
                 description=(
-                        "Whether to give you your problems or submissions in JSON format!"
-                        "Defaults to True"
+                    "Whether to give you your problems or submissions in JSON format!"
+                    "Defaults to True"
                 ),
                 type=disnake.OptionType.boolean,
                 required=False,
@@ -511,9 +523,7 @@ class MiscCommandsCog(HelperCog):
                 "trusted_user": is_trusted_user,
                 "blacklisted": is_blacklisted,
             },
-            "Appeals": [
-                appeal.to_dict() for appeal in raw_data['appeals']
-            ]
+            "Appeals": [appeal.to_dict() for appeal in raw_data["appeals"]],
         }
         return new_data
 
@@ -611,7 +621,7 @@ class MiscCommandsCog(HelperCog):
         Submit a request! I will know! It uses a channel in my discord server and posts an embed.
         If you do not provide a guild id, it will be None.
         I will probably deprecate this and replace it with emailing me.
-        This command has been deprecated. """
+        This command has been deprecated."""
         if (
             extra_info is None
             and type == ""
@@ -646,7 +656,7 @@ class MiscCommandsCog(HelperCog):
         )
 
         if problem_found:
-            embed.description = f"Problem_info:{str(Problem)}"  # type: ignore
+            embed.description = f"Problem_info:{str(problem)}"  # type: ignore
         embed.description += f"""Copyrighted thing: (if legal): {copyrighted_thing}
         Extra info: {extra_info}"""
         if problem_found:
@@ -675,11 +685,15 @@ class MiscCommandsCog(HelperCog):
                 name="documentation_type",
                 description="What kind of help you want",
                 choices=[
-                    disnake.OptionChoice(name="documentation_link", value="documentation_link"),
+                    disnake.OptionChoice(
+                        name="documentation_link", value="documentation_link"
+                    ),
                     disnake.OptionChoice(name="command_help", value="command_help"),
                     disnake.OptionChoice(name="function_help", value="function_help"),
                     disnake.OptionChoice(name="privacy_policy", value="privacy_policy"),
-                    disnake.OptionChoice(name="terms_of_service", value="terms_of_service"),
+                    disnake.OptionChoice(
+                        name="terms_of_service", value="terms_of_service"
+                    ),
                 ],
                 required=True,
             ),
@@ -711,7 +725,7 @@ class MiscCommandsCog(HelperCog):
         Legend (for other documentation)
         /command_name: the command
         {argument_name: type |choice1|choice2|...} -
-        A required argument with choices of the given type, and the available choices are choice1, choice 2, etc.)
+        A required argument with choices of the given type, and the available choices are choice1, choice 2, etc.
         {argument_name: type |choice1|choice2|... = default} -
         An optional argument that defaults to default if not specified.
         Arguments must be a choice specified (from choice 1 etc.) and must be of the type specified.
@@ -786,7 +800,7 @@ class MiscCommandsCog(HelperCog):
             )
             return
         elif documentation_type == "terms_of_service":
-            # TODO: softcode this in a config.json file
+            # TODO: soft-code this in a config.json file
             await inter.send(
                 "The link to the terms of service is here: [https://github.com/rf20008/TheDiscordMathProblemBotRepo/blob/beta/TERMS_AND_CONDITIONS.md](Terms of Service Link)"
             )
@@ -888,7 +902,6 @@ class MiscCommandsCog(HelperCog):
 
             # TODO: what do I do after a user gets blacklisted? Do I delete their data?
 
-    
     async def documentation(
         self,
         inter: disnake.ApplicationCommandInteraction,
@@ -909,7 +922,7 @@ class MiscCommandsCog(HelperCog):
         Legend (for other documentation)
         /command_name: the command
         {argument_name: type |choice1|choice2|...} -
-        A required argument with choices of the given type, and the available choices are choice1, choice 2, etc.)
+        A required argument with choices of the given type, and the available choices are choice1, choice 2, etc.
         {argument_name: type |choice1|choice2|... = default} -
         An optional argument that defaults to default if not specified.
         Arguments must be a choice specified (from choice 1 etc.) and must be of the type specified.
@@ -1085,22 +1098,54 @@ class MiscCommandsCog(HelperCog):
             await inter.send("Successfully un-blacklisted the user!")
 
             # TODO: what do I do after a user gets blacklisted? Do I delete their data?
+
     @checks.guild_owners_or_trusted_users_only()
     @checks.is_not_blacklisted()
     @checks.guild_not_blacklisted()
-    @commands.slash_command(description = "Request for your guild's data to be deleted")
+    @commands.slash_command(description="Request for your guild's data to be deleted")
     async def request_guild_data_delete(
-        self,
-        inter: disnake.ApplicationCommandInteraction
+        self, inter: disnake.ApplicationCommandInteraction
     ):
+        """/request_guild_data_delete
+
+        Requests the deletion of the data stored with this bot associated with the guild.
+        Only guild owners can run this. There is also a confirmation view to confirm.
+        You will have 2 minutes to click a button, or nothing will happen!"""
         try:
             assert inter.guild is not None
-            assert await self.bot.is_trusted(inter.author) or inter.author.id == inter.guild.owner_id
+            assert (
+                await self.bot.is_trusted(inter.author)
+                or inter.author.id == inter.guild.owner_id
+            )
         except AssertionError:
             await inter.send("You don't have permission!")
             raise
-        await inter.send(modal=GuildDataDeletionView(inter=inter,timeout=200,bot=self.bot))
-        _ = bot.wait_for(modal_submit, check=lambda modal_inter: modal_inter.author.id == inter.author.id)
+        assert isinstance(inter.channel, CAN_SEND_MESSAGES_TO)
+        view = GuildDataDeletionView(
+            inter=inter, timeout=GUILD_DATA_DELETION_TIMEOUT, bot=self.bot
+        )
+        await inter.send(view=view)
+        msg = await inter.original_message()
+        try:
+            _ = bot.wait_for(
+                "on_button", check=lambda i: i.author.id == inter.author.id
+            )
+        except asyncio.TimeoutError:
+            view.stop()
+            for item in view.children:
+                if not isinstance(item, disnake.ui.Item):
+                    raise RuntimeError()
+                if hasattr(item, "disabled"):
+                    if not getattr(item, "disabled", False):
+                        item.disabled = True
+
+            await msg.edit(
+                content="You didn't respond in time, so the view has now been closed"
+                + msg.content,  # noqa: E501
+                view=view,
+            )
+            return await inter.channel.send("You didn't submit in time!")
+        return
 
 
 def setup(bot):
@@ -1109,4 +1154,3 @@ def setup(bot):
 
 def teardown(bot):
     bot.remove_cog("MiscCommandsCog")
-

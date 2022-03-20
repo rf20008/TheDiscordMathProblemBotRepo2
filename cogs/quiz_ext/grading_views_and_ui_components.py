@@ -6,6 +6,7 @@ from helpful_modules.my_modals import MyModal
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from typing import Union, List, Optional
 
+
 class GradingQuizView(ui.View):
     def __init__(
         self,
@@ -64,38 +65,35 @@ class GradingQuizView(ui.View):
         grade_input_custom_id = os.urandom(14).hex() + inter.id
         the_modal_custom_id = os.urandom(15).hex() + inter.id
         modal_to_send = MyModal(
-                target_user_id = self.user_id,
-                bot = inter.bot,
-                quiz_id = self.quiz_id,
-                grader_user_id= inter.author.id,
-                attempt_num = self.attempt_num,
-                problem_num = self.problem_num,
-                channel = inter.channel,
-                reasoning_input_custom_id=reasoning_input_custom_id,
-                grade_input_custom_id=grade_input_custom_id,
-                title = "Grade this quiz's submission problem number #",
-                components= [],
-                custom_id = the_modal_custom_id,
-                timeout = 60 * 60
-            )
+            target_user_id=self.user_id,
+            bot=inter.bot,
+            quiz_id=self.quiz_id,
+            grader_user_id=inter.author.id,
+            attempt_num=self.attempt_num,
+            problem_num=self.problem_num,
+            channel=inter.channel,
+            reasoning_input_custom_id=reasoning_input_custom_id,
+            grade_input_custom_id=grade_input_custom_id,
+            title="Grade this quiz's submission problem number #",
+            components=[],
+            custom_id=the_modal_custom_id,
+            timeout=60 * 60,
+        )
         raise NotImplementedError("Oh No! This isn't fully implemented yet!!!")
         modal_to_send.add_text_input(
-            label = "What will you choose?",
-
+            label="What will you choose?",
         )
-        await inter.response.send_modal(
-            modal_to_send
-        )
+        await inter.response.send_modal(modal_to_send)
 
     async def on_error(self, item: ui.Item, exc: Exception):
         await base_on_error(exc)
         raise NotImplementedError
 
     async def interaction_check(self, inter: disnake.MessageInteraction):
-        return (
-            inter.author.id == self.grader_user_id
-            and inter.component.custom_id in [self.continue_grading.custom_id, self.exit_and_stop.custom_id]
-        )
+        return inter.author.id == self.grader_user_id and inter.component.custom_id in [
+            self.continue_grading.custom_id,
+            self.exit_and_stop.custom_id,
+        ]
 
 
 async def on_grade_modal_callback(
@@ -123,7 +121,7 @@ async def on_grade_modal_callback(
         )
     )
     session: pm.QuizSolvingSession = copy.copy(submissions[0])
-    submission=session.answers[problem_num]
+    submission = session.answers[problem_num]
     submission.set_grade(grade)
     submission.reasoning = modal_inter.text_values[reasoning_input_custom_id]
     await quiz.update_self()
@@ -135,7 +133,7 @@ async def on_grade_modal_callback(
             grader_user_id=inter.author.id,
             bot=inter.bot,
             attempt_num=attempt_num,
-            channel = modal_inter.channel
+            channel=modal_inter.channel,
         )
     )
 
@@ -166,14 +164,14 @@ class GradingModal(ui.Modal):
             ],
         ],
         custom_id=...,
-        timeout=60*60
+        timeout=60 * 60
     ):
         super().__init__(
             title=title, components=components, custom_id=custom_id, timeout=timeout
         )
         self._bot = bot
         self.quiz_id = quiz_id
-        self.grader_quiz_id = grader_user_id,
+        self.grader_quiz_id = (grader_user_id,)
         self.target_user_id = target_user_id
         self._attempt_num = attempt_num
         self._channel = channel
@@ -185,14 +183,16 @@ class GradingModal(ui.Modal):
         try:
             await self._channel.send("You didn't submit the modal in time!")
         except disnake.Forbidden:
-            raise RuntimeError("I don't have permission to send to the channel and tell them that they ran out of time")
+            raise RuntimeError(
+                "I don't have permission to send to the channel and tell them that they ran out of time"
+            )
 
     async def callback(self, inter: disnake.ModalInteraction):
         if inter.author.id is not self.grader_quiz_id:
             raise RuntimeError("Uh oh!")
         assert isinstance(inter.bot, TheDiscordMathProblemBot)
 
-        #raise NotImplementedError("I haven't fully implemented this yet!")
+        # raise NotImplementedError("I haven't fully implemented this yet!")
         return await on_grade_modal_callback(
             modal_inter=inter,
             quiz_id=self.quiz_id,
@@ -200,9 +200,8 @@ class GradingModal(ui.Modal):
             reasoning_input_custom_id=self.reasoning_input_custom_id,
             problem_num=self.problem_num,
             attempt_num=self._attempt_num,
-            cache=inter.bot.cache
+            cache=inter.bot.cache,
         )
 
     async def on_error(self, error: Exception, inter: disnake.ModalInteraction):
         return await inter.send(**base_on_error(inter, error))
-

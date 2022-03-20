@@ -10,6 +10,7 @@ from helpful_modules.my_modals import MyModal
 from helpful_modules.custom_embeds import SuccessEmbed, ErrorEmbed
 from os import urandom
 
+
 class AppealsCog(HelperCog):
     def __init__(self, bot: TheDiscordMathProblemBot):
         super().__init__(bot)
@@ -24,6 +25,7 @@ class AppealsCog(HelperCog):
         Appeal your punishments! It uses a modal.
         There are subcommands!"""
         pass
+
     @has_privileges(blacklisted=True)
     @commands.cooldown(1, 86400, commands.BucketType.user)
     @appeal.sub_command(name="blacklist", description="Appeal your blacklists")
@@ -41,42 +43,47 @@ class AppealsCog(HelperCog):
                 label="Why should I unblacklist you? You have 20 minutes to answer",
                 style=disnake.TextInputStyle.long,
                 required=True,
-                custom_id=unblacklist_custom_id
+                custom_id=unblacklist_custom_id,
             )
         ]
         reason: str = ""
+
         async def callback(s, inter: disnake.ModalInteraction):
             s.view.stop()
             nonlocal reason
             reason = inter.text_values[unblacklist_custom_id]
             await inter.send("Thanks! I'm now going to add this to the database :)")
+
         modal = MyModal(
             callback=callback,
             title="Why should I un-blacklist you?",
             components=[],
             timeout=1200,
-            custom_id=modal_custom_id
+            custom_id=modal_custom_id,
         )
         modal.add_text_input(text_inputs)
         await inter.response.send_modal(modal)
-        _ = await self.bot.wait_for('modal_submit', check = lambda modal_inter: modal_inter.author.id == inter.author.id)
+        _ = await self.bot.wait_for(
+            "modal_submit",
+            check=lambda modal_inter: modal_inter.author.id == inter.author.id,
+        )
 
         # Create an appeal
         # find the appeal
-        highest_appeal_num=0
+        highest_appeal_num = 0
         for appeal in self.cache.cached_appeals:
             if appeal.user_id != inter.author.id:
                 continue
             if appeal.appeal_num > highest_appeal_num:
-                highest_appeal_num=appeal.appeal_num
-        highest_appeal_num+=1
+                highest_appeal_num = appeal.appeal_num
+        highest_appeal_num += 1
         appeal: problems_module.Appeal = problems_module.Appeal(
             timestamp=time.time(),
             appeal_str=reason,
             special_id=_generate_appeal_id(inter.author.id, highest_appeal_num),
             appeal_num=highest_appeal_num,
             user_id=inter.author.id,
-            type=problems_module.AppealType.BLACKLIST_APPEAL.value
+            type=problems_module.AppealType.BLACKLIST_APPEAL.value,
         )
         await self.cache.set_appeal_data(appeal)
 
@@ -84,5 +91,6 @@ class AppealsCog(HelperCog):
 def setup(bot):
     bot.add_cog(AppealsCog(bot))
 
+
 def teardown(bot):
-    bot.remove_cog('AppealsCog')
+    bot.remove_cog("AppealsCog")

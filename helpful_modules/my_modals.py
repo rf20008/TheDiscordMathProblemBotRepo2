@@ -22,7 +22,7 @@ class MyModal(Modal):
             else os.urandom(20).hex()
         )
         self._check = kwargs.pop("check", _check)
-        self._extra_args = kwargs.pop('extra_args', [])
+        self._extra_args = kwargs.pop("extra_args", [])
         self._on_error = kwargs.pop("on_error", MyModal.on_error)
         self._inter: disnake.ApplicationCommandInteraction = kwargs.pop("inter", None)
 

@@ -270,7 +270,7 @@ class DeveloperCommands(HelperCog):
         if num_new_problems_to_generate > 200:
             return await inter.send(
                 embed=ErrorEmbed(
-                    "You are trying to create too many problems." 
+                    "You are trying to create too many problems."
                     "Try something smaller than or equal to 200."
                 ),
                 ephemeral=True,
@@ -445,7 +445,9 @@ class DeveloperCommands(HelperCog):
         try:
             await self.cache.set_user_data(user_id=user.id, new=their_user_data)
         except problems_module.UserDataNotExistsException:
-            await self.cache.add_user_data(user_id=user.id, thing_to_add=their_user_data)
+            await self.cache.add_user_data(
+                user_id=user.id, thing_to_add=their_user_data
+            )
         await inter.send(
             embed=ErrorEmbed(
                 f"Successfully made {user.display_name} no longer a trusted user!"

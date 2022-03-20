@@ -512,7 +512,6 @@ class ProblemsCog(HelperCog):
                         f"Your question is too long! Therefore, it cannot be added. "
                         "The maximum question length is {self.cache.max_question_length} characters."  # noqa: E501
                     ),
-
                     custom_title="Your question is too long.",
                 ),
                 ephemeral=True,
@@ -535,7 +534,7 @@ class ProblemsCog(HelperCog):
             if inter.guild is None:
                 raise RuntimeError(
                     "You're not allowed to submit guild problems because you're running this command in a DM"  # noqa: E501
-                    ", and I don't know which guild to associate your problem with."
+                    " and I don't know which guild to associate your problem with."
                 )
 
             guild_id = inter.guild.id
@@ -569,7 +568,7 @@ class ProblemsCog(HelperCog):
                 embed=ErrorEmbed(
                     f"You have reached the guild problem limit of {self.cache.max_guild_problems} and therefore cannot create new problems!"  # noqa: E501
                     + (
-                        "This is to prevent spam.\n" 
+                        "This is to prevent spam.\n"
                         "As of right now, you cannot increase the guild problem limit without self-hosting the bot.\n"  # noqa: E501
                         "If you are self-hosting the bot, it is possible to increase the limit by changing the code. :)"  # noqa: E501
                     )
@@ -601,7 +600,6 @@ class ProblemsCog(HelperCog):
             guild_id=guild_id,
             cache=self.cache,
         )  # Create the problem!
-        print(problem)
         await self.cache.add_problem(
             problem_id=problem_id, problem=problem
         )  # Add the problem
@@ -727,12 +725,9 @@ class ProblemsCog(HelperCog):
     ):
         """/check_answer {problem_id: int} {answer: str}
         Check your answer to the problem with the given id.
-        The bot can tell whether the problem is a guild problem.
-"""
+        The bot can tell whether the problem is a guild problem."""
         try:
-            problem = await self.bot.cache.get_problem(
-                int(problem_id)
-            )
+            problem = await self.bot.cache.get_problem(int(problem_id))
             if problem.is_solver(inter.author):  # If the user solved the problem
                 await inter.send(
                     embed=ErrorEmbed(
@@ -788,15 +783,9 @@ class ProblemsCog(HelperCog):
                 type=disnake.OptionType.integer,
                 required=True,
             ),
-            disnake.Option(
-                name="is_guild_problem",
-                description="problem id of the problem you are attempting to delete",
-                type=disnake.OptionType.boolean,
-                required=False,
-            ),
         ],
     )
-    async def vote(self, inter, problem_id: int, is_guild_problem: bool = False):
+    async def vote(self, inter, problem_id: int):
         """/vote [problem_id: int] [is_guild_problem: bool = False]
         Vote for the deletion of the problem with the given problem_id.
         The bot can tell whether the problem is a guild problem.
@@ -908,7 +897,7 @@ class ProblemsCog(HelperCog):
         await problem.update_self()  # Save the changes to the database.
 
         successMessage = (
-            "You successfully un-voted for the problem's deletion!" 
+            "You successfully un-voted for the problem's deletion!"
             "As long as this problem is not deleted, you can always un-vote."
             f"There are {problem.get_num_voters()}/{self.bot.vote_threshold}"
             " votes on this problem!"
@@ -944,7 +933,7 @@ class ProblemsCog(HelperCog):
         If the problem is a guild problem, you need the Administrator permission.
         You do not need to specify whether the problem is a guild problem.
         """
-        #TODO: fix
+        # TODO: fix
         if inter.guild is not None:
             guild_id = inter.guild.id
         else:

@@ -35,7 +35,7 @@ class AppealsRelatedCache(GuildDataRelatedCache):
                         data.appeal_num,
                         data.user_id,
                         data.timestamp,
-                        data.type
+                        data.type,
                     ),
                 )  # TODO: test
                 await conn.commit()
@@ -59,8 +59,7 @@ class AppealsRelatedCache(GuildDataRelatedCache):
                         data.appeal_num,
                         data.user_id,
                         data.timestamp,
-                        data.type
-
+                        data.type,
                     ),
                 )  # TODO: test
 

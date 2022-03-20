@@ -91,7 +91,9 @@ class DebugCog(HelperCog):
         else:
             return
 
-    async def cog_slash_command_check(self, inter: disnake.ApplicationCommandInteraction):
+    async def cog_slash_command_check(
+        self, inter: disnake.ApplicationCommandInteraction
+    ):
         """A check that makes sure only bot owners can use this cog!"""
         if not await self.bot.is_owner(inter.author):
             raise commands.CheckFailure("You don't own this bot!")
@@ -115,6 +117,7 @@ class DebugCog(HelperCog):
             raise commands.CheckFailure("You don't own this bot!")
         except AttributeError:
             raise commands.CheckFailure("You don't own this bot!")
+        raise commands.CheckFailure("Uh oh!")
 
     @checks.has_privileges(trusted=True)
     @commands.is_owner()
@@ -148,7 +151,9 @@ class DebugCog(HelperCog):
             return await inter.send(
                 "Neither owner_id or owner_ids is defined... exiting!"
             )
-        if not await self.bot.is_owner(inter.author) or not commands.is_owner().predicate(inter):
+        if not await self.bot.is_owner(
+            inter.author
+        ) or not commands.is_owner().predicate(inter):
             return await inter.send("You don't own this bot")
 
         try:

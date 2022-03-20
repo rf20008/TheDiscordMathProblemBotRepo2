@@ -1,12 +1,14 @@
 from typing import *
 from enum import Enum
 
+
 class AppealType(Enum):
     BLACKLIST_APPEAL = 0
     GUILD_BLACKLIST_APPEAL = 1
     SUPPORT_SERVER_BAN = 2
     SUPPORT_SERVER_MISC_PUNISHMENT = 3
-    OTHER=4
+    OTHER = 4
+
 
 class Appeal:
     __slots__ = (
@@ -16,7 +18,7 @@ class Appeal:
         "appeal_num",
         "cache",
         "special_id",
-        "type"
+        "type",
     )
 
     def __init__(
@@ -28,7 +30,7 @@ class Appeal:
         appeal_num: int,
         special_id: int,
         cache: "MathProblemCache",
-        type: int
+        type: int,
     ):
         try:
             self.type = AppealType(type)
@@ -49,7 +51,7 @@ class Appeal:
             timestamp=data["timestamp"],
             appeal_num=data["appeal_num"],
             special_id=data["special_id"],
-            type=data['type'],
+            type=data["type"],
             cache=cache,
         )
 
@@ -60,7 +62,7 @@ class Appeal:
             "timestamp": self.timestamp,
             "appeal_num": self.appeal_num,
             "special_id": self.special_id,
-            'appeal_type': str(self.type.name)
+            "appeal_type": str(self.type.name),
         }
 
     def __str__(self):
