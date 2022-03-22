@@ -1,4 +1,6 @@
 # Terms & Conditions
+
+Last modified: Mar 22, 2022 AD 
 Disclaimer: I am not a lawyer. If you want legal advice, please ask a real lawyer.
 
 Most of this language should be self-explanatory. Please create an issue if it isn't!
@@ -33,12 +35,13 @@ The trusted users/guild administrators (if the problem isn't global) also have t
 ### LIABILITY DISCLAIMER
 
 I'm not liable for the content this bot shows you as I do not produce it. 
-Sometimes I shut my bot off for development purposes (if I do, I usually notify you), but otherwise I'm not liable to anyone for that too. 
+Sometimes I shut my bot off for development purposes (if I do, I usually notify you), but otherwise I'm not liable to anyone for that too.
 I try to get rid of bugs, but I'm not liable for them if they occur. However, in most serious cases, the law would supersede this.  
-(In some places, I'm not allowed to legally disclaim liability. If you live in such a place, please ignore this section.)
-(In some scenarios, laws might supersede this policy. In those cases, I will still be liable. This is the case if there is no plausible interpretation of the law that says I am not liable to you. In those cases, I am still liable.)
+I will be liable by errors on my part (it's not your fault, and also it's required by law.)
 
-In most serious scenarios, the law would supersede this policy. I would still be liable in those cases.
+(In some places, I'm not allowed to legally disclaim liability. If you live in such a place, please ignore this section.)
+### Small disclaimer
+In some scenarios, laws might supersede this policy. In those cases, I will still be liable. This is the case if there is no plausible interpretation of the law that says I am not liable to you. In those cases, I am still liable.
 
 ### COPYRIGHT DISCLAIMER
 
@@ -46,15 +49,16 @@ When you submit a problem, quiz, etc. to this bot, you (the user of the bot) giv
 
 ## When the law complicates stuff
 
-When the law complicates stuff & it invalidates parts of these Terms, only the smallest part that, when removed, makes the law not complicate stuff and makes the rest of the Terms invalid, will be removed from the Terms.
+When the law complicates stuff and invalidates parts of these Terms, only the smallest part that, when removed, makes the law not complicate stuff and makes the rest of the Terms invalid will be removed from the Terms.
+(This T.O.S. is governed by the laws of Massachusetts and U.S. law, and other laws that may exist.)
 
 Inspiration: https://arcane.bot/tos
 
 If this is not allowed, the above section is rendered null. If it's rendered null, when the law complicates stuff, it will be handled on a case-by-case basis instead.
 ## Changes to the Terms
 
-I may change the Terms at any time and for any reason. We won't notify you individually (because we don't store contact data about you with the express purpose of contacting you). However, we might use the bot's status/the official server/other ways to notify you.
-
+I may change the Terms at any time and for any reason. 
+We won't notify you individually (because we don't store contact data about you with the express purpose of contacting you). However, we might use the bot's status/the official server/other ways to notify you.
 However, when the changes are significant, we will notify you, as required by U.S. law.
 
 ### Suggestions to the TOS
@@ -63,7 +67,8 @@ Suggestions to this are welcome (as of right now)! If you make any TOS changes t
 
 ## A disclaimer because of GPLv3
 
-These Terms shall not be construed to prevent you from doing anything that the GPLv3 License allows you to do.  
+These Terms shall not be construed to prevent you from doing anything that the GPLv3 License allows you to do.
+(Basically, I'm not preventing you from doing anything that the GPLv3 allows you to do as the GPLv3 license's terms say that I cannot impose restrictions on code sharing.)
 
 ## Contributions/ Derivatives / Forks of the project
 

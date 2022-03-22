@@ -48,11 +48,11 @@ class AppealsCog(HelperCog):
         ]
         reason: str = ""
 
-        async def callback(s, inter: disnake.ModalInteraction):
+        async def callback(s, modal_inter: disnake.ModalInteraction):
             s.view.stop()
             nonlocal reason
-            reason = inter.text_values[unblacklist_custom_id]
-            await inter.send("Thanks! I'm now going to add this to the database :)")
+            reason = modal_inter.text_values[unblacklist_custom_id]
+            await modal_inter.send("Thanks! I'm now going to add this to the database :)")
 
         modal = MyModal(
             callback=callback,
@@ -71,6 +71,7 @@ class AppealsCog(HelperCog):
         # Create an appeal
         # find the appeal
         highest_appeal_num = 0
+        await self.bot.cache.update_cache()
         for appeal in self.cache.cached_appeals:
             if appeal.user_id != inter.author.id:
                 continue
