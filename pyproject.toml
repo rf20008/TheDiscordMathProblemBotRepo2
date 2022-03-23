@@ -14,7 +14,7 @@ discord = "^1.7.3"
 discord-py-slash-command = "^3.0.1"
 nextcord = "^2.0.0-alpha.1"
 
-python = "^3.8"
+python = "^3.10"
 python-dotenv = "^0.19.2"
 typing-extensions = "^3.10.0"
 "mysql-connector-python" = "^8.0.27"

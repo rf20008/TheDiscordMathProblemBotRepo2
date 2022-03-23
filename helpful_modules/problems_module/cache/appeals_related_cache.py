@@ -6,6 +6,8 @@ import aiosqlite
 from ...dict_factory import dict_factory
 from ..appeal import Appeal
 from ..mysql_connector_with_stmt import *
+from aiomysql import DictCursor
+import aiomysql
 from ..mysql_connector_with_stmt import mysql_connection
 
 from .guild_data_related_cache import GuildDataRelatedCache
@@ -41,8 +43,8 @@ class AppealsRelatedCache(GuildDataRelatedCache):
                 await conn.commit()
         else:
             with self.get_a_connection() as connection:
-                cursor = connection.cursor()
-                cursor.execute(
+                cursor = await connection.cursor(DictCursor)
+                await cursor.execute(
                     """INSERT INTO appeals (special_id, appeal_str, appeal_num, user_id, timestamp,type) 
                     VALUES (%s,%s,%s,%s,%s,%s) 
                     ON DUPLICATE KEY UPDATE 
@@ -84,13 +86,13 @@ class AppealsRelatedCache(GuildDataRelatedCache):
                         "There were too many rows with the same special id in the appeals table!"
                     )
         else:
-            with self.get_a_connection() as connection:
-                cursor = connection.cursor(dictionaries=True)
+            async with self.get_a_connection() as connection:
+                cursor = await connection.cursor(DictCursor)
 
-                cursor.execute(
+                await cursor.execute(
                     "SELECT * FROM appeals WHERE special_id = %s", (special_id,)
                 )
-                results = list(cursor.fetchall())
+                results = list(await cursor.fetchall())
                 if len(results) == 0:
                     return default
                 elif len(results) == 1:

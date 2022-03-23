@@ -6,6 +6,8 @@ from copy import copy, deepcopy
 from types import FunctionType
 from typing import *
 
+from aiomysql import DictCursor
+import aiomysql
 import aiosqlite
 import disnake
 
@@ -62,9 +64,9 @@ class UserDataRelatedCache(QuizRelatedCache):
                         f"Too much user data; found {len(cursor_results)} results; expected either 1 or 0"
                     )
         else:
-            with self.get_a_connection() as connection:
+            async with self.get_a_connection() as connection:
                 log.debug("Connected to MySQL")
-                cursor = connection.cursor(dictionaries=True)
+                cursor = await connection.cursor(DictCursor)
                 cursor.execute(
                     "SELECT * FROM user_data WHERE USER_ID=%s",
                     (user_id,),  # TODO: fix placeholders

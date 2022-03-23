@@ -1127,8 +1127,8 @@ class MiscCommandsCog(HelperCog):
         await inter.send(view=view)
         msg = await inter.original_message()
         try:
-            _ = bot.wait_for(
-                "on_button", check=lambda i: i.author.id == inter.author.id
+            _ = await bot.wait_for(
+                "button_click", check=lambda i: i.author.id == inter.author.id, timeout=120
             )
         except asyncio.TimeoutError:
             view.stop()

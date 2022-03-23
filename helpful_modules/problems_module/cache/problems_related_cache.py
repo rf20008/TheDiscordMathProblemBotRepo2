@@ -5,10 +5,11 @@ import typing
 import warnings
 from copy import copy, deepcopy
 from types import FunctionType
-from typing import *
+from typing import Optional, List, Union
 
 import aiosqlite
 import disnake
+import aiomysql
 
 from helpful_modules.dict_factory import dict_factory
 from helpful_modules.threads_or_useful_funcs import get_log
@@ -68,11 +69,6 @@ class ProblemsRelatedCache(MiscRelatedCache):
         self, guild_id: typing.Optional[int], problem_id: int
     ) -> BaseProblem:
         """Gets the problem with this guild id and problem id. If the problem is not found, a ProblemNotFound exception will be raised."""
-        # This isn't working
-        # Possible causes:
-        # The item is of the wrong type
-        # Wrong database/table / a SQL feature that I didn't know about
-        # Searching by NULL
         log.debug(
             f"Type of guild_id & problem_id: guild_id: {type(guild_id)} {guild_id}, problem_id: {type(problem_id)} {problem_id}"
         )
@@ -138,12 +134,12 @@ class ProblemsRelatedCache(MiscRelatedCache):
                         row = rows[0]
                     return BaseProblem.from_row(row, cache=copy(self))
             else:
-                with self.get_a_connection() as connection:
-                    cursor = connection.cursor(dictionaries=True)
-                    cursor.execute(
+                async with self.get_a_connection() as connection:
+                    cursor = connection.cursor(aiomysql.DictCursor)
+                    await cursor.execute(
                         "SELECT * from problems WHERE problem_id = %s", (problem_id,)
                     )  # Get the problem
-                    rows = cursor.fetchall()
+                    rows = await cursor.fetchall()
                     if len(rows) == 0:
                         raise ProblemNotFound("Problem not found!")
                     elif len(rows) > 1:
@@ -169,7 +165,7 @@ class ProblemsRelatedCache(MiscRelatedCache):
     ) -> typing.Dict[int, BaseProblem]:
         if not isinstance(guild_id, int) and guild_id is not None:
             raise AssertionError
-
+        await self.update_cache()
         if guild_id is None:
             return await self.get_global_problems()
         try:
@@ -189,11 +185,8 @@ class ProblemsRelatedCache(MiscRelatedCache):
         if kwargs is None:
             kwargs = {}
         await self.update_cache()
-        guild_problems = []
-        for item in self.guild_problems.values():
-            guild_problems.extend(
-                item.values()
-            )  # This could be a list comprehension (but it creates the list of guild problems)
+        guild_problems = [item.values() for item in self.guild_problems.values()]  # Creates the list of guild problems
+
         global_problems_that_meet_the_criteria = [
             problem
             for problem in self.global_problems.values()
@@ -308,8 +301,8 @@ class ProblemsRelatedCache(MiscRelatedCache):
                 await conn.commit()
             return problem
         else:
-            with self.get_a_connection() as connection:
-                cursor = connection.cursor(dictionaries=True)
+            async with self.get_a_connection() as connection:
+                cursor = await connection.cursor(aiomysql.DictCursor)
                 await cursor.execute(
                     """INSERT INTO problems (guild_id, problem_id, question, answer, voters, solvers, author)
                 VALUES (%s,%s,%s,%b,%b,%b,%s)""",
@@ -377,13 +370,13 @@ class ProblemsRelatedCache(MiscRelatedCache):
                 await conn.commit()
 
         else:
-            with self.get_a_connection() as connection:
-                cursor = connection.cursor(dictionaries=True)
-                cursor.execute(
+            async with self.get_a_connection() as connection:
+                cursor = connection.cursor(aiomysql.DictCursor)
+                await cursor.execute(
                     "DELETE FROM problems WHERE problem_id = %s",
                     (problem_id,),
                 )  # The actual deletion
-                connection.commit()
+                await connection.commit()
                 try:
                     del self.guild_problems[guild_id][
                         problem_id
@@ -406,12 +399,12 @@ class ProblemsRelatedCache(MiscRelatedCache):
                 ]
                 await conn.commit()
         else:
-            with self.get_a_connection() as connection:
-                cursor = connection.cursor(dictionaries=True)
+            async with self.get_a_connection() as connection:
+                cursor = await connection.cursor(aiomysql.DictCursor)
                 await cursor.execute("SELECT * FROM Problems")
                 all_problems = [
                     BaseProblem.from_row(row, cache=copy(self))
-                    for row in cursor.fetchall()
+                    for row in await cursor.fetchall()
                 ]
         for problemA in range(len(all_problems)):
             for problemB in range(len(all_problems)):
@@ -423,7 +416,7 @@ class ProblemsRelatedCache(MiscRelatedCache):
                     )  # Delete the problem
 
     async def get_guilds(
-        self, bot: disnake.ext.commands.Bot = None
+        self, bot: Optional[disnake.ext.commands.Bot] = None
     ) -> List[Union[int, Optional[disnake.Guild]]]:
         """Get the guilds (due to using sql, it must return the guild id, bot is needed to return guilds. takes O(n) time)"""
         try:
@@ -489,9 +482,9 @@ class ProblemsRelatedCache(MiscRelatedCache):
                     ),
                 )
         else:
-            with self.get_a_connection() as connection:
-                cursor = connection.cursor(dictionaries=True)
-                cursor.execute(
+            async with self.get_a_connection() as connection:
+                cursor = await connection.cursor(dictionaries=True)
+                await cursor.execute(
                     """UPDATE problems 
                     SET guild_id = '%s', problem_id = '%s', question = %s, answer = %s, voters = %s, solvers = %s, author = '%s'
                     WHERE AND problem_id = '%s'""",

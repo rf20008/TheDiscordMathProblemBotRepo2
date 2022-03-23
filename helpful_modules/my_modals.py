@@ -5,7 +5,7 @@ from .threads_or_useful_funcs import base_on_error
 
 
 class MyModal(Modal):
-    """A wrapper around disnake.Modal that allows passing in a custom callback :_)"""
+    """A wrapper around disnake.Modal that allows passing in a custom callback :-)"""
 
     def __init__(self, *args, **kwargs):
         async def default_callback(modal_inter):

@@ -11,6 +11,7 @@ from typing import *
 import aiosqlite
 import disnake
 from mysql.connector import MySQLConnection
+import aiomysql
 
 from helpful_modules.dict_factory import dict_factory
 from helpful_modules.threads_or_useful_funcs import get_log
@@ -50,22 +51,13 @@ class MiscRelatedCache:
     ):
         """Create a new MathProblemCache. The arguments should be self-explanatory.
         Many methods are async!"""
-        if not use_sqlite:
-            self._pool = mysql.connector.pooling.MySQLConnectionPool(
-                pool_name="BotPool1",
-                pool_size=pool_size,
-                host=mysql_db_ip,
-                username=mysql_username,
-                password=mysql_password,
-                database=mysql_db_name,
-            )
-
         self.cached_submissions_organized_by_dict = None
         log.info("Initializing the MathProblemCache object.")
         # make_sql_table([], db_name = sql_dict_db_name)
         # make_sql_table([], db_name = "MathProblemCache1.db", table_name="kv_store")
         if use_sqlite:
             warnings.warn("Sqlite has been deprecated. Use MySQL instead.")
+        self._pool = None
         self.db_name = db_name
         self.db = db_name
         if warnings_or_errors not in ["warnings", "errors"]:
@@ -108,28 +100,42 @@ class MiscRelatedCache:
         self.cached_guild_data = {}
         self.cached_appeals = {}
 
-    def _request_connection(self) -> typing.Optional[MySQLConnection]:
+    async def create_pool(self):
+        self._pool = await aiomysql.create_pool(
+            minsize=5,
+            maxsize=30,
+            host=mysql_db_ip,
+            username=mysql_username,
+            password=mysql_password,
+            database=mysql_db_name
+        )
+        return self._pool
+    async def _request_connection(self) -> typing.Optional[aiomysql.Connection]:
         """Request a connection from my internal pool. I will raise exceptions (including PoolError's if there are no more connections in the pool)"""
+
         if self.use_sqlite:
             raise MathProblemsModuleException("I don't use MySQL!")
 
+        if not hasattr(self, '_pool') or getattr(self, '_pool') is None:
+            await self.create_pool()
+
         try:
-            return self._pool.get_connection()
+            return await self._pool.acquire()
         except PoolError:
             try:
-                self._pool.add_connection()
-                return self._pool.get_connection()
+                await self._pool.add_connection()
+                return await self._pool.get_connection()
             except PoolError as pe2:
                 raise NoConnectionException(
                     "Pool full, and all connections are used"
                 ) from pe2
 
-    @contextlib.contextmanager
-    def get_a_connection(self):
+    @contextlib.asynccontextmanager
+    async def get_a_connection(self) -> typing.AsyncGenerator[aiomysql.Pool, None]:
         if self.use_sqlite:
             raise MathProblemsModuleException("MySQL is not used")
         try:
-            conn = self._request_connection()
+            conn = await self._request_connection()
         except NoConnectionException as exc:
             raise NoConnectionException(
                 "I couldn't get a connection from my internal pool! This is because I'm too popular!!!"
@@ -138,8 +144,9 @@ class MiscRelatedCache:
         try:
             yield conn
         finally:
-            conn.commit()
-            conn.close()
+            await conn.commit()
+            await conn.close()
+            self._pool.release(conn)
             return
 
     async def update_cache(self: "MathProblemCache") -> None:
@@ -217,10 +224,10 @@ class MiscRelatedCache:
                         appeals[appeal.special_id] = appeal
 
         else:
-            with self.get_a_connection() as connection:
-                cursor = connection.cursor(dictionaries=True)
-                cursor.execute("SELECT * FROM problems")  # Get all problems
-                for row in cursor.fetchall():
+            async with self.get_a_connection() as connection:
+                cursor = await connection.cursor(aiomysql.DictCursor)
+                await cursor.execute("SELECT * FROM problems")  # Get all problems
+                for row in await cursor.fetchall():
                     problem = BaseProblem.from_row(row, cache=copy(self))
                     if (
                         problem.guild_id not in guild_ids
@@ -235,8 +242,8 @@ class MiscRelatedCache:
                         raise SQLException(
                             "An error occurred while assigning the problem..."
                         ) from e
-                cursor.execute("SELECT * FROM quizzes")  # Get all quiz problems
-                for row in cursor.fetchall():
+                await cursor.execute("SELECT * FROM quizzes")  # Get all quiz problems
+                for row in await cursor.fetchall():
                     quiz_problem = QuizProblem.from_row(
                         row, cache=copy(self)
                     )  # Turn the quiz problems into QuizProblem objects
@@ -249,8 +256,8 @@ class MiscRelatedCache:
                             quiz_problem
                         ]  # New quiz!
                 # Similar log for quiz submissions
-                cursor.execute("SELECT submissions from quiz_submissions")
-                for row in cursor.fetchall():
+                await cursor.execute("SELECT submissions from quiz_submissions")
+                for row in await cursor.fetchall():
                     submission = QuizSubmission.from_dict(
                         pickle.loads(row["submission"]), cache=copy(self)
                     )
@@ -258,16 +265,16 @@ class MiscRelatedCache:
                         quiz_submissions_dict[submission.quiz_id].append(submission)
                     except KeyError:
                         quiz_submissions_dict[submission.quiz_id] = [submission]
-                cursor.execute("SELECT * FROM quiz_submission_sessions")
-                for _row in cursor.fetchall():
+                await cursor.execute("SELECT * FROM quiz_submission_sessions")
+                for _row in await cursor.fetchall():
                     session = QuizSolvingSession.from_sqlite_dict(_row, cache=self)
                     try:
                         quiz_sessions_dict[session.quiz_id].append(session)
                     except KeyError:
                         quiz_sessions_dict[session.quiz_id] = [session]
 
-                cursor.execute("SELECT * FROM user_data")
-                for row in cursor.fetchall():
+                await cursor.execute("SELECT * FROM user_data")
+                for row in await cursor.fetchall():
                     data = UserData.from_dict(row)
                     user_id_dict[data.user_id] = data
                 cursor.execute("SELECT * FROM guild_data")
@@ -275,7 +282,7 @@ class MiscRelatedCache:
                 for row in cursor.fetchall():
                     data = GuildData.from_dict(row, cache=self)
                     guild_data_dict[data.guild_id] = data
-                cursor.execute("SELECT * FROM appeals")
+                await cursor.execute("SELECT * FROM appeals")
                 for row in await cursor.fetchall():
                     appeal = Appeal.from_dict(row, cache=self)
                     appeals[appeal.special_id] = appeal
@@ -395,48 +402,48 @@ class MiscRelatedCache:
                 ]
 
         else:
-            with self.get_a_connection() as connection:
-                cursor = connection.cursor(dictionaries=True)
-                cursor.execute(
+            async with self.get_a_connection() as connection:
+                cursor = await connection.cursor(aiomysql.DictCursor)
+                await cursor.execute(
                     "SELECT * FROM quizzes WHERE author = '%s'", (author_id,)
                 )
                 quiz_problems = [
                     QuizProblem.from_row(row, cache=copy(self))
                     for row in cursor.fetchall()
                 ]
-                cursor.execute(
+                await cursor.execute(
                     "SELECT submissions FROM quiz_submissions WHERE user_id = '%s'",
                     (author_id,),
                 )
                 quiz_submissions = [
                     QuizSubmission.from_dict(submission, cache=copy(self))
                     for submission in [
-                        pickle.loads(item["submissions"]) for item in cursor.fetchall()
+                        pickle.loads(item["submissions"]) for item in await cursor.fetchall()
                     ]
                 ]
-                cursor.execute(
+                await cursor.execute(
                     "SELECT * FROM problems WHERE author = '%s'", (author_id,)
                 )
                 problems = [
                     BaseProblem.from_dict(item, cache=copy(self))
-                    for item in cursor.fetchall()
+                    for item in await cursor.fetchall()
                 ]
-                cursor.execute(
+                await cursor.execute(
                     "SELECT * FROM quiz_submission_sessions WHERE author = %s",
                     (user_id,),
                 )
                 sessions = [
                     QuizSolvingSession.from_mysql_dict(cache=self, dict=item)
-                    for item in cursor.fetchall()
+                    for item in await cursor.fetchall()
                 ]
-                cursor.execute(
+                await cursor.execute(
                     "SELECT * FROM quiz_description WHERE author = ?", (user_id,)
                 )
                 descriptions = [
                     QuizDescription.from_dict(cache=self, data=data)
-                    for data in cursor.fetchall()
+                    for data in await cursor.fetchall()
                 ]
-                cursor.execute("SELECT * FROM appeals WHERE user_id = %s", (author_id,))
+                await cursor.execute("SELECT * FROM appeals WHERE user_id = %s", (author_id,))
                 appeals = [
                     Appeal.from_dict(data, cache=self)
                     for data in await cursor.fetchall()
@@ -479,22 +486,22 @@ class MiscRelatedCache:
                 cursor.execute("DELETE FROM appeals WHERE user_id=?", (user_id,))
                 await conn.commit()  # Otherwise, nothing happens and it rolls back!!
         else:
-            with self.get_a_connection() as connection:
-                cursor = connection.cursor(dictionaries=True)
-                cursor.execute("DELETE FROM problems WHERE author = '%s'", (user_id,))
-                cursor.execute("DELETE FROM quizzes WHERE author = '%s'", (user_id,))
-                cursor.execute(
+            async with self.get_a_connection() as connection:
+                cursor =await connection.cursor(aiomysql.DictCursor)
+                await cursor.execute("DELETE FROM problems WHERE author = '%s'", (user_id,))
+                await cursor.execute("DELETE FROM quizzes WHERE author = '%s'", (user_id,))
+                await cursor.execute(
                     "DELETE FROM quiz_submissions WHERE author = '%s'", (user_id,)
                 )
-                cursor.execute(
+                await cursor.execute(
                     "DELETE FROM quiz_submission_sessions WHERE author = %s", (user_id,)
                 )
-                cursor.execute(
+                await cursor.execute(
                     "DELETE FROM quiz_description WHERE author = %s", (user_id,)
                 )
-                cursor.execute("DELETE FROM user_data WHERE user_id=%s", (user_id,))
-                cursor.execute("DELETE FROM appeals WHERE user_id=%s", (user_id,))
-                connection.commit()
+                await cursor.execute("DELETE FROM user_data WHERE user_id=%s", (user_id,))
+                await cursor.execute("DELETE FROM appeals WHERE user_id=%s", (user_id,))
+                await connection.commit()
 
     async def delete_all_by_guild_id(self, guild_id: int) -> None:
         """Delete all data stored by a given guild. This deletes all problems & quizzes & quiz submissions under that guild!"""
@@ -527,28 +534,28 @@ class MiscRelatedCache:
                 )
                 await conn.commit()  # Otherwise, nothing happens!
         else:
-            with self.get_a_connection() as connection:
-                cursor = connection.cursor(dictionaries=True)
-                cursor.execute(
+            async with self.get_a_connection() as connection:
+                cursor = await connection.cursor(aiomysql.DictCursor)
+                await cursor.execute(
                     "DELETE FROM problems WHERE guild_id = %s", (guild_id,)
                 )  # Remove all guild problems from this guild
-                cursor.execute(
+                await cursor.execute(
                     "DELETE FROM quizzes WHERE guild_id = %s", (guild_id,)
                 )  # Remove all quizzes from the guild
-                cursor.execute(
+                await cursor.execute(
                     "DELETE FROM quiz_submissions WHERE guild_id = %s", (guild_id,)
                 )  # Remove all quiz submissions as well
-                cursor.execute(
+                await cursor.execute(
                     "DELETE FROM quiz_submission_sessions WHERE guild_id = %s",
                     (guild_id,),
                 )
-                cursor.execute(
+                await cursor.execute(
                     "DELETE FROM quiz_description WHERE guild_id = %s", (guild_id,)
                 )
-                cursor.execute(
+                await cursor.execute(
                     "DELETE FROM guild_data WHERE guild_id = %s", (guild_id,)
                 )
-                connection.commit()
+                await connection.commit()
 
     def __bool__(self):
         """Return bool(self)"""
@@ -570,15 +577,10 @@ class MiscRelatedCache:
                 await conn.commit()
                 return await cursor.fetchall()
         else:
-            with mysql_connection(
-                host=self.mysql_db_ip,
-                password=self.mysql_password,
-                user=self.mysql_username,
-                database=self.mysql_db_name,
-            ) as connection:
-                cursor = connection.cursor(dictionaries=True)
-                cursor.execute(sql, placeholders)
-                connection.commit()
+            async with self.get_a_connection() as connection:
+                cursor = await connection.cursor(aiomysql.DictCursor)
+                await cursor.execute(sql, placeholders)
+                await connection.commit()
                 return cursor.fetchall()
 
     async def initialize_sql_table(self):
@@ -688,10 +690,10 @@ class MiscRelatedCache:
                 await conn.commit()  # Otherwise, when this closes, the database just reverted!
                 log.debug("Saved!")
         else:
-            with self.get_a_connection() as connection:
-                cursor = connection.cursor(dictionaries=True)
+            async with self.get_a_connection() as connection:
+                cursor = await connection.cursor(aiomysql.DictCursor)
                 log.debug("Created cursor")
-                cursor.execute(
+                await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS problems (
                         guild_id BIGINT,
                         problem_id BIGINT NOT NULL,
@@ -704,7 +706,7 @@ class MiscRelatedCache:
                 )  # Blob types will be compiled with pickle.loads() and pickle.dumps() (they are lists)
                 # author: int = user_id
                 log.debug("Created problems table!")
-                cursor.execute(
+                await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS quizzes (
                     guild_id BIGINT,
                     quiz_id BIGINT NOT NULL PRIMARY KEY,
@@ -717,7 +719,7 @@ class MiscRelatedCache:
                 )"""
                 )
                 log.debug("Created quizzes table")
-                cursor.execute(
+                await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS quiz_submissions (
                     guild_id BIGINT,
                     quiz_id BIGINT NOT NULL,
@@ -727,14 +729,14 @@ class MiscRelatedCache:
                 )  # as dictionary
                 # Used to store submissions
                 log.debug("Created submissions table")
-                cursor.execute(
+                await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS user_data (
                     user_id INT,
                     trusted BOOLEAN DEFAULT false,
                     blacklisted BOOLEAN DEFAULT false
                     )"""
                 )
-                cursor.execute(
+                await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS quiz_submission_sessions (
                     quiz_id INT NOT NULL,
                     user_id INT NOT NULL,
@@ -748,7 +750,7 @@ class MiscRelatedCache:
                     is_finished INT
                     )"""
                 )
-                cursor.execute(
+                await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS quiz_description ("
                                description VARCHAR,
                                quiz_id INT PRIMARY KEY,
@@ -762,7 +764,7 @@ class MiscRelatedCache:
                                )
                                """
                 )
-                cursor.execute(
+                await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS guild_data (
                     blacklisted INT,
                     guild_id INT PRIMARY KEY,
@@ -772,7 +774,7 @@ class MiscRelatedCache:
                     )
                     """
                 )
-                cursor.execute(
+                await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS appeals (
                     special_id VARCHAR PRIMARY KEY,
                     appeal_str VARCHAR,
@@ -785,5 +787,8 @@ class MiscRelatedCache:
                 # TODO: test whether SQL can serialize enums
                 # I don't know whether SQL can serialize enums
                 log.debug("Created user data table")
-                connection.commit()
+                await connection.commit()
                 log.debug("Saved tables!")
+
+# TODO: finish the migrating to await
+

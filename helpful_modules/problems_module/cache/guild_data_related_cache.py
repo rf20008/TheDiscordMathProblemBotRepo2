@@ -6,6 +6,8 @@ import aiosqlite
 from ...dict_factory import dict_factory
 from ..GuildData.guild_data import GuildData
 from ..mysql_connector_with_stmt import *
+from aiomysql import DictCursor
+import aiomysql
 from ..mysql_connector_with_stmt import mysql_connection
 from .permissions_required_related_cache import PermissionsRequiredRelatedCache
 
@@ -37,9 +39,9 @@ class GuildDataRelatedCache(PermissionsRequiredRelatedCache):
                 )  # TODO: test
                 await conn.commit()
         else:
-            with self.get_a_connection() as connection:
-                cursor = connection.cursor()
-                cursor.execute(
+            async with self.get_a_connection() as connection:
+                cursor = await connection.cursor(DictCursor)
+                await cursor.execute(
                     """INSERT INTO guild_data (guild_id, blacklisted, can_create_problems_check, can_create_quizzes_check, mod_check)
                     VALUES (%s, %s, %s, %s, %s)
                     ON DUPLICATE KEY UPDATE
@@ -79,13 +81,13 @@ class GuildDataRelatedCache(PermissionsRequiredRelatedCache):
                         "There were too many rows with the same guild id in guild data"
                     )
         else:
-            with self.get_a_connection() as connection:
-                cursor = connection.cursor(dictionaries=True)
+            async with self.get_a_connection() as connection:
+                cursor = await connection.cursor(DictCursor)
 
                 await cursor.execute(
                     "SELECT * FROM guild_data WHERE guild_id = %s", (guild_id,)
                 )
-                results = list(cursor.fetchall())
+                results = list(await cursor.fetchall())
                 if len(results) == 0:
                     return default
                 elif len(results) == 1:
