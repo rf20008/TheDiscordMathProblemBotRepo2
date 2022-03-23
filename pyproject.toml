@@ -9,17 +9,21 @@ description = "An open source discord bot for quizzes!"
 name = "thediscordmathproblembot"
 version = "0.0.8a1"
 [tool.poetry.dependencies]
-aiosqlite = {git = "https://github.com/omnilib/aiosqlite.git", rev = "main"}
+aiofiles = "^0.8.0"
 discord = "^1.7.3"
 discord-py-slash-command = "^3.0.1"
+mysql-connector-python = "^8.0.27"
 nextcord = "^2.0.0-alpha.1"
-
-python = "^3.10"
+python = "^3.8"
 python-dotenv = "^0.19.2"
 typing-extensions = "^3.10.0"
-"mysql-connector-python" = "^8.0.27"
-"betterstatcord.py" = {git = "https://github.com/Iapetus-11/betterstatcord.py.git", rev = "main"}
-aiofiles = "^0.8.0"
+aiomysql = "^0.0.22"
+[tool.poetry.dependencies.aiosqlite]
+git = "https://github.com/omnilib/aiosqlite.git"
+rev = "main"
+[tool.poetry.dependencies."betterstatcord.py"]
+git = "https://github.com/Iapetus-11/betterstatcord.py.git"
+rev = "main"
 [tool.poetry.dependencies.disnake]
 git = "https://github.com/DisnakeDev/disnake.git"
 [tool.poetry.dependencies.orjson]
