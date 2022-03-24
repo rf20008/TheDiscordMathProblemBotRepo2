@@ -7,6 +7,7 @@ from helpful_modules import problems_module, checks
 from helpful_modules.problems_module import *
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.my_modal import MyModal
+from .grading_views_and_ui_components import GradingQuizView, GradingModal
 
 
 class GradingQuizzesCog(HelperCog):
@@ -57,7 +58,7 @@ class GradingQuizzesCog(HelperCog):
         description="View the users who submitted submissions to this quiz",
     )
     async def view_submission_users(
-        self, inter, quiz_id: int = commands.Param(large=True)
+            self, inter, quiz_id: int = commands.Param(large=True)
     ) -> typing.Optional[typing.Union[disnake.InteractionMessage, disnake.Message]]:
         """/quiz_grade view_submission_users
 
@@ -87,13 +88,13 @@ class GradingQuizzesCog(HelperCog):
 
     @quiz_grade.sub_command(name="manual_grade", description="Manually grade quizzes")
     async def manual_grade(
-        self,
-        inter: disnake.ApplicationCommandInteraction,
-        quiz_id: int = commands.Param(description="The quiz to grade"),
-        user: disnake.User = commands.Param(description="The user to grade"),
-        attempt_num: int = commands.Param(
-            description="The attempt number to grade (defaults to 0)", le=0
-        ),
+            self,
+            inter: disnake.ApplicationCommandInteraction,
+            quiz_id: int = commands.Param(description="The quiz to grade"),
+            user: disnake.User = commands.Param(description="The user to grade"),
+            attempt_num: int = commands.Param(
+                description="The attempt number to grade (defaults to 0)", le=0
+            ),
     ):
         """/quiz_grade manual_grade
 
@@ -113,8 +114,8 @@ class GradingQuizzesCog(HelperCog):
             submission
             for submission in quiz.submissions
             if submission.user_id == user.id
-            and submission.attempt_num == attempt_num
-            and submission.done
+               and submission.attempt_num == attempt_num
+               and submission.done
         ]
         if user_submissions is []:
             return await inter.send(
@@ -122,8 +123,18 @@ class GradingQuizzesCog(HelperCog):
                 + attempt_num
                 + " !"
             )
-        user_submission = user_submissions[0]
-        for submission in user_submission.answers:
+        submission = user_submissions[0]
+        qn = 0
+        for question_num in range(len(quiz.problems)):
+
+            try:
+                question = quiz.problems[question_num]
+            except KeyError:
+                break
+
+            if question.is_written:
+                break
+            qn = question_num
             if quiz.problems[submission.problem_id].is_written is False:
                 # Automatically grade
                 if submission.answer in quiz_problems[submission.problem_id].answers:
@@ -132,6 +143,15 @@ class GradingQuizzesCog(HelperCog):
                     submission.reasoning = (
                         "Matched one of the specified correct answers"
                     )
-            else:
-                # Send a modal
-                raise NotImplementedError
+
+        view = GradingQuizView(
+            quiz_id=quiz_id,
+            user_id=user_id,
+            bot=self.bot,
+            attempt_num=attempt_num,
+            problem_num=qn,
+            grader_user_id=inter.author.id,
+            timeout=600
+        )
+        await inter.send(view=view, content="Click a button to grade!")
+        raise NotImplementedError("This part of the logic is not yet implemented!")
