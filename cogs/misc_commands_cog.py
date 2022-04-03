@@ -35,6 +35,7 @@ CAN_SEND_MESSAGES_TO = (
 )
 GUILD_DATA_DELETION_TIMEOUT = 250
 
+# TODO: Split this into different cogs for readability purpose
 
 class MiscCommandsCog(HelperCog):
     def __init__(self, bot: TheDiscordMathProblemBot):
