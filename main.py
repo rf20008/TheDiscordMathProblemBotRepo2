@@ -17,6 +17,7 @@ from sys import exc_info, exit, stdout
 
 # Imports - My own files
 from disnake.ext import commands
+import disnake
 
 from cogs import *
 from helpful_modules import (
@@ -35,7 +36,7 @@ from helpful_modules.threads_or_useful_funcs import *
 # Imports - 3rd party
 
 if (
-        not __debug__
+    not __debug__
 ):  # __debug__ must be true for the bot to run (because assert statements)
     exit("__debug__ must be True for the bot to run! (Don't run with -o or -OO)")
 del exit
@@ -143,8 +144,8 @@ def get_git_revision_hash() -> str:
     """A method that gets the git revision hash. Credit to https://stackoverflow.com/a/21901260 for the code :-)"""
     return (
         subprocess.check_output(["git", "rev-parse", "HEAD"])
-            .decode("ascii")
-            .strip()[:7]
+        .decode("ascii")
+        .strip()[:7]
     )  # [7:] is here because of the commit hash, the rest of this function is from stack overflow
 
 
@@ -240,9 +241,9 @@ async def on_connect():
         guild.id for guild in bot.guilds
     ]  # The guild_ids of the guilds that the bot is in
     for (
-            guild_id
+        guild_id
     ) in (
-            await bot.cache.get_guilds()
+        await bot.cache.get_guilds()
     ):  # Obtain all guilds the cache stores data (will need to be upgraded.)
         if guild_id not in bot_guild_ids:  # It's not in the guild!!
             if guild_id is None:  # Don't delete global problems
@@ -252,7 +253,7 @@ async def on_connect():
 
 
 @bot.event
-async def on_error(event, *_, **__):
+async def on_error(event, *args, **kwargs):
     print(f"Error in {event}... uh oh", file=stderr)
     error = exc_info()
     # print the traceback to the file
@@ -280,7 +281,7 @@ async def on_slash_command_error(inter, error):
     except AttributeError:
         log_error(error, f"error_logs/{str(datetime.datetime.now())}")
         await inter.send(
-            "An error occurred, and the error message couldn't be sent. However, it has been saved!"
+            "An error occured, and the error message couldn't be sent. However, it has been saved!"
         )
         raise error
 
@@ -305,15 +306,6 @@ async def on_guild_join(guild):
         #     "Oh no..... there is a guild with id None... this will mess up the bot!")
         #  # Make sure that a guild with id _global doesn't mess up stuff
 
-
-async def make_sure_the_cache_has_a_pool_if_mysql_is_used():
-    if not main_cache.use_sqlite:
-        if not hasattr(main_cache, "_pool") or main_cache._pool is None:  # type: ignore
-            await main_cache.create_pool()
-
-
-asyncio.run(
-    make_sure_the_cache_has_a_pool_if_mysql_is_used())  # Make sure that if the cache uses MYSQL that we have a pool before we start the bot
 
 if __name__ == "__main__":
     print("The bot has finished setting up and will now run.")
