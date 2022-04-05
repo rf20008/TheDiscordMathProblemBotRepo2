@@ -65,7 +65,7 @@ class GuildConfigCog(HelperCog):
         Add a permission!
         The list of allowed permissions is added below.
         You must type each permission exactly, or the bot will not recongnize the permission. 
-        omeday, I could add a dropdown menu, but there are too many permissions!
+        Someday, I could add a dropdown menu, but there are too many permissions!
         Permission list: {'\t\n'.join([permission for permission in Permissions.VALID_FLAGS.keys()])}"""
         if permission not in Permissions.VALID_FLAGS:
             return await inter.send("Invalid permission!")
@@ -76,4 +76,10 @@ class GuildConfigCog(HelperCog):
         await inter.send("This has been updated!")
 
 
+
     # TODO: Finish everything else!
+    @modify_mod_check.sub_command(
+        description = "Remove a required permission from the mod check"
+    )
+    async def remove_a_required_permission(self, inter: ApplicationCommandInteraction, permission: str):
+        """/guild_config """

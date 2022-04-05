@@ -11,6 +11,7 @@ from functools import wraps, partial
 import time
 from helpful_modules import problems_module
 from helpful_modules.constants_loader import BotConstants
+from helpful_modules.restart_the_bot import RestartTheBot
 from .threads_or_useful_funcs import modified_async_wrap
 from helpful_modules.problems_module.cache import MathProblemCache
 from types import FunctionType
@@ -26,6 +27,7 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
             "on_ready_func"
         )  # Will be called when the bot is ready (with an argument of itself)
         assert isinstance(self.tasks, dict)
+        self.restart = RestartTheBot(self)
         for task in self.tasks.values():
             assert isinstance(task, disnake.ext.tasks.Loop)
             task.start()  # TODO: add being able to change it
