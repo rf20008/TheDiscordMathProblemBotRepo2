@@ -13,7 +13,7 @@ import warnings
 from asyncio import sleep as asyncio_sleep
 from copy import copy
 from logging import handlers
-from sys import exc_info, exit, stdout
+from sys import exc_info, exit, stdout, argv
 
 # Imports - My own files
 from disnake.ext import commands
@@ -307,10 +307,22 @@ async def on_guild_join(guild):
         #  # Make sure that a guild with id _global doesn't mess up stuff
 
 
+
+async def make_sure_the_cache_has_a_pool_if_mysql_is_used():
+    if not main_cache.use_sqlite:
+        if not hasattr(main_cache, "_pool") or main_cache._pool is None:  # type: ignore
+            await main_cache.create_pool()
+
+
+asyncio.run(
+    make_sure_the_cache_has_a_pool_if_mysql_is_used())  # Make sure that if the cache uses MYSQL that we have a pool before we start the bot
+
 if __name__ == "__main__":
     print("The bot has finished setting up and will now run.")
     for command in bot.global_slash_commands:
         # raise
         if len(command.name) > 100:
             raise Exception(f"This command: {command.name} is too long!")
+    if argv != [] and argv[0] == 'do_not_connect':
+        exit()
     bot.run(DISCORD_TOKEN)
