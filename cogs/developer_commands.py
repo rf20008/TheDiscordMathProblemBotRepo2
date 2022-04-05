@@ -43,7 +43,7 @@ class DeveloperCommands(HelperCog):
 
         if inter.author.id not in self.bot.trusted_users:
             await inter.send(
-                ErrorEmbed(
+                embed=ErrorEmbed(
                     """You aren't a trusted user.
                     Therefore, you don't have permission to force-load files."""
                 )

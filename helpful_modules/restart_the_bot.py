@@ -32,12 +32,12 @@ class RestartTheBot:
             [
                 'python3.10'
                 'main.py'
+                'do_not_connect'
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             stdin=subprocess.PIPE
         )
-        await asyncio.sleep(0.5)
-        os._exit(0)
+        os._exit(1)
 
 
