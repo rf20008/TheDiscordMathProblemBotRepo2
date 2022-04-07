@@ -83,7 +83,7 @@ def the_daemon_file_saver():
     )
     print("Loading files...")
     FileSaverDict = FileSaverObj.load_files(bot.cache, True)
-    (bot.vote_threshold) = (int(FileSaverDict["vote_threshold"]),)
+    bot.vote_threshold = int(FileSaverDict["vote_threshold"])
     while True:
         sleep(45)
         print("Saving files")

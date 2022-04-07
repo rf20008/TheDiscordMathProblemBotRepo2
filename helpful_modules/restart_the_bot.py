@@ -2,7 +2,7 @@ import asyncio
 import disnake
 import subprocess
 from typing import NoReturn
-
+from sys import executable
 #from .custom_bot import TheDiscordMathProblemBot
 
 RESTART_MESSAGE_WARNING = (
@@ -24,19 +24,17 @@ class RestartTheBot:
     async def restart_the_bot(self) -> NoReturn:
         print("The bot is now restarting!")
         await self.notify_before_restarting()
+        await self.actual_restart()
+    async def actual_restart(self):
         await asyncio.sleep(3)
         await self.bot.close()
         await asyncio.sleep(5)
-        subprocess.run('cd ../') # Make sure that we're in the right directory
+        subprocess.run(['cd', '../']) # Make sure that we're in the right directory
+        command = executable + " main.py"
         subprocess.run(
-            [
-                'python3.10'
-                'main.py'
-                'do_not_connect'
-            ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            stdin=subprocess.PIPE
+            command.split(),
+            capture_output=True,
+            shell=True
         )
         os._exit(1)
 

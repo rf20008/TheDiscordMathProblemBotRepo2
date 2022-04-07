@@ -82,4 +82,14 @@ class GuildConfigCog(HelperCog):
         description = "Remove a required permission from the mod check"
     )
     async def remove_a_required_permission(self, inter: ApplicationCommandInteraction, permission: str):
-        """/guild_config """
+        """/guild_config remove_a_required_permission [permission: str]
+        Remove a required permission from the list of required permissions to meet the mod check!
+        Warning: If you remove all required permissions, then ANYBODY can act as a moderator in your server in regards to this bot!"""
+        data = await self.cache.get_guild_data(inter.guild_id, default=problems_module.GuildData.default(inter.guild_id))
+        try:
+            data.mod_check.permissions_needed.remove(permission)
+        except (ValueError, TypeError) as t:
+            await self.cache.set_guild_data(inter.guild_id, data)
+            raise
+        await inter.send("Successfully completed!")
+        return
