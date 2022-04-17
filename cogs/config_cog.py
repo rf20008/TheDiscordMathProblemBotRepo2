@@ -93,3 +93,42 @@ class GuildConfigCog(HelperCog):
             raise
         await inter.send("Successfully completed!")
         return
+
+    @modify_mod_check.sub_command(
+        description = "Add a whitelisted user to the mod check"
+    )
+    async def add_whitelisted_user(self, inter: ApplicationCommandInteraction, user: Member):
+        """/guild_config modify_mod_check add_whitelisted_user [user: User]
+        Add a user to the whitelisted users part of the mod check - this will fail if the user is already whitelisted
+        """
+        data = await self.cache.get_guild_data(inter.guild_id, default = problems_module.GuildData.default(guild_id=inter.guild_id))
+        if user.id in data.mod_check.whitelisted_users:
+            return await inter.send("This user is already whitelisted!")
+        data.mod_check.whitelisted_users.append(user.id)
+        await self.cache.set_guild_data(inter.guild_id, data)
+        await inter.send("You have successfully added a whitelisted user!")
+        return
+
+    @modify_mod_check.sub_command(
+        description = "Remove a whitelisted user from the mod check"
+    )
+    async def remove_whitelisted_user(self, inter: ApplicationCommandInteraction, user: User):
+        """/guild_config modify_mod_check remove_whitelisted_user [user: User]
+        Remove a whitelisted user from the list of whitelisted users for the mod check. This will work even if the user is not whitelisted """
+        # I have no way of telling whether the user is in the server - because I don't have the members intent
+        # This doesn't seem like a valid reason that Discord would give me this intent
+        # so I have to work around it
+        data = await self.cache.get_guild_data(inter.guild_id, default = problems_module.GuildData.default(guild_id=inter.guild_id))
+        try:
+            data.mod_check.whitelisted_users.remove(user.id)
+            await self.cache.set_guild_data(inter.guild_id, data=data)
+            await inter.send("Data sent!")
+            return
+        except ValueError:
+            await inter.send("This user is not whitelisted")
+            raise # for debugging purposes only
+
+
+
+
+

@@ -1,5 +1,6 @@
 import logging
 import random
+import typing
 import subprocess
 import traceback
 from copy import deepcopy
@@ -43,7 +44,12 @@ def loading_documentation_thread():
 
 
 async def base_on_error(
-    inter: disnake.ApplicationCommandInteraction, error: BaseException
+    inter: typing.Union[
+        disnake.ApplicationCommandInteraction,
+        disnake.MessageInteraction,
+        disnake.ModalInteraction,
+        disnake.Interaction
+    ], error: BaseException
 ):
     """The base on_error event. Call this and use the dictionary as keyword arguments to print to the user"""
     error_traceback = "\n".join(traceback.format_exception(error))

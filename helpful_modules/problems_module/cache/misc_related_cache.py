@@ -27,7 +27,9 @@ from ..GuildData import GuildData
 
 log = logging.getLogger(__name__)
 
-
+MIN_CONNS = 5
+NEEDED_CONNECTIONS = 25
+GUARD = 10
 class MiscRelatedCache:
     def __init__(
         self,
@@ -101,22 +103,30 @@ class MiscRelatedCache:
         self.cached_appeals = {}
 
     async def create_pool(self):
+        """If aiomysql is used, create a pool for the cache. """
+        if self.use_sqlite:
+            raise Exception("MySQL is not used.")
         self._pool = await aiomysql.create_pool(
-            minsize=5,
-            maxsize=30,
-            host=mysql_db_ip,
-            username=mysql_username,
-            password=mysql_password,
-            database=mysql_db_name
+            minsize=MIN_CONNS,
+            maxsize=NEEDED_CONNECTIONS+GUARD, #might change if
+            host=self.mysql_db_ip,
+            username=self.mysql_username,
+            password=self.mysql_password,
+            database=self.mysql_db_name
         )
         return self._pool
+    def has_pool(self):
+        """has_pool()
+        Return whether the cache has a pool"""
+        return not self.use_sqlite and (getattr(self, '_pool', None) is not None)
     async def _request_connection(self) -> typing.Optional[aiomysql.Connection]:
-        """Request a connection from my internal pool. I will raise exceptions (including PoolError's if there are no more connections in the pool)"""
+        """Request a connection from my internal pool.
+        This will raise exceptions (including PoolError's if there are no more connections in the pool)"""
 
         if self.use_sqlite:
             raise MathProblemsModuleException("I don't use MySQL!")
 
-        if not hasattr(self, '_pool') or getattr(self, '_pool') is None:
+        if not self.has_pool():
             await self.create_pool()
 
         try:
