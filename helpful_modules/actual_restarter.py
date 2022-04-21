@@ -1,3 +1,10 @@
-import os
-os.system('cd ../; python3.10 main.py; cd helpful_modules/; exit')
+import os, threading, time
+
+
+def start():
+    os.system("cd ../; python3.10 main.py")
+
+
+t = threading.Thread(target=start)
+time.sleep(5)
 os._exit(0)

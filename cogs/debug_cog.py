@@ -40,7 +40,7 @@ class DebugCog(HelperCog):
             "self": self,
             "inter": inter,
             "author": inter.author,
-            "restart": self.bot.restart
+            "restart": self.bot.restart,
         }
         new_globals.update(
             globals()

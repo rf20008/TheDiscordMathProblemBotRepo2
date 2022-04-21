@@ -52,7 +52,9 @@ class AppealsCog(HelperCog):
             s.view.stop()
             nonlocal reason
             reason = modal_inter.text_values[unblacklist_custom_id]
-            await modal_inter.send("Thanks! I'm now going to add this to the database :)")
+            await modal_inter.send(
+                "Thanks! I'm now going to add this to the database :)"
+            )
 
         modal = MyModal(
             callback=callback,

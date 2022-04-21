@@ -48,8 +48,9 @@ async def base_on_error(
         disnake.ApplicationCommandInteraction,
         disnake.MessageInteraction,
         disnake.ModalInteraction,
-        disnake.Interaction
-    ], error: BaseException
+        disnake.Interaction,
+    ],
+    error: BaseException,
 ):
     """The base on_error event. Call this and use the dictionary as keyword arguments to print to the user"""
     error_traceback = "\n".join(traceback.format_exception(error))

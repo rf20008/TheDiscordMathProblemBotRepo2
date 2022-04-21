@@ -2,7 +2,6 @@
 
 Last modified: Mar 22, 2022 AD 
 Disclaimer: I am not a lawyer. If you want legal advice, please ask a real lawyer.
-
 Most of this language should be self-explanatory. Please create an issue if it isn't!
 
 By using the application (The Discord Math Problem Bot), you agree to these Terms.

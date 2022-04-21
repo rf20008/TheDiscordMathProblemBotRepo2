@@ -8,4 +8,5 @@ from .helper_cog import HelperCog
 from .misc_commands_cog import MiscCommandsCog
 from .problems_cog import ProblemsCog
 from .test_cog import TestCog
+from .config_cog import GuildConfigCog
 from .quiz_ext import setup, teardown

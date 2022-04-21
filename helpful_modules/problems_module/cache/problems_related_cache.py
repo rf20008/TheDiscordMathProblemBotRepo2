@@ -185,7 +185,9 @@ class ProblemsRelatedCache(MiscRelatedCache):
         if kwargs is None:
             kwargs = {}
         await self.update_cache()
-        guild_problems = [item.values() for item in self.guild_problems.values()]  # Creates the list of guild problems
+        guild_problems = [
+            item.values() for item in self.guild_problems.values()
+        ]  # Creates the list of guild problems
 
         global_problems_that_meet_the_criteria = [
             problem

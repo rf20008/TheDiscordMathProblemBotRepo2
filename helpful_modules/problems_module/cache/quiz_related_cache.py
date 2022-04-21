@@ -381,9 +381,12 @@ class QuizRelatedCache(ProblemsRelatedCache):
         else:
             async with self.get_a_connection() as connection:
                 cursor = await connection.cursor(DictCursor)
-                await cursor.execute("SELECT * FROM quizzes WHERE quiz_id = '%s'", (quiz_id,))
+                await cursor.execute(
+                    "SELECT * FROM quizzes WHERE quiz_id = '%s'", (quiz_id,)
+                )
                 problems = [
-                    QuizProblem.from_row(row, copy(self)) for row in await cursor.fetchall()
+                    QuizProblem.from_row(row, copy(self))
+                    for row in await cursor.fetchall()
                 ]
                 await cursor.execute(
                     "SELECT * FROM submissions WHERE quiz_id = '%s'", (quiz_id,)

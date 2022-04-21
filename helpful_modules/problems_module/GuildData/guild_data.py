@@ -1,5 +1,5 @@
 import json
-
+from warnings import warn
 from ..errors import InvalidDictionaryInDatabaseException
 from .the_basic_check import CheckForUserPassage
 
@@ -84,6 +84,24 @@ class GuildData:
 
         return dict_to_return
 
+    def get_mod_check(self):
+        return self.mods_check
+
+    def set_mod_check(self, value: CheckForUserPassage):
+        if not isinstance(value, CheckForUserPassage):
+            warnings.warn(
+                "The mod check is being set to an object that is not of type CheckForUserPassage, instead it is of type "
+                + value.__class__.__name__
+                + "...",
+                stacklevel=2,
+            )  # noqa: E401
+        self.mods_check = value
+
+    def del_mod_check(self):
+        del self.mods_check
+
+    mod_check = property(get_mod_check, set_mod_check, del_mod_check)
+
     @classmethod
     def default(cls, guild_id: int) -> "GuildData":
         return cls(
@@ -93,3 +111,16 @@ class GuildData:
             can_create_problems_check=CheckForUserPassage.default(),
             mods_check=CheckForUserPassage.default_mod_check(),
         )
+
+    def __eq__(self, other: typing.Any):
+        if not isinstance(other, GuildData):
+            return False  # There is no way that these objects are equal if they are of different types
+        return (
+            self.guild_id == other.guild_id
+            and self.blacklisted == other.blacklisted
+            and self.mod_check == other.mod_check
+            and self.can_create_quizzes_check== other.can_create_quizzes_check
+            and self.can_create_problems_check==other.can_create_problems_check
+        )
+    def is_default(self):
+        return self == GuildData.default(self.guild_id)

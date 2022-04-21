@@ -1,6 +1,5 @@
 [![Number of source lines of code](https://img.shields.io/tokei/lines/github/rf20008/TheDiscordMathProblemBotRepo)](https://img.shields.io)
 <!---TODO: rewrite--->
-
 # Quick links / Table of Contents
 
 ## Quick links
@@ -28,6 +27,7 @@ If you run into any issues create an issue or DM me (ay136416#2707).
 # Announcements
 
 <ol>
+<li> 20 April 2022 - A reminder: This is one of my side projects, so I may not be able to actively maintain the bot, or test it thourougly.</li>
 <li> CC-BY-SA 4.0 is no longer a valid license to use this bot under! You **must** license the bot under GPLv3 (or a later version.)
 (CC-BY-SA 4.0 has a one way migration to GPLv3, so you are allowed to do this. </li>
 <li> **Everything (even things that do not explicitly say they are licensed under GPLv3) in this repository except for things that are ignored in .gitignore are licensed under GPLv3. This includes every python file.** </li>

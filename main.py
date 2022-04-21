@@ -213,6 +213,7 @@ bot.add_cog(DebugCog(bot))
 bot.add_cog(DeveloperCommands(bot))
 bot.add_cog(ProblemsCog(bot))
 bot.add_cog(MiscCommandsCog(bot))
+bot.add_cog(ConfigCog(bot))
 bot.load_extension("cogs.appeals_cog")
 bot.load_extension("cogs.quiz_ext")
 bot.CONSTANTS = bot_constants
@@ -307,7 +308,6 @@ async def on_guild_join(guild):
         #  # Make sure that a guild with id _global doesn't mess up stuff
 
 
-
 async def make_sure_the_cache_has_a_pool_if_mysql_is_used():
     if not main_cache.use_sqlite:
         if not hasattr(main_cache, "_pool") or main_cache._pool is None:  # type: ignore
@@ -315,7 +315,8 @@ async def make_sure_the_cache_has_a_pool_if_mysql_is_used():
 
 
 asyncio.run(
-    make_sure_the_cache_has_a_pool_if_mysql_is_used())  # Make sure that if the cache uses MYSQL that we have a pool before we start the bot
+    make_sure_the_cache_has_a_pool_if_mysql_is_used()
+)  # Make sure that if the cache uses MYSQL that we have a pool before we start the bot
 
 if __name__ == "__main__":
     print("The bot has finished setting up and will now run.")
@@ -323,6 +324,6 @@ if __name__ == "__main__":
         # raise
         if len(command.name) > 100:
             raise Exception(f"This command: {command.name} is too long!")
-    if argv != [] and argv[0] == 'do_not_connect':
+    if argv != [] and argv[0] == "do_not_connect":
         exit()
     bot.run(DISCORD_TOKEN)

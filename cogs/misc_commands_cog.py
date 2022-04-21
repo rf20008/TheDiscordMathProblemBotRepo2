@@ -37,6 +37,7 @@ GUILD_DATA_DELETION_TIMEOUT = 250
 
 # TODO: Split this into different cogs for readability purpose
 
+
 class MiscCommandsCog(HelperCog):
     def __init__(self, bot: TheDiscordMathProblemBot):
         super().__init__(bot)
@@ -1129,7 +1130,9 @@ class MiscCommandsCog(HelperCog):
         msg = await inter.original_message()
         try:
             _ = await bot.wait_for(
-                "button_click", check=lambda i: i.author.id == inter.author.id, timeout=120
+                "button_click",
+                check=lambda i: i.author.id == inter.author.id,
+                timeout=120,
             )
         except asyncio.TimeoutError:
             view.stop()

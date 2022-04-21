@@ -30,6 +30,8 @@ log = logging.getLogger(__name__)
 MIN_CONNS = 5
 NEEDED_CONNECTIONS = 25
 GUARD = 10
+
+
 class MiscRelatedCache:
     def __init__(
         self,
@@ -103,22 +105,24 @@ class MiscRelatedCache:
         self.cached_appeals = {}
 
     async def create_pool(self):
-        """If aiomysql is used, create a pool for the cache. """
+        """If aiomysql is used, create a pool for the cache."""
         if self.use_sqlite:
             raise Exception("MySQL is not used.")
         self._pool = await aiomysql.create_pool(
             minsize=MIN_CONNS,
-            maxsize=NEEDED_CONNECTIONS+GUARD, #might change if
+            maxsize=NEEDED_CONNECTIONS + GUARD,  # might change if
             host=self.mysql_db_ip,
             username=self.mysql_username,
             password=self.mysql_password,
-            database=self.mysql_db_name
+            database=self.mysql_db_name,
         )
         return self._pool
+
     def has_pool(self):
         """has_pool()
         Return whether the cache has a pool"""
-        return not self.use_sqlite and (getattr(self, '_pool', None) is not None)
+        return not self.use_sqlite and (getattr(self, "_pool", None) is not None)
+
     async def _request_connection(self) -> typing.Optional[aiomysql.Connection]:
         """Request a connection from my internal pool.
         This will raise exceptions (including PoolError's if there are no more connections in the pool)"""
@@ -428,7 +432,8 @@ class MiscRelatedCache:
                 quiz_submissions = [
                     QuizSubmission.from_dict(submission, cache=copy(self))
                     for submission in [
-                        pickle.loads(item["submissions"]) for item in await cursor.fetchall()
+                        pickle.loads(item["submissions"])
+                        for item in await cursor.fetchall()
                     ]
                 ]
                 await cursor.execute(
@@ -453,7 +458,9 @@ class MiscRelatedCache:
                     QuizDescription.from_dict(cache=self, data=data)
                     for data in await cursor.fetchall()
                 ]
-                await cursor.execute("SELECT * FROM appeals WHERE user_id = %s", (author_id,))
+                await cursor.execute(
+                    "SELECT * FROM appeals WHERE user_id = %s", (author_id,)
+                )
                 appeals = [
                     Appeal.from_dict(data, cache=self)
                     for data in await cursor.fetchall()
@@ -497,9 +504,13 @@ class MiscRelatedCache:
                 await conn.commit()  # Otherwise, nothing happens and it rolls back!!
         else:
             async with self.get_a_connection() as connection:
-                cursor =await connection.cursor(aiomysql.DictCursor)
-                await cursor.execute("DELETE FROM problems WHERE author = '%s'", (user_id,))
-                await cursor.execute("DELETE FROM quizzes WHERE author = '%s'", (user_id,))
+                cursor = await connection.cursor(aiomysql.DictCursor)
+                await cursor.execute(
+                    "DELETE FROM problems WHERE author = '%s'", (user_id,)
+                )
+                await cursor.execute(
+                    "DELETE FROM quizzes WHERE author = '%s'", (user_id,)
+                )
                 await cursor.execute(
                     "DELETE FROM quiz_submissions WHERE author = '%s'", (user_id,)
                 )
@@ -509,7 +520,9 @@ class MiscRelatedCache:
                 await cursor.execute(
                     "DELETE FROM quiz_description WHERE author = %s", (user_id,)
                 )
-                await cursor.execute("DELETE FROM user_data WHERE user_id=%s", (user_id,))
+                await cursor.execute(
+                    "DELETE FROM user_data WHERE user_id=%s", (user_id,)
+                )
                 await cursor.execute("DELETE FROM appeals WHERE user_id=%s", (user_id,))
                 await connection.commit()
 
@@ -800,5 +813,5 @@ class MiscRelatedCache:
                 await connection.commit()
                 log.debug("Saved tables!")
 
-# TODO: finish the migrating to await
 
+# TODO: finish the migrating to await
