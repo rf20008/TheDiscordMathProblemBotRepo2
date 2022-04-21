@@ -2,7 +2,7 @@ import json
 from warnings import warn
 from ..errors import InvalidDictionaryInDatabaseException
 from .the_basic_check import CheckForUserPassage
-
+import typing
 
 class GuildData:
     blacklisted: bool

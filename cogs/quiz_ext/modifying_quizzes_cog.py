@@ -520,3 +520,7 @@ class ModifyingQuizzesCog(HelperCog):
         await quiz.update_self()
 
         await inter.send("I have successfully updated the quiz description!")
+        
+def setup(*args):
+    pass
+

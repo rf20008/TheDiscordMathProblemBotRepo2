@@ -1,12 +1,12 @@
 from ._utils import get_quiz_submission
 from ..helper_cog import HelperCog
-
+import typing
 from disnake.ext import commands
 import disnake
 from helpful_modules import problems_module, checks
 from helpful_modules.problems_module import *
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
-from helpful_modules.my_modal import MyModal
+from helpful_modules.my_modals import MyModal
 from .grading_views_and_ui_components import GradingQuizView, GradingModal
 
 
@@ -155,3 +155,7 @@ class GradingQuizzesCog(HelperCog):
         )
         await inter.send(view=view, content="Click a button to grade!")
         raise NotImplementedError("This part of the logic is not yet implemented!")
+
+def setup(*args):
+    pass
+    

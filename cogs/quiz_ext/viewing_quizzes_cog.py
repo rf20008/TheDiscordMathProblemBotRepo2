@@ -454,3 +454,7 @@ Max Score: {problem.max_score}
                     f"Page number out of range (there are only {len(await self.quiz_pages(inter.guild_id))} pages)"
                 )
             )
+
+
+def setup(*args):
+    pass

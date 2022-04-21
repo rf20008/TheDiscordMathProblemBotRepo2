@@ -320,3 +320,6 @@ class CreatingQuizzesCommandsCog(HelperCog):
             ),
         )
         await self.bot.cache.add_quiz(quiz)
+
+def setup(*args):
+    pass

@@ -41,3 +41,6 @@ async def get_attempt_num_for_user(self: HelperCog, user_id: int, quiz_id: int) 
     # From that, we use list comprehension to create a list of the attempt numbers of the sessions given
     # Then we use max() to find the maximum of that created list and return it
     return max([item.attempt_num for item in filter(check, quiz.existing_sessions)])
+
+def setup(*args):
+    pass

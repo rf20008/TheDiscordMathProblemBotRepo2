@@ -20,7 +20,7 @@ from disnake.ext.commands import (
 class TaskCog(HelperCog):
     def __init__(self, bot: TheDiscordMathProblemBot):
         self.bot = bot
-        super().__init__(self, bot)
+        super().__init__(bot)
         self.cache = bot.cache
 
     @commands.Cog.listener()

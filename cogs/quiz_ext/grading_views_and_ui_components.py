@@ -1,4 +1,5 @@
-from disnake import commands, ui
+from disnake import ui
+from disnake.ext import commands
 import disnake
 from helpful_modules import problems_module as pm
 from helpful_modules.threads_or_useful_funcs import base_on_error
@@ -205,3 +206,6 @@ class GradingModal(ui.Modal):
 
     async def on_error(self, error: Exception, inter: disnake.ModalInteraction):
         return await inter.send(**base_on_error(inter, error))
+
+def setup(*args):
+    pass

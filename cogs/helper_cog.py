@@ -93,3 +93,6 @@ class HelperCog(ext.commands.Cog):
             if len(new_trusted_users) == 0:
                 warn("You are removing all trusted users", Warning)
         self.bot.trusted_users = new_trusted_users
+
+def setup(*args):
+    pass

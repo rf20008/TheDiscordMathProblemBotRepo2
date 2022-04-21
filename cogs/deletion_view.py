@@ -74,3 +74,6 @@ class GuildDataDeletionView(ui.View):
                     item.disabled = True
         await inter.message.edit(view=self)
         await inter.send(**base_on_error(inter, err))
+
+def setup(*args):
+    pass

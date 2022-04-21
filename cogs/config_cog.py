@@ -58,7 +58,7 @@ class GuildConfigCog(HelperCog):
         pass
 
     @modify_mod_check.sub_command(
-        description="Add a permission to the list of required permissions to be a mod!. This must match up exactly with Disnake's permission names!"
+        description="Add a permission to the list of required permissions to be a mod - more info in the description"
     )
     async def add_permission(
         self, inter: ApplicationCommandInteraction, permission: str
