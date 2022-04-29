@@ -2,17 +2,56 @@ import disnake
 from .helper_cog import HelperCog
 from disnake.ext import commands, tasks
 from helpful_modules import checks, problems_module, the_documentation_file_loader
+from helpful_modules.threads_or_useful_funcs import get_log
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
-from disnake import User, Member, Guild, ApplicationCommandInteraction, Permissions
+from disnake import (
+    User,
+    Member,
+    Guild,
+    ApplicationCommandInteraction,
+    Permissions,
+    Role,
+)
 from helpful_modules.problems_module import GuildData, MathProblemCache
+from typing import Optional
 
 TAB_NEWLINE = "\t\n"  # This is because f-strings cannot contain backslashes...
+CHECKS = ("mod_check", "can_create_problems_check", "can_create_quizzes_check")
+# TODO: migrate to permissions v2 when https://github.com/DisnakeDev/disnake/pull/405 is merged
 
 
 class GuildConfigCog(HelperCog):
     def __init__(self, bot: TheDiscordMathProblemBot):
+        super().__init__(bot)
         self.bot = bot
         self.cache: problems_module.MathProblemCache = bot.cache
+
+    async def sync_check(
+        self, inter: ApplicationCommandInteraction, cache_name: str, role: Role
+    ):
+        if cache_name not in CHECKS:
+            return await inter.send("This is not a valid check!")
+
+        # TODO: Refactor - don't use setattr
+        data = await self.cache.get_guild_data(
+            guild_id=inter.guild_id, default=GuildData.default(inter.guild_id)
+        )
+        try:
+            check = getattr(data, cache_name)  # Get the check
+            role_permissions = role.permissions  # Cache the permissions
+            check.permissions = [
+                name
+                for name in Permissions.VALID_FLAGS
+                if getattr(role_permissions, name, False)
+            ]
+            # For each permission, add it to the list if the given role has that permission
+
+            setattr(data, check_name, check)  # Set it to the data
+            await self.cache.set_guild_data(data=data)  # And update it so it's not lost
+            await inter.send("The check has been successfully updated!!")
+        except AttributeError:
+            await inter.send("Uh oh! An error occurred.")
+            raise
 
     async def user_passes_guild_mod_check(
         self, guild: Guild, author: User | Member
@@ -158,8 +197,9 @@ class GuildConfigCog(HelperCog):
         await inter.send(
             "Successfully added a blacklisted user to the list of blacklisted users..."
         )
+
     @commands.slash_command(
-        description = "Remove a blacklisted user from the list of blacklisted users in the mod check"
+        description="Remove a blacklisted user from the list of blacklisted users in the mod check"
     )
     async def remove_blacklisted_user(
         self, inter: ApplicationCommandInteraction, user: User
@@ -175,9 +215,21 @@ class GuildConfigCog(HelperCog):
             await inter.send("Successfully removed the user's blacklistness")
             return
         except ValueError:
-            await inter.send("The user is not blacklisted, so I cannot unblacklist the user from the mod check.")
-            raise # for debugging purposes
+            await inter.send(
+                "The user is not blacklisted, so I cannot unblacklist the user from the mod check."
+            )
+            raise  # for debugging purposes
+
+    @guild_config.sub_command(description="Sync a check's permissions with a role")
+    async def sync_required_permission(
+        self, inter: ApplicationCommandInteraction, check_name: str, role: Role
+    ):
+        """/guild_config modify_mod_check sync_required_permission (check_name: str|mod_check|can_create_problems_check|can_create_quizzes_check) [role: Role]
+        Sync the permissions needed of the given check with the role. This will be deprecated when Disnake supports permissions v2!
+
+        """
+        await self.sync_check(inter, check_name, role)
+
 
 def setup(bot: TheDiscordMathProblemBot):
     bot.add_cog(GuildConfigCog(bot))
-

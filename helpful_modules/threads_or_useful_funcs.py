@@ -7,8 +7,8 @@ from copy import deepcopy
 from logging import handlers
 from sys import exc_info, stderr
 from time import asctime, sleep
-from typing import Optional
-
+from typing import Optional, Callable
+import pathlib
 import disnake
 from disnake.ext import commands
 
@@ -18,6 +18,8 @@ from .custom_embeds import *
 from .the_documentation_file_loader import DocumentationFileLoader
 
 # Licensed under GPLv3
+
+REQUIRED_LOGS = ("" "bot", "disnake")
 
 log = logging.getLogger(__name__)
 
@@ -78,7 +80,7 @@ async def base_on_error(
     if isinstance(error, disnake.ext.commands.errors.CheckFailure):
         return {"embed": ErrorEmbed(str(error))}
     # Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
-    logging.error("Uh oh - an error occurred ", exc_info=exc_info())
+    logging.error("Uh oh! An error occurred!", exc_info=exc_info())
     print(
         "\n".join(traceback.format_exception(error)),  # python 3.10 only!
         file=stderr,
@@ -171,3 +173,13 @@ def modified_async_wrap(func):
     if asyncio.iscoroutinefunction(func):
         return func
     return async_wrap(func)
+
+
+def make_sure_log_dir_exists(log_maker: Callable[[str], logging.Logger]):
+    try:
+        logs_folder = pathlib.Path("logs")
+        logs_folder.mkdir(exist_ok=True)
+        for log_needed in REQUIRED_LOGS:
+            log = log_maker(log_needed + ".log")
+    except:
+        print("I don't have permission to create a logs folder so logs may be missing!")

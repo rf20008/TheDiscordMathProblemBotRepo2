@@ -14,6 +14,7 @@ from .permissions_required_related_cache import PermissionsRequiredRelatedCache
 
 class GuildDataRelatedCache(PermissionsRequiredRelatedCache):
     async def set_guild_data(self, data: GuildData):
+        """Set the guild data given in the cache. The guild id will be inferred."""
         assert isinstance(data, GuildData)  # Basic type-checking
 
         if self.use_sqlite:

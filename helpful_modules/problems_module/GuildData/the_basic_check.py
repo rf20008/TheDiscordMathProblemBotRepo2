@@ -88,13 +88,16 @@ class CheckForUserPassage:
             roles_allowed=[],
             permissions_needed=["administrator"],
         )
+
     def __eq__(self, other):
         if not isinstance(other, CheckForUserPassage):
-            return False # It's not equal to this object because the types are different
+            return (
+                False  # It's not equal to this object because the types are different
+            )
 
         return (
-            self.blacklisted_users==other.blacklisted_users
-            and other.whitelisted_users==self.whitelisted_users
-            and self.permissions_needed==other.permissions_needed
+            self.blacklisted_users == other.blacklisted_users
+            and other.whitelisted_users == self.whitelisted_users
+            and self.permissions_needed == other.permissions_needed
             and self.roles_allowed == other.roles_allowed
         )

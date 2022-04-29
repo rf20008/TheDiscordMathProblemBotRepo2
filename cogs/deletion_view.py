@@ -75,5 +75,6 @@ class GuildDataDeletionView(ui.View):
         await inter.message.edit(view=self)
         await inter.send(**base_on_error(inter, err))
 
+
 def setup(*args):
     pass

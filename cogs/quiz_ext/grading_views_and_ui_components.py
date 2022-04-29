@@ -207,5 +207,6 @@ class GradingModal(ui.Modal):
     async def on_error(self, error: Exception, inter: disnake.ModalInteraction):
         return await inter.send(**base_on_error(inter, error))
 
+
 def setup(*args):
     pass

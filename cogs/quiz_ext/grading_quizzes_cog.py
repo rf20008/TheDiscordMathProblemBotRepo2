@@ -156,6 +156,6 @@ class GradingQuizzesCog(HelperCog):
         await inter.send(view=view, content="Click a button to grade!")
         raise NotImplementedError("This part of the logic is not yet implemented!")
 
+
 def setup(*args):
     pass
-    

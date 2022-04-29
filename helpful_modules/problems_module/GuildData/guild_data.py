@@ -4,6 +4,7 @@ from ..errors import InvalidDictionaryInDatabaseException
 from .the_basic_check import CheckForUserPassage
 import typing
 
+
 class GuildData:
     blacklisted: bool
     guild_id: int
@@ -119,8 +120,9 @@ class GuildData:
             self.guild_id == other.guild_id
             and self.blacklisted == other.blacklisted
             and self.mod_check == other.mod_check
-            and self.can_create_quizzes_check== other.can_create_quizzes_check
-            and self.can_create_problems_check==other.can_create_problems_check
+            and self.can_create_quizzes_check == other.can_create_quizzes_check
+            and self.can_create_problems_check == other.can_create_problems_check
         )
+
     def is_default(self):
         return self == GuildData.default(self.guild_id)

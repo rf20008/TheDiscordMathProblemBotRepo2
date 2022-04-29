@@ -155,5 +155,6 @@ class QuizSolveCog(HelperCog):
         await quiz.update_self()
         await inter.send("I have successfully created a session for you!")
 
+
 def setup(*args):
     pass
