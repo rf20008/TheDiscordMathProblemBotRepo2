@@ -4,14 +4,7 @@ from disnake.ext import commands, tasks
 from helpful_modules import checks, problems_module, the_documentation_file_loader
 from helpful_modules.threads_or_useful_funcs import get_log
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
-from disnake import (
-    User,
-    Member,
-    Guild,
-    ApplicationCommandInteraction,
-    Permissions,
-    Role,
-)
+from disnake import User, Member, Guild, Permissions, GuildCommandInteraction, Role
 from helpful_modules.problems_module import GuildData, MathProblemCache
 from typing import Optional
 
@@ -27,7 +20,7 @@ class GuildConfigCog(HelperCog):
         self.cache: problems_module.MathProblemCache = bot.cache
 
     async def sync_check(
-        self, inter: ApplicationCommandInteraction, cache_name: str, role: Role
+        self, inter: GuildCommandInteraction, cache_name: str, role: Role
     ):
         if cache_name not in CHECKS:
             return await inter.send("This is not a valid check!")
@@ -62,7 +55,7 @@ class GuildConfigCog(HelperCog):
         return data.mod_check.check_for_user_passage(author)
 
     async def cog_slash_command_check(
-        self, inter: disnake.ApplicationCommandInteraction
+        self, inter: disnake.GuildCommandInteraction
     ) -> bool:
         """Make sure that only trusted users or guild owners or guild mods can run this command only in guilds!"""
         return (
@@ -77,14 +70,16 @@ class GuildConfigCog(HelperCog):
             )
         )
 
-    @commands.slash_command(description="Change your guild config!")
-    async def guild_config(self, inter: disnake.ApplicationCommandInteraction):
+    @commands.slash_command(description="Change your guild config!",default_member_permissions=Permissions(administrator=True),)
+    async def guild_config(self, inter: disnake.GuildCommandInteraction):
         """/guild_config
         Modify your guild's config -- there are subcommands"""
         pass
 
-    @guild_config.sub_command_group(description="Modify your guild's mod check!")
-    async def modify_mod_check(self, inter: ApplicationCommandInteraction):
+    @guild_config.sub_command_group(
+        description="Modify your guild's mod check!",
+    )
+    async def modify_mod_check(self, inter: GuildCommandInteraction):
         """/guild_config modify_mod_check
         Usage:
             /guild_config_modify_mod_check add_permission [permission: str]
@@ -97,11 +92,9 @@ class GuildConfigCog(HelperCog):
         pass
 
     @modify_mod_check.sub_command(
-        description="Add a permission to the list of required permissions to be a mod - more info in the description"
+        description="Add a permission to the list of required permissions to be a mod - more info in the description",
     )
-    async def add_permission(
-        self, inter: ApplicationCommandInteraction, permission: str
-    ):
+    async def add_permission(self, inter: GuildCommandInteraction, permission: str):
         f"""/guild_config modify_mod_check add_permission [permission: str]
         Add a permission!
         The list of allowed permissions is added below.
@@ -123,7 +116,7 @@ class GuildConfigCog(HelperCog):
         description="Remove a required permission from the mod check"
     )
     async def remove_a_required_permission(
-        self, inter: ApplicationCommandInteraction, permission: str
+        self, inter: GuildCommandInteraction, permission: str
     ):
         """/guild_config remove_a_required_permission [permission: str]
         Remove a required permission from the list of required permissions to meet the mod check!
@@ -139,10 +132,10 @@ class GuildConfigCog(HelperCog):
         await inter.send("Successfully completed!")
         return
 
-    @modify_mod_check.sub_command(description="Add a whitelisted user to the mod check")
-    async def add_whitelisted_user(
-        self, inter: ApplicationCommandInteraction, user: Member
-    ):
+    @modify_mod_check.sub_command(
+        description="Add a whitelisted user to the mod check",
+    )
+    async def add_whitelisted_user(self, inter: GuildCommandInteraction, user: Member):
         """/guild_config modify_mod_check add_whitelisted_user [user: User]
         Add a user to the whitelisted users part of the mod check - this will fail if the user is already whitelisted
         """
@@ -158,11 +151,9 @@ class GuildConfigCog(HelperCog):
         return
 
     @modify_mod_check.sub_command(
-        description="Remove a whitelisted user from the mod check"
+        description="Remove a whitelisted user from the mod check",
     )
-    async def remove_whitelisted_user(
-        self, inter: ApplicationCommandInteraction, user: User
-    ):
+    async def remove_whitelisted_user(self, inter: GuildCommandInteraction, user: User):
         """/guild_config modify_mod_check remove_whitelisted_user [user: User]
         Remove a whitelisted user from the list of whitelisted users for the mod check. This will work even if the user is not whitelisted"""
         # I have no way of telling whether the user is in the server - because I don't have the members intent
@@ -181,10 +172,10 @@ class GuildConfigCog(HelperCog):
             await inter.send("This user is not whitelisted")
             raise  # for debugging purposes only
 
-    @modify_mod_check.sub_command(description="add_blacklisted_user")
-    async def add_blacklisted_user(
-        self, inter: ApplicationCommandInteraction, user: User
-    ):
+    @modify_mod_check.sub_command(
+        description="add_blacklisted_user",
+    )
+    async def add_blacklisted_user(self, inter: GuildCommandInteraction, user: User):
         """/guild_config modify_mod_check add_blacklisted_user [user: User]
         Add a blacklisted user to the mod check, which prevents this user from interacting as a mod with this bot, even if they meet all other requirements"""  # noqa: E401
 
@@ -199,11 +190,9 @@ class GuildConfigCog(HelperCog):
         )
 
     @commands.slash_command(
-        description="Remove a blacklisted user from the list of blacklisted users in the mod check"
+        description="Remove a blacklisted user from the list of blacklisted users in the mod check",
     )
-    async def remove_blacklisted_user(
-        self, inter: ApplicationCommandInteraction, user: User
-    ):
+    async def remove_blacklisted_user(self, inter: GuildCommandInteraction, user: User):
         """/guild_config modify_mod_check remove_blacklisted_user [user: User]
         Attempt to remove a blacklisted user from the list of blacklisted users, and don't do anything if the user is not blacklisted"""
         data = await self.cache.get_guild_data(
@@ -220,9 +209,11 @@ class GuildConfigCog(HelperCog):
             )
             raise  # for debugging purposes
 
-    @guild_config.sub_command(description="Sync a check's permissions with a role")
+    @guild_config.sub_command(
+        description="Sync a check's permissions with a role",
+    )
     async def sync_required_permission(
-        self, inter: ApplicationCommandInteraction, check_name: str, role: Role
+        self, inter: GuildCommandInteraction, check_name: str, role: Role
     ):
         """/guild_config modify_mod_check sync_required_permission (check_name: str|mod_check|can_create_problems_check|can_create_quizzes_check) [role: Role]
         Sync the permissions needed of the given check with the role. This will be deprecated when Disnake supports permissions v2!

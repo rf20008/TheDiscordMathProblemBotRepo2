@@ -183,3 +183,33 @@ def make_sure_log_dir_exists(log_maker: Callable[[str], logging.Logger]):
             log = log_maker(log_needed + ".log")
     except:
         print("I don't have permission to create a logs folder so logs may be missing!")
+
+def miller_robin_primality_test(n: int, certainty: int = 1000):
+    """An implementation of the Miller-Robin primality test. Return whether the number is probably prime!
+
+    Lots of credit to https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test"""
+    if n<=1:
+        return False
+    if n==2:
+        return True
+
+    d=n-1
+    numFactorsof2=0
+    while d % 2== 0:
+        d/=2
+        numFactorsof2+=1
+    for i in range(certainty):
+        a = random.randint(2, N-2)
+        x = pow(a,d,n)
+        if x==1 or x==n-1:
+            continue
+        witnessFound=False
+        for j in range(numFactorsof2):
+            x=pow(x,2,n)
+            if x==n-1:
+                witnessFound=True
+                break
+        if witnessFound:
+            return False
+    return True
+

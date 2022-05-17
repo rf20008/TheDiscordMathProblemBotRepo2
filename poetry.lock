@@ -78,8 +78,8 @@ tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>
 
 [[package]]
 name = "betterstatcord.py"
-version = "3.4.1"
-description = "A better Statcord API library for Python + Discord.py"
+version = "3.5.0"
+description = "A better Statcord API library for Python + Discord.py and its forks"
 category = "main"
 optional = false
 python-versions = "^3.7"
@@ -93,7 +93,7 @@ psutil = "^5.8.0"
 type = "git"
 url = "https://github.com/Iapetus-11/betterstatcord.py.git"
 reference = "main"
-resolved_reference = "c49c1a0d23dd0e0f3ecd906977a5fb70ded232b6"
+resolved_reference = "582e55ad15d80872660c543e709389350b91bfed"
 
 [[package]]
 name = "chardet"
@@ -148,7 +148,7 @@ voice = ["PyNaCl (>=1.3.0,<1.5)"]
 
 [[package]]
 name = "disnake"
-version = "2.5.0a4139+gb40a268a"
+version = "2.6.0a4216+gbba4f03c"
 description = "A Python wrapper for the Discord API"
 category = "main"
 optional = false
@@ -168,7 +168,7 @@ voice = ["PyNaCl (>=1.3.0,<1.5)"]
 type = "git"
 url = "https://github.com/DisnakeDev/disnake.git"
 reference = "master"
-resolved_reference = "b40a268a6bed609874c39a8782159bf980fa2529"
+resolved_reference = "bba4f03c87daf147740bc266d6060daafc502076"
 
 [[package]]
 name = "idna"
@@ -177,6 +177,18 @@ description = "Internationalized Domain Names in Applications (IDNA)"
 category = "main"
 optional = false
 python-versions = ">=3.5"
+
+[[package]]
+name = "mpmath"
+version = "1.2.1"
+description = "Python library for arbitrary-precision floating-point arithmetic"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+develop = ["pytest (>=4.6)", "pycodestyle", "pytest-cov", "codecov", "wheel"]
+tests = ["pytest (>=4.6)"]
 
 [[package]]
 name = "multidict"
@@ -220,7 +232,7 @@ voice = ["PyNaCl (>=1.3.0,<1.5)"]
 
 [[package]]
 name = "orjson"
-version = "3.6.7"
+version = "3.6.8"
 description = "Fast, correct Python JSON library supporting dataclasses, datetimes, and numpy"
 category = "main"
 optional = false
@@ -231,7 +243,7 @@ develop = false
 type = "git"
 url = "https://github.com/ijl/orjson.git"
 reference = "master"
-resolved_reference = "aee8a9fed45f84d227cf2cb7102656aa65a4890a"
+resolved_reference = "acaecd2409231106307719f7288e51ebdbb9b24d"
 
 [[package]]
 name = "protobuf"
@@ -297,7 +309,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "65a5263b178f31f96ca11c294d40650dd26c91411ec945b570400e5755be6d75"
+content-hash = "bb704b50d7a67f1e9299eb62ed767f075efb274a271fd422062c44c5b51729b7"
 
 [metadata.files]
 aiofiles = [
@@ -377,6 +389,10 @@ disnake = []
 idna = [
     {file = "idna-3.3-py3-none-any.whl", hash = "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff"},
     {file = "idna-3.3.tar.gz", hash = "sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d"},
+]
+mpmath = [
+    {file = "mpmath-1.2.1-py3-none-any.whl", hash = "sha256:604bc21bd22d2322a177c73bdb573994ef76e62edd595d17e00aff24b0667e5c"},
+    {file = "mpmath-1.2.1.tar.gz", hash = "sha256:79ffb45cf9f4b101a807595bcb3e72e0396202e0b1d25d689134b48c4216a81a"},
 ]
 multidict = [
     {file = "multidict-6.0.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:0b9e95a740109c6047602f4db4da9949e6c5945cefbad34a1299775ddc9a62e2"},
@@ -506,11 +522,6 @@ psutil = [
     {file = "psutil-5.9.0-cp310-cp310-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:742c34fff804f34f62659279ed5c5b723bb0195e9d7bd9907591de9f8f6558e2"},
     {file = "psutil-5.9.0-cp310-cp310-win32.whl", hash = "sha256:8293942e4ce0c5689821f65ce6522ce4786d02af57f13c0195b40e1edb1db61d"},
     {file = "psutil-5.9.0-cp310-cp310-win_amd64.whl", hash = "sha256:9b51917c1af3fa35a3f2dabd7ba96a2a4f19df3dec911da73875e1edaf22a40b"},
-    {file = "psutil-5.9.0-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:e9805fed4f2a81de98ae5fe38b75a74c6e6ad2df8a5c479594c7629a1fe35f56"},
-    {file = "psutil-5.9.0-cp36-cp36m-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:c51f1af02334e4b516ec221ee26b8fdf105032418ca5a5ab9737e8c87dafe203"},
-    {file = "psutil-5.9.0-cp36-cp36m-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:32acf55cb9a8cbfb29167cd005951df81b567099295291bcfd1027365b36591d"},
-    {file = "psutil-5.9.0-cp36-cp36m-win32.whl", hash = "sha256:e5c783d0b1ad6ca8a5d3e7b680468c9c926b804be83a3a8e95141b05c39c9f64"},
-    {file = "psutil-5.9.0-cp36-cp36m-win_amd64.whl", hash = "sha256:d62a2796e08dd024b8179bd441cb714e0f81226c352c802fca0fd3f89eeacd94"},
     {file = "psutil-5.9.0-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:3d00a664e31921009a84367266b35ba0aac04a2a6cad09c550a89041034d19a0"},
     {file = "psutil-5.9.0-cp37-cp37m-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:7779be4025c540d1d65a2de3f30caeacc49ae7a2152108adeaf42c7534a115ce"},
     {file = "psutil-5.9.0-cp37-cp37m-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:072664401ae6e7c1bfb878c65d7282d4b4391f1bc9a56d5e03b5a490403271b5"},

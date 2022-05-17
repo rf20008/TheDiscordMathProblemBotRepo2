@@ -26,7 +26,25 @@ class DeveloperCommands(HelperCog):
         super().__init__(bot)
         self.bot: TheDiscordMathProblemBot = bot
         # checks = self.checks
-        checks.setup(bot)
+        try:
+            checks.setup(bot)
+        except AttributeError:
+            pass
+
+    async def cog_check(self, inter: disnake.ApplicationCommandInteraction) -> bool:
+        """Return whether the user can use the command"""
+        if await self.bot.is_owner(inter.author):
+            return True
+
+        if await self.bot.is_trusted(inter.author):
+            return True
+        if await self.bot.is_blacklisted(inter.author):
+            await inter.send("You cannot use this command because you are blacklisted.")
+            return False
+        await inter.send("These commands are for me only!")
+        return False
+
+    # TODO: make these commands guild-only commands or get rid of the commands entirely
 
     @checks.has_privileges(blacklisted=False)
     @commands.cooldown(1, 5, commands.BucketType.user)

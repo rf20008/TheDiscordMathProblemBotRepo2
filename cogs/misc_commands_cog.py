@@ -10,6 +10,7 @@ from typing import Union
 
 import disnake
 from disnake.ext import commands
+from mpmath import *
 
 from .deletion_view import GuildDataDeletionView
 from helpful_modules import checks, problems_module, the_documentation_file_loader
@@ -17,7 +18,7 @@ from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.custom_buttons import BasicButton, ConfirmationButton, MyView
 from helpful_modules.custom_embeds import SimpleEmbed, SuccessEmbed, ErrorEmbed
 from helpful_modules.save_files import FileSaver
-from helpful_modules.threads_or_useful_funcs import get_git_revision_hash
+from helpful_modules.threads_or_useful_funcs import get_git_revision_hash, miller_robin_primality_test
 
 from .helper_cog import HelperCog
 
@@ -34,6 +35,8 @@ CAN_SEND_MESSAGES_TO = (
     disnake.abc.GuildChannel,
 )
 GUILD_DATA_DELETION_TIMEOUT = 250
+TEN_BILLION = 10_000_000_000
+
 
 # TODO: Split this into different cogs for readability purpose
 
@@ -59,9 +62,9 @@ class MiscCommandsCog(HelperCog):
         ],
     )
     async def info(
-        self,
-        inter: disnake.ApplicationCommandInteraction,
-        include_extra_info: bool = False,
+            self,
+            inter: disnake.ApplicationCommandInteraction,
+            include_extra_info: bool = False,
     ):
         """/info [include_extra_info: bool = False]
         Show bot info. include_extra_info shows technical information!"""
@@ -180,8 +183,8 @@ class MiscCommandsCog(HelperCog):
                         "Could not save the files after removing the nonexistent trusted user!!"
                     ) from e
             except (
-                disnake.Forbidden,
-                disnake.Forbidden,
+                    disnake.Forbidden,
+                    disnake.Forbidden,
             ) as exc:  # Cannot fetch this user!
                 raise RuntimeError("Cannot fetch users") from exc
             else:
@@ -213,7 +216,7 @@ class MiscCommandsCog(HelperCog):
         description="Prints the vote threshold and takes no arguments",
     )
     async def what_is_vote_threshold(
-        self, inter: disnake.ApplicationCommandInteraction
+            self, inter: disnake.ApplicationCommandInteraction
     ):
         """/what_is_vote_threshold
         Returns the vote threshold. Takes no arguments.
@@ -286,7 +289,7 @@ class MiscCommandsCog(HelperCog):
         ],
     )
     async def set_vote_threshold(
-        self, inter: disnake.ApplicationCommandInteraction, threshold: int
+            self, inter: disnake.ApplicationCommandInteraction, threshold: int
     ):
         """/set_vote_threshold [threshold: int]
         Set the vote threshold. Only trusted users may do this.
@@ -338,8 +341,8 @@ class MiscCommandsCog(HelperCog):
             disnake.Option(
                 name="save_data_before_deletion",
                 description=(
-                    "Whether to give you your problems or submissions in JSON format!"
-                    "Defaults to True"
+                        "Whether to give you your problems or submissions in JSON format!"
+                        "Defaults to True"
                 ),
                 type=disnake.OptionType.boolean,
                 required=False,
@@ -359,11 +362,11 @@ class MiscCommandsCog(HelperCog):
         ],
     )
     async def delete_all(
-        self: "MiscCommandsCog",
-        inter: disnake.ApplicationCommandInteraction,
-        save_data_before_deletion: bool = True,
-        delete_votes=False,
-        delete_solves=False,
+            self: "MiscCommandsCog",
+            inter: disnake.ApplicationCommandInteraction,
+            save_data_before_deletion: bool = True,
+            delete_votes=False,
+            delete_solves=False,
     ):
         """/user_data delete_all [save_data_before_deletion: bool = True] [delete_votes: bool = False] [delete_solves: bool = False]
         Delete all your data. YOU MUST CONFIRM THIS!
@@ -384,9 +387,9 @@ class MiscCommandsCog(HelperCog):
             )  # Turn it into a dictionary
 
         async def confirm_callback(
-            Self: ConfirmationButton,
-            interaction: disnake.Interaction,
-            _extra_data: dict,
+                Self: ConfirmationButton,
+                interaction: disnake.Interaction,
+                _extra_data: dict,
         ) -> None:
             """The function that runs when the button gets pressed. This actually deletes the data.
             Time complexity: O(V*N+P+S*M)
@@ -432,7 +435,7 @@ class MiscCommandsCog(HelperCog):
             return
 
         async def deny_callback(
-            button: BasicButton, interaction: disnake.MessageInteraction
+                button: BasicButton, interaction: disnake.MessageInteraction
         ):
             """A function that runs when the deny button is pressed"""
             await interaction.response.send_message(
@@ -477,7 +480,7 @@ class MiscCommandsCog(HelperCog):
         )
 
     async def _get_json_data_by_user(
-        self, author: Union[disnake.User, disnake.Member]
+            self, author: Union[disnake.User, disnake.Member]
     ) -> typing.Dict[str, typing.Any]:
         """
         Return a user's stored data as a dictionary.
@@ -544,8 +547,9 @@ class MiscCommandsCog(HelperCog):
     )
     async def get_data(self, inter):
         """/user_data get_data
-        Get all the data the bot stores about you.
-        To prevent spam and getting rate limited, there is a 100-second cooldown."""
+        Get (almost) all the data the bot stores about you automatically.
+        To prevent spam and getting rate limited, there is a 100-second cooldown.
+        You can use this command even if you are blacklisted."""
         await inter.response.defer()
         file = disnake.File(
             BytesIO(
@@ -610,13 +614,13 @@ class MiscCommandsCog(HelperCog):
         ],
     )
     async def submit_a_request(
-        self,
-        inter: disnake.ApplicationCommandInteraction,
-        offending_problem_guild_id: int = None,
-        offending_problem_id: int = None,
-        extra_info: str = None,
-        copyrighted_thing: str = Exception,
-        type: str = "",
+            self,
+            inter: disnake.ApplicationCommandInteraction,
+            offending_problem_guild_id: int = None,
+            offending_problem_id: int = None,
+            extra_info: str = None,
+            copyrighted_thing: str = Exception,
+            type: str = "",
     ):
         """/submit_a_request [offending_problem_guild_id: int = None] [offending_problem_id: int = None]
 
@@ -625,11 +629,11 @@ class MiscCommandsCog(HelperCog):
         I will probably deprecate this and replace it with emailing me.
         This command has been deprecated."""
         if (
-            extra_info is None
-            and type == ""
-            and copyrighted_thing is not Exception
-            and offending_problem_guild_id is None
-            and offending_problem_id is None
+                extra_info is None
+                and type == ""
+                and copyrighted_thing is not Exception
+                and offending_problem_guild_id is None
+                and offending_problem_id is None
         ):
             await inter.send(embed=ErrorEmbed("You must specify some field."))
         if extra_info is None:
@@ -668,9 +672,9 @@ class MiscCommandsCog(HelperCog):
 
         content = "A request has been submitted."
         for (
-            owner_id
+                owner_id
         ) in (
-            self.bot.owner_ids
+                self.bot.owner_ids
         ):  # Mentioning owners: may be removed (you can also remove it as well)
             content += f"<@{owner_id}>"
         content += f"<@{self.bot.owner_id}>"
@@ -708,16 +712,16 @@ class MiscCommandsCog(HelperCog):
         ],
     )
     async def documentation(
-        self,
-        inter: disnake.ApplicationCommandInteraction,
-        documentation_type: typing.Literal[
-            "documentation_link",  # type: ignore
-            "command_help",
-            "function_help",
-            "privacy_policy",
-            "terms_of_service",
-        ],
-        help_obj: str = None,
+            self,
+            inter: disnake.ApplicationCommandInteraction,
+            documentation_type: typing.Literal[
+                "documentation_link",  # type: ignore
+                "command_help",
+                "function_help",
+                "privacy_policy",
+                "terms_of_service",
+            ],
+            help_obj: str = None,
     ) -> typing.Optional[disnake.Message]:
         """/documentation {documentation_type: str|documentation_link|command_help|function_help} {help_obj}
 
@@ -785,7 +789,7 @@ class MiscCommandsCog(HelperCog):
                 )
             except the_documentation_file_loader.DocumentationNotFound as e:
                 if isinstance(
-                    e, the_documentation_file_loader.DocumentationFileNotFound
+                        e, the_documentation_file_loader.DocumentationFileNotFound
                 ):
                     await inter.send(
                         embed=ErrorEmbed(
@@ -834,9 +838,9 @@ class MiscCommandsCog(HelperCog):
         ],
     )
     async def blacklist(
-        self: "MiscCommandsCog",
-        inter: disnake.ApplicationCommandInteraction,
-        user: typing.Union[disnake.User, disnake.Member],
+            self: "MiscCommandsCog",
+            inter: disnake.ApplicationCommandInteraction,
+            user: typing.Union[disnake.User, disnake.Member],
     ):
         """/blacklist [user: user]
         Blacklist someone from the bot. You must be a trusted user to do this!
@@ -877,9 +881,9 @@ class MiscCommandsCog(HelperCog):
         ],
     )
     async def unblacklist(
-        self: "MiscCommandsCog",
-        inter: disnake.ApplicationCommandInteraction,
-        user: typing.Union[disnake.User, disnake.Member],
+            self: "MiscCommandsCog",
+            inter: disnake.ApplicationCommandInteraction,
+            user: typing.Union[disnake.User, disnake.Member],
     ):
         """/unblacklist [user: user]
         Remove a user's bot blacklist. You must be a trusted user to do this!
@@ -904,17 +908,20 @@ class MiscCommandsCog(HelperCog):
 
             # TODO: what do I do after a user gets blacklisted? Do I delete their data?
 
+    @commands.slash_command(
+        description="This command gives you documentation."
+    )
     async def documentation(
-        self,
-        inter: disnake.ApplicationCommandInteraction,
-        documentation_type: typing.Literal[
-            "documentation_link",  # type: ignore
-            "command_help",
-            "function_help",
-            "privacy_policy",
-            "terms_of_service",
-        ],
-        help_obj: str = None,
+            self,
+            inter: disnake.ApplicationCommandInteraction,
+            documentation_type: typing.Literal[
+                "documentation_link",  # type: ignore
+                "command_help",
+                "function_help",
+                "privacy_policy",
+                "terms_of_service",
+            ],
+            help_obj: str = None,
     ) -> typing.Optional[disnake.Message]:
         """/documentation {documentation_type: str|documentation_link|command_help|function_help} {help_obj}
 
@@ -931,7 +938,9 @@ class MiscCommandsCog(HelperCog):
         [argument_name: type = default] -
         An argument with choices of the given type, and defaults to default if not specified. Strings are represented without quotation marks.
         (argument_name: type) -
-        A required argument of the given type"""
+        A required argument of the given type
+        You can use this command even if you are blacklisted!"""
+
         if help_obj is None and documentation_type in ["command_help", "function_help"]:
             return await inter.send(
                 embed=ErrorEmbed(
@@ -982,7 +991,7 @@ class MiscCommandsCog(HelperCog):
                 )
             except the_documentation_file_loader.DocumentationNotFound as e:
                 if isinstance(
-                    e, the_documentation_file_loader.DocumentationFileNotFound
+                        e, the_documentation_file_loader.DocumentationFileNotFound
                 ):
                     await inter.send(
                         embed=ErrorEmbed(
@@ -1011,7 +1020,7 @@ class MiscCommandsCog(HelperCog):
             #    )  # Concatenate the lines in the file + send them
         else:
             raise NotImplementedError(
-                "This hasn't been implemented yet. Please contribute something!"
+                "This hasn't been implemented yet!"
             )
 
     @checks.has_privileges(blacklisted=False)
@@ -1031,9 +1040,9 @@ class MiscCommandsCog(HelperCog):
         ],
     )
     async def blacklist(
-        self: "MiscCommandsCog",
-        inter: disnake.ApplicationCommandInteraction,
-        user: typing.Union[disnake.User, disnake.Member],
+            self: "MiscCommandsCog",
+            inter: disnake.ApplicationCommandInteraction,
+            user: typing.Union[disnake.User, disnake.Member],
     ):
         """/blacklist [user: user]
         Blacklist someone from the bot. You must be a trusted user to do this!
@@ -1074,9 +1083,9 @@ class MiscCommandsCog(HelperCog):
         ],
     )
     async def unblacklist(
-        self: "MiscCommandsCog",
-        inter: disnake.ApplicationCommandInteraction,
-        user: typing.Union[disnake.User, disnake.Member],
+            self: "MiscCommandsCog",
+            inter: disnake.ApplicationCommandInteraction,
+            user: typing.Union[disnake.User, disnake.Member],
     ):
         """/unblacklist [user: user]
         Remove a user's bot blacklist. You must be a trusted user to do this!
@@ -1106,7 +1115,7 @@ class MiscCommandsCog(HelperCog):
     @checks.guild_not_blacklisted()
     @commands.slash_command(description="Request for your guild's data to be deleted")
     async def request_guild_data_delete(
-        self, inter: disnake.ApplicationCommandInteraction
+            self, inter: disnake.ApplicationCommandInteraction
     ):
         """/request_guild_data_delete
 
@@ -1116,8 +1125,8 @@ class MiscCommandsCog(HelperCog):
         try:
             assert inter.guild is not None
             assert (
-                await self.bot.is_trusted(inter.author)
-                or inter.author.id == inter.guild.owner_id
+                    await self.bot.is_trusted(inter.author)
+                    or inter.author.id == inter.guild.owner_id
             )
         except AssertionError:
             await inter.send("You don't have permission!")
@@ -1145,10 +1154,48 @@ class MiscCommandsCog(HelperCog):
 
             await msg.edit(
                 content="You didn't respond in time, so the view has now been closed"
-                + msg.content,  # noqa: E501
+                        + msg.content,  # noqa: E501
                 view=view,
             )
             return await inter.channel.send("You didn't submit in time!")
+        return
+
+    @commands.slash_command(
+        description="Compute the number of factors of y in x! where x>y and x and y are integers"
+    )
+    async def compute_num_factors_in_factorial(self, inter: disnake.ApplicationCommandInteraction, x: int, y: int):
+        """/compute_num_factors_in_factorial [x: int] [y:int]
+        Compute the number of factors of y in x! where x>y and x and y are positive integers. y must be a prime number!
+        The formula (the sum of floor(x,y^k) for k from 1 to infinity) is used.
+        I'm probably not going to implement parsing arithmetic so don't tell me about it.
+        We already have calculators and a lot of calculators already exist (including some on Discord),so I'm not going to implement one here right now."""
+        # TODO: implement a version that can compute this when y is not prime, and some other math commands (but not too many)
+        if not x > y:
+            await inter.send(embed=ErrorEmbed("x is not larger than y!"))
+            return
+        if x <= 0 or y <= 0:
+            await inter.send(embed=ErrorEmbed("x or y are negative."))
+            return
+        if y > TEN_BILLION:
+            await inter.send(embed=ErrorEmbed("y is too big!"))
+            return
+
+        if not miller_robin_primality_test(y):
+            await inter.send(embed=ErrorEmbed("y is composite."))
+            return
+        Y = mpf(y)
+        X = mpf(x)
+        numFactors = mpf(0)
+        k = mpf(0)
+        while True:
+            k += 1
+            numNewFactorsOfY = floor(X / Y ** k)
+            if numNewFactorsOfY == 0:
+                # Everything after will be 0 so we can stop computing here.
+                break
+            else:
+                numFactors += numNewFactorsOfY
+        await inter.send(embed=SuccessEmbed(f"There are {numFactors} factors of {y} in {x}!."))
         return
 
 
