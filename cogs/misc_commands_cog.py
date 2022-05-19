@@ -1166,7 +1166,7 @@ class MiscCommandsCog(HelperCog):
     async def compute_num_factors_in_factorial(self, inter: disnake.ApplicationCommandInteraction, x: int, y: int):
         """/compute_num_factors_in_factorial [x: int] [y:int]
         Compute the number of factors of y in x! where x>y and x and y are positive integers. y must be a prime number!
-        The formula (the sum of floor(x,y^k) for k from 1 to infinity) is used.
+        The formula (the sum of floor(x,y^k) for k from 1 to infinity) is used) or expre
         I'm probably not going to implement parsing arithmetic so don't tell me about it.
         We already have calculators and a lot of calculators already exist (including some on Discord),so I'm not going to implement one here right now."""
         # TODO: implement a version that can compute this when y is not prime, and some other math commands (but not too many)
