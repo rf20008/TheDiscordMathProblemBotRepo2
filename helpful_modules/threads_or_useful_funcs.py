@@ -3,6 +3,7 @@ import random
 import typing
 import subprocess
 import traceback
+import types
 from copy import deepcopy
 from logging import handlers
 from sys import exc_info, stderr
@@ -218,4 +219,25 @@ def miller_rabin_primality_test(n: int, certainty: int = 1000):
 
 def miller_robin_primality_test(n: int, certainty:int=1000)-> bool:
     return miller_rabin_primality_test(n,certainty)
-print(miller_rabin_primality_test(5))
+
+
+
+def attempt_to_import_orjson() -> tuple[typing.Optional[types.ModuleType], bool]:
+    """attempt_to_import_orjson()
+    
+    Attempt to import orjson and catch the ImportError
+
+    Parameters
+    -----------------
+    There are no parameters
+
+    Returns
+    ------------
+    Returns a tuple. The first element of the tuple is orjson or None.
+    The second element is a bool representing whether orjson could be succesfully imported
+    """
+    try:
+        import orjson
+        return (orjson, True)
+    except ImportError:
+        return (None, False)

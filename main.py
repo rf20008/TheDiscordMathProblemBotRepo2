@@ -134,6 +134,7 @@ main_cache = problems_module.MathProblemCache(
     mysql_db_name=bot_constants.MYSQL_DB_NAME,
     use_sqlite=bot_constants.USE_SQLITE,
 )  # Generate a new cache for the bot!
+problems_module.GuildData.global_cache=main_cache
 assert main_cache.db is main_cache.db_name
 vote_threshold = -1  # default
 mathProblems = {}

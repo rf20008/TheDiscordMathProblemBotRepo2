@@ -1,17 +1,25 @@
 import json
+from ...threads_or_useful_funcs import attempt_to_import_orjson
 from warnings import warn
 from ..errors import InvalidDictionaryInDatabaseException
 from .the_basic_check import CheckForUserPassage
 import typing
 
+JSON = json
+orjson, could_import = attempt_to_import_orjson()
+if could_import:
+    JSON = orjson
+else:
+    del orjson, could_import
+    
 
 class GuildData:
+    global_cache: "MathProblemCache"
     blacklisted: bool
     guild_id: int
     can_create_problems_check: CheckForUserPassage
     can_create_quizzes_check: CheckForUserPassage
     mods_check: CheckForUserPassage
-    cache: "MathProblemCache"
 
     def __init__(
         self,
@@ -20,46 +28,33 @@ class GuildData:
         can_create_problems_check: str,
         can_create_quizzes_check: str,
         mods_check: str,
-        cache,
     ):
-        self.cache = cache
         self.guild_id = guild_id
         self.blacklisted = blacklisted
-        try:
-            self.can_create_problems_check = CheckForUserPassage.from_dict(
-                json.loads(can_create_problems_check)
-            )
-        except json.JSONDecodeError as exc:
-            raise InvalidDictionaryInDatabaseException.from_invalid_data(
-                can_create_problems_check
-            ) from exc
-        except KeyError as exc:
-            raise InvalidDictionaryInDatabaseException(
-                f"I was able to parse {can_create_problems_check} into a dictionary, but I couldn't find the key called {str(exc)}!"
-            ) from exc
-        try:
-            self.can_create_quizzes_check = CheckForUserPassage.from_dict(
-                json.loads(can_create_quizzes_check)
-            )
-        except json.JSONDecodeError as exc:
-            raise InvalidDictionaryInDatabaseException.from_invalid_data(
-                can_create_quizzes_check
-            ) from exc
-        except KeyError as exc:
-            raise InvalidDictionaryInDatabaseException(
-                f"I was able to parse {can_create_quizzes_check} into a dictionary, but I couldn't find the key called {str(exc)}!"
-            ) from exc
+        for property, val in (
+            ("can_create_problems_check", can_create_problems_check),
+            ("can_create_quizzes_check", can_create_quizzes_check),
+            ("mods_check", mods_check)
+        ):
+            if isinstance(val, (str, dict)):
+                res=val
+                if isinstance(val, str):
+                    try:
+                        res = JSON.loads(val)
+                    except json.JSONDecodeError as exc:
+                        # Oh no
+                        raise
+                    except TypeError as exc:
+                        raise InvalidDictionaryInDatabaseException.from_invalid_data(val) from exc
+                try:
+                    setattr(self, property, CheckForUserPassage.from_dict(JSON.loads(val)))
 
-        try:
-            self.mods_check = CheckForUserPassage.from_dict(json.loads(mods_check))
-        except json.JSONDecodeError as exc:
-            raise InvalidDictionaryInDatabaseException.from_invalid_data(
-                mods_check
-            ) from exc
-        except KeyError as exc:
-            raise InvalidDictionaryInDatabaseException(
-                f"I was able to parse {mods_check} into a dictionary, but I couldn't find the key called {str(exc)}!"
-            ) from exc
+                except KeyError as exc:
+                    raise InvalidDictionaryInDatabaseException(
+                        f"I was able to parse {mods_check} into a dictionary, but I couldn't find the key called {str(exc)}!"
+                    ) from exc
+                
+                
 
     @classmethod
     def from_dict(cls, data: dict, cache) -> "GuildData":
@@ -69,7 +64,6 @@ class GuildData:
             can_create_problems_check=data["can_create_problems_check"],
             mods_check=data["mods_check"],
             can_create_quizzes_check=data["can_create_quizzes_check"],
-            cache=cache,
         )
 
     def to_dict(self, include_cache: bool) -> dict:
@@ -81,7 +75,7 @@ class GuildData:
             "mods_check": self.mods_check,
         }
         if include_cache:
-            dict_to_return["cache"] = self.cache
+            dict_to_return["cache"] = self.global_cache
 
         return dict_to_return
 
