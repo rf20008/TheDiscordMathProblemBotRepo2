@@ -199,7 +199,7 @@ def miller_robin_primality_test(n: int, certainty: int = 1000):
         d/=2
         numFactorsof2+=1
     for i in range(certainty):
-        a = random.randint(2, N-2)
+        a = random.randint(2,d-2)
         x = pow(a,d,n)
         if x==1 or x==n-1:
             continue

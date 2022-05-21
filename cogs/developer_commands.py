@@ -31,7 +31,7 @@ class DeveloperCommands(HelperCog):
         except AttributeError:
             pass
 
-    async def cog_check(self, inter: disnake.ApplicationCommandInteraction) -> bool:
+    async def cog_check(self, inter: disnake.ApplicationCommandInteraction | commands.Context) -> bool:
         """Return whether the user can use the command"""
         if await self.bot.is_owner(inter.author):
             return True
@@ -41,7 +41,7 @@ class DeveloperCommands(HelperCog):
         if await self.bot.is_blacklisted(inter.author):
             await inter.send("You cannot use this command because you are blacklisted.")
             return False
-        await inter.send("These commands are for me only!")
+        await inter.send("These commands are only for my developers!")
         return False
 
     # TODO: make these commands guild-only commands or get rid of the commands entirely
