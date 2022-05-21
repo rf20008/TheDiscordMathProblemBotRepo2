@@ -3,6 +3,7 @@ import random
 import typing
 import subprocess
 import traceback
+import types
 from copy import deepcopy
 from logging import handlers
 from sys import exc_info, stderr
@@ -184,19 +185,22 @@ def make_sure_log_dir_exists(log_maker: Callable[[str], logging.Logger]):
     except:
         print("I don't have permission to create a logs folder so logs may be missing!")
 
-def miller_robin_primality_test(n: int, certainty: int = 1000):
-    """An implementation of the Miller-Robin primality test. Return whether the number is probably prime!
+import random
+def miller_rabin_primality_test(n: int, certainty: int = 1000):
+    """An implementation of the Miller-Rabin primality test. Return whether the number is probably prime!
 
     Lots of credit to https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test"""
     if n<=1:
         return False
     if n==2:
         return True
-
-    d=n-1
+    if n==3:
+        return True
+    
+    d=n
     numFactorsof2=0
     while d % 2== 0:
-        d/=2
+        d= d//2
         numFactorsof2+=1
     for i in range(certainty):
         a = random.randint(2,d-2)
@@ -213,3 +217,27 @@ def miller_robin_primality_test(n: int, certainty: int = 1000):
             return False
     return True
 
+def miller_robin_primality_test(n: int, certainty:int=1000)-> bool:
+    return miller_rabin_primality_test(n,certainty)
+
+
+
+def attempt_to_import_orjson() -> tuple[typing.Optional[types.ModuleType], bool]:
+    """attempt_to_import_orjson()
+    
+    Attempt to import orjson and catch the ImportError
+
+    Parameters
+    -----------------
+    There are no parameters
+
+    Returns
+    ------------
+    Returns a tuple. The first element of the tuple is orjson or None.
+    The second element is a bool representing whether orjson could be succesfully imported
+    """
+    try:
+        import orjson
+        return (orjson, True)
+    except ImportError:
+        return (None, False)

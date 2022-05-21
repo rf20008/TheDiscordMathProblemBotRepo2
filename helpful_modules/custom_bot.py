@@ -139,7 +139,7 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
 
     async def is_blacklisted_by_guild_id(self, guild_id: int) -> bool:
         data: GuildData = await self.cache.get_guild_data(
-            guild_id=guild_id, default=problems_module.GuildData.default()
+            guild_id=guild_id, default=problems_module.GuildData.default(guild_id=guild_id)
         )
         return data.blacklisted
 
