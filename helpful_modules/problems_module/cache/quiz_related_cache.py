@@ -6,9 +6,9 @@ from copy import copy, deepcopy
 from types import FunctionType
 from typing import *
 
+import aiomysql
 import aiosqlite
 import disnake
-import aiomysql
 from aiomysql import DictCursor
 
 from helpful_modules.dict_factory import dict_factory

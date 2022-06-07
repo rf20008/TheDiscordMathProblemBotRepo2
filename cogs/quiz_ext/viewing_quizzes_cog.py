@@ -1,15 +1,15 @@
+import typing
+
 import disnake
 from disnake.ext import commands
 
-from helpful_modules import problems_module
+from helpful_modules import checks, problems_module
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.custom_embeds import *
 from helpful_modules.problems_module import *
-import typing
 
 from ..helper_cog import HelperCog
 from ._utils import get_attempt_num_for_user, get_quiz_submission
-from helpful_modules import checks
 
 
 class ViewingQuizzesCog(HelperCog):

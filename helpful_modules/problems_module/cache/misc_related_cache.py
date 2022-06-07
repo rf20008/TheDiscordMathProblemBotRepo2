@@ -8,22 +8,22 @@ from copy import copy, deepcopy
 from types import FunctionType
 from typing import *
 
+import aiomysql
 import aiosqlite
 import disnake
 from mysql.connector import MySQLConnection
-import aiomysql
 
 from helpful_modules.dict_factory import dict_factory
 from helpful_modules.threads_or_useful_funcs import get_log
 
+from ..appeal import Appeal
 from ..base_problem import BaseProblem
 from ..errors import *
-from ..appeal import Appeal
+from ..GuildData import GuildData
 from ..mysql_connector_with_stmt import mysql_connection
 from ..quizzes import Quiz, QuizProblem, QuizSolvingSession, QuizSubmission
 from ..quizzes.quiz_description import QuizDescription
 from ..user_data import UserData
-from ..GuildData import GuildData
 
 log = logging.getLogger(__name__)
 

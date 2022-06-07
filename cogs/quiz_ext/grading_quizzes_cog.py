@@ -1,13 +1,16 @@
-from ._utils import get_quiz_submission
-from ..helper_cog import HelperCog
 import typing
-from disnake.ext import commands
+
 import disnake
-from helpful_modules import problems_module, checks
-from helpful_modules.problems_module import *
+from disnake.ext import commands
+
+from helpful_modules import checks, problems_module
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.my_modals import MyModal
-from .grading_views_and_ui_components import GradingQuizView, GradingModal
+from helpful_modules.problems_module import *
+
+from ..helper_cog import HelperCog
+from ._utils import get_quiz_submission
+from .grading_views_and_ui_components import GradingModal, GradingQuizView
 
 
 class GradingQuizzesCog(HelperCog):

@@ -1,18 +1,15 @@
+from typing import Union
+
 import disnake
 from disnake.ext import commands, tasks
+from disnake.ext.commands import (AutoShardedBot, AutoShardedInteractionBot,
+                                  Bot, InteractionBot)
 
 from helpful_modules import problems_module
 from helpful_modules._error_logging import log_error
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 
 from .helper_cog import HelperCog
-from typing import Union
-from disnake.ext.commands import (
-    Bot,
-    InteractionBot,
-    AutoShardedInteractionBot,
-    AutoShardedBot,
-)
 
 # TODO: make this an extension :-)
 

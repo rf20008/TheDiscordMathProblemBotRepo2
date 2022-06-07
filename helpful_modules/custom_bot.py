@@ -1,20 +1,22 @@
-import random
 import asyncio
-import disnake
-from disnake.ext import commands, tasks
-import helpful_modules
-import typing
 import inspect
 import logging
 import random
-from functools import wraps, partial
 import time
+import typing
+from functools import partial, wraps
+from types import FunctionType
+
+import disnake
+from disnake.ext import commands, tasks
+
+import helpful_modules
 from helpful_modules import problems_module
 from helpful_modules.constants_loader import BotConstants
-from helpful_modules.restart_the_bot import RestartTheBot
-from .threads_or_useful_funcs import modified_async_wrap
 from helpful_modules.problems_module.cache import MathProblemCache
-from types import FunctionType
+from helpful_modules.restart_the_bot import RestartTheBot
+
+from .threads_or_useful_funcs import modified_async_wrap
 
 
 class TheDiscordMathProblemBot(disnake.ext.commands.Bot):

@@ -5,11 +5,11 @@ import typing
 import warnings
 from copy import copy, deepcopy
 from types import FunctionType
-from typing import Optional, List, Union
+from typing import List, Optional, Union
 
+import aiomysql
 import aiosqlite
 import disnake
-import aiomysql
 
 from helpful_modules.dict_factory import dict_factory
 from helpful_modules.threads_or_useful_funcs import get_log

@@ -1,8 +1,9 @@
 import asyncio
-import disnake
 import subprocess
-from typing import NoReturn
 from sys import executable
+from typing import NoReturn
+
+import disnake
 
 # from .custom_bot import TheDiscordMathProblemBot
 

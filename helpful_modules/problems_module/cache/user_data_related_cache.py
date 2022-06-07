@@ -6,10 +6,10 @@ from copy import copy, deepcopy
 from types import FunctionType
 from typing import *
 
-from aiomysql import DictCursor
 import aiomysql
 import aiosqlite
 import disnake
+from aiomysql import DictCursor
 
 from helpful_modules.dict_factory import dict_factory
 from helpful_modules.threads_or_useful_funcs import get_log

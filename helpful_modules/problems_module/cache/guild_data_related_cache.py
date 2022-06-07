@@ -1,13 +1,13 @@
 import asyncio
 import copy
 
+import aiomysql
 import aiosqlite
+from aiomysql import DictCursor
 
 from ...dict_factory import dict_factory
 from ..GuildData.guild_data import GuildData
 from ..mysql_connector_with_stmt import *
-from aiomysql import DictCursor
-import aiomysql
 from ..mysql_connector_with_stmt import mysql_connection
 from .permissions_required_related_cache import PermissionsRequiredRelatedCache
 

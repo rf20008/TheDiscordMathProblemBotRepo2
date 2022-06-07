@@ -1,6 +1,8 @@
+import os
+
 import disnake
 from disnake.ui import Modal
-import os
+
 from .threads_or_useful_funcs import base_on_error
 
 

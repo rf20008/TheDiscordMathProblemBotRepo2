@@ -4,9 +4,9 @@ from disnake.ext import commands
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 
 from .creating_quizzes_commands import CreatingQuizzesCommandsCog
+from .modifying_quizzes_cog import ModifyingQuizzesCog
 from .solving_commands import QuizSolveCog
 from .viewing_quizzes_cog import ViewingQuizzesCog
-from .modifying_quizzes_cog import ModifyingQuizzesCog
 
 
 def setup(bot: TheDiscordMathProblemBot) -> None:

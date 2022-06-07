@@ -6,14 +6,15 @@ from io import BytesIO
 import disnake
 from disnake.ext import commands
 
-from helpful_modules import problems_module
+from helpful_modules import checks, problems_module
+from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.custom_embeds import ErrorEmbed, SuccessEmbed
 from helpful_modules.problems_module import *
 from helpful_modules.problems_module import MathProblemCache, Quiz, QuizProblem
-from helpful_modules.problems_module.quizzes import QuizSolvingSession, QuizSubmission
-from helpful_modules.custom_bot import TheDiscordMathProblemBot
+from helpful_modules.problems_module.quizzes import (QuizSolvingSession,
+                                                     QuizSubmission)
 from helpful_modules.threads_or_useful_funcs import generate_new_id, get_log
-from helpful_modules import checks
+
 from ..helper_cog import HelperCog
 
 

@@ -10,10 +10,11 @@ The dict in the permissions_needed key should not be modified.
 Also, most of the logic is delegated either to UserDataRequiredCache or AsyncFileReader
 
 """
-from .user_data_related_cache import UserDataRelatedCache
-from ...FileDictionaryReader import AsyncFileDict
 import typing
+
+from ...FileDictionaryReader import AsyncFileDict
 from ..user_data import UserData
+from .user_data_related_cache import UserDataRelatedCache
 
 
 class PermissionsRequiredRelatedCache(UserDataRelatedCache):

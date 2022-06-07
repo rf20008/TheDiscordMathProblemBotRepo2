@@ -1,11 +1,13 @@
+from typing import List, Optional, Union
+
+import disnake
 from disnake import ui
 from disnake.ext import commands
-import disnake
+
 from helpful_modules import problems_module as pm
-from helpful_modules.threads_or_useful_funcs import base_on_error
-from helpful_modules.my_modals import MyModal
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
-from typing import Union, List, Optional
+from helpful_modules.my_modals import MyModal
+from helpful_modules.threads_or_useful_funcs import base_on_error
 
 
 class GradingQuizView(ui.View):

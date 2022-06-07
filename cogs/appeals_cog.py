@@ -1,14 +1,17 @@
-from helpful_modules.custom_bot import TheDiscordMathProblemBot
-import disnake
 import time
+from os import urandom
+
+import disnake
+from disnake.ext import commands
+
 from helpful_modules import problems_module
 from helpful_modules.checks import has_privileges
-from disnake.ext import commands
-from .helper_cog import HelperCog
-from helpful_modules.threads_or_useful_funcs import _generate_appeal_id
+from helpful_modules.custom_bot import TheDiscordMathProblemBot
+from helpful_modules.custom_embeds import ErrorEmbed, SuccessEmbed
 from helpful_modules.my_modals import MyModal
-from helpful_modules.custom_embeds import SuccessEmbed, ErrorEmbed
-from os import urandom
+from helpful_modules.threads_or_useful_funcs import _generate_appeal_id
+
+from .helper_cog import HelperCog
 
 
 class AppealsCog(HelperCog):

@@ -1,10 +1,12 @@
-from disnake import ui, abc
-from disnake.ext import commands
-from helpful_modules.custom_bot import TheDiscordMathProblemBot
+from typing import Optional, Union
+
 import disnake
-from helpful_modules import problems_module, custom_bot
+from disnake import abc, ui
+from disnake.ext import commands
+
+from helpful_modules import custom_bot, problems_module
+from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.threads_or_useful_funcs import base_on_error
-from typing import Union, Optional
 
 
 class GuildDataDeletionView(ui.View):

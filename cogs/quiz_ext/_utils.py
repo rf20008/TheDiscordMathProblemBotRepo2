@@ -1,7 +1,8 @@
+import typing
+
 from helpful_modules.problems_module import *
 
 from ..helper_cog import HelperCog
-import typing
 
 
 async def get_quiz_submission(

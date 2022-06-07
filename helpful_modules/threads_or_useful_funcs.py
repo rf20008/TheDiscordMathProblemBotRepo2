@@ -1,15 +1,16 @@
 import logging
+import pathlib
 import random
-import typing
 import subprocess
 import traceback
 import types
+import typing
 from copy import deepcopy
 from logging import handlers
 from sys import exc_info, stderr
 from time import asctime, sleep
-from typing import Optional, Callable
-import pathlib
+from typing import Callable, Optional
+
 import disnake
 from disnake.ext import commands
 
@@ -186,6 +187,8 @@ def make_sure_log_dir_exists(log_maker: Callable[[str], logging.Logger]):
         print("I don't have permission to create a logs folder so logs may be missing!")
 
 import random
+
+
 def miller_rabin_primality_test(n: int, certainty: int = 1000):
     """An implementation of the Miller-Rabin primality test. Return whether the number is probably prime!
 

@@ -1,12 +1,17 @@
-import disnake
-from .helper_cog import HelperCog
-from disnake.ext import commands, tasks
-from helpful_modules import checks, problems_module, the_documentation_file_loader
-from helpful_modules.threads_or_useful_funcs import get_log
-from helpful_modules.custom_bot import TheDiscordMathProblemBot
-from disnake import User, Member, Guild, Permissions, GuildCommandInteraction, Role
-from helpful_modules.problems_module import GuildData, MathProblemCache
 from typing import Optional
+
+import disnake
+from disnake import (Guild, GuildCommandInteraction, Member, Permissions, Role,
+                     User)
+from disnake.ext import commands, tasks
+
+from helpful_modules import (checks, problems_module,
+                             the_documentation_file_loader)
+from helpful_modules.custom_bot import TheDiscordMathProblemBot
+from helpful_modules.problems_module import GuildData, MathProblemCache
+from helpful_modules.threads_or_useful_funcs import get_log
+
+from .helper_cog import HelperCog
 
 TAB_NEWLINE = "\t\n"  # This is because f-strings cannot contain backslashes...
 CHECKS = ("mod_check", "can_create_problems_check", "can_create_quizzes_check")

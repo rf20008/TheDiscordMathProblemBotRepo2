@@ -1,9 +1,10 @@
 import json
-from ...threads_or_useful_funcs import attempt_to_import_orjson
+import typing
 from warnings import warn
+
+from ...threads_or_useful_funcs import attempt_to_import_orjson
 from ..errors import InvalidDictionaryInDatabaseException
 from .the_basic_check import CheckForUserPassage
-import typing
 
 JSON = json
 orjson, could_import = attempt_to_import_orjson()
