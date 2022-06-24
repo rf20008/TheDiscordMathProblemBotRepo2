@@ -83,15 +83,20 @@ class GeneralizedTable:
     """A table that can be used for general purposes and can be used"""
     cache: MathProblemCache
     table_name: str
-    column_names: Sequence[str]
     name_to_type_mapping: Mapping[str, type]
+    primary_key: str
 
-    def __init__(self, cache: MathProblemCache, table_name: str, column_names: Sequence[str], name_to_type_mapping: Mapping[str, type]):
+    @property
+    def column_names(self):
+        return self.name_to_type_mapping.keys()
+
+    def __init__(self, cache: MathProblemCache, table_name: str, name_to_type_mapping: Mapping[str, type], primary_key: str):
+        if primary_key not in name_to_type_mapping.keys():
+            raise MathProblemsModuleException("You cannot use this as a primary key since it is not a column name")
         self.cache=cache
         if table_name in UNUSABLE_NAMES:
             raise MathProblemsModuleException("You cannot use this table name")
         self.table_name=table_name
-        self.column_names=column_names
         self.name_to_type_mapping=name_to_type_mapping
 
     async def create_my_table(self):
@@ -107,5 +112,7 @@ class GeneralizedTable:
                     sql_query+= column_name + " " + column_type
                 else:
                     sql_query += column_name + " MEDIUMTEXT(1000000)"
-                raise NotImplementedError
+                if column_name==primary_key:
+                    sql_query += "PRIMARY KEY"
+                
             await self.cache.run_sql(sql_query)

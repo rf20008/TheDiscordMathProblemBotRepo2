@@ -126,9 +126,7 @@ class MiscCommandsCog(HelperCog):
             embed = embed.add_field(
                 name="Uptime",
                 value=(
-                    f"""The bot started at" 
-                    f"{disnake.utils.format_dt(self.bot.timeStarted)}"
-                    f"and has been up for {round(self.bot.uptime)} seconds."""
+                    f"""The bot started at {disnake.utils.format_dt(self.bot.timeStarted)} and has been up for {round(self.bot.uptime)} seconds."""
                 ),
             )
 
