@@ -56,7 +56,8 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
         #    raise TypeError("trusted_users was not found")
         # self.blacklisted_users = kwargs.get("blacklisted_users", [])
         self.closing_things = []
-
+        self.support_server=None
+        
     def get_task(self, task_name):
         return self.tasks[task_name]
 

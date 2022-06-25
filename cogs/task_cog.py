@@ -12,7 +12,7 @@ from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from .helper_cog import HelperCog
 
 # TODO: make this an extension :-)
-
+SUPPORT_SERVER_ID = 873741593159540747
 
 class TaskCog(HelperCog):
     def __init__(self, bot: TheDiscordMathProblemBot):
@@ -61,6 +61,9 @@ class TaskCog(HelperCog):
         self.update_cache_task.stop()
         self.report_tasks_task.stop()
 
-
+    @tasks.loop(minutes=4)
+    async def update_support_server(self):
+        self.bot.support_server = await self.bot.fetch_guild(SUPPORT_SERVER_ID)
+        
 def setup(bot: TheDiscordMathProblemBot):
     bot.add_cog(TaskCog(bot))

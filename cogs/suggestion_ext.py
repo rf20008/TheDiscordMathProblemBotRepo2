@@ -46,7 +46,7 @@ class ConfirmView(disnake.ui.View):
     async def confirm(self, button: disnake.ui.Button, inter: disnake.MessageInteraction):
         await inter.response.defer()
         # assume the interaction check has passed, Disnake calls the interaction check before the function is called
-        channel =await self.bot.get_or_fetch_channel(SUGGESTIONS_AND_FEEDBACK_CHANNEL_ID)
+        channel =await self.bot.support_server.get_or_fetch_channel(SUGGESTIONS_AND_FEEDBACK_CHANNEL_ID)
         await channel.send(
             disnake.Embed(
                 title = (inter.author.name + "#" + inter.author.discriminator),
