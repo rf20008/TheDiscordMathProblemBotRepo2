@@ -226,7 +226,7 @@ bot.CONSTANTS = bot_constants
 bot.add_app_command_check(checks.is_not_blacklisted())
 bot.add_app_command_check(checks.has_privileges())
 bot.add_app_command_check(checks.guild_not_blacklisted())
-
+bot.add_app_command_check(checks.nothing_too_long())
 for command in bot.application_commands:
     log.debug("Testing " + command.name)
     if not (1 <= len(command.name) <= 100):

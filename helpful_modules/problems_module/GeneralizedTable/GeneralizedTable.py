@@ -100,6 +100,12 @@ class GeneralizedTable:
         self.name_to_type_mapping=name_to_type_mapping
 
     async def create_my_table(self):
+        """
+        |coro|
+        Make a table for myself. Warning: DO NOT LET THE USER CONTROL THE TABLE NAME OR THE COLUMN NAMES (to prevent SQL injection!)
+        This function does not return anything.
+        This may throw
+        """
         if self.cache.use_sqlite:
             sql_query = "CREATE TABLE IF NOT EXISTS "
             sql_query+=self.table_name
@@ -114,5 +120,9 @@ class GeneralizedTable:
                     sql_query += column_name + " MEDIUMTEXT(1000000)"
                 if column_name==primary_key:
                     sql_query += "PRIMARY KEY"
-                
+
+            await self.cache.run_sql(sql_query)
+        else:
+            sql_query = f"CREATE TABLE IF NOT"
+
             await self.cache.run_sql(sql_query)

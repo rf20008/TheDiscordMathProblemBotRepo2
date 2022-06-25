@@ -5,7 +5,7 @@ from .custom_bot import TheDiscordMathProblemBot
 from .problems_module.user_data import UserData
 
 bot = None
-
+MAX_LIMIT = 120_000 # Nothing longer than 120,000 characters
 
 def setup(_bot):
     global bot
@@ -177,3 +177,22 @@ def guild_owners_or_trusted_users_only():
             raise commands.CheckFailure("You don't own this guild!")
 
     return commands.check(predicate)
+
+def nothing_too_long():
+    async def predicate(inter: disnake.ApplicationCommandInteraction):
+        for item, l in inter.filled_options:
+            try:
+                if len(l) > MAX_LIMIT:
+                    raise commands.CheckFailure(f"You're not allowed to send things longer than {MAX_LIMIT} characters.")
+                else:
+                    continue
+            except commands.CheckFailure:
+                raise # Don't catch this error
+            except TypeError:
+                # Not something we can find the length of
+                pass # Don't do anything
+
+        return True
+
+    return commands.check(predicate)
+
