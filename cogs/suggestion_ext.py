@@ -32,7 +32,12 @@ class ConfirmView(disnake.ui.View):
         self.suggestion=suggestion
 
     async def interaction_check(self, inter: disnake.Interaction):
-        return self.user_id == inter.author.id and not await self.bot.is_blacklisted(inter.author.id)
+        async def check():
+            return self.user_id == inter.author.id and not await self.bot.is_blacklisted_by_user_id(inter.author.id)
+        if await check():
+            return True
+        else:
+            await inter.send("This isn't your view!", ephemeral=True, delete_after=15.0)
 
     @disnake.ui.button(label="CONFIRM", disabled=False, style=disnake.ButtonStyle.green)
     async def confirm(self, button: disnake.ui.Button, inter: disnake.MessageInteraction):
@@ -51,6 +56,7 @@ class ConfirmView(disnake.ui.View):
 
     @disnake.ui.button(label="DENY", disabled=False, style=disnake.ButtonStyle.red)
     async def deny(self, _: disnake.ui.Button, inter: disnake.MessageInteraction):
+        print(inter)
         await inter.edit_original_message(content="Okay. I guess you don't want to make the suggestion.", embeds=[], view=None)
 
 
@@ -79,7 +85,7 @@ class SuggestionCog(HelperCog):
             return await inter.send("I am not ready to recieve suggestions!")
 
         await inter.send(
-            embed=SimpleEmbed(
+            embed=custom_embeds.SimpleEmbed(
                 title="Are you sure you want to make this?",
                 description = (
                     "This suggestion will be sent to the official support server. "+

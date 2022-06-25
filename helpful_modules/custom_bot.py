@@ -25,6 +25,7 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
         self.is_closing = False
 
         self.tasks = kwargs.pop("tasks")
+
         self._on_ready_func = kwargs.pop(
             "on_ready_func"
         )  # Will be called when the bot is ready (with an argument of itself)
@@ -135,6 +136,7 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
         self, user: typing.Union[disnake.User, disnake.Member]
     ) -> bool:
         return await self.is_blacklisted_by_user_id(user.id)
+
 
     async def is_guild_blacklisted(self, guild: disnake.Guild) -> bool:
         return await self.is_blacklisted_by_guild_id(guild.id)
