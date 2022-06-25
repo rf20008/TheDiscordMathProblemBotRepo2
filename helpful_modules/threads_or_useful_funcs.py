@@ -55,9 +55,23 @@ async def base_on_error(
         disnake.Interaction,
     ],
     error: BaseException,
+    item: typing.Optional[
+        typing.Union[
+            disnake.ui.Button,
+            disnake.ui.Select
+        ]
+    ]=None
 ):
     """The base on_error event. Call this and use the dictionary as keyword arguments to print to the user"""
     error_traceback = "\n".join(traceback.format_exception(error))
+    extra_content=""
+    if item is not None:
+        if isinstance(item, disnake.ui.Button):
+            extra_content += "An error occured in the button called " + item.label + "!\n"
+        else:
+            extra_content += "An error occured in the select " + item + "!"
+            
+    
     if isinstance(error, BaseException) and not isinstance(error, Exception):
         # Errors that do not inherit from Exception are not meant to be caught
         await inter.bot.close()
@@ -70,7 +84,7 @@ async def base_on_error(
         )
         return {"content": content}
     if isinstance(error, (disnake.Forbidden,)):
-        extra_content = """There was a 403 error. This means either
+        extra_content += """There was a 403 error. This means either
         1) You didn't give me enough permissions to function correctly, or
         2) There's a bug! If so, please report it!
         
@@ -88,7 +102,7 @@ async def base_on_error(
         file=stderr,
     )
     log_error(error)  # Log the error
-    error_msg = """An error occurred!
+    error_msg = extra_content+"""An error occurred!
     
     Steps you should do:
     1) Please report this bug to me! (Either create a github issue, or report it in the support server)
@@ -109,7 +123,7 @@ async def base_on_error(
     except (TypeError, NameError) as e:
 
         # send as plain text
-        plain_text = (
+        plain_text = extra_content+(
             """Oh no! An Exception occurred! And it couldn't be sent as an embed!```"""
         )
         plain_text += error_traceback

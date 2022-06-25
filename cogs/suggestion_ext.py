@@ -21,6 +21,7 @@ from disnake.ext import commands, tasks
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules import checks, custom_embeds
 from .helper_cog import HelperCog
+from helpful_modules.threads_or_useful_funcs import base_on_error
 import random
 SUGGESTIONS_AND_FEEDBACK_CHANNEL_ID = 883908866541256805
 
@@ -31,6 +32,8 @@ class ConfirmView(disnake.ui.View):
         self.bot=bot
         self.suggestion=suggestion
 
+    async def on_error(self, error, item, interaction):
+        await interaction.send(**base_on_error(interaction, error, item))
     async def interaction_check(self, inter: disnake.Interaction):
         async def check():
             return self.user_id == inter.author.id and not await self.bot.is_blacklisted_by_user_id(inter.author.id)
@@ -41,7 +44,7 @@ class ConfirmView(disnake.ui.View):
 
     @disnake.ui.button(label="CONFIRM", disabled=False, style=disnake.ButtonStyle.green)
     async def confirm(self, button: disnake.ui.Button, inter: disnake.MessageInteraction):
-
+        await inter.response.defer()
         # assume the interaction check has passed, Disnake calls the interaction check before the function is called
         channel =await self.bot.get_or_fetch_channel(SUGGESTIONS_AND_FEEDBACK_CHANNEL_ID)
         await channel.send(
@@ -56,8 +59,8 @@ class ConfirmView(disnake.ui.View):
 
     @disnake.ui.button(label="DENY", disabled=False, style=disnake.ButtonStyle.red)
     async def deny(self, _: disnake.ui.Button, inter: disnake.MessageInteraction):
-        print(inter)
-        await inter.edit_original_message(content="Okay. I guess you don't want to make the suggestion.", embeds=[], view=None)
+        #msg = await inter.get_original_message()
+        await inter.response.edit_message(content="Okay. I guess you don't want to make the suggestion.", embeds=[], view=None)
 
 
 
