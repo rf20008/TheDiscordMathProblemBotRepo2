@@ -100,5 +100,9 @@ class SuggestionCog(HelperCog):
 
 
 
+def setup(bot: TheDiscordMathProblemBot):
+    bot.add_cog(SuggestionCog(bot))
 
+def teardown(bot: TheDiscordMathProblemBot):
+    bot.remove_cog("SuggestionCog")
 
