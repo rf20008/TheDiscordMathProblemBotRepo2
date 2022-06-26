@@ -161,6 +161,7 @@ def get_git_revision_hash() -> str:
 async def on_ready(bot: TheDiscordMathProblemBot):
     """Ran when the disnake library detects that the bot is ready"""
     app_info = await bot.application_info()
+    bot.support_server = await bot.fetch_guild(bot.constants.SUPPORT_SERVER_ID)
     print("The bot is now ready!")
     print(f"I connected as {bot.user.name}#{bot.user.discriminator}.")
     print(

@@ -63,7 +63,7 @@ class TaskCog(HelperCog):
 
     @tasks.loop(minutes=4)
     async def update_support_server(self):
-        self.bot.support_server = await self.bot.fetch_guild(SUPPORT_SERVER_ID)
+        self.bot.support_server = await self.bot.fetch_guild(self.bot.constants.SUPPORT_SERVER_ID)
         
 def setup(bot: TheDiscordMathProblemBot):
     bot.add_cog(TaskCog(bot))

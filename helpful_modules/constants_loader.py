@@ -20,3 +20,5 @@ class BotConstants:
             "https://github.com/rf20008/TheDiscordMathProblemBotRepo",
         )
         self.BOT_RESTART_CHANNEL = os.environ.get("bot_restart_channel")
+        self.SUGGESTIONS_AND_FEEDBACK_CHANNEL_ID = 883908866541256805
+        self.SUPPORT_SERVER_ID = 873741593159540747

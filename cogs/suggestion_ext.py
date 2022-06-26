@@ -30,10 +30,10 @@ class ConfirmView(disnake.ui.View):
         super().__init__(timeout=timeout)
         self.user_id = user_id
         self.bot=bot
-        self.suggestion=suggestion
+
 
     async def on_error(self, error, item, interaction):
-        await interaction.send(**base_on_error(interaction, error, item))
+        await interaction.send(**(await base_on_error(interaction, error, item)))
     async def interaction_check(self, inter: disnake.Interaction):
         async def check():
             return self.user_id == inter.author.id and not await self.bot.is_blacklisted_by_user_id(inter.author.id)
@@ -46,7 +46,7 @@ class ConfirmView(disnake.ui.View):
     async def confirm(self, button: disnake.ui.Button, inter: disnake.MessageInteraction):
         await inter.response.defer()
         # assume the interaction check has passed, Disnake calls the interaction check before the function is called
-        channel =await self.bot.support_server.get_or_fetch_channel(SUGGESTIONS_AND_FEEDBACK_CHANNEL_ID)
+        channel =await self.bot.support_server.fetch_channel(SUGGESTIONS_AND_FEEDBACK_CHANNEL_ID)
         await channel.send(
             disnake.Embed(
                 title = (inter.author.name + "#" + inter.author.discriminator),
