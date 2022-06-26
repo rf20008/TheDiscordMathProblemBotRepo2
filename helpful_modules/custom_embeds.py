@@ -12,9 +12,16 @@ class SimpleEmbed(Embed):
         description="",
         color=Color.from_rgb(r=randint(0, 255), g=randint(0, 255), b=randint(0, 255)),
         footer=Embed.Empty,
+        file=None,
+        url=None,
+        timestamp=None
     ):
         super().__init__(title=title, description=description, color=color)
         self.set_footer(text=footer)
+        if url is not None and file is not None:
+            self.set_image(url,file=file)
+        if timestamp is not None:
+            self.timestamp=timestamp
 
 
 class ErrorEmbed(SimpleEmbed):

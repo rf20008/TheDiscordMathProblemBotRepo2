@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses>"""
 
 import disnake
+import io
 from typing import *
 from disnake.ext import commands, tasks
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
@@ -30,7 +31,7 @@ class ConfirmView(disnake.ui.View):
         super().__init__(timeout=timeout)
         self.user_id = user_id
         self.bot=bot
-
+        self.suggestion=suggestion
 
     async def on_error(self, error, item, interaction):
         await interaction.send(**(await base_on_error(interaction, error, item)))
@@ -48,9 +49,11 @@ class ConfirmView(disnake.ui.View):
         # assume the interaction check has passed, Disnake calls the interaction check before the function is called
         channel =await self.bot.support_server.fetch_channel(SUGGESTIONS_AND_FEEDBACK_CHANNEL_ID)
         await channel.send(
-            disnake.Embed(
+            embed=custom_embeds.SimpleEmbed(
+                url=inter.author.display_avatar.url,
+                file=io.BytesIO(await inter.author.display_avatar.read()),
                 title = (inter.author.name + "#" + inter.author.discriminator),
-                description=suggestion,
+                description=self.suggestion,
                 color = random.randint(0x000000, 0xffffff),
                 timestamp=disnake.utils.utcnow()
             )
