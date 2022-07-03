@@ -727,7 +727,7 @@ class ProblemsCog(HelperCog):
         Check your answer to the problem with the given id.
         The bot can tell whether the problem is a guild problem."""
         try:
-            problem = await self.bot.cache.get_problem(int(problem_id))
+            problem = await self.bot.cache.get_problem(inter.guild_id, int(problem_id))
             if problem.is_solver(inter.author):  # If the user solved the problem
                 await inter.send(
                     embed=ErrorEmbed(
