@@ -32,7 +32,7 @@ class ConfirmView(disnake.ui.View):
         self.user_id = user_id
         self.bot=bot
         self.suggestion=suggestion
-
+    
     async def on_error(self, error, item, interaction):
         await interaction.send(**(await base_on_error(interaction, error, item)))
     async def interaction_check(self, inter: disnake.Interaction):
@@ -51,10 +51,11 @@ class ConfirmView(disnake.ui.View):
         await channel.send(
             embed=custom_embeds.SimpleEmbed(
                 url=inter.author.display_avatar.url,
-                title = (inter.author.name + "#" + inter.author.discriminator),
+                title = "Suggestion #" + str((await self.incr_suggestion_num())),
                 description=self.suggestion,
                 color = random.randint(0x000000, 0xffffff),
-                timestamp=disnake.utils.utcnow()
+                timestamp=disnake.utils.utcnow(),
+                footer =  "Author: "+(inter.author.name + "#" + inter.author.discriminator)
             )
         )
         await inter.edit_original_message(content="Successful. This view is now closed.", embeds=[], view=None)
@@ -64,6 +65,17 @@ class ConfirmView(disnake.ui.View):
         #msg = await inter.get_original_message()
         await inter.response.edit_message(content="Okay. I guess you don't want to make the suggestion.", embeds=[], view=None)
 
+
+    async def get_suggestion_num(self) -> int:
+        """Get the suggestion number"""
+        return int(await self.bot.config_json.get_key("suggestion_num"))
+
+    async def incr_suggestion_num(self) -> int:
+        """Get the suggestion number, add 1, and set this to the new suggestion number, and return the new suggestion number (which is cached)"""
+        suggestion_num =await  self.get_suggestion_num()
+        suggestion_num+=1
+        await self.bot.config_json.set_key("suggestion_num", suggestion_num)
+        return suggestion_num
 
 
 class SuggestionCog(HelperCog):
@@ -78,6 +90,7 @@ class SuggestionCog(HelperCog):
         await self.bot.wait_until_ready() # Make sure we have a connection before we continue
         self.suggestions_and_feedback_channel = await self.bot.fetch_channel(SUGGESTIONS_AND_FEEDBACK_CHANNEL_ID)
         self.is_ready=True
+
 
     @checks.is_not_blacklisted()
     @commands.slash_command(description="Make a suggestion")

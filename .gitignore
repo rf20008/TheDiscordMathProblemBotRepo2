@@ -151,6 +151,7 @@ vote_threshold.txt # Use /what_is_vote_threshold to use. This may be outdated...
 trusted_users.txt # /list_trusted_users to list trusted users. 
 **/.env # keep my token safe
 .env #keep my token safe :)
+config.json # Don't show my private information to the entire world
 !**/*.py #never ignore any python file :)
 !**/.gitignore
 pylint-1.rtf

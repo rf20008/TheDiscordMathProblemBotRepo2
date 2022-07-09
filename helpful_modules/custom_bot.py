@@ -9,7 +9,7 @@ from types import FunctionType
 
 import disnake
 from disnake.ext import commands, tasks
-
+from .FileDictionaryReader import AsyncFileDict
 import helpful_modules
 from helpful_modules import problems_module
 from helpful_modules.constants_loader import BotConstants
@@ -25,7 +25,8 @@ class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
         self.is_closing = False
 
         self.tasks = kwargs.pop("tasks")
-
+        self.config_json =AsyncFileDict("config.json")
+        
         self._on_ready_func = kwargs.pop(
             "on_ready_func"
         )  # Will be called when the bot is ready (with an argument of itself)

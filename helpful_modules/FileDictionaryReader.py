@@ -16,10 +16,11 @@ __all__ = ("AsyncFileDict",)
 class AsyncFileDict:
     """This is a class that uses a file and stores JSON. It also uses an internal dictionary"""
 
-    def __init__(self, filename):
+    def __init__(self, filename, overwrite=False):
         self.filename = filename
         self.dict = {}
-        asyncio.run(self.update_my_file())
+        if overwrite:
+            asyncio.run(self.update_my_file())
 
     async def update_my_file(self):
         async with aiofiles.open(self.filename, "wb") as file:
@@ -28,7 +29,7 @@ class AsyncFileDict:
 
     async def read_from_file(self) -> dict:
         async with aiofiles.open(self.filename, "r") as file:
-            self._dict = json.loads(await file.read())
+            self.dict = json.loads(await file.read())
             return self.dict
 
     async def get_key(self, key):
