@@ -9,7 +9,7 @@ class SimpleEmbed(Embed):
     def __init__(
         self,
         title="",
-        description="",url,file=file)
+        description="",
         color=Color.from_rgb(r=randint(0, 255), g=randint(0, 255), b=randint(0, 255)),
         footer=Embed.Empty,
         file=None,
