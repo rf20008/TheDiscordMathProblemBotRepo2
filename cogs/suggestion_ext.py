@@ -51,7 +51,6 @@ class ConfirmView(disnake.ui.View):
         await channel.send(
             embed=custom_embeds.SimpleEmbed(
                 url=inter.author.display_avatar.url,
-                file=io.BytesIO(await inter.author.display_avatar.read()),
                 title = (inter.author.name + "#" + inter.author.discriminator),
                 description=self.suggestion,
                 color = random.randint(0x000000, 0xffffff),

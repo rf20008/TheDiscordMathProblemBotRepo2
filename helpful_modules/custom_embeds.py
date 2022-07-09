@@ -9,7 +9,7 @@ class SimpleEmbed(Embed):
     def __init__(
         self,
         title="",
-        description="",
+        description="",url,file=file)
         color=Color.from_rgb(r=randint(0, 255), g=randint(0, 255), b=randint(0, 255)),
         footer=Embed.Empty,
         file=None,
@@ -19,7 +19,7 @@ class SimpleEmbed(Embed):
         super().__init__(title=title, description=description, color=color)
         self.set_footer(text=footer)
         if url is not None and file is not None:
-            self.set_image(url,file=file)
+            self.set_image(url)
         if timestamp is not None:
             self.timestamp=timestamp
 
