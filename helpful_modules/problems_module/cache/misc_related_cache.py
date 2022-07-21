@@ -587,7 +587,7 @@ class MiscRelatedCache:
     async def run_sql(
         self, sql: str, placeholders: typing.Optional[typing.List[Any]] = None
     ) -> dict:
-        """Run arbitrary SQL. Only used in /sql"""
+        """Run arbitrary SQL. Only used in /sql and the GeneralizedTable class"""
         assert isinstance(sql, str)
         assert isinstance(placeholders, list) or placeholders is None
         if placeholders is None:
