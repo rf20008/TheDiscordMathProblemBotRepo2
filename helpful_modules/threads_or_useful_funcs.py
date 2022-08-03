@@ -7,6 +7,7 @@ import subprocess
 import traceback
 import types
 import typing
+import aiofiles
 from copy import deepcopy
 from logging import handlers
 from sys import exc_info, stderr
@@ -42,7 +43,7 @@ month_num_to_name_dict = {
 }
 
 def humanify_date(date: datetime.datetime | datetime.date):
-    return date.year + month_num_to_name_dict[date.month] + date.day
+    return str(date.year) + " " + month_num_to_name_dict[date.month] + " " + str(date.day)
 
 def ensure_eval_logs_exist():
     try:
@@ -296,6 +297,8 @@ async def log_evaled_code(code: str, filepath: str = "", time_ran: datetime.date
         time = datetime.datetime.now()
     # determine the filepath
     date = humanify_date(time_ran)
+    if filepath == "":
+        filepath = f"eval_log/{date}"
     try:
         async with aiofiles.open(filepath, 'a') as file: 
             await file.write(str(time_ran) + '\n' + code)

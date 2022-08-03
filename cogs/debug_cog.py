@@ -1,3 +1,4 @@
+import datetime
 import contextlib
 import copy
 import io
@@ -12,7 +13,7 @@ from helpful_modules import checks, problems_module
 from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.custom_embeds import SuccessEmbed
 from helpful_modules.my_modals import MyModal
-from helpful_modules.threads_or_useful_funcs import get_log
+from helpful_modules.threads_or_useful_funcs import get_log, log_evaled_code
 
 from .helper_cog import HelperCog
 
@@ -45,6 +46,7 @@ class DebugCog(HelperCog):
         new_globals.update(
             globals()
         )  # credit: https://github.com/Rapptz/RoboDanny/blob/rewrite/cogs/admin.py#L234 (for the idea)
+        await log_evaled_code(code, time_ran = datetime.datetime.now())
         try:
             exec(thing_to_run, new_globals, locals())
             compiled = True
@@ -154,7 +156,7 @@ class DebugCog(HelperCog):
             )
         if not await self.bot.is_owner(
             inter.author
-        ) or not commands.is_owner().predicate(inter):
+        ) or not await commands.is_owner().predicate(inter):
             return await inter.send("You don't own this bot")
 
         try:

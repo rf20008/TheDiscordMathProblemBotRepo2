@@ -643,7 +643,7 @@ class MiscRelatedCache:
                     guild_id INT,
                     quiz_id INT NOT NULL PRIMARY KEY,
                     problem_id INT NOT NULL,
-                    question TEXT(500) NOT NULL,
+                    question TEXT(10000) NOT NULL,
                     answer BLOB NOT NULL,
                     voters BLOB NOT NULL,
                     author INT NOT NULL,
@@ -675,11 +675,11 @@ class MiscRelatedCache:
                 await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS quiz_submission_sessions (
                     quiz_id INT NOT NULL,
-                    user_id INT NOT NULL,
+                    user_id DECIMAL(30) NOT NULL,
                     is_finished INT,
                     start_time INT,
                     expire_time INT,
-                    guild_id INT,
+                    guild_id DECIMAL(30),
                     answers BLOB,
                     special_id VARCHAR,
                     attempt_num INT,
@@ -730,11 +730,11 @@ class MiscRelatedCache:
                 log.debug("Created cursor")
                 await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS problems (
-                        guild_id BIGINT,
-                        problem_id BIGINT NOT NULL,
-                        question TEXT(2000) NOT NULL,
+                        guild_id DECIMAL(30),
+                        problem_id DECIMAL(30) NOT NULL,
+                        question TEXT(10000) NOT NULL,
                         answers BLOB NOT NULL, 
-                        author BIGINT NOT NULL,
+                        author DECIMAL(30) NOT NULL,
                         voters BLOB NOT NULL,
                         solvers BLOB NOT NULL
                         )"""
@@ -743,22 +743,22 @@ class MiscRelatedCache:
                 log.debug("Created problems table!")
                 await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS quizzes (
-                    guild_id BIGINT,
-                    quiz_id BIGINT NOT NULL PRIMARY KEY,
+                    guild_id DECIMAL(30),
+                    quiz_id DECIMAL(30) NOT NULL PRIMARY KEY,
                     problem_id BIGINT NOT NULL,
                     question TEXT(500) NOT NULL,
                     answer BLOB NOT NULL,
                     voters BLOB NOT NULL,
-                    author BIGINT NOT NULL,
+                    author DECIMAL(30) NOT NULL,
                     solvers BLOB NOT NULL
                 )"""
                 )
                 log.debug("Created quizzes table")
                 await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS quiz_submissions (
-                    guild_id BIGINT,
-                    quiz_id BIGINT NOT NULL,
-                    user_id BIGINT NOT NULL,
+                    guild_id DECIMAL(30),
+                    quiz_id DECIMAL(30) NOT NULL,
+                    user_id DECIMAL(30) NOT NULL,
                     submissions BLOB NOT NULL
                     )"""
                 )  # as dictionary
@@ -766,19 +766,19 @@ class MiscRelatedCache:
                 log.debug("Created submissions table")
                 await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS user_data (
-                    user_id INT,
+                    user_id DECIMAL(30),
                     trusted BOOLEAN DEFAULT false,
                     blacklisted BOOLEAN DEFAULT false
                     )"""
                 )
                 await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS quiz_submission_sessions (
-                    quiz_id INT NOT NULL,
-                    user_id INT NOT NULL,
+                    quiz_id DECIMAL(30) NOT NULL,
+                    user_id DECIMAL(30) NOT NULL,
                     is_finished INT,
                     start_time INT,
                     expire_time INT,
-                    guild_id INT,
+                    guild_id DECIMAL(30),
                     answers BLOB,
                     special_id VARCHAR,
                     attempt_num INT,
@@ -788,13 +788,13 @@ class MiscRelatedCache:
                 await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS quiz_description ("
                                description VARCHAR,
-                               quiz_id INT PRIMARY KEY,
+                               quiz_id DECIMAL(30) PRIMARY KEY,
                                time_limit INT,
                                intensity FLOAT,
                                license VARCHAR,
                                category VARCHAR,
-                               author INT,
-                               guild_id INT,
+                               author DECIMAL(30),
+                               guild_id DECIMAL(30),
                                solvers_can_view_quiz INT
                                )
                                """
@@ -802,7 +802,7 @@ class MiscRelatedCache:
                 await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS guild_data (
                     blacklisted INT,
-                    guild_id INT PRIMARY KEY,
+                    guild_id DECIMAL(30) PRIMARY KEY,
                     can_create_problems_check VARCHAR,
                     can_create_quizzes_check VARCHAR,
                     mod_check VARCHAR,
@@ -814,7 +814,7 @@ class MiscRelatedCache:
                     special_id VARCHAR PRIMARY KEY,
                     appeal_str VARCHAR,
                     appeal_num INT,
-                    user_id INT,
+                    user_id DECIMAL(30),
                     timestamp INT,
                     type INT,
                     )"""
