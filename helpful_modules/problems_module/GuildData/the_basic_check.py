@@ -101,3 +101,5 @@ class CheckForUserPassage:
             and self.permissions_needed == other.permissions_needed
             and self.roles_allowed == other.roles_allowed
         )
+    def __repr__(self):
+        return f"<CheckForUserPassage roles_needed=[{self.roles_allowed}] blacklisted_users={self.blacklisted_users} whitelisted_users={self.whitelisted_users} permissions_needed = {self.permissions_needed}>"

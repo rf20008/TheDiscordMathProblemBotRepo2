@@ -108,7 +108,7 @@ class SuggestionCog(HelperCog):
                 description = (
                     "This suggestion will be sent to the official support server. "+
                     "You may be BLACKLISTED for making rule-breaking suggestions. "+
-                    "Do you want do this anyway?"+
+                    "Do you want do this anyway? "+
                     "You have 3 minutes to respond."
                 )
             ),

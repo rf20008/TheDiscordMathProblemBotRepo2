@@ -1,2 +1,15 @@
 2022-08-03 03:29:43.741350
-yes
+yes2022-08-03 03:42:10.442310
+await inter.channel.purge(2)2022-08-03 03:42:46.400251
+for msg in await inter.channel.history(limit=3):
+ await msg.delete()
+2022-08-03 03:43:37.794625
+3
+
+2022-08-03 03:44:00.309256
+for msg in await inter.channel.history(limit=3):
+ await msg.delete()
+
+
+2022-08-03 04:01:32.135178
+print(str(inter.permissions))

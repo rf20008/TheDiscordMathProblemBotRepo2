@@ -180,6 +180,15 @@ class DeveloperCommands(HelperCog):
         )
         raise error
 
+    async def humanify_check(check: problems_module.CheckForUserPassage, guild: disnake.Guild):
+        roles_needed =" ".join([guild.get_role(role_id).name for role in check.roles_allowed])
+        permissions_needed = check.permissions_needed
+        whitelisted_user_ids = " ".join(check.whitelisted_users) # We can't show the names because no members intent
+        blacklisted_users_ids = " ".join(check.blacklisted_users)
+        return f"The roles needed are {roles_needed} and the permissions needed are {permissions_needed} and the whitelisted user ids are {whitelisted_user_ids} and the blacklisted user ids are {blacklisted_user_ids}"
+        
+
+    
     @checks.has_privileges(blacklisted=False)
     @commands.slash_command(
         name="debug",
@@ -213,6 +222,8 @@ class DeveloperCommands(HelperCog):
             return
         me = guild.me
         my_permissions = me.guild_permissions
+        guild_data = await self.bot.cache.get_guild_data(guild_id)
+        
         debug_dict = {
             "Server Guild ID": inter.guild.id,
             "Invoker's user ID": inter.author.id,
@@ -224,6 +235,12 @@ class DeveloperCommands(HelperCog):
             "Number of guild-only problems": len(
                 await self.bot.cache.get_guild_problems(inter.guild)
             ),
+            "Guild info": {
+                "Checks": {
+                    "Mod check": self.humanify_check(guild_data.mod_check),
+                    "Can create problems check": self.humanify_check(guild_data.can_create_problems_check)
+                }
+            }
         }
         correct_permissions = {
             "Read Message History": "✅" if my_permissions.read_messages else "❌",
@@ -238,6 +255,7 @@ class DeveloperCommands(HelperCog):
             else "❌",  # can I embed links?
             "Use Slash Commands": "✅" if my_permissions.use_slash_commands else "❌",
         }
+
         debug_dict["Do I have the correct permissions?"] = correct_permissions
         if raw:
             await inter.send(str(debug_dict), ephemeral=send_ephermally)

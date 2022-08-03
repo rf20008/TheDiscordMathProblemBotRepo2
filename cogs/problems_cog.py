@@ -793,7 +793,7 @@ class ProblemsCog(HelperCog):
         The data about you voting is not private.
         It will be given to people who interacted with problems and use /user_data get_data.
 
-        I might remove voting for problems!"""
+        Voting for problems may be removedc"""
         try:
             problem = await self.bot.cache.get_problem(
                 problem_id=int(problem_id),  # Will probably have to change
