@@ -26,9 +26,9 @@ class GuildData:
         self,
         guild_id: int,
         blacklisted: bool,
-        can_create_problems_check: str,
-        can_create_quizzes_check: str,
-        mods_check: str,
+        can_create_problems_check: str | CheckForUserPassage,
+        can_create_quizzes_check: str | CheckForUserPassage,
+        mods_check: str | CheckForUserPassage,
     ):
         self.guild_id = guild_id
         self.blacklisted = blacklisted
@@ -54,7 +54,9 @@ class GuildData:
                     raise InvalidDictionaryInDatabaseException(
                         f"I was able to parse {mods_check} into a dictionary, but I couldn't find the key called {str(exc)}!"
                     ) from exc
-                
+            else:
+                if isinstance(val, CheckForUserPassage):
+                    setattr(self, property, val)
                 
 
     @classmethod

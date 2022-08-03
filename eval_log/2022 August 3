@@ -13,3 +13,21 @@ for msg in await inter.channel.history(limit=3):
 
 2022-08-03 04:01:32.135178
 print(str(inter.permissions))
+
+2022-08-03 04:18:42.784230
+data = await self.bot.cache.get_guild_data(inter.guild_id,default=problems_module.GuildData(inter.guild_id)); print(data.__dict__)
+
+2022-08-03 04:18:57.871258
+data = await self.bot.cache.get_guild_data(inter.guild_id,default=problems_module.GuildData.default(inter.guild_id)); print(data.__dict__)
+
+2022-08-03 04:20:15.031087
+data = await self.bot.cache.get_guild_data(inter.guild_id,default=problems_module.GuildData(inter.guild_id)); print(data.__dict__)
+
+2022-08-03 04:20:16.243821
+data = await self.bot.cache.get_guild_data(inter.guild_id,default=problems_module.GuildData(inter.guild_id)); print(data.__dict__)
+
+2022-08-03 04:20:25.319801
+data = await self.bot.cache.get_guild_data(inter.guild_id,default=problems_module.GuildData.default(inter.guild_id)); print(data.__dict__)
+
+2022-08-03 04:20:53.084330
+data = await self.bot.cache.get_guild_data(inter.guild_id,default=problems_module.GuildData.default(inter.guild_id)); print(data.__dict__)

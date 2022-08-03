@@ -206,15 +206,18 @@ class DebugCog(HelperCog):
                 "Neither owner_id or owner_ids is defined... exiting!"
             )
 
-        if inter.guild is None:
-            pass
-        elif not (
-            inter.author.guild_permissions.administrator
-            and inter.guild.me.guild_permissions.administrator
-        ):
-            return await inter.send(
-                "We must both have the administrator permission to /eval!"
-            )
+
+        #Commented out because you can bypass it
+
+        #if inter.guild is None:
+        #    pass
+        #elif not (
+        #    inter.author.guild_permissions.administrator
+        #    and inter.guild.me.guild_permissions.administrator
+        #):
+        #    return await inter.send(
+        #        "We must both have the administrator permission to /eval!"
+        #    )
         code = "\n".join(code.split("\\n"))  # Split the code by `\n`
         await self.eval_code(inter, code)
 

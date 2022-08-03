@@ -909,11 +909,11 @@ class MiscCommandsCog(HelperCog):
         return
 
 
-    async def humanify_check(check: problems_module.CheckForUserPassage, guild: disnake.Guild):
+    async def humanify_check(self, check: problems_module.CheckForUserPassage, guild: disnake.Guild):
         roles_needed =" ".join([guild.get_role(role_id).name for role in check.roles_allowed])
         permissions_needed = check.permissions_needed
         whitelisted_user_ids = " ".join(check.whitelisted_users) # We can't show the names because no members intent
-        blacklisted_users_ids = " ".join(check.blacklisted_users)
+        blacklisted_user_ids = " ".join(check.blacklisted_users)
         return f"The roles needed are {roles_needed} and the permissions needed are {permissions_needed} and the whitelisted user ids are {whitelisted_user_ids} and the blacklisted user ids are {blacklisted_user_ids}"
         
 
@@ -951,7 +951,7 @@ class MiscCommandsCog(HelperCog):
             return
         me = guild.me
         my_permissions = me.guild_permissions
-        guild_data = await self.bot.cache.get_guild_data(guild_id)
+        guild_data = await self.bot.cache.get_guild_data(inter.guild_id, default=problems_module.GuildData.default(guild_id=inter.guild_id))
         
         debug_dict = {
             "Server Guild ID": inter.guild.id,
@@ -966,9 +966,9 @@ class MiscCommandsCog(HelperCog):
             ),
             "Guild info": {
                 "Checks": {
-                    "Mod check": self.humanify_check(guild_data.mod_check),
-                    "Can create problems check": self.humanify_check(guild_data.can_create_problems_check),
-                    "Can create quizzes check": self.humanify_check(guild_data.can_create_quizzes_check)
+                    "Mod check": await self.humanify_check(guild_data.mod_check, inter.guild),
+                    "Can create problems check": await self.humanify_check(guild_data.can_create_problems_check, inter.guild),
+                    "Can create quizzes check": await self.humanify_check(guild_data.can_create_quizzes_check, inter.guild)
                 },
                 "Blacklisted": str(guild_data.blacklisted)
             }
@@ -992,21 +992,22 @@ class MiscCommandsCog(HelperCog):
             await inter.send(str(debug_dict), ephemeral=send_ephermally)
             return
         else:
-            text = ""
-            for key in debug_dict.keys():
-                val = debug_dict[key]
-                if not isinstance(val, dict):
-                    text += f"{key}: {val}\n"
-                else:
-                    text += key + "\n"
-                    if isinstance(val, dict):
-                        for k in val.keys():
-                            v = val[k]
-                            text += f"\t{k}: {v}\n"
+            text = self.unwrap_dict(debug_dict)
 
         await inter.send(text, ephemeral=send_ephermally)
 
+    def unwrap_dict(self, d: dict, nesting=0) -> str:
+        text = ""
+        for key in d.keys():
+            val =  d[key]
+            if not isinstance(val, dict):
+                text += "\t" * nesting + f"{key}: {val}\n"
+            else:
+                text +="\t" * nesting + f"{key}: \n{self.unwrap_dict(val, nesting=nesting+1)}\n"
+        return text
+            
 
+    
 def setup(bot):
     bot.add_cog(MiscCommandsCog(bot))
 
