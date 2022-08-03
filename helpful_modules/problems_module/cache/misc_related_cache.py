@@ -353,6 +353,18 @@ class MiscRelatedCache:
         self.cached_guild_data = guild_data_dict
         self.cached_appeals = appeals
 
+    @property
+    def cached_data(self):
+        return {
+            'guildproblems': self.guild_problems,
+            'cached_user_data': self.cached_guild_data,
+            'appeals': self.cached_appeals,
+            'cached_quiz_submissions':  self.cached_submissions,
+            'guild_ids': self.guild_ids,
+            'quizzes': self.cached_quizzes,
+            'sessions': self.cached_sessions,
+        }
+    
     async def get_all_by_author_id(self, author_id: int) -> dict:
         """Return a dictionary containing everything that was created by the author"""
         assert isinstance(author_id, int)  # Make sure it is of type integer

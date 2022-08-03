@@ -1,3 +1,5 @@
+import time
+import datetime
 import logging
 import pathlib
 import random
@@ -24,6 +26,34 @@ from .the_documentation_file_loader import DocumentationFileLoader
 REQUIRED_LOGS = ("" "bot", "disnake")
 
 log = logging.getLogger(__name__)
+month_num_to_name_dict = {
+    1: "January",
+    2: "February",
+    3: "March",
+    4: "April",
+    5: "May",
+    6: "June",
+    7: "July",
+    8: "August",
+    9: "September",
+    10: "October",
+    11: "November",
+    12: "December"
+}
+
+def humanify_date(date: datetime.datetime | datetime.date):
+    return date.year + month_num_to_name_dict[date.month] + date.day
+
+def ensure_eval_logs_exist():
+    try:
+        logs_folder = pathlib.Path("eval_log")
+        logs_folder.mkdir(exist_ok=True)
+        return
+    except:
+        print("I don't have permission to create an eval logs folder so logs may be missing!")
+        traceback.print_exc()
+        
+
 
 
 def generate_new_id():
@@ -258,3 +288,17 @@ def attempt_to_import_orjson() -> tuple[typing.Optional[types.ModuleType], bool]
         return (orjson, True)
     except ImportError:
         return (None, False)
+
+
+
+async def log_evaled_code(code: str, filepath: str = "", time_ran: datetime.datetime = None) -> None:
+    if time_ran == None:
+        time = datetime.datetime.now()
+    # determine the filepath
+    date = humanify_date(time_ran)
+    try:
+        async with aiofiles.open(filepath, 'a') as file: 
+            await file.write(str(time_ran) + '\n' + code)
+    except Exception as e:
+        raise RuntimeError("While attempting to log the code that was evaluated, I ran into some problems!") from e
+    
