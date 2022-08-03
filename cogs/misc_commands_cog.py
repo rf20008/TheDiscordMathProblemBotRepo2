@@ -909,6 +909,104 @@ class MiscCommandsCog(HelperCog):
         return
 
 
+    async def humanify_check(check: problems_module.CheckForUserPassage, guild: disnake.Guild):
+        roles_needed =" ".join([guild.get_role(role_id).name for role in check.roles_allowed])
+        permissions_needed = check.permissions_needed
+        whitelisted_user_ids = " ".join(check.whitelisted_users) # We can't show the names because no members intent
+        blacklisted_users_ids = " ".join(check.blacklisted_users)
+        return f"The roles needed are {roles_needed} and the permissions needed are {permissions_needed} and the whitelisted user ids are {whitelisted_user_ids} and the blacklisted user ids are {blacklisted_user_ids}"
+        
+
+    
+    @checks.has_privileges(blacklisted=False)
+    @commands.slash_command(
+        name="debug",
+        description="Helpful for debugging :-)",
+        options=[
+            disnake.Option(
+                name="raw",
+                description="raw debug data?",
+                type=disnake.OptionType.boolean,
+                required=False,
+            ),
+            disnake.Option(
+                name="send_ephemerally",
+                description="Send the debug message ephemerally?",
+                type=disnake.OptionType.boolean,
+                required=False,
+            ),
+        ],
+    )
+    async def debug(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        raw: bool = False,
+        send_ephermally: bool = True,
+    ):
+        """/debug [raw: bool = False] [send_ephermally: bool = False]
+        Provides helpful debug information :-)"""
+        guild = inter.guild  # saving me typing trouble!
+        if inter.guild is None:
+            await inter.send(content="This command can only be ran in servers!")
+            return
+        me = guild.me
+        my_permissions = me.guild_permissions
+        guild_data = await self.bot.cache.get_guild_data(guild_id)
+        
+        debug_dict = {
+            "Server Guild ID": inter.guild.id,
+            "Invoker's user ID": inter.author.id,
+            "Maximum number of guild-only problems allowed.": self.bot.cache.max_guild_problems,
+            "Has this guild reached the maximum number of problems?": "✅"
+            if len(await self.bot.cache.get_guild_problems(inter.guild))
+            >= self.bot.cache.max_guild_problems
+            else "❌",
+            "Number of guild-only problems": len(
+                await self.bot.cache.get_guild_problems(inter.guild)
+            ),
+            "Guild info": {
+                "Checks": {
+                    "Mod check": self.humanify_check(guild_data.mod_check),
+                    "Can create problems check": self.humanify_check(guild_data.can_create_problems_check),
+                    "Can create quizzes check": self.humanify_check(guild_data.can_create_quizzes_check)
+                },
+                "Blacklisted": str(guild_data.blacklisted)
+            }
+        }
+        correct_permissions = {
+            "Read Message History": "✅" if my_permissions.read_messages else "❌",
+            "Read Messages": "✅"
+            if my_permissions.read_messages
+            else "❌",  # can I read messages?
+            "Send Messages": "✅"
+            if my_permissions.send_messages
+            else "❌",  # can I send messages?
+            "Embed Links": "✅"
+            if my_permissions.embed_links
+            else "❌",  # can I embed links?
+            "Use Slash Commands": "✅" if my_permissions.use_slash_commands else "❌",
+        }
+
+        debug_dict["Do I have the correct permissions?"] = correct_permissions
+        if raw:
+            await inter.send(str(debug_dict), ephemeral=send_ephermally)
+            return
+        else:
+            text = ""
+            for key in debug_dict.keys():
+                val = debug_dict[key]
+                if not isinstance(val, dict):
+                    text += f"{key}: {val}\n"
+                else:
+                    text += key + "\n"
+                    if isinstance(val, dict):
+                        for k in val.keys():
+                            v = val[k]
+                            text += f"\t{k}: {v}\n"
+
+        await inter.send(text, ephemeral=send_ephermally)
+
+
 def setup(bot):
     bot.add_cog(MiscCommandsCog(bot))
 
