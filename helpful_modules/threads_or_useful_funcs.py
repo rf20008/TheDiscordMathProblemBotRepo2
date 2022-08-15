@@ -304,4 +304,24 @@ async def log_evaled_code(code: str, filepath: str = "", time_ran: datetime.date
             await file.write("\n"+str(time_ran) + '\n' + code + "\n")
     except Exception as e:
         raise RuntimeError("While attempting to log the code that was evaluated, I ran into some problems!") from e
-    
+
+def extended_gcd(a: int, b: int) -> list[tuple[int]]:
+    """Extended Euclidean Algorithm
+returns a list of 3 tuples
+tuple 1: bezout coefficients -> x is first, y is second
+tuple 2: just the gcd
+tuple 3:quotients by the gcd
+pseudocode credit: https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm"""
+
+    (old_r, r) = (a,b)
+    (old_s, s) = (1,0)
+    (old_t,t) = (0,1)
+    while r != 0:
+        quotient = old_r // r
+        (old_r,r) = (r, old_r-quotient*r)
+        (old_s, s) = (s, old_s - quotient*s)
+        (old_t, t) = (t, old_t - quotient*t)
+    return [
+        (old_s, old_t),
+        (old_r,),
+        (t,s)
