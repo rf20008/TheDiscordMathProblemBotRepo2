@@ -1,7 +1,8 @@
 from .helper_cog import HelperCog
 from mpmath import *
-from disnake import commands, tasks
-from helper_modules import checks, problems_module, custom_bot, threads_or_useful_funcs
+from disnake.ext import commands, tasks
+import disnake
+from helpful_modules import checks, problems_module, custom_bot, threads_or_useful_funcs
 from math import gcd
 import more_itertools
 class InterestingComputationCog(HelperCog):
@@ -34,3 +35,8 @@ class InterestingComputationCog(HelperCog):
                 sum += num*mult_inv * remainders[i]
             return sum
 
+def setup(bot):
+    bot.add_cog(InterestingComputationCog(bot))
+
+def teardown(bot):
+    bot.remove_cog("InterestingComputationCog")
