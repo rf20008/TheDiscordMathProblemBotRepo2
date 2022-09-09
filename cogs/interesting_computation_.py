@@ -1,10 +1,16 @@
 from .helper_cog import HelperCog
 from mpmath import *
 from disnake import commands, tasks
+from helper_modules.custom_embeds import ErrorEmbed, SuccessEmbed, SimpleEmbed
 from helper_modules import checks, problems_module, custom_bot, threads_or_useful_funcs
 from math import gcd
 import more_itertools
+
+MAX_NUM = 1_000_000_000_000_000_000_000_000_000_000
+
 class InterestingComputationCog(HelperCog):
+
+
     class ChineseRemainderTheoremComputer:
         def __init__(self, remainders, moduli):
             if len(remainders) != len(moduli):
@@ -22,6 +28,8 @@ class InterestingComputationCog(HelperCog):
             self.remainders = remainders
             self.moduli = moduli
         def compute(self):
+            """Compute the CRT
+            Algorithm credits to my brother"""
             product=1
             for i in range(len(moduli)):
                 product *= moduli[i]
@@ -33,4 +41,40 @@ class InterestingComputationCog(HelperCog):
                 mult_inv = return_val[0][1]
                 sum += num*mult_inv * remainders[i]
             return sum
+        
+    @checks.no_insanely_huge_numbers_checK()
+    @commands.slash_command(description="CRT problem")
+    async def crt_problem(self, inter: disnake.ApplicationCommandInteraction,  moduliA: str, numsA: str):
+        if(len(moduliA) >= 300 or len(numsA) >= 300:
+            return inter.send(embed=ErrorEmbed("Too many moduli or nums!"))
+        try:
+            moduli = [int(item) for item in moduliA.split()]
+        except ValueError:
+            inter.send(embed=ErrorEmbed("Could not convert moduli to a list of numbers!"))
+            raise
+        if len(moduli_) >= 100:
+            return inter.send(embed=ErrorEmbed("Too many moduli!"))
+        for i in moduli:
+            if i<=0 or i> 10**30:
+                return inter.send("All the remainders must be positive")
+        for i in range(len(moduli) - 1):
+            for j in range(i, len(moduli)):
+                if math.gcd(moduli[i],moduli[j]) != 1:
+                    return inter.send(embed=ErrorEmbed("The chinese remainder theorem doesn't hold unless the numbers are relatively prime"))
+        try:
+            nums = [int(item) for item in numsA.split()]
+        except ValueError:
+            inter.send(embed=ErrorEmbed("Could not convert nums to a list of numbers!"))
+            raise
+        if len(nums) >= 100:
+            return inter.send(embed=ErrorEmbed("Too many nums!"))
+        if len(moduli) != len(nums):
+            return inter.send(embed=ErrorEmbed("#moduli != # nums : therefore we can't use CRT."))
 
+        for i in range(len(nums)):
+            if nums[i] <= 0:
+                return inter.send("All the remainders must be positive!")
+            if nums[i]
+        CRTC = InterestingComputationCog.ChineseRemainderTheoremComputer(remainders=nums, nums=nums)
+        inter.send(embed=SuccessEmbed(f"The result is f{CRTC.compute()}."))
+        return
