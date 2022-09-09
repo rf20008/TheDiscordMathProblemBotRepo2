@@ -2,7 +2,7 @@ from .helper_cog import HelperCog
 from mpmath import *
 from disnake.ext import commands, tasks
 import disnake
-
+from disnake import commands, tasks
 from helper_modules.custom_embeds import ErrorEmbed, SuccessEmbed, SimpleEmbed
 from helper_modules import checks, problems_module, custom_bot, threads_or_useful_funcs
 
@@ -73,10 +73,6 @@ class InterestingComputationCog(HelperCog):
             return inter.send(embed=ErrorEmbed("Too many nums!"))
         if len(moduli) != len(nums):
             return inter.send(embed=ErrorEmbed("#moduli != # nums : therefore we can't use CRT."))
-
-
-
-
         for i in range(len(nums)):
             if nums[i] <= 0:
                 return inter.send("All the remainders must be positive!")
