@@ -6,7 +6,11 @@ from .problems_module.user_data import UserData
 
 bot = None
 MAX_LIMIT = 120_000 # Nothing longer than 120,000 characters
+MAX_NUM = 1
+for i in range(30):
+    MAX_NUM *= 10
 
+# MAX_NUM should equal 10^30
 def setup(_bot):
     global bot
     bot = _bot
@@ -196,3 +200,23 @@ def nothing_too_long():
 
     return commands.check(predicate)
 
+def no_insanely_huge_numbers_check(max_num = MAX_NUM):
+    async def predicate(inter: disnake.ApplicationCommandInteraction):
+        for _, it in inter.filled_options:
+            if not isinstance(it, (float, str, int)):
+                continue
+            if isinstance(it, float):
+                continue
+            if isinstance(it, str):
+                try:
+                    if int(it) >= MAX_NUM:
+                        return False
+                except:
+                    pass
+                for i in it.split():
+                    try:
+                        if int(i) >= MAX_NUM:
+                            return False
+                    except:
+                        pass
+        return True

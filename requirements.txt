@@ -11,4 +11,5 @@ git+git://github.com/DisnakeDev/disnake.git
 git+git://github.com/Iapetus-11/betterstatcord.py
 git+git://github.com/ijl/orjson.git
 pre-commit
+more-itertools >= 8.14.0
 aiofiles >= 0.8.0
