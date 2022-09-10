@@ -200,6 +200,7 @@ def nothing_too_long():
 
     return commands.check(predicate)
 
+
 def no_insanely_huge_numbers_check(max_num = MAX_NUM):
     async def predicate(inter: disnake.ApplicationCommandInteraction):
         for _, it in inter.filled_options:
@@ -209,14 +210,15 @@ def no_insanely_huge_numbers_check(max_num = MAX_NUM):
                 continue
             if isinstance(it, str):
                 try:
-                    if int(it) >= MAX_NUM:
+                    if int(it) >= max_num:
                         return False
                 except:
                     pass
                 for i in it.split():
                     try:
-                        if int(i) >= MAX_NUM:
+                        if int(i) >= max_num:
                             return False
                     except:
                         pass
         return True
+    return commands.check(predicate)

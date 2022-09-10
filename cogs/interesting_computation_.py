@@ -45,9 +45,16 @@ class InterestingComputationCog(HelperCog):
                 sum += num*mult_inv * remainders[i]
             return sum
         
-    @checks.no_insanely_huge_numbers_checK()
+    @checks.no_insanely_huge_numbers_check()
     @commands.slash_command(description="CRT problem")
-    async def crt_problem(self, inter: disnake.ApplicationCommandInteraction,  moduliA: str, numsA: str):
+    async def crt_problem(self, inter: disnake.ApplicationCommandInteraction,  moduli: str, nums: str):
+        """/crt_problem (moduli: str (should be a space-seperated list of numbers)) (nums: str (should be a space-seperated list of numbers)
+        Solve the CRT problem for when the moduli are `moduli` and the nums are `nums`
+        
+        """
+        moduliA = moduli
+        numsA= nums
+        
         if len(moduliA) >= 300 or len(numsA) >= 300:
             return inter.send(embed=ErrorEmbed("Too many moduli or nums!"))
         try:
