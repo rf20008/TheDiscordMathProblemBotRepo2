@@ -325,3 +325,4 @@ pseudocode credit: https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm"""
         (old_s, old_t),
         (old_r,),
         (t,s)
+    ]

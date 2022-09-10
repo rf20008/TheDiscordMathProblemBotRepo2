@@ -11,7 +11,7 @@ class SimpleEmbed(Embed):
         title="",
         description="",
         color=Color.from_rgb(r=randint(0, 255), g=randint(0, 255), b=randint(0, 255)),
-        footer=Embed.Empty,
+        footer=None,
         file=None,
         url=None,
         timestamp=None
@@ -30,7 +30,7 @@ class ErrorEmbed(SimpleEmbed):
         description="",
         color=Color.red(),
         custom_title="Error",
-        footer=Embed.Empty,
+        footer=None,
     ):
         super().__init__(title=custom_title, description=description, color=color)
         self.set_footer(text=footer)
@@ -42,7 +42,7 @@ class SuccessEmbed(SimpleEmbed):
         description="",
         color=Color.green(),
         successTitle="Success!",
-        footer=Embed.Empty,
+        footer=None,
     ):
         super().__init__(title=successTitle, description=description, color=color)
         self.set_footer(text=footer)
