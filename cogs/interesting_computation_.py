@@ -4,6 +4,7 @@ from disnake.ext import commands, tasks
 import disnake
 from disnake import commands, tasks
 from helper_modules.custom_embeds import ErrorEmbed, SuccessEmbed, SimpleEmbed
+from helper_modules.cache import *
 from helper_modules import checks, problems_module, custom_bot, threads_or_useful_funcs
 
 from math import gcd
@@ -48,7 +49,7 @@ class InterestingComputationCog(HelperCog):
     @checks.no_insanely_huge_numbers_checK()
     @commands.slash_command(description="CRT problem")
     async def crt_problem(self, inter: disnake.ApplicationCommandInteraction,  moduliA: str, numsA: str):
-        if(len(moduliA) >= 300 or len(numsA) >= 300:
+        if len(moduliA) >= 300 or len(numsA) >= 300:
             return inter.send(embed=ErrorEmbed("Too many moduli or nums!"))
         try:
             moduli = [int(item) for item in moduliA.split()]
@@ -61,9 +62,12 @@ class InterestingComputationCog(HelperCog):
             if i<=0 or i> 10**30:
                 return inter.send("All the remainders must be positive")
         for i in range(len(moduli) - 1):
+            if moduli[i] >= MAX_NUM:
+                raise MathProblemsModuleException("Remainder too big")
             for j in range(i, len(moduli)):
                 if math.gcd(moduli[i],moduli[j]) != 1:
                     return inter.send(embed=ErrorEmbed("The chinese remainder theorem doesn't hold unless the numbers are relatively prime"))
+            
         try:
             nums = [int(item) for item in numsA.split()]
         except ValueError:
@@ -73,10 +77,16 @@ class InterestingComputationCog(HelperCog):
             return inter.send(embed=ErrorEmbed("Too many nums!"))
         if len(moduli) != len(nums):
             return inter.send(embed=ErrorEmbed("#moduli != # nums : therefore we can't use CRT."))
+
+
         for i in range(len(nums)):
             if nums[i] <= 0:
                 return inter.send("All the remainders must be positive!")
-            if nums[i]
+            if nums[i] >= MAX_NUM:
+                raise MathProblemsModuleException("Number too big")
+            if nums[i] >= moduli[i]:
+                raise MathProblemsModuleException("nums[i] > moduli[i]")
+                
         CRTC = InterestingComputationCog.ChineseRemainderTheoremComputer(remainders=nums, nums=nums)
         inter.send(embed=SuccessEmbed(f"The result is f{CRTC.compute()}."))
         return

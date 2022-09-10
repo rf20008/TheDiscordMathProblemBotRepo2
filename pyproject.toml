@@ -19,6 +19,7 @@ python-dotenv = "^0.19.2"
 typing-extensions = "^3.10.0"
 aiomysql = "^0.0.22"
 mpmath = "^1.2.1"
+more-itertools = "^8.14.0"
 [tool.poetry.dependencies.aiosqlite]
 git = "https://github.com/omnilib/aiosqlite.git"
 rev = "main"
