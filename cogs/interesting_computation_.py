@@ -2,10 +2,9 @@ from .helper_cog import HelperCog
 from mpmath import *
 from disnake.ext import commands, tasks
 import disnake
-from disnake import commands, tasks
-from helper_modules.custom_embeds import ErrorEmbed, SuccessEmbed, SimpleEmbed
-from helper_modules.cache import *
-from helper_modules import checks, problems_module, custom_bot, threads_or_useful_funcs
+from helpful_modules.custom_embeds import ErrorEmbed, SuccessEmbed, SimpleEmbed
+from helpful_modules.problems_module import *
+from helpful_modules import checks, problems_module, custom_bot, threads_or_useful_funcs
 
 from math import gcd
 import more_itertools
