@@ -7,44 +7,54 @@ import helpful_modules
 from helpful_modules import problems_module
 from helpful_modules.constants_loader import BotConstants
 from helpful_modules.problems_module.cache import MathProblemCache
-
+from helpful_modules.FileDictionaryReader import AsyncFileDict
 
 class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
+
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        try:
-            self.tasks = kwargs.pop("tasks")
-        except:
-            raise KeyError("Uh oh")
+        self.is_closing = False
+
+        self.tasks = kwargs.pop("tasks")
+        self.config_json =AsyncFileDict("config.json")
+        self.trusted_users = kwargs.pop("trusted_users")
         self._on_ready_func = kwargs.pop(
             "on_ready_func"
-        )  # Will be called when the bot is ready (with an argument of itself)
-        assert isinstance(self.tasks, dict)
-        for task in self.tasks.values():
-            assert isinstance(task, disnake.ext.tasks.Loop)
-            task.start()  # TODO: add being able to change it
-        self.timeStarted = float("inf")
+        )  # Will be called when the bot is ready (with an argument of itself
+        cache = kwargs.pop("cache")
         self.cache = (
-            kwargs.get("cache")
+            cache
             if isinstance(
-                kwargs.get("cache"), helpful_modules.problems_module.MathProblemCache
+                cache,
+helpful_modules.problems_module.MathProblemCache
             )
             else False
         )
         if self.cache is False:
             raise TypeError("Not of type MathProblemCache")
+        #print(self.cache)
         self.constants = (
-            kwargs.get("constants")
+            kwargs.pop("constants")
             if isinstance(kwargs.get("constants"), BotConstants)
             else False
         )
         if self.constants is False:
             raise TypeError("Constants is not a BotConstants object")
-        self.trusted_users = kwargs.get("trusted_users", None)
-        if not self.trusted_users and self.trusted_users != []:
-            raise TypeError("trusted_users was not found")
-        self.blacklisted_users = kwargs.get("blacklisted_users", [])
-
+        super().__init__(*args, **kwargs)
+        
+        assert isinstance(self.tasks, dict)
+        self.restart = RestartTheBot(self)
+        for task in self.tasks.values():
+            assert isinstance(task, disnake.ext.tasks.Loop)
+            task.start()  # TODO: add being able to change it
+        self.timeStarted = float("inf")
+        
+        
+        #self.trusted_users = kwargs.get("trusted_users", None)
+        # if not self.trusted_users and self.trusted_users != []:
+        #    raise TypeError("trusted_users was not found")
+        # self.blacklisted_users = kwargs.get("blacklisted_users", [])
+        self.closing_things = []
+        self.support_server=None
     def get_task(self, task_name):
         return self.tasks[task_name]
 

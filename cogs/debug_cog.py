@@ -54,7 +54,7 @@ class DebugCog(HelperCog):
         description="Run SQL",
         options=[
             disnake.Option(
-                name="Query",
+                name="query",
                 description="The query to run",
                 type=disnake.OptionType.string,
                 required=True,
