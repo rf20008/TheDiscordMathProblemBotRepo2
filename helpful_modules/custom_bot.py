@@ -8,6 +8,9 @@ from helpful_modules import problems_module
 from helpful_modules.constants_loader import BotConstants
 from helpful_modules.problems_module.cache import MathProblemCache
 from helpful_modules.FileDictionaryReader import AsyncFileDict
+from helpful_modules.restart_the_bot import RestartTheBot
+
+
 
 class TheDiscordMathProblemBot(disnake.ext.commands.Bot):
 
