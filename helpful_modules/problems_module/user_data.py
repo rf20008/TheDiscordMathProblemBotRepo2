@@ -23,8 +23,8 @@ class UserData:
         """Get UserData from a dictionary"""
         return cls(
             user_id=dict["user_id"],
-            trusted=bool(dict["trusted"]),
-            blacklisted=bool(dict["blacklisted"]),
+            trusted=dict["trusted"],
+            blacklisted=dict["blacklisted"],
         )
 
     def to_dict(self) -> dict:
@@ -38,7 +38,3 @@ class UserData:
     async def add_to_cache(self, cache):
         """Add myself to a cache. Can't typehint because circular imports."""
         return await cache.add_user_data(self)
-
-    @classmethod
-    def default(cls, user_id):
-        return cls(user_id=user_id, trusted=False, blacklisted=False)

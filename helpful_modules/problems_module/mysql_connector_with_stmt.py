@@ -1,7 +1,6 @@
 import contextlib
 
 import mysql.connector
-import mysql.connector.pooling
 
 # Licensed under GPLv3 (or later)
 

@@ -2,8 +2,6 @@ from random import randint
 
 from disnake import Color, Embed
 
-# This is mostly just easier ways for me to use commonly used embeds :)
-
 
 class SimpleEmbed(Embed):
     def __init__(
@@ -11,17 +9,10 @@ class SimpleEmbed(Embed):
         title="",
         description="",
         color=Color.from_rgb(r=randint(0, 255), g=randint(0, 255), b=randint(0, 255)),
-        footer=None,
-        file=None,
-        url=None,
-        timestamp=None
+        footer=Embed.Empty,
     ):
         super().__init__(title=title, description=description, color=color)
         self.set_footer(text=footer)
-        if url is not None and file is not None:
-            self.set_image(url)
-        if timestamp is not None:
-            self.timestamp=timestamp
 
 
 class ErrorEmbed(SimpleEmbed):
@@ -30,7 +21,7 @@ class ErrorEmbed(SimpleEmbed):
         description="",
         color=Color.red(),
         custom_title="Error",
-        footer=None,
+        footer=Embed.Empty,
     ):
         super().__init__(title=custom_title, description=description, color=color)
         self.set_footer(text=footer)
@@ -42,7 +33,7 @@ class SuccessEmbed(SimpleEmbed):
         description="",
         color=Color.green(),
         successTitle="Success!",
-        footer=None,
+        footer=Embed.Empty,
     ):
         super().__init__(title=successTitle, description=description, color=color)
         self.set_footer(text=footer)

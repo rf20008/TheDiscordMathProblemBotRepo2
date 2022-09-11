@@ -1,5 +1,6 @@
 [![Number of source lines of code](https://img.shields.io/tokei/lines/github/rf20008/TheDiscordMathProblemBotRepo)](https://img.shields.io)
 <!---TODO: rewrite--->
+
 # Quick links / Table of Contents
 
 ## Quick links
@@ -27,7 +28,6 @@ If you run into any issues create an issue or DM me (ay136416#2707).
 # Announcements
 
 <ol>
-<li> 20 April 2022 - A reminder: This is one of my side projects, so I may not be able to actively maintain the bot, or test it thourougly.</li>
 <li> CC-BY-SA 4.0 is no longer a valid license to use this bot under! You **must** license the bot under GPLv3 (or a later version.)
 (CC-BY-SA 4.0 has a one way migration to GPLv3, so you are allowed to do this. </li>
 <li> **Everything (even things that do not explicitly say they are licensed under GPLv3) in this repository except for things that are ignored in .gitignore are licensed under GPLv3. This includes every python file.** </li>
@@ -107,13 +107,8 @@ mysql_db_name: Your MySQL database name
 source_code_link: link to the place that contains the bot's source code. This must be public and have the actual source code 
  Filling it out __should__ fulfill the "Disclose source" requirement of GPLv3, if it is valid). However, unless I am sued or legally obligated to check if it's valid, I won't check.
 
-## config.json
 
-
-
-
-
-# Attribution / Contributors
+## Attribution / Contributors
 
 MySQL: https://pypi.org/project/mysql-connector-python/#files <br>
 GPLv3 simplified: https://tldrlegal.com/license/gnu-general-public-license-v3-(gpl-3) <br>

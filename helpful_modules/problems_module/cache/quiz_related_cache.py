@@ -6,10 +6,8 @@ from copy import copy, deepcopy
 from types import FunctionType
 from typing import *
 
-import aiomysql
 import aiosqlite
 import disnake
-from aiomysql import DictCursor
 
 from helpful_modules.dict_factory import dict_factory
 from helpful_modules.threads_or_useful_funcs import get_log
@@ -42,16 +40,21 @@ class QuizRelatedCache(ProblemsRelatedCache):
                     for item in await cursor.fetchall()
                 ]
         else:
-            async with self.get_a_connection() as connection:
-                cursor = await connection.cursor(DictCursor)
-                await cursor.execute(
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
                     "SELECT * FROM quiz_submission_sessions WHERE quiz_id = %s",
                     (quiz_id,),
                 )
                 # For each row retrieved: turn it into a QuizSolvingSession using from_mysql_dict and return the result
                 return [
                     QuizSolvingSession.from_mysql_dict(item, cache=self)
-                    for item in await cursor.fetchall()
+                    for item in cursor.fetchall()
                 ]
 
     async def add_quiz_session(self, session: QuizSolvingSession):
@@ -68,7 +71,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 conn.row_factory = dict_factory
                 cursor = await conn.cursor()
                 await cursor.execute(
-                    """INSERT INTO quiz_submission_sessions (user_id, quiz_id, guild_id, is_finished, answers, start_time, expire_time, special_id, attempt_num, is_finished)
+                    """INSERT INTO quiz_submission_sessions (user_id, quiz_id, guild_id, is_finished, answers, start_time, expire_time, special_id, attempt_num)
                     VALUES (?,?,?,?,?,?,?,?)""",
                     (
                         session.user_id,
@@ -80,16 +83,20 @@ class QuizRelatedCache(ProblemsRelatedCache):
                         session.expire_time,
                         session.special_id,
                         session.attempt_num,
-                        int(session.is_finished),
                     ),
                 )
                 await conn.commit()
                 return
         else:
-            async with self.get_a_connection() as connection:
-                cursor = await connection.cursor(DictCursor)
-                await cursor.execute(
-                    """INSERT INTO quiz_submission_sessions (user_id, quiz_id, guild_id, is_finished, answers, start_time, expire_time, special_id, attempt_num, is_finished)
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
+                    """INSERT INTO quiz_submission_sessions (user_id, quiz_id, guild_id, is_finished, answers, start_time, expire_time, special_id, attempt_num)
                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""",
                     (
                         session.user_id,
@@ -103,10 +110,9 @@ class QuizRelatedCache(ProblemsRelatedCache):
                         session.expire_time,
                         session.special_id,
                         session.attempt_num,
-                        int(session.is_finished),
                     ),
                 )
-                await connection.commit()
+                connection.commit()
 
     async def update_quiz_session(self, special_id: int, session: QuizSolvingSession):
         """Update the quiz session given the special id"""
@@ -125,7 +131,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 cursor = await conn.cursor()
                 await cursor.execute(
                     """UPDATE quiz_submission_sessions 
-                    SET guild_id = ?, quiz_id = ?, user_id = ?, answers = ?, start_time = ?, expire_time = ?, is_finished = ?, special_id = ?, attempt_num = ?,
+                    SET guild_id = ?, quiz_id = ?, user_id = ?, answers = ?, start_time = ?, expire_time = ?, is_finished = ?, special_id = ?, attempt_num = ?
                     WHERE special_id = ?""",
                     (
                         session.guild_id,
@@ -143,9 +149,14 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 await conn.commit()
                 return
         else:
-            async with self.get_a_connection() as connection:
-                cursor = await connection.cursor(DictCursor)
-                await cursor.execute(  # Connect to SQL and actually change it
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(  # Connect to SQL and actually change it
                     """UPDATE quiz_submission_sessions 
                     SET guild_id = %s, quiz_id = %s, user_id = %s, answers = %s, start_time = %s, expire_time = %s, is_finished = %s, special_id = %s, attempt_num = %s
                     WHERE special_id = %s""",
@@ -162,7 +173,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                         session.special_id,
                     ),
                 )
-                await connection.commit()
+                connection.commit()
                 return
 
     async def delete_quiz_session(self, special_id: int):
@@ -179,13 +190,18 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 await conn.commit()
 
         else:
-            async with self.get_a_connection() as connection:
-                cursor = await connection.cursor(DictCursor)
-                await cursor.execute(
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
                     "DELETE FROM quiz_submission_session WHERE special_id=%s",
                     (special_id,),
                 )
-                await connection.commit()
+                connection.commit()
 
     async def get_quiz_session_by_special_id(
         self, special_id: int
@@ -214,13 +230,18 @@ class QuizRelatedCache(ProblemsRelatedCache):
                         potential_sessions[0], cache=self
                     )
         else:
-            async with self.get_a_connection() as connection:
-                cursor = await connection.cursor(DictCursor)
-                await cursor.execute(
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
                     "SELECT * FROM quiz_submission_sessions WHERE special_id = %s",
                     (special_id,),
                 )
-                potential_sessions = list(await cursor.fetchall())
+                potential_sessions = list(cursor.fetchall())
                 if len(potential_sessions) < 1:
                     raise QuizSessionNotFoundException(
                         "There aren't any quiz sessions found with this special id"
@@ -233,6 +254,61 @@ class QuizRelatedCache(ProblemsRelatedCache):
                     return QuizSolvingSession.from_mysql_dict(
                         potential_sessions[0], cache=self
                     )
+
+    async def add_user_data(self, user_id: int, thing_to_add: UserData) -> None:
+        assert isinstance(user_id, int)
+        assert isinstance(thing_to_add, UserData)
+        if (await self.get_user_data(user_id, default=Exception)) != Exception:  # type: ignore
+            # This is because the user_id is None. Then it will return the default instead
+            raise MathProblemsModuleException(
+                "User data already exists"
+            )  # Make sure the user data doesn't already exist
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db_name) as conn:
+                cursor = await conn.cursor()
+                await cursor.execute(
+                    """INSERT INTO user_data (user_id, trusted, blacklisted)
+                VALUES (?,?,?)""",
+                    (user_id, thing_to_add.trusted, thing_to_add.blacklisted),
+                )  # add the user data
+                await conn.commit()
+                log.debug("Finished adding user data!")
+        else:
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
+                    """INSERT INTO user_data (user_id, trusted, blacklisted)
+                VALUES (%s, %s, %s)""",
+                    (user_id, thing_to_add.trusted, thing_to_add.blacklisted),
+                )
+                connection.commit()
+
+    async def del_user_data(self, user_id: int):
+        """Delete user data given the user id"""
+        assert isinstance(user_id, int)
+        if self.use_sqlite:
+            async with aiosqlite.connect(self.db_name) as conn:
+                cursor = await conn.cursor()
+                await cursor.execute(
+                    "DELETE FROM user_data WHERE user_id = ?", (user_id,)
+                )
+                await conn.commit()
+        else:
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute("DELETE FROM user_data WHERE user_id = %s", (user_id,))
+                connection.commit()
+                connection.close()
 
     async def add_quiz(self, quiz: Quiz) -> Quiz:
         """Add a quiz"""
@@ -251,6 +327,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
         except QuizNotFound:
             pass
         if self.use_sqlite:
+
             async with aiosqlite.connect(self.db_name) as conn:
                 try:
                     conn.row_factory = dict_factory  # Make sure the row_factory can be set to dict_factory
@@ -294,12 +371,18 @@ class QuizRelatedCache(ProblemsRelatedCache):
                             pickle.dumps(item.to_dict()),
                         ),
                     )
+
                 await conn.commit()
         else:
-            async with self.get_a_connection() as connection:
-                cursor = await connection.cursor(DictCursor)
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
                 for item in quiz.problems:
-                    await cursor.execute(
+                    cursor.execute(
                         """INSERT INTO quizzes (guild_id, quiz_id, problem_id, question, answer, voters, solvers, author)
                     VALUES ('%s','%s','%s',%s,%s,%s,%s,'%s')""",
                         (
@@ -314,7 +397,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                         ),
                     )
                 for item in quiz.submissions:
-                    await cursor.execute(
+                    cursor.execute(
                         """INSERT INTO quiz_submissions (guild_id, quiz_id, user_id, submissions)
                     VALUES ('%s','%s','%s',%s)""",
                         (
@@ -324,16 +407,6 @@ class QuizRelatedCache(ProblemsRelatedCache):
                             pickle.dumps(item.to_dict()),
                         ),
                     )
-
-        # Update the description and sessions as well
-        await self.add_quiz_description(description=quiz.description)
-
-        for session in quiz.existing_sessions:
-            try:
-                await self.update_quiz_session(quiz.id, session)
-            except QuizSessionNotFoundException:
-                await self.add_quiz_session(session)
-
         return quiz
 
     def __str__(self):
@@ -379,21 +452,23 @@ class QuizRelatedCache(ProblemsRelatedCache):
                     for row in problems
                 ]
         else:
-            async with self.get_a_connection() as connection:
-                cursor = await connection.cursor(DictCursor)
-                await cursor.execute(
-                    "SELECT * FROM quizzes WHERE quiz_id = '%s'", (quiz_id,)
-                )
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute("SELECT * FROM quizzes WHERE quiz_id = '%s'", (quiz_id,))
                 problems = [
-                    QuizProblem.from_row(row, copy(self))
-                    for row in await cursor.fetchall()
+                    QuizProblem.from_row(row, copy(self)) for row in cursor.fetchall()
                 ]
-                await cursor.execute(
+                cursor.execute(
                     "SELECT * FROM submissions WHERE quiz_id = '%s'", (quiz_id,)
                 )
                 submissions = [
                     QuizSubmission.from_dict(pickle.loads(row[0]), cache=copy(self))
-                    for row in await cursor.fetchall()
+                    for row in cursor.fetchall()
                 ]
         authors = set((problem.author for problem in problems))
         sessions = await self.get_quiz_sessions(quiz_id)
@@ -438,18 +513,23 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 )
                 await conn.commit()  # Commit
         else:
-            async with self.get_a_connection() as connection:
-                cursor = await connection.cursor(DictCursor)
-                await cursor.execute(
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
                     "DELETE FROM quizzes WHERE quiz_id = '?'", (quiz_id,)
                 )  # Delete the quiz's problems
-                await cursor.execute(
+                cursor.execute(
                     "DELETE FROM quiz_submissions WHERE quiz_id='?'", (quiz_id,)
                 )  # Delete the submissions as well.
-                await cursor.execute(
+                cursor.execute(
                     "DELETE FROM quiz_submission_sessions WHERE quiz_id = ?", (quiz_id,)
                 )  # Delete the sessions associated with it
-                await connection.commit()
+                connection.commit()
 
     async def get_quiz_description(self, quiz_id: int) -> QuizDescription:
         """Get a quiz description from a quiz id"""
@@ -472,12 +552,17 @@ class QuizRelatedCache(ProblemsRelatedCache):
                     possible_quiz_descriptions[0], cache=self
                 )
         else:
-            async with self.get_a_connection() as connection:
-                cursor = await connection.cursor(DictCursor)
-                await cursor.execute(
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
                     "SELECT * FROM quiz_description WHERE quiz_id = ?", (quiz_id,)
                 )
-                possible_quiz_descriptions = await cursor.fetchall()
+                possible_quiz_descriptions = cursor.fetchall()
                 if len(possible_quiz_descriptions) == 0:
                     raise QuizDescriptionNotFoundException("Quiz description not found")
                 elif len(possible_quiz_descriptions) > 1:
@@ -505,7 +590,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 cursor = await conn.cursor()
                 await cursor.execute(
                     """UPDATE quiz_description
-                    SET description = ?, license = ?, time_limit = ?, intensity = ?, category = ?, quiz_id = ?, author = ?, guild_id = ?, solvers_can_view_quiz=?
+                    SET description = ?, license = ?, time_limit = ?, intensity = ?, category = ?, quiz_id = ?, author = ?, guild_id = ?
                     WHERE quiz_id = ?""",
                     (
                         description.description,
@@ -516,17 +601,21 @@ class QuizRelatedCache(ProblemsRelatedCache):
                         description.quiz_id,
                         description.author,
                         description.guild_id,
-                        int(description.solvers_can_view_quiz),
                         description.quiz_id,
                     ),
                 )
                 await conn.commit()
         else:
-            async with self.get_a_connection() as connection:
-                cursor = await connection.cursor(DictCursor)
-                await cursor.execute(
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
                     """UPDATE quiz_description
-                    SET description = %s, license = %s, time_limit = %s, intensity = %s, category = %s, quiz_id = %s, author = %s, guild_id = %s, solvers_can_view_quiz=%s
+                    SET description = %s, license = %s, time_limit = %s, intensity = %s, category = %s, quiz_id = %s, author = %s, guild_id = %s
                     WHERE quiz_id = %s""",
                     (
                         description.description,
@@ -537,11 +626,10 @@ class QuizRelatedCache(ProblemsRelatedCache):
                         description.quiz_id,
                         description.author,
                         description.guild_id,
-                        int(description.solvers_can_view_quiz),
                         description.quiz_id,
                     ),
                 )
-                await connection.commit()
+                connection.commit()
 
     async def add_quiz_description(self, description: QuizDescription):
         """Add quiz description"""
@@ -573,9 +661,14 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 )
                 await conn.commit()
         else:
-            async with self.get_a_connection() as connection:
-                cursor = await connection.cursor(DictCursor)
-                await cursor.execute(
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
                     """INSERT INTO quiz_description (description, license, time_limit, intensity, quiz_id, author, category, guild_id)
                     VALUES (%s, %s, %s, %s, %s, %s, %s. %s)
                     """,
@@ -591,7 +684,7 @@ class QuizRelatedCache(ProblemsRelatedCache):
                         description.guild_id,
                     ),
                 )
-                await connection.commit()
+                connection.commit()
 
     async def delete_quiz_description(self, quiz_id: int):
         """DELETE quiz description!"""
@@ -606,12 +699,17 @@ class QuizRelatedCache(ProblemsRelatedCache):
                 await conn.commit()
 
         else:
-            async with self.get_a_connection() as connection:
-                cursor = await connection.cursor(DictCursor)
-                await cursor.execute(
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
                     "DELETE * FROM quiz_description WHERE quiz_id = ?", (quiz_id,)
                 )  # Delete it
-                await connection.commit()
+                connection.commit()
 
     async def get_quizzes_by_func(
         self: "MathProblemCache",

@@ -51,6 +51,12 @@ class FileSaver:
             print(
                 f"{str(self)}: Attempting to load vote_threshold from vote_threshold.txt, trusted_users_list from trusted_users.txt, and math_problems  from math_problems.json..."
             )
+        with open("math_problems.json", "r") as file:
+            mathProblems = json.load(fp=file)
+
+        with open("trusted_users.txt", "r") as file2:
+            for line in file2:
+                trusted_users.append(int(line))
         vote_threshold = False
         with open("vote_threshold.txt", "r") as file3:
             for line in file3:
@@ -59,8 +65,10 @@ class FileSaver:
                 ).isnumeric():  # Make sure that an empty string does not become the new vote threshold
                     vote_threshold = int(line)
         if not vote_threshold:
-            raise RuntimeError("vote_threshold not found!!!")
+            raise RuntimeError("vote_threshold not given!!")
 
+        with open("guild_math_problems.json", "r") as file4:
+            guildMathProblems = json.load(fp=file4)
         if (
             printSuccessMessages
             or printSuccessMessages is None
@@ -69,6 +77,9 @@ class FileSaver:
             print(f"{self.name}: Successfully loaded files.")
 
         return {
+            "guildMathProblems": guildMathProblems,
+            "trusted_users": trusted_users,
+            "mathProblems": mathProblems,
             "vote_threshold": vote_threshold,
         }
 
@@ -76,7 +87,10 @@ class FileSaver:
         self,
         main_cache=None,
         printSuccessMessages=None,
-        vote_threshold: int = 3,
+        guild_math_problems_dict={},
+        vote_threshold=3,
+        math_problems_dict={},
+        trusted_users_list={},
     ):
         """Saves files to file names specified in __init__."""
 
@@ -93,12 +107,18 @@ class FileSaver:
                 f"{str(self)}: Attempting to save math problems vote_threshold to vote_threshold.txt, trusted_users_list to  trusted_users.txt..."
             )
         # main_cache.update_file_cache() #Removed method
-        if not isinstance(vote_threshold, int):
-            raise RuntimeError(
-                f"Vote Threshold is not an integer! Instead it's {vote_threshold} (which is of type {type(vote_threshold).__name__})"
-            )
+
+        with open("trusted_users.txt", "w") as file2:
+            for user in trusted_users_list:
+                file2.write(str(user))
+                file2.write("\n")
+                # print(user)
+
         with open("vote_threshold.txt", "w") as file3:
             file3.write(str(vote_threshold))
+        with open("guild_math_problems.json", "w") as file4:
+            e = json.dumps(obj=guild_math_problems_dict)
+            file4.write(e)
         if (
             printSuccessMessages
             or printSuccessMessages is None

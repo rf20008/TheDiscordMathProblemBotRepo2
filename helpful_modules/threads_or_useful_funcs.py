@@ -1,18 +1,12 @@
-import time
-import datetime
 import logging
-import pathlib
 import random
 import subprocess
 import traceback
-import types
-import typing
-import aiofiles
 from copy import deepcopy
 from logging import handlers
 from sys import exc_info, stderr
 from time import asctime, sleep
-from typing import Callable, Optional
+from typing import Optional
 
 import disnake
 from disnake.ext import commands
@@ -24,42 +18,12 @@ from .the_documentation_file_loader import DocumentationFileLoader
 
 # Licensed under GPLv3
 
-REQUIRED_LOGS = ("" "bot", "disnake")
-
 log = logging.getLogger(__name__)
-month_num_to_name_dict = {
-    1: "January",
-    2: "February",
-    3: "March",
-    4: "April",
-    5: "May",
-    6: "June",
-    7: "July",
-    8: "August",
-    9: "September",
-    10: "October",
-    11: "November",
-    12: "December"
-}
-
-def humanify_date(date: datetime.datetime | datetime.date):
-    return str(date.year) + " " + month_num_to_name_dict[date.month] + " " + str(date.day)
-
-def ensure_eval_logs_exist():
-    try:
-        logs_folder = pathlib.Path("eval_log")
-        logs_folder.mkdir(exist_ok=True)
-        return
-    except:
-        print("I don't have permission to create an eval logs folder so logs may be missing!")
-        traceback.print_exc()
-        
-
 
 
 def generate_new_id():
     """Generate a random number from 0 to 2**53-1"""
-    return random.randint(0, 2**53 - 1)
+    return random.randint(0, 2 ** 53 - 1)
 
 
 def get_git_revision_hash() -> str:
@@ -79,30 +43,10 @@ def loading_documentation_thread():
 
 
 async def base_on_error(
-    inter: typing.Union[
-        disnake.ApplicationCommandInteraction,
-        disnake.MessageInteraction,
-        disnake.ModalInteraction,
-        disnake.Interaction,
-    ],
-    error: BaseException,
-    item: typing.Optional[
-        typing.Union[
-            disnake.ui.Button,
-            disnake.ui.Select
-        ]
-    ]=None
+    inter: disnake.ApplicationCommandInteraction, error: BaseException
 ):
     """The base on_error event. Call this and use the dictionary as keyword arguments to print to the user"""
     error_traceback = "\n".join(traceback.format_exception(error))
-    extra_content=""
-    if item is not None:
-        if isinstance(item, disnake.ui.Button):
-            extra_content += "An error occured in the button called " + item.label + "!\n"
-        else:
-            extra_content += "An error occured in the select " + item + "!"
-            
-    
     if isinstance(error, BaseException) and not isinstance(error, Exception):
         # Errors that do not inherit from Exception are not meant to be caught
         await inter.bot.close()
@@ -115,7 +59,7 @@ async def base_on_error(
         )
         return {"content": content}
     if isinstance(error, (disnake.Forbidden,)):
-        extra_content += """There was a 403 error. This means either
+        extra_content = """There was a 403 error. This means either
         1) You didn't give me enough permissions to function correctly, or
         2) There's a bug! If so, please report it!
         
@@ -127,13 +71,13 @@ async def base_on_error(
     if isinstance(error, disnake.ext.commands.errors.CheckFailure):
         return {"embed": ErrorEmbed(str(error))}
     # Embed = ErrorEmbed(custom_title="⚠ Oh no! Error: " + str(type(error)), description=("Command raised an exception:" + str(error)))
-    logging.error("Uh oh! An error occurred!", exc_info=exc_info())
+    logging.error("Uh oh - an error occurred ", exc_info=exc_info())
     print(
         "\n".join(traceback.format_exception(error)),  # python 3.10 only!
         file=stderr,
     )
     log_error(error)  # Log the error
-    error_msg = extra_content+"""An error occurred!
+    error_msg = """An error occurred!
     
     Steps you should do:
     1) Please report this bug to me! (Either create a github issue, or report it in the support server)
@@ -154,7 +98,7 @@ async def base_on_error(
     except (TypeError, NameError) as e:
 
         # send as plain text
-        plain_text = extra_content+(
+        plain_text = (
             """Oh no! An Exception occurred! And it couldn't be sent as an embed!```"""
         )
         plain_text += error_traceback
@@ -193,136 +137,3 @@ def _generate_special_id(guild_id, quiz_id, user_id, attempt_num):
             "attempt_num": attempt_num,
         }
     )
-
-
-def _generate_appeal_id(user_id, appeal_num):
-    return str({"appeal_num": appeal_num, "user_id": user_id})
-
-
-def async_wrap(func):
-    """Turn a sync function into an asynchronous function
-    Source: https://dev.to/0xbf/turn-sync-function-to-async-python-tips-58nn
-
-    """
-
-    @wraps(func)
-    async def run(*args, loop=None, executor=None, **kwargs):
-        if loop is None:
-            loop = asyncio.get_event_loop()
-        pfunc = partial(func, *args, **kwargs)
-        return await loop.run_in_executor(executor, pfunc)
-
-    return run
-
-
-def modified_async_wrap(func):
-    assert isinstance(func, types.FunctionType)
-    if asyncio.iscoroutinefunction(func):
-        return func
-    return async_wrap(func)
-
-
-def make_sure_log_dir_exists(log_maker: Callable[[str], logging.Logger]):
-    try:
-        logs_folder = pathlib.Path("logs")
-        logs_folder.mkdir(exist_ok=True)
-        for log_needed in REQUIRED_LOGS:
-            log = log_maker(log_needed + ".log")
-    except:
-        print("I don't have permission to create a logs folder so logs may be missing!")
-
-import random
-
-
-def miller_rabin_primality_test(n: int, certainty: int = 1000):
-    """An implementation of the Miller-Rabin primality test. Return whether the number is probably prime!
-
-    Lots of credit to https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test"""
-    if n<=1:
-        return False
-    if n==2:
-        return True
-    if n==3:
-        return True
-    
-    d=n
-    numFactorsof2=0
-    while d % 2== 0:
-        d= d//2
-        numFactorsof2+=1
-    for i in range(certainty):
-        a = random.randint(2,d-2)
-        x = pow(a,d,n)
-        if x==1 or x==n-1:
-            continue
-        witnessFound=False
-        for j in range(numFactorsof2):
-            x=pow(x,2,n)
-            if x==n-1:
-                witnessFound=True
-                break
-        if witnessFound:
-            return False
-    return True
-
-def miller_robin_primality_test(n: int, certainty:int=1000)-> bool:
-    return miller_rabin_primality_test(n,certainty)
-
-
-
-def attempt_to_import_orjson() -> tuple[typing.Optional[types.ModuleType], bool]:
-    """attempt_to_import_orjson()
-    
-    Attempt to import orjson and catch the ImportError
-
-    Parameters
-    -----------------
-    There are no parameters
-
-    Returns
-    ------------
-    Returns a tuple. The first element of the tuple is orjson or None.
-    The second element is a bool representing whether orjson could be succesfully imported
-    """
-    try:
-        import orjson
-        return (orjson, True)
-    except ImportError:
-        return (None, False)
-
-
-
-async def log_evaled_code(code: str, filepath: str = "", time_ran: datetime.datetime = None) -> None:
-    if time_ran == None:
-        time = datetime.datetime.now()
-    # determine the filepath
-    date = humanify_date(time_ran)
-    if filepath == "":
-        filepath = f"eval_log/{date}"
-    try:
-        async with aiofiles.open(filepath, 'a') as file: 
-            await file.write("\n"+str(time_ran) + '\n' + code + "\n")
-    except Exception as e:
-        raise RuntimeError("While attempting to log the code that was evaluated, I ran into some problems!") from e
-
-def extended_gcd(a: int, b: int) -> list[tuple[int]]:
-    """Extended Euclidean Algorithm
-returns a list of 3 tuples
-tuple 1: bezout coefficients -> x is first, y is second
-tuple 2: just the gcd
-tuple 3:quotients by the gcd
-pseudocode credit: https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm"""
-
-    (old_r, r) = (a,b)
-    (old_s, s) = (1,0)
-    (old_t,t) = (0,1)
-    while r != 0:
-        quotient = old_r // r
-        (old_r,r) = (r, old_r-quotient*r)
-        (old_s, s) = (s, old_s - quotient*s)
-        (old_t, t) = (t, old_t - quotient*t)
-    return [
-        (old_s, old_t),
-        (old_r,),
-        (t,s)
-    ]

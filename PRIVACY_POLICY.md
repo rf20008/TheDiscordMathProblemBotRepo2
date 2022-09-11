@@ -37,15 +37,11 @@ There is also a ``/user_data delete_all`` command, which will delete *all* your 
 However, due to security reasons, we won't delete the data we store about you about whether you're blacklisted / trusted.  
 It is possible to delete data about whether you voted or solved problems.
 
-### Requests to modify your stored data/delete/see/etc your data
-
-If you can't do it through the bot, please email me.
-
 ## Updates and notification
 
 I may update this policy at any time. We don't store contact information (such as Discord usernames, emails, etc.), so we can't contact users individually. However, we can notify you through the official Discord server or through the bot's status.
 
-If there are significant changes to the Terms, we'll notify you :-). However, I often forget; please check the Policy every so often as we won't notify you for every change.
+If there are signifigant changes to the Terms, we'll notify you :-). However, I often forget; please check the Policy every so often as we won't notify you for every change.
 # Contributions
 
 For legal reasons, all contributions to this application *must* be licensed under GPLv3 or later. I am not legally allowed to accept contributions licensed under any other license. I greatly appreciate your contributions!

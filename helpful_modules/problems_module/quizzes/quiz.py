@@ -110,15 +110,7 @@ class Quiz(list):
         """Convert this instance into a Dictionary!"""
         problems = [problem.to_dict() for problem in self.problems]
         submissions = [submission.to_dict for submission in self.submissions]
-        return {
-            "problems": problems,
-            "submissions": submissions,
-            "id": self._id,
-            "existing_sessions": [
-                session.to_dict() for session in self.existing_sessions
-            ],
-            "description": self._description.to_dict(),
-        }
+        return {"problems": problems, "submissions": submissions, "id": self._id}
 
     async def update_self(self):
         """Update myself!"""

@@ -6,17 +6,15 @@ from copy import copy, deepcopy
 from types import FunctionType
 from typing import *
 
-import aiomysql
 import aiosqlite
 import disnake
-from aiomysql import DictCursor
 
 from helpful_modules.dict_factory import dict_factory
 from helpful_modules.threads_or_useful_funcs import get_log
 
+from ..mysql_connector_with_stmt import mysql_connection
 from ..base_problem import BaseProblem
 from ..errors import *
-from ..mysql_connector_with_stmt import mysql_connection
 from ..quizzes import Quiz, QuizProblem, QuizSolvingSession, QuizSubmission
 from ..quizzes.quiz_description import QuizDescription
 from ..user_data import UserData
@@ -64,9 +62,14 @@ class UserDataRelatedCache(QuizRelatedCache):
                         f"Too much user data; found {len(cursor_results)} results; expected either 1 or 0"
                     )
         else:
-            async with self.get_a_connection() as connection:
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
                 log.debug("Connected to MySQL")
-                cursor = await connection.cursor(DictCursor)
+                cursor = connection.cursor(dictionaries=True)
                 cursor.execute(
                     "SELECT * FROM user_data WHERE USER_ID=%s",
                     (user_id,),  # TODO: fix placeholders
@@ -126,48 +129,3 @@ class UserDataRelatedCache(QuizRelatedCache):
                 connection.commit()
                 log.debug("Finished!")
                 return
-
-    async def add_user_data(self, user_id: int, thing_to_add: UserData) -> None:
-        assert isinstance(user_id, int)
-        assert isinstance(thing_to_add, UserData)
-        if (await self.get_user_data(user_id, default=Exception)) != Exception:  # type: ignore
-            # This is because the user_id is None. Then it will return the default instead
-            raise MathProblemsModuleException(
-                "User data already exists"
-            )  # Make sure the user data doesn't already exist
-        if self.use_sqlite:
-            async with aiosqlite.connect(self.db_name) as conn:
-                cursor = await conn.cursor()
-                await cursor.execute(
-                    """INSERT INTO user_data (user_id, trusted, blacklisted)
-                VALUES (?,?,?)""",
-                    (user_id, thing_to_add.trusted, thing_to_add.blacklisted),
-                )  # add the user data
-                await conn.commit()
-                log.debug("Finished adding user data!")
-        else:
-            with self.get_a_connection() as connection:
-                cursor = connection.cursor(dictionaries=True)
-                cursor.execute(
-                    """INSERT INTO user_data (user_id, trusted, blacklisted)
-                VALUES (%s, %s, %s)""",
-                    (user_id, thing_to_add.trusted, thing_to_add.blacklisted),
-                )
-                connection.commit()
-
-    async def del_user_data(self, user_id: int):
-        """Delete user data given the user id"""
-        assert isinstance(user_id, int)
-        if self.use_sqlite:
-            async with aiosqlite.connect(self.db_name) as conn:
-                cursor = await conn.cursor()
-                await cursor.execute(
-                    "DELETE FROM user_data WHERE user_id = ?", (user_id,)
-                )
-                await conn.commit()
-        else:
-            with self.get_a_connection() as connection:
-                cursor = connection.cursor(dictionaries=True)
-                cursor.execute("DELETE FROM user_data WHERE user_id = %s", (user_id,))
-                connection.commit()
-                connection.close()

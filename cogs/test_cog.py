@@ -28,7 +28,3 @@ class TestCog(HelperCog):
     async def test(self, ctx):
         """Returns test & takes no arguments. Useful only for debugging purposes"""
         return await ctx.send("test")
-
-
-def setup(*args):
-    pass  # I'm not going to use this!

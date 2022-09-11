@@ -22,7 +22,6 @@ from . import *
 from .base_problem import BaseProblem
 from .cache import *
 from .errors import *
-from .GuildData import *
 from .quizzes import *
 from .user_data import UserData
 

@@ -1,43 +1,17 @@
 class QuizSubmissionAnswer:
     """A class that represents an answer for a singular problem"""
 
-    def __init__(
-        self,
-        answer: str = "",
-        problem_id: int = None,
-        quiz_id: int = 10,
-        reasoning: str = None,
-    ):
+    def __init__(self, answer: str = "", problem_id: int = None, quiz_id: int = 10):
         self.answer = answer
         self.problem_id = problem_id
-        self.grade = grade
+        self.grade = 0
         self.quiz_id = quiz_id
-        self.reasoning = reasoning
 
     def set_grade(self, grade):
         self.grade = grade
 
     def __str__(self):
         return f"<QuizSubmission quiz_id = {self.quiz_id} answer = {self.answer} grade = {self.grade}>"
-
-    @classmethod
-    def from_dict(cls, data: dict):
-        return cls(
-            answer=data["answer"],
-            problem_id=data["problem_id"],
-            grade=data["grade"],
-            quiz_id=data["quiz_id"],
-            reasoning=data["reasoning"],
-        )
-
-    def to_dict(self) -> dict:
-        return {
-            "answer": self.answer,
-            "problem_id": self.problem_id,
-            "grade": self.grade,
-            "quiz_id": self.quiz_id,
-            "reasoning": self.reasoning,
-        }
 
 
 class QuizSubmission:

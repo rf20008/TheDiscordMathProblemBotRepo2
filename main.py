@@ -1,3 +1,4 @@
+
 # Written by @rf20008
 # Licensed under GPLv3 (or later)
 # Feel free to contribute! :-)
@@ -6,16 +7,14 @@
 # imports - standard library
 import asyncio
 import logging
-import subprocess
 import threading
 import typing
 import warnings
 from asyncio import sleep as asyncio_sleep
 from copy import copy
 from logging import handlers
-from sys import argv, exc_info, exit, stdout
+from sys import exc_info, exit, stdout
 
-import disnake
 # Imports - My own files
 from disnake.ext import commands
 
@@ -35,7 +34,7 @@ if (
 ):  # __debug__ must be true for the bot to run (because assert statements)
     exit("__debug__ must be True for the bot to run! (Don't run with -o or -OO)")
 del exit
-VERSION = "0.0.8a1"
+VERSION = "0.0.7a1"
 try:
     import dotenv  # https://pypi.org/project/python-dotenv/
 
@@ -50,19 +49,7 @@ if DISCORD_TOKEN is None:
 
 # TODO: use logging + changelog.json + debugging :-)
 # TODO: fix SQL errors
-def log_maker(log_name: str) -> logging.Logger:
-    log = logging.get_log(log_name)
-    log.addHandler(
-        handlers.TimedRotatingFileHandler(
-            filename="logs/" + log_name,
-            when="midnight",
-            encoding="utf-8",
-            backupCount=300,
-        )
-    )
-
-
-make_sure_log_dir_exists(log_maker)
+# TODO: store logs
 TRFHB = handlers.TimedRotatingFileHandler(
     filename="logs/bot.log", when="midnight", encoding="utf-8", backupCount=300
 )  # TimedRotatingFileHandler(for the)Bot
@@ -71,13 +58,13 @@ TRFHD = handlers.TimedRotatingFileHandler(
 )  # TimedRotatingFileHandler(for) Disnake
 assert TRFHD != TRFHB
 if __name__ == "__main__":
-    root_log = logging.getLogger()
+    log = logging.getLogger()
 else:
-    root_log = logging.getLogger(__name__)
+    log = logging.getLogger(__name__)
 disnake_log = logging.getLogger("disnake")
-root_log.addHandler(TRFHB)
+log.addHandler(TRFHB)
 disnake_log.addHandler(TRFHD)
-root_log.setLevel(-1)
+log.setLevel(-1)
 disnake_log.setLevel(logging.INFO)
 
 
@@ -90,14 +77,20 @@ def the_daemon_file_saver():
     )
     print("Loading files...")
     FileSaverDict = FileSaverObj.load_files(bot.cache, True)
-    bot.vote_threshold = int(FileSaverDict["vote_threshold"])
+    (guildMathProblems, bot.trusted_users, bot.vote_threshold) = (
+        FileSaverDict["guildMathProblems"],
+        FileSaverDict["trusted_users"],
+        int(FileSaverDict["vote_threshold"]),
+    )
     while True:
         sleep(45)
         print("Saving files")
         FileSaverObj.save_files(
             bot.cache,
             False,
+            guildMathProblems,
             bot.vote_threshold,
+            bot.trusted_users,
         )
 
 
@@ -129,7 +122,6 @@ main_cache = problems_module.MathProblemCache(
     mysql_db_name=bot_constants.MYSQL_DB_NAME,
     use_sqlite=bot_constants.USE_SQLITE,
 )  # Generate a new cache for the bot!
-problems_module.GuildData.global_cache=main_cache
 assert main_cache.db is main_cache.db_name
 vote_threshold = -1  # default
 mathProblems = {}
@@ -161,7 +153,7 @@ def get_git_revision_hash() -> str:
 async def on_ready(bot: TheDiscordMathProblemBot):
     """Ran when the disnake library detects that the bot is ready"""
     app_info = await bot.application_info()
-    bot.support_server = await bot.fetch_guild(bot.constants.SUPPORT_SERVER_ID)
+
     print("The bot is now ready!")
     print(f"I connected as {bot.user.name}#{bot.user.discriminator}.")
     print(
@@ -215,41 +207,21 @@ _the_daemon_file_saver = threading.Thread(
 _the_daemon_file_saver.start()
 # bot.load_extension("jishaku")
 
+# slash = InteractionClient(client=bot, sync_commands=True)
+# bot.slash = slash
 # Add the commands
-# bot.add_cog(DebugCog(bot))
-# bot.add_cog(DeveloperCommands(bot))
-# bot.add_cog(ProblemsCog(bot))
-# bot.add_cog(MiscCommandsCog(bot))
-bot.load_extensions("cogs")
-# bot.load_extension("cogs.appeals_cog")
-bot.load_extension("cogs.quiz_ext")
+bot.add_cog(DebugCog(bot))
+bot.add_cog(DeveloperCommands(bot))
+bot.add_cog(ProblemsCog(bot))
+bot.add_cog(QuizCog(bot))
+bot.add_cog(MiscCommandsCog(bot))
 bot.CONSTANTS = bot_constants
-bot.add_app_command_check(checks.is_not_blacklisted())
-bot.add_app_command_check(checks.has_privileges())
-bot.add_app_command_check(checks.guild_not_blacklisted())
-bot.add_app_command_check(checks.nothing_too_long())
-for command in bot.application_commands:
-    log.debug("Testing " + command.name)
-    if not (1 <= len(command.name) <= 100):
-        log.error(f"{command.name} name is too long!")
-
-    for option in command.options:
-        log.debug("Testing the options of " + command.name)
-        if len(option.description) >= 100 or len(option.description) <= 1:
-            log.error(
-                f"{option.description} in {command.name} is too long... or too short in the option {option}"
-            )
-            print(
-                f"{option.description} in {command.name} is too long... or too short in the option {option}"
-            )
+bot.add_check(checks.is_not_blacklisted())
 
 
 # Events
 
-
 # TODO: (general) add changelog.json
-
-
 @bot.event
 async def on_connect():
     """Run when the bot connects"""
@@ -269,7 +241,7 @@ async def on_connect():
     ) in (
         await bot.cache.get_guilds()
     ):  # Obtain all guilds the cache stores data (will need to be upgraded.)
-        if guild_id not in bot_guild_ids:  # It's not in the guild!!
+        if guild_id not in bot_guild_ids:  # It's not in!
             if guild_id is None:  # Don't delete global problems
                 continue
             bot.log.debug("The bot is deleting data from a guild it has left.")
@@ -305,7 +277,7 @@ async def on_slash_command_error(inter, error):
     except AttributeError:
         log_error(error, f"error_logs/{str(datetime.datetime.now())}")
         await inter.send(
-            "An error occurred, and the error message couldn't be sent. However, it has been saved!"
+            "An error occured, and the error message couldn't be sent. However, it has been saved!"
         )
         raise error
 
@@ -322,8 +294,6 @@ async def on_guild_join(guild):
     """Ran when the bot joins a guild!"""
     if guild.id is None:  # Should never happen
         raise Exception("Uh oh!")  # This is probably causing the bot to do stuff
-    if await bot.is_guild_blacklisted(guild):
-        await bot.notify_guild_on_guild_leave_because_guild_blacklist(guild)
         # await guild.leave()  # This will mess up stuff
         # print("Oh no")
         # raise RuntimeError(
@@ -331,15 +301,11 @@ async def on_guild_join(guild):
         #  # Make sure that a guild with id _global doesn't mess up stuff
 
 
-async def make_sure_the_cache_has_a_pool_if_mysql_is_used():
-    if not main_cache.use_sqlite:
-        if not hasattr(main_cache, "_pool") or main_cache._pool is None:  # type: ignore
-            await main_cache.create_pool()
+@bot.event
+async def on_guild_remove(guild):
+    await bot.cache.remove_all_by_guild_id(guild.id)  # Remove all guild-related stuff
+    # uh oh?
 
-
-asyncio.run(
-    make_sure_the_cache_has_a_pool_if_mysql_is_used()
-)  # Make sure that if the cache uses MYSQL that we have a pool before we start the bot
 
 if __name__ == "__main__":
     print("The bot has finished setting up and will now run.")
@@ -347,6 +313,4 @@ if __name__ == "__main__":
         # raise
         if len(command.name) > 100:
             raise Exception(f"This command: {command.name} is too long!")
-    if len(argv) >= 2 and argv[1] == "do_not_connect":
-        exit()
     bot.run(DISCORD_TOKEN)

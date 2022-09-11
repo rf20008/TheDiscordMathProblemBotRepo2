@@ -5,9 +5,8 @@ import typing
 import warnings
 from copy import copy, deepcopy
 from types import FunctionType
-from typing import List, Optional, Union
+from typing import *
 
-import aiomysql
 import aiosqlite
 import disnake
 
@@ -21,12 +20,77 @@ from ..mysql_connector_with_stmt import mysql_connection
 from ..quizzes import Quiz, QuizProblem, QuizSolvingSession, QuizSubmission
 from ..quizzes.quiz_description import QuizDescription
 from ..user_data import UserData
-from .misc_related_cache import MiscRelatedCache
 
 log = logging.getLogger(__name__)
 
 
-class ProblemsRelatedCache(MiscRelatedCache):
+class ProblemsRelatedCache:
+    def __init__(
+        self,
+        *,
+        mysql_username: str,
+        mysql_password: str,
+        mysql_db_ip: str,
+        mysql_db_name: str,
+        use_sqlite: bool = False,
+        max_answer_length: int = 100,
+        max_question_limit: int = 250,
+        max_guild_problems: int = 125,
+        max_answers_per_problem: int = 25,
+        max_problems_per_quiz: int = 50,
+        max_quizzes_per_guild: int = 50,
+        warnings_or_errors: Union[Literal["warnings"], Literal["errors"]] = "warnings",
+        db_name: str = "problems_module.db",
+        update_cache_by_default_when_requesting: bool = True,
+        use_cached_problems: bool = False,
+    ):
+        """Create a new MathProblemCache. The arguments should be self-explanatory.
+        Many methods are async!"""
+        self.cached_submissions_organized_by_dict = None
+        log.info("Initializing the MathProblemCache object.")
+        # make_sql_table([], db_name = sql_dict_db_name)
+        # make_sql_table([], db_name = "MathProblemCache1.db", table_name="kv_store")
+        if use_sqlite:
+            warnings.warn("Sqlite has been deprecated. Use MySQL instead.")
+        self.db_name = db_name
+        self.db = db_name
+        if warnings_or_errors not in ["warnings", "errors"]:
+            log.critical("Uh oh; warnings_or_errors is bad")
+            raise ValueError(
+                f"warnings_or_errors is {warnings_or_errors}, not 'warnings' or 'errors'"
+            )
+        self.warnings = (
+            warnings_or_errors == "warnings"
+        )  # Whether to raise TypeErrors or warn
+        if max_answers_per_problem < 1:
+            raise ValueError("max_answers_per_problem must be at least 1!")
+        self._max_answers_per_problem = max_answers_per_problem
+        self.use_sqlite = use_sqlite
+        self.use_cached_problems = use_cached_problems
+        self._max_answer_length = max_answer_length
+        self._max_question_length = max_question_limit
+        self._max_guild_limit = max_guild_problems
+        self.mysql_username = mysql_username
+        self.max_quizzes_per_guild = max_quizzes_per_guild
+        self.max_problems_per_quiz = max_problems_per_quiz
+        self.mysql_password = mysql_password
+        self.mysql_db_ip = mysql_db_ip
+        self.mysql_db_name = mysql_db_name
+        asyncio.run(
+            self.initialize_sql_table()
+        )  # Initialize the SQL tables (but asyncio.run() has to be used because __init__ cannot be async)
+        self.update_cache_by_default_when_requesting = (
+            update_cache_by_default_when_requesting
+        )
+        self.guild_ids = []
+        self.global_problems = {}
+        self.cached_submissions = []
+        self.cached_quizzes = []
+        self.guild_problems = {}
+        self._guilds: typing.List[disnake.Guild] = []
+        asyncio.run(self.update_cache())
+        self.cached_sessions = {}
+
     async def convert_to_dict(self) -> dict:
         """A method that converts self to a dictionary (not used, will probably be removed soon)"""
         e = {}
@@ -69,6 +133,11 @@ class ProblemsRelatedCache(MiscRelatedCache):
         self, guild_id: typing.Optional[int], problem_id: int
     ) -> BaseProblem:
         """Gets the problem with this guild id and problem id. If the problem is not found, a ProblemNotFound exception will be raised."""
+        # This isn't working
+        # Possible causes:
+        # The item is of the wrong type
+        # Wrong database/table / a SQL feature that I didn't know about
+        # Searching by NULL
         log.debug(
             f"Type of guild_id & problem_id: guild_id: {type(guild_id)} {guild_id}, problem_id: {type(problem_id)} {problem_id}"
         )
@@ -134,12 +203,17 @@ class ProblemsRelatedCache(MiscRelatedCache):
                         row = rows[0]
                     return BaseProblem.from_row(row, cache=copy(self))
             else:
-                async with self.get_a_connection() as connection:
-                    cursor = connection.cursor(aiomysql.DictCursor)
-                    await cursor.execute(
+                with mysql_connection(
+                    host=self.mysql_db_ip,
+                    password=self.mysql_password,
+                    user=self.mysql_username,
+                    database=self.mysql_db_name,
+                ) as connection:
+                    cursor = connection.cursor(dictionaries=True)
+                    cursor.execute(
                         "SELECT * from problems WHERE problem_id = %s", (problem_id,)
                     )  # Get the problem
-                    rows = await cursor.fetchall()
+                    rows = cursor.fetchall()
                     if len(rows) == 0:
                         raise ProblemNotFound("Problem not found!")
                     elif len(rows) > 1:
@@ -165,7 +239,7 @@ class ProblemsRelatedCache(MiscRelatedCache):
     ) -> typing.Dict[int, BaseProblem]:
         if not isinstance(guild_id, int) and guild_id is not None:
             raise AssertionError
-        await self.update_cache()
+
         if guild_id is None:
             return await self.get_global_problems()
         try:
@@ -185,10 +259,11 @@ class ProblemsRelatedCache(MiscRelatedCache):
         if kwargs is None:
             kwargs = {}
         await self.update_cache()
-        guild_problems = [
-            item.values() for item in self.guild_problems.values()
-        ]  # Creates the list of guild problems
-
+        guild_problems = []
+        for item in self.guild_problems.values():
+            guild_problems.extend(
+                item.values()
+            )  # This could be a list comprehension (but it creates the list of guild problems)
         global_problems_that_meet_the_criteria = [
             problem
             for problem in self.global_problems.values()
@@ -303,8 +378,13 @@ class ProblemsRelatedCache(MiscRelatedCache):
                 await conn.commit()
             return problem
         else:
-            async with self.get_a_connection() as connection:
-                cursor = await connection.cursor(aiomysql.DictCursor)
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
                 await cursor.execute(
                     """INSERT INTO problems (guild_id, problem_id, question, answer, voters, solvers, author)
                 VALUES (%s,%s,%s,%b,%b,%b,%s)""",
@@ -372,13 +452,18 @@ class ProblemsRelatedCache(MiscRelatedCache):
                 await conn.commit()
 
         else:
-            async with self.get_a_connection() as connection:
-                cursor = connection.cursor(aiomysql.DictCursor)
-                await cursor.execute(
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
                     "DELETE FROM problems WHERE problem_id = %s",
                     (problem_id,),
                 )  # The actual deletion
-                await connection.commit()
+                connection.commit()
                 try:
                     del self.guild_problems[guild_id][
                         problem_id
@@ -401,12 +486,17 @@ class ProblemsRelatedCache(MiscRelatedCache):
                 ]
                 await conn.commit()
         else:
-            async with self.get_a_connection() as connection:
-                cursor = await connection.cursor(aiomysql.DictCursor)
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
                 await cursor.execute("SELECT * FROM Problems")
                 all_problems = [
                     BaseProblem.from_row(row, cache=copy(self))
-                    for row in await cursor.fetchall()
+                    for row in cursor.fetchall()
                 ]
         for problemA in range(len(all_problems)):
             for problemB in range(len(all_problems)):
@@ -418,7 +508,7 @@ class ProblemsRelatedCache(MiscRelatedCache):
                     )  # Delete the problem
 
     async def get_guilds(
-        self, bot: Optional[disnake.ext.commands.Bot] = None
+        self, bot: disnake.ext.commands.Bot = None
     ) -> List[Union[int, Optional[disnake.Guild]]]:
         """Get the guilds (due to using sql, it must return the guild id, bot is needed to return guilds. takes O(n) time)"""
         try:
@@ -484,9 +574,14 @@ class ProblemsRelatedCache(MiscRelatedCache):
                     ),
                 )
         else:
-            async with self.get_a_connection() as connection:
-                cursor = await connection.cursor(dictionaries=True)
-                await cursor.execute(
+            with mysql_connection(
+                host=self.mysql_db_ip,
+                password=self.mysql_password,
+                user=self.mysql_username,
+                database=self.mysql_db_name,
+            ) as connection:
+                cursor = connection.cursor(dictionaries=True)
+                cursor.execute(
                     """UPDATE problems 
                     SET guild_id = '%s', problem_id = '%s', question = %s, answer = %s, voters = %s, solvers = %s, author = '%s'
                     WHERE AND problem_id = '%s'""",

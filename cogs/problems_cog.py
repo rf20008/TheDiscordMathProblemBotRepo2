@@ -3,6 +3,7 @@ import typing
 from asyncio import run
 
 import disnake
+from disnake import *
 from disnake.ext import commands
 
 from helpful_modules import checks, problems_module
@@ -24,7 +25,6 @@ class ProblemsCog(HelperCog):
         super().__init__(bot)
         checks.setup(bot)
 
-    @checks.has_privileges(blacklisted=False)
     @commands.cooldown(1, 1, commands.BucketType.user)
     @checks.is_not_blacklisted()
     @commands.slash_command(name="edit_problem", description="edit a problem")
@@ -32,35 +32,34 @@ class ProblemsCog(HelperCog):
         """The base command to edit problems."""
         pass
 
-    @checks.has_privileges(blacklisted=False)
     @commands.cooldown(1, 1, commands.BucketType.user)
     @checks.is_not_blacklisted()
     @edit_problem.sub_command(
         name="general_edits",
         description="edit a problem",
         options=[
-            disnake.Option(
+            Option(
                 name="problem_id",
                 description="problem_id",
-                type=disnake.OptionType.integer,
+                type=OptionType.integer,
                 required=True,
             ),
-            disnake.Option(
+            Option(
                 name="guild_id",
                 description="the guild id",
-                type=disnake.OptionType.integer,
+                type=OptionType.integer,
                 required=False,
             ),
-            disnake.Option(
+            Option(
                 name="new_question",
                 description="the new question",
-                type=disnake.OptionType.string,
+                type=OptionType.string,
                 required=False,
             ),
-            disnake.Option(
+            Option(
                 name="new_answer",
                 description="the new answer",
-                type=disnake.OptionType.string,
+                type=OptionType.string,
                 required=False,
             ),
         ],
@@ -119,27 +118,26 @@ class ProblemsCog(HelperCog):
 
         await inter.send(embed=SuccessEmbed(e), ephemeral=True)
 
-    @checks.has_privileges(blacklisted=False)
     @edit_problem.sub_command(
         name="add_answer",
         description="Add an answer to an existing problem",
         options=[
-            disnake.Option(
+            Option(
                 name="problem_id",
                 description="The problem to add an answer to",
-                type=disnake.OptionType.integer,
+                type=OptionType.integer,
                 required=True,
             ),
-            disnake.Option(
+            Option(
                 name="answer",
                 description="The answer to add to the problem",
-                type=disnake.OptionType.string,
+                type=OptionType.string,
                 required=True,
             ),
-            disnake.Option(
+            Option(
                 name="guild_id",
                 description="The guild ID of the problem to edit",
-                type=disnake.OptionType.integer,
+                type=OptionType.integer,
                 required=False,
             ),
         ],
@@ -173,33 +171,32 @@ class ProblemsCog(HelperCog):
         await problem.update_self()
         await inter.reply("Successfully added the answer!")
 
-    @checks.has_privileges(blacklisted=False)
     @commands.slash_command(
         name="show_problem_info",
         description="Show problem info",
         options=[
-            disnake.Option(
+            Option(
                 name="problem_id",
                 description="problem id of the problem you want to show",
-                type=disnake.OptionType.integer,
+                type=OptionType.integer,
                 required=True,
             ),
-            disnake.Option(
+            Option(
                 name="show_all_data",
                 description="whether to show all data (only usable by problem authors and trusted users",
-                type=disnake.OptionType.boolean,
+                type=OptionType.boolean,
                 required=False,
             ),
-            disnake.Option(
+            Option(
                 name="raw",
                 description="whether to show data as json?",
-                type=disnake.OptionType.boolean,
+                type=OptionType.boolean,
                 required=False,
             ),
-            disnake.Option(
+            Option(
                 name="is_guild_problem",
                 description="whether the problem you are trying to view is a guild problem",
-                type=disnake.OptionType.boolean,
+                type=OptionType.boolean,
                 required=False,
             ),
         ],
@@ -287,17 +284,16 @@ class ProblemsCog(HelperCog):
             await inter.send(embed=SuccessEmbed(Problem_as_str), ephemeral=True)
         await inter.send(embed=SuccessEmbed(Problem_as_str), ephemeral=True)
 
-    @checks.has_privileges(blacklisted=False)
     @commands.cooldown(1, 2.5, commands.BucketType.user)
     @commands.slash_command(
         name="list_all_problem_ids",
         description="List all problem ids",
         options=[
-            disnake.Option(
+            Option(
                 name="show_only_guild_problems",
                 description="Whether to show guild problem ids",
                 required=False,
-                type=disnake.OptionType.boolean,
+                type=OptionType.boolean,
             )
         ],
     )
@@ -336,32 +332,32 @@ class ProblemsCog(HelperCog):
         thing_to_write = "\n".join([str(problem.id) for problem in global_problems])
         await inter.send(embed=SuccessEmbed(thing_to_write))
 
-    @checks.has_privileges(blacklisted=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.slash_command(
         name="list_all_problems",
         description="List all problems stored with the bot",
         options=[
-            disnake.Option(
+            Option(
                 name="show_solved_problems",
                 description="Whether to show solved problems",
-                type=disnake.OptionType.boolean,
+                type=OptionType.boolean,
                 required=False,
             ),
-            disnake.Option(
+            Option(
                 name="show_guild_problems",
                 description="Whether to show solved problems",
-                type=disnake.OptionType.boolean,
+                type=OptionType.boolean,
                 required=False,
             ),
-            disnake.Option(
+            Option(
                 name="show_only_guild_problems",
                 description="Whether to only show guild problems",
-                type=disnake.OptionType.boolean,
+                type=OptionType.boolean,
                 required=False,
             ),
         ],
     )
+    @checks.is_not_blacklisted()
     async def list_all_problems(
         self,
         inter,
@@ -438,13 +434,12 @@ class ProblemsCog(HelperCog):
             problem_info_as_str += str(len(problem.get_solvers())) + "\t"
         await inter.send(embed=SuccessEmbed(problem_info_as_str[:1930]))
 
-    @checks.trusted_users_only()
-    @disnake.ext.commands.cooldown(1, 15, commands.BucketType.user)
-    @checks.has_privileges(blacklisted=False, trusted=True)
     @commands.slash_command(
         name="delallbotproblems",
         description="delete all automatically generated problems",
     )
+    @checks.trusted_users_only()
+    @disnake.ext.commands.cooldown(1, 15, commands.BucketType.user)
     async def delallbotproblems(self, inter: disnake.ApplicationCommandInteraction):
         """/delallbotproblems
         Delete all automatically generated problems."""
@@ -454,7 +449,6 @@ class ProblemsCog(HelperCog):
         )  # may get rid of later? :)
 
         await self.cache.delete_all_by_user_id(self.bot.user.id)
-
         # async with aiosqlite.connect(self.bot.cache.db_name) as conn: #
         #    cursor = conn.cursor()
         #    await cursor.execute(
@@ -463,32 +457,31 @@ class ProblemsCog(HelperCog):
         #    await conn.commit()
         await inter.send(
             embed=SuccessEmbed(
-                "Successfully deleted all automatically generated problems!"
+                f"Successfully deleted all automatically generated problems!"
             )
         )
 
-    @checks.has_privileges(blacklisted=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.slash_command(
         name="submit_problem",
         description="Create a new problem",
         options=[
-            disnake.Option(
+            Option(
                 name="question",
                 description="your question to submit!",
-                type=disnake.OptionType.string,
+                type=OptionType.string,
                 required=True,
             ),
-            disnake.Option(
+            Option(
                 name="answer",
                 description="The answer to this problem",
-                type=disnake.OptionType.string,
+                type=OptionType.string,
                 required=True,
             ),
-            disnake.Option(
+            Option(
                 name="guild_question",
                 description="Whether it should be a question for the guild",
-                type=disnake.OptionType.boolean,
+                type=OptionType.boolean,
                 required=False,
             ),
         ],
@@ -502,16 +495,13 @@ class ProblemsCog(HelperCog):
     ) -> None:
         """/submit_problem {question:str}, {answer:str}, [guild_question:bool=false]
         Create & submit a new problem with the given question and answer.
-        If the problem is a guild problem, you must not run the command in a DM."""
+        If the problem is a guild problem, it must not be executed in a DM context or the bot will not know which guild the problem is for!"""
         if (
             len(question) > self.cache.max_question_length
         ):  # Check to make sure it's not too long!
             await inter.send(
                 embed=ErrorEmbed(
-                    (
-                        f"Your question is too long! Therefore, it cannot be added. "
-                        "The maximum question length is {self.cache.max_question_length} characters."  # noqa: E501
-                    ),
+                    f"Your question is too long! Therefore, it cannot be added. The maximum question length is {self.cache.max_question_length} characters.",
                     custom_title="Your question is too long.",
                 ),
                 ephemeral=True,
@@ -520,7 +510,7 @@ class ProblemsCog(HelperCog):
         if len(answer) > self.cache.max_answer_length:
             await inter.send(
                 embed=ErrorEmbed(
-                    description=f"Your answer is longer than {self.cache.max_answer_length} characters. Therefore, it is too long and cannot be added.",  # noqa: E501
+                    description=f"Your answer is longer than {self.cache.max_answer_length} characters. Therefore, it is too long and cannot be added.",
                     custom_title="Your answer is too long",
                 ),
                 ephemeral=True,
@@ -533,8 +523,7 @@ class ProblemsCog(HelperCog):
         if guild_question:
             if inter.guild is None:
                 raise RuntimeError(
-                    "You're not allowed to submit guild problems because you're running this command in a DM"  # noqa: E501
-                    " and I don't know which guild to associate your problem with."
+                    "You're not allowed to submit guild problems because you're executing this in a DM context, or there is a bug with the library"
                 )
 
             guild_id = inter.guild.id
@@ -566,15 +555,17 @@ class ProblemsCog(HelperCog):
         ):  # Check to make sure the maximum guild problem limit is not reached
             await inter.send(
                 embed=ErrorEmbed(
-                    f"You have reached the guild problem limit of {self.cache.max_guild_problems} and therefore cannot create new problems!"  # noqa: E501
+                    f"You have reached the guild problem limit of {self.cache.max_guild_problems} and therefore cannot create new problems!"
                     + (
-                        "This is to prevent spam.\n"
-                        "As of right now, you cannot increase the guild problem limit without self-hosting the bot.\n"  # noqa: E501
-                        "If you are self-hosting the bot, it is possible to increase the limit by changing the code. :)"  # noqa: E501
+                        """This is to prevent spam. 
+                        As of right now, there is no way to increase the guild problem limit.
+                        This is because there is no premium version of the bot (because it is open-source).
+                        However, if you are self-hosting the bot, you can increase the limit in main.py :-)"""
                     )
                 )
             )
             return  # Exit the function
+
         while True:
 
             problem_id = generate_new_id()
@@ -600,6 +591,7 @@ class ProblemsCog(HelperCog):
             guild_id=guild_id,
             cache=self.cache,
         )  # Create the problem!
+        print(problem)
         await self.cache.add_problem(
             problem_id=problem_id, problem=problem
         )  # Add the problem
@@ -618,22 +610,22 @@ class ProblemsCog(HelperCog):
     #     name="check_answer",
     #     description="Check your answer to a problem that was submitted",
     #     options=[
-    #         disnake.Option(
+    #         Option(
     #             name="problem_id",
     #             description="the id of the problem you are trying to check the answer of",
-    #             type=disnake.OptionType.integer,
+    #             type=OptionType.integer,
     #             required=True,
     #         ),
-    #         disnake.Option(
+    #         Option(
     #             name="answer",
     #             description="your answer",
-    #             type=disnake.OptionType.string,
+    #             type=OptionType.string,
     #             required=True,
     #         ),
-    #         disnake.Option(
+    #         Option(
     #             name="checking_guild_problem",
     #             description="whether checking a guild problem",
-    #             type=disnake.OptionType.boolean,
+    #             type=OptionType.boolean,
     #             required=False,
     #         ),
     #     ],
@@ -679,7 +671,7 @@ class ProblemsCog(HelperCog):
     #     if not problem.check_answer(answer):
     #         await inter.send(
     #             embed=ErrorEmbed(
-    #                 "You didn't answer the problem correctly! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.", # noqa: E501
+    #                 "You didn't answer the problem correctly! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.",
     #                 custom_title="Sorry, your answer is wrong.",
     #             ),
     #             ephemeral=True,
@@ -696,22 +688,27 @@ class ProblemsCog(HelperCog):
     #
 
     # Commented out: duplicate
-    @checks.has_privileges(blacklisted=False)
     @commands.slash_command(
         name="check_answer",
         description="Check if you are right",
         options=[
-            disnake.Option(
+            Option(
                 name="problem_id",
                 description="the id of the problem you are trying to check the answer of",
-                type=disnake.OptionType.integer,
+                type=OptionType.integer,
                 required=True,
             ),
-            disnake.Option(
+            Option(
                 name="answer",
                 description="your answer",
-                type=disnake.OptionType.string,
+                type=OptionType.string,
                 required=True,
+            ),
+            Option(
+                name="checking_guild_problem",
+                description="whether checking a guild problem",
+                type=OptionType.boolean,
+                required=False,
             ),
         ],
     )
@@ -722,12 +719,23 @@ class ProblemsCog(HelperCog):
         inter: disnake.ApplicationCommandInteraction,
         problem_id: int,
         answer: str,
+        checking_guild_problem: bool = False,
     ):
-        """/check_answer {problem_id: int} {answer: str}
+        """/check_answer {problem_id: int} {answer: str} [checking_guild_problem: bool = false]
         Check your answer to the problem with the given id.
-        The bot can tell whether the problem is a guild problem."""
+        If this command is executed in a DM, then you must set checking_guild_problem to False or the bot will error."""
+        if not inter.guild or not hasattr(inter.guild, "id"):
+            if checking_guild_problem:
+                return await inter.send(
+                    embed=ErrorEmbed(
+                        "You must run the command with checking_guild_problem set to False! If you set it to True I don't know which guild the problem is in!"
+                    )
+                )
+            checking_guild_problem = False
         try:
-            problem = await self.bot.cache.get_problem(inter.guild_id, int(problem_id))
+            problem = await self.bot.cache.get_problem(
+                inter.guild.id if inter.guild is not None else None, int(problem_id)
+            )
             if problem.is_solver(inter.author):  # If the user solved the problem
                 await inter.send(
                     embed=ErrorEmbed(
@@ -738,8 +746,8 @@ class ProblemsCog(HelperCog):
                 )  # Don't let them re-solve the problem
                 return
         except (
-            problems_module.ProblemNotFound,
-            problems_module.ProblemNotFoundException,
+            ProblemNotFound,
+            ProblemNotFoundException,
         ):  # But if the problem wasn't found, then tell them
             await inter.send(
                 embed=ErrorEmbed(
@@ -752,10 +760,7 @@ class ProblemsCog(HelperCog):
         if not problem.check_answer(answer):
             await inter.send(
                 embed=ErrorEmbed(
-                    (
-                        "Your answer is not correct. If you think this problem is incorrect,"
-                        "you can vote for the problem. "
-                    ),
+                    "Sorry..... but you got it wrong! You can vote for the deletion of this problem if it's wrong or breaks copyright rules.",
                     custom_title="Sorry, your answer is wrong.",
                 ),
                 ephemeral=True,
@@ -771,31 +776,37 @@ class ProblemsCog(HelperCog):
             await problem.update_self()
             return
 
-    @checks.has_privileges(blacklisted=False)
-    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.slash_command(
         name="vote",
         description="Vote for the deletion of a problem!",
         options=[
-            disnake.Option(
+            Option(
                 name="problem_id",
                 description="problem id of the problem you are attempting to delete",
-                type=disnake.OptionType.integer,
+                type=OptionType.integer,
                 required=True,
+            ),
+            Option(
+                name="is_guild_problem",
+                description="problem id of the problem you are attempting to delete",
+                type=OptionType.boolean,
+                required=False,
             ),
         ],
     )
-    async def vote(self, inter, problem_id: int):
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def vote(self, inter, problem_id: int, is_guild_problem: bool = False):
         """/vote [problem_id: int] [is_guild_problem: bool = False]
         Vote for the deletion of the problem with the given problem_id.
-        The bot can tell whether the problem is a guild problem.
+        if is_guild_problem is true, then the bot looks for the problem with the given problem id and guild id, and makes you vote for it.
+        Otherwise, the bot looks for the global problem with given problem id (the guild id is None).
         There is a 5-second cooldown on this command, to prevent spam.
-        The data about you voting is not private.
-        It will be given to people who interacted with problems and use /user_data get_data.
-
-        Voting for problems may be removedc"""
+        The data about you voting is not private; it will be given to people who created/solved/voted for problems and use /user_data get_data"""
         try:
             problem = await self.bot.cache.get_problem(
+                inter.guild.id
+                if is_guild_problem
+                else None,  # If it's a guild problem, set the guild id to the guild_id, otherwise set it to None
                 problem_id=int(problem_id),  # Will probably have to change
             )  # Get the problem
             if problem.is_voter(
@@ -816,11 +827,8 @@ class ProblemsCog(HelperCog):
         await problem.add_voter(
             inter.author
         )  # Add the voter. Must be awaited because updating it in the cache is a coroutine.
-        string_to_print = (
-            "You successfully voted for the problem's deletion! "
-            "As long as this problem is not deleted, you can always un-vote. "
-            f"There are {problem.get_num_voters()}/{self.bot.vote_threshold} votes on this problem!"
-        )  # Tell the user how many votes there are now
+        string_to_print = "You successfully voted for the problem's deletion! As long as this problem is not deleted, you can always un-vote. There are "
+        string_to_print += f"{problem.get_num_voters()}/{self.bot.vote_threshold} votes on this problem!"  # Tell the user how many votes there are now
         await inter.send(
             embed=SuccessEmbed(string_to_print, title="You Successfully voted"),
             ephemeral=True,
@@ -830,7 +838,7 @@ class ProblemsCog(HelperCog):
         ):  # Has it passed the vote threshold?
             # If it did, delete the problem
             await self.bot.cache.remove_problem(
-                problem_id=problem.id
+                guild_id=problem.guild_id, problem_id=problem.id
             )  # Remove the problem, after it passes the vote threshold
             await inter.send(  # May cause problems in a DM
                 embed=SimpleEmbed(
@@ -840,21 +848,20 @@ class ProblemsCog(HelperCog):
             )
             return
 
-    @checks.has_privileges(blacklisted=False)
     @commands.slash_command(
         name="unvote",
         description="Vote for the deletion of a problem",
         options=[
-            disnake.Option(
+            Option(
                 name="problem_id",
                 description="problem id of the problem you are attempting to delete",
-                type=disnake.OptionType.boolean,
+                type=OptionType.boolean,
                 required=True,
             ),
-            disnake.Option(
+            Option(
                 name="is_guild_problem",
                 description="problem id of the problem you are attempting to delete",
-                type=disnake.OptionType.boolean,
+                type=OptionType.boolean,
                 required=False,
             ),
         ],
@@ -868,8 +875,7 @@ class ProblemsCog(HelperCog):
         is_guild_problem: bool = False,
     ):
         """/unvote [problem_id: int] [is_guild_problem: bool = False]
-        Searches for the problem with the given id.
-        If is_guild_problem is True, the guild id of the problem that it searches for will be the guild id of the context.
+        Searches for the problem with the given id. If is_guild_problem is True, the guild id of the problem that it searches for will be the guild id of the context.
         Otherwise, it will look for the global problem with the given id.
         After searching for the problem, it removes your vote for deletion of that problem.
         There is a 5-second cooldown on this command."""
@@ -883,7 +889,7 @@ class ProblemsCog(HelperCog):
             ):  # You can't un-vote unless you are voting
                 await inter.send(
                     embed=ErrorEmbed(
-                        "You can't un-vote because you aren't voting for this problem!"
+                        "You can't un-vote because you are not voting for the deletion of this problem!"
                     ),
                     ephemeral=True,
                 )
@@ -896,44 +902,40 @@ class ProblemsCog(HelperCog):
         problem.voters.remove(inter.author.id)  # Remove the user id from problem
         await problem.update_self()  # Save the changes to the database.
 
-        successMessage = (
-            "You successfully un-voted for the problem's deletion!"
+        successMessage = f"You successfully un-voted for the problem's deletion!" + (
             "As long as this problem is not deleted, you can always un-vote."
-            f"There are {problem.get_num_voters()}/{self.bot.vote_threshold}"
-            " votes on this problem!"
+            + (
+                "There are {problem.get_num_voters()}/{self.bot.vote_threshold} votes on this problem!"
+            )
         )
         await inter.send(
             embed=SuccessEmbed(successMessage, successTitle="Successfully un-voted!"),
             ephemeral=True,
         )  # Tell the user of the successful un-vote.
 
-    @commands.cooldown(1, 0.5, commands.BucketType.user)
-    @commands.guild_only()
-    @checks.has_privileges(blacklisted=False)
     @commands.slash_command(
         name="delete_problem",
         description="Delete a problem",
         options=[
-            disnake.Option(
+            Option(
                 name="problem_id",
                 description="Problem ID of the problem you want to delete.",
-                type=disnake.OptionType.integer,
+                type=OptionType.integer,
                 required=True,
             ),
         ],
     )
+    @commands.cooldown(1, 0.5, commands.BucketType.user)
+    @commands.guild_only()
     async def delete_problem(
         self: "ProblemsCog",
         inter: disnake.ApplicationCommandInteraction,
         problem_id: int,
     ) -> typing.Optional[disnake.Message]:
-        """
-        /delete_problem (problem_id: int)
-        Delete a problem.
-        If the problem is a guild problem, you need the Administrator permission.
-        You do not need to specify whether the problem is a guild problem.
-        """
-        # TODO: fix
+        """/delete_problem (problem_id: int)
+        Delete a problem. You must either have the Administrator permission in the guild, and the problem must be a guild problem, or be a trusted user.
+
+        You do not need to specify whether the problem is a guild problem, as the bot can figure it out."""
         if inter.guild is not None:
             guild_id = inter.guild.id
         else:
@@ -953,7 +955,7 @@ class ProblemsCog(HelperCog):
                     user_data: problems_module.UserData = (
                         await self.bot.cache.get_user_data(
                             user_id=inter.author.id,
-                            default=problems_module.UserData(
+                            default=UserData(
                                 user_id=inter.author.id,
                                 trusted=False,
                                 blacklisted=False,
@@ -968,7 +970,7 @@ class ProblemsCog(HelperCog):
                 user_data: problems_module.UserData = (
                     await self.bot.cache.get_user_data(
                         user_id=inter.author.id,
-                        default=problems_module.UserData(
+                        default=UserData(
                             user_id=inter.author.id, trusted=False, blacklisted=False
                         ),
                     )

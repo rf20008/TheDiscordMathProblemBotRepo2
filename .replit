@@ -1,2 +1,2 @@
 language = "python3"
-run = "clear; git pull origin beta; (python3.10 --version || install-pkg python3.10); python3.8 -m pip install -U pip; poetry install; python3.10 main.py"
+run = "clear; git pull origin beta; (python3.10 --version || install-pkg python3.10); poetry install; python3.10 main.py"
