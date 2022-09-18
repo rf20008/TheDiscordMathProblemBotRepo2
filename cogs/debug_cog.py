@@ -129,8 +129,8 @@ class DebugCog(HelperCog):
         if inter.guild is None:
             pass
         elif not (
-            inter.author.guild_permissions().administrator
-            and inter.guild.me.guild_permissions().administrator
+            inter.author.guild_permissions.administrator
+            and inter.guild.me.guild_permissions.administrator
         ):
             return await inter.send(
                 "We must both have the administrator permission to /eval!"

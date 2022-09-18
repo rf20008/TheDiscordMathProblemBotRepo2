@@ -1,7 +1,6 @@
 [build-system]
 build-backend = "poetry.core.masonry.api"
 requires = ["poetry-core>=1.0.0"]
-
 [tool]
 [tool.poetry]
 authors = ["ay136416 <<>>"]
@@ -23,6 +22,7 @@ aiofiles = ">=22.1.0"
 mpmath = ">=1.2.1"
 aiomysql = ">=0.1.1"
 PyMySQL = ">=1.0.2"
+more-itertools = "^8.14.0"
 [tool.poetry.dependencies.disnake]
 git = "https://github.com/DisnakeDev/disnake.git"
 #[tool.poetry.dependencies.orjson]
