@@ -5,8 +5,7 @@ import more_itertools
 from disnake.ext import commands, tasks
 from mpmath import *
 
-from helpful_modules import (checks, custom_bot, problems_module,
-                             threads_or_useful_funcs)
+from helpful_modules import checks, custom_bot, problems_module, threads_or_useful_funcs
 from helpful_modules.custom_embeds import ErrorEmbed, SimpleEmbed, SuccessEmbed
 from helpful_modules.problems_module import *
 
@@ -17,7 +16,7 @@ MAX_NUM = 1_000_000_000_000_000_000_000_000_000_000
 
 class InterestingComputationCog(HelperCog):
     def __init__(self, bot):
-        self.bot=bot
+        self.bot = bot
         self.cache = bot.cache
         super().__init__(bot)
 
@@ -58,8 +57,10 @@ class InterestingComputationCog(HelperCog):
             return sum
 
     @checks.no_insanely_huge_numbers_check()
-    @commands.slash_command(name = "crt_problem", description="crt_problem")
-    async def crt_problem(self, inter: disnake.ApplicationCommandInteraction,  moduli: str, nums: str):
+    @commands.slash_command(name="crt_problem", description="crt_problem")
+    async def crt_problem(
+        self, inter: disnake.ApplicationCommandInteraction, moduli: str, nums: str
+    ):
         """/crt_problem (moduli: str (should be a space-seperated list of numbers)) (nums: str (should be a space-seperated list of numbers)
         Solve the CRT problem for when the moduli are `moduli` and the nums are `nums`
 
@@ -123,7 +124,6 @@ class InterestingComputationCog(HelperCog):
         )
         inter.send(embed=SuccessEmbed(f"The result is f{CRTC.compute()}."))
         return
-
 
 
 def setup(bot):

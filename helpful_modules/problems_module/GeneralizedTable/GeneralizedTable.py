@@ -26,6 +26,8 @@ from ..cache.final_cache import MathProblemCache
 from ..errors import *
 
 T = typing.TypeVar("T")
+
+
 class ConverterData(NamedTuple):
     """ConverterData class
 
@@ -42,29 +44,29 @@ class ConverterData(NamedTuple):
     It is expected that deconverter(converter(X)) == X for all X of type T.
     Additionally we expect converter(deconverter(X)) == X for all X of type T.
     """
+
     type: T
     converter: typing.Callable[[T], str]
     deconverter: typing.Callable[[str], T]
+
+
 TYPE_TO_SQLITE_TYPE = {
     int: "BIGINT",
     str: "MEDIUMTEXT(10000000)",
-    float: "DOUBLE(53)"
+    float: "DOUBLE(53)",
     bytes: "BIGBLOB",
     dict: ConverterData(
         dict,
         converter=orjson.dump,
         deconverter=orjson.load,
     ),
-    mpf: ConverterData(
-        mpf,
-        converter=mpf,
-        deconverter = lambda a: str(a)
-    )
-
+    mpf: ConverterData(mpf, converter=mpf, deconverter=lambda a: str(a)),
 }
 
 Converter = typing.Callable[[T], str]
-DeConverter= typing.Callable[[str], T]
+DeConverter = typing.Callable[[str], T]
+
+
 def addextratype(type_used: T, converter: Converter, deconverter: DeConverter) -> None:
     TYPE_TO_SQLITE_TYPE[T] = ConverterData(type_used, converter, deconverter)
 
@@ -77,14 +79,17 @@ UNUSABLE_NAMES = {
     "user_data",
     "quiz_submission_sessions",
     "guild_data",
-    "quiz_description"
+    "quiz_description",
 }
+
+
 class GeneralizedTable:
     """A table that can be used for general purposes and can be used
     cache: the cache used
     table_name: The table name
     name_to_type_mapping: a mapping from column names to type
     primary_key: the primary key"""
+
     cache: MathProblemCache
     table_name: str
     name_to_type_mapping: Mapping[str, type]
@@ -93,18 +98,29 @@ class GeneralizedTable:
     @property
     def column_names(self):
         return self.name_to_type_mapping.keys()
+
     def validate(self):
         if primary_key not in self.column_names():
-            raise MathProblemsModuleException("Not valid! The primary key has been removed!")
+            raise MathProblemsModuleException(
+                "Not valid! The primary key has been removed!"
+            )
 
-    def __init__(self, cache: MathProblemCache, table_name: str, name_to_type_mapping: Mapping[str, type], primary_key: str):
+    def __init__(
+        self,
+        cache: MathProblemCache,
+        table_name: str,
+        name_to_type_mapping: Mapping[str, type],
+        primary_key: str,
+    ):
         if primary_key not in name_to_type_mapping.keys():
-            raise MathProblemsModuleException("You cannot use this as a primary key since it is not a column name")
-        self.cache=cache
+            raise MathProblemsModuleException(
+                "You cannot use this as a primary key since it is not a column name"
+            )
+        self.cache = cache
         if table_name in UNUSABLE_NAMES:
             raise MathProblemsModuleException("You cannot use this table name")
-        self.table_name=table_name
-        self.name_to_type_mapping=name_to_type_mapping
+        self.table_name = table_name
+        self.name_to_type_mapping = name_to_type_mapping
 
     async def create_my_table(self):
         """
@@ -115,24 +131,8 @@ class GeneralizedTable:
         """
         if self.cache.use_sqlite:
             sql_query = "CREATE TABLE IF NOT EXISTS "
-            sql_query+=self.table_name
+            sql_query += self.table_name
             sql_query += "("
-            for column_type, column_name in self.name_to_type_mapping:
-                # Verify the column type
-                if not isinstance(column_type, (str, dict)):
-                    raise MathProblemsModuleException("The column type is invalid!")
-                if isinstance(column_type, str):
-                    sql_query+= column_name + " " + column_type
-                else:
-                    sql_query += column_name + " MEDIUMTEXT(1000000)" # 10,000,000 characters of space
-                if column_name==primary_key:
-                    sql_query += "PRIMARY KEY"
-                sql_query+=","
-            sql_query = sql_query[:-1]
-            sql_query += ");"
-            await self.cache.run_sql(sql_query)
-        else:
-            sql_query = f"CREATE TABLE IF NOT EXISTS"+ self.table_name + "("
             for column_type, column_name in self.name_to_type_mapping:
                 # Verify the column type
                 if not isinstance(column_type, (str, dict)):
@@ -140,7 +140,27 @@ class GeneralizedTable:
                 if isinstance(column_type, str):
                     sql_query += column_name + " " + column_type
                 else:
-                    sql_query += column_name + " MEDIUMTEXT(1000000)"  # 10,000,000 characters of space
+                    sql_query += (
+                        column_name + " MEDIUMTEXT(1000000)"
+                    )  # 10,000,000 characters of space
+                if column_name == primary_key:
+                    sql_query += "PRIMARY KEY"
+                sql_query += ","
+            sql_query = sql_query[:-1]
+            sql_query += ");"
+            await self.cache.run_sql(sql_query)
+        else:
+            sql_query = f"CREATE TABLE IF NOT EXISTS" + self.table_name + "("
+            for column_type, column_name in self.name_to_type_mapping:
+                # Verify the column type
+                if not isinstance(column_type, (str, dict)):
+                    raise MathProblemsModuleException("The column type is invalid!")
+                if isinstance(column_type, str):
+                    sql_query += column_name + " " + column_type
+                else:
+                    sql_query += (
+                        column_name + " MEDIUMTEXT(1000000)"
+                    )  # 10,000,000 characters of space
                 if column_name == primary_key:
                     sql_query += "PRIMARY KEY"
                 sql_query += ","
@@ -156,7 +176,9 @@ class GeneralizedTable:
         sql_query = ""
         for key, _ in column_name_map.items():
             if key not in self.column_names:
-                raise MathProblemsModuleException(f"The column {key} does not exist in the database.")
+                raise MathProblemsModuleException(
+                    f"The column {key} does not exist in the database."
+                )
         if self.cache.use_sqlite:
             sql_query = "REPLACE INTO " + self.table_name + "VALUES ("
             for key, _ in column_name_map.items():
@@ -164,36 +186,41 @@ class GeneralizedTable:
             sql_query = sql_query[:-1]
             for key, val in column_name_map.items():
                 obj_sql_type = TYPE_TO_SQLITE_TYPE[type(val)]
-                placeholders=()
+                placeholders = ()
                 if isinstance(obj_sql_type, str):
-                    placeholders +=(str(val) + ",")
+                    placeholders += str(val) + ","
                 else:
-                    placeholders += (obj_sql_type.converter(val) + ",")
+                    placeholders += obj_sql_type.converter(val) + ","
             sql_query += ");"
 
             await self.cache.run_sql(sql_query, placeholders)
             return None
         else:
             sql_query = "REPLACE INTO " + self.table_name + "\n SET "
-            placeholders=()
+            placeholders = ()
             for column_name, value in column_name_map.items():
                 sql_query += column_name + " "
                 obj_sql_type = TYPE_TO_SQLITE_TYPE[type(val)]
                 sql_query += "%s,"
                 if isinstance(obj_sql_type, str):
-                    placeholders += (str(val))
+                    placeholders += str(val)
                 else:
-                    placeholders += (obj_sql_type.converter(val) + ",")
+                    placeholders += obj_sql_type.converter(val) + ","
 
             sql_query = sql_query[:-1]
-            sql_query+=";"
+            sql_query += ";"
             await self.cache.run_sql(sql_query, placeholders)
 
-    async def get_obj(self,key:str) -> dict:
+    async def get_obj(self, key: str) -> dict:
         """Get the object at the given key (when the given key is the value of the key)"""
         self.validate()
         if self.use_sqlite:
-            return await self.cache.run_sql(f"""SELECT * FROM {self.table_name} WHERE {self.primary_key} = ?""", placeholders=(key))
+            return await self.cache.run_sql(
+                f"""SELECT * FROM {self.table_name} WHERE {self.primary_key} = ?""",
+                placeholders=(key),
+            )
         else:
-            return await self.cache.run_sql(f"""SELECT * FROM {self.table_name} WHERE {self.primary_key} = %s""",
-                                            placeholders=(key))
+            return await self.cache.run_sql(
+                f"""SELECT * FROM {self.table_name} WHERE {self.primary_key} = %s""",
+                placeholders=(key),
+            )

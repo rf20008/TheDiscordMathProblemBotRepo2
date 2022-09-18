@@ -4,8 +4,7 @@ from typing import *
 import disnake
 from disnake.ext import commands, tasks
 
-from helpful_modules import (checks, custom_bot, problems_module,
-                             threads_or_useful_funcs)
+from helpful_modules import checks, custom_bot, problems_module, threads_or_useful_funcs
 
 from .helper_cog import HelperCog
 

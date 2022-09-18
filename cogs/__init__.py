@@ -8,3 +8,4 @@ from .misc_commands_cog import MiscCommandsCog
 from .problems_cog import ProblemsCog
 from .quiz_cog import QuizCog
 from .test_cog import TestCog
+from .interesting_computation_ import InterestingComputationCog
