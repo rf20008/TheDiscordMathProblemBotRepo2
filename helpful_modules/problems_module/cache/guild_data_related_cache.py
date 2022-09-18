@@ -2,10 +2,13 @@ import asyncio
 import copy
 
 import aiosqlite
-from ..mysql_connector_with_stmt import mysql_connection
+
 from ..GuildData.guild_data import GuildData
 from ..mysql_connector_with_stmt import *
+from ..mysql_connector_with_stmt import mysql_connection
 from .user_data_related_cache import UserDataRelatedCache
+
+
 class GuildDataRelatedCache:
     def set_guild_data(self, data: GuildData):
         assert isinstance(data, GuildData)  # Basic type-checking

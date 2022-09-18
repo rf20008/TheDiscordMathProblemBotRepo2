@@ -338,7 +338,7 @@ class MiscCommandsCog(HelperCog):
 
         You cannot use this command if you are blacklisted.
 
-        This command will delete your permissions -- 
+        This command will delete your permissions --
 
         By using this command, you agree to being DMed!"""
         if save_data_before_deletion:

@@ -1,6 +1,7 @@
 import json
-from .the_basic_check import CheckForUserPassage
+
 from ..errors import InvalidDictionaryInDatabaseException
+from .the_basic_check import CheckForUserPassage
 
 
 class GuildData:
@@ -12,13 +13,13 @@ class GuildData:
     cache: "MathProblemCache"
 
     def __init__(
-            self,
-            guild_id: int,
-            blacklisted: bool,
-            can_create_problems_check: str,
-            can_create_quizzes_check: str,
-            mods_check: str,
-            cache
+        self,
+        guild_id: int,
+        blacklisted: bool,
+        can_create_problems_check: str,
+        can_create_quizzes_check: str,
+        mods_check: str,
+        cache,
     ):
         self.cache = cache
         self.guild_id = guild_id
@@ -51,31 +52,34 @@ class GuildData:
         try:
             self.mods_check = CheckForUserPassage.from_dict(json.loads(mods_check))
         except json.JSONDecodeError as exc:
-            raise InvalidDictionaryInDatabaseException.from_invalid_data(mods_check) from exc
+            raise InvalidDictionaryInDatabaseException.from_invalid_data(
+                mods_check
+            ) from exc
         except KeyError as exc:
             raise InvalidDictionaryInDatabaseException(
-                f"I was able to parse {mods_check} into a dictionary, but I couldn't find the key called {str(exc)}!") from exc
+                f"I was able to parse {mods_check} into a dictionary, but I couldn't find the key called {str(exc)}!"
+            ) from exc
 
     @classmethod
     def from_dict(cls, data: dict, cache) -> "GuildData":
         return cls(
-            blacklisted=bool(data['blacklisted']),
-            guild_id=data['guild_id'],
-            can_create_problems_check=data['can_create_problems_check'],
-            mods_check=data['mods_check'],
-            can_create_quizzes_check=data['can_create_quizzes_check'],
-            cache=cache
+            blacklisted=bool(data["blacklisted"]),
+            guild_id=data["guild_id"],
+            can_create_problems_check=data["can_create_problems_check"],
+            mods_check=data["mods_check"],
+            can_create_quizzes_check=data["can_create_quizzes_check"],
+            cache=cache,
         )
 
     def to_dict(self, include_cache: bool) -> dict:
         dict_to_return = {
-            'blacklisted': int(self.blacklisted),
-            'guild_id': self.guild_id,
-            'can_create_problems_check': self.can_create_problems_check,
-            'can_create_quizzes_check': self.can_create_quizzes_check,
-            'mods_check': self.mods_check,
+            "blacklisted": int(self.blacklisted),
+            "guild_id": self.guild_id,
+            "can_create_problems_check": self.can_create_problems_check,
+            "can_create_quizzes_check": self.can_create_quizzes_check,
+            "mods_check": self.mods_check,
         }
         if include_cache:
-            dict_to_return['cache'] = self.cache
+            dict_to_return["cache"] = self.cache
 
         return dict_to_return

@@ -13,6 +13,7 @@ from .helper_cog import HelperCog
 class DataModificationCog(HelperCog):
     def __init__(self, bot):
         super().__init__(bot)
+
     @commands.slash_command(description="Interact with your user data")
     async def user_data(self, inter: disnake.ApplicationCommandInteraction):
         """The base command to interact with your user data.
@@ -28,8 +29,8 @@ class DataModificationCog(HelperCog):
             disnake.Option(
                 name="save_data_before_deletion",
                 description=(
-                        "Whether to give you your problems or submissions in JSON format!"
-                        "Defaults to True"
+                    "Whether to give you your problems or submissions in JSON format!"
+                    "Defaults to True"
                 ),
                 type=disnake.OptionType.boolean,
                 required=False,
@@ -49,11 +50,11 @@ class DataModificationCog(HelperCog):
         ],
     )
     async def delete_all(
-            self: "MiscCommandsCog",
-            inter: disnake.ApplicationCommandInteraction,
-            save_data_before_deletion: bool = True,
-            delete_votes=False,
-            delete_solves=False,
+        self: "MiscCommandsCog",
+        inter: disnake.ApplicationCommandInteraction,
+        save_data_before_deletion: bool = True,
+        delete_votes=False,
+        delete_solves=False,
     ):
         """/user_data delete_all [save_data_before_deletion: bool = True] [delete_votes: bool = False] [delete_solves: bool = False]
         Delete all your data. YOU MUST CONFIRM THIS!
@@ -74,9 +75,9 @@ class DataModificationCog(HelperCog):
             )  # Turn it into a dictionary
 
         async def confirm_callback(
-                Self: ConfirmationButton,
-                interaction: disnake.Interaction,
-                _extra_data: dict,
+            Self: ConfirmationButton,
+            interaction: disnake.Interaction,
+            _extra_data: dict,
         ) -> None:
             """The function that runs when the button gets pressed. This actually deletes the data.
             Time complexity: O(V*N+P+S*M)
@@ -122,7 +123,7 @@ class DataModificationCog(HelperCog):
             return
 
         async def deny_callback(
-                button: BasicButton, interaction: disnake.MessageInteraction
+            button: BasicButton, interaction: disnake.MessageInteraction
         ):
             """A function that runs when the deny button is pressed"""
             await interaction.response.send_message(
@@ -167,7 +168,7 @@ class DataModificationCog(HelperCog):
         )
 
     async def _get_json_data_by_user(
-            self, author: Union[disnake.User, disnake.Member]
+        self, author: Union[disnake.User, disnake.Member]
     ) -> typing.Dict[str, typing.Any]:
         """
         Return a user's stored data as a dictionary.
@@ -263,7 +264,6 @@ class DataModificationCog(HelperCog):
             # TODO: when discord api allows sending files in interaction replies, send them the file
         except BaseException as e:  # We can't send it for some reason
             raise e
-
 
 
 def setup(bot: custom_bot.TheDiscordMathProblemBot):

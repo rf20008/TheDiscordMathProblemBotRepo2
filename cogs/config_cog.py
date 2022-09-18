@@ -75,7 +75,10 @@ class GuildConfigCog(HelperCog):
             )
         )
 
-    @commands.slash_command(description="Change your guild config!",default_member_permissions=Permissions(administrator=True),)
+    @commands.slash_command(
+        description="Change your guild config!",
+        default_member_permissions=Permissions(administrator=True),
+    )
     async def guild_config(self, inter: disnake.GuildCommandInteraction):
         """/guild_config
         Modify your guild's config -- there are subcommands"""

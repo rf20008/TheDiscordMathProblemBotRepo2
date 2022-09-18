@@ -1,4 +1,3 @@
-
 # Written by @rf20008
 # Licensed under GPLv3 (or later)
 # Feel free to contribute! :-)

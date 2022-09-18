@@ -283,7 +283,7 @@ class DeveloperCommands(HelperCog):
 
             if operation == "^":
                 try:
-                    answer = num1 ** num2
+                    answer = num1**num2
 
                 except OverflowError:  # Too big?
                     try:
