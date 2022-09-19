@@ -166,7 +166,7 @@ docs = ["typing-extensions (>=4.3,<5)", "sphinxcontrib-websupport", "sphinxcontr
 
 [[package]]
 name = "disnake"
-version = "2.6.0a4377+g54432e92"
+version = "2.6.0a4378+g35a79ffa"
 description = "A Python wrapper for the Discord API"
 category = "main"
 optional = false
@@ -186,7 +186,7 @@ voice = ["PyNaCl (>=1.3.0,<1.5)"]
 type = "git"
 url = "https://github.com/DisnakeDev/disnake.git"
 reference = "master"
-resolved_reference = "54432e928eb07e9246c2a513f22fca9bb300200b"
+resolved_reference = "35a79ffa678ea4a115ea0fc24352aa34e980f01d"
 
 [[package]]
 name = "frozenlist"
@@ -200,6 +200,14 @@ python-versions = ">=3.7"
 name = "idna"
 version = "3.4"
 description = "Internationalized Domain Names in Applications (IDNA)"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
+name = "more-itertools"
+version = "8.14.0"
+description = "More routines for operating on iterables, beyond itertools"
 category = "main"
 optional = false
 python-versions = ">=3.5"
@@ -336,7 +344,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "7591469fbcb3878079d11e3262ec13c94b0d7f12bb168abb72bcf22e8e7d48e3"
+content-hash = "95d0dca04f6daf20e60013faa10d39e0bac38102e7f100c29c38e69a439c5df4"
 
 [metadata.files]
 aiofiles = []
@@ -354,6 +362,7 @@ discord-py-slash-command = []
 disnake = []
 frozenlist = []
 idna = []
+more-itertools = []
 mpmath = []
 multidict = []
 mysql-connector-python = []
