@@ -15,7 +15,6 @@ from logging import handlers
 from sys import exc_info, exit, stdout
 
 # Imports - My own files
-from disnake.ext import commands
 
 from cogs import *
 from helpful_modules import (
@@ -32,6 +31,8 @@ from helpful_modules.custom_bot import TheDiscordMathProblemBot
 from helpful_modules.threads_or_useful_funcs import *
 
 # Imports - 3rd party
+from disnake.ext import commands
+
 
 if (
     not __debug__
@@ -54,6 +55,12 @@ if DISCORD_TOKEN is None:
 # TODO: use logging + changelog.json + debugging :-)
 # TODO: fix SQL errors
 # TODO: store logs
+
+should_we_connect = True
+if len(sys.argv) >= 3:
+    if sys.argv[2] == "DO_NOT_CONNECT":
+        should_we_connect=False
+ 
 TRFHB = handlers.TimedRotatingFileHandler(
     filename="logs/bot.log", when="midnight", encoding="utf-8", backupCount=300
 )  # TimedRotatingFileHandler(for the)Bot
@@ -317,4 +324,5 @@ if __name__ == "__main__":
         # raise
         if len(command.name) > 100:
             raise Exception(f"This command: {command.name} is too long!")
-    bot.run(DISCORD_TOKEN)
+    if should_we_connect:
+        bot.run(DISCORD_TOKEN)
