@@ -9,13 +9,14 @@ from types import FunctionType
 
 import disnake
 from disnake.ext import commands, tasks
-from .FileDictionaryReader import AsyncFileDict
+
 import helpful_modules
 from helpful_modules import problems_module
 from helpful_modules.constants_loader import BotConstants
 from helpful_modules.problems_module.cache import MathProblemCache
 from helpful_modules.restart_the_bot import RestartTheBot
 
+from .FileDictionaryReader import AsyncFileDict
 from .threads_or_useful_funcs import modified_async_wrap
 
 
