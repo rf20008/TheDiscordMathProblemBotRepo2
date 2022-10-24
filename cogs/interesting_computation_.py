@@ -35,7 +35,7 @@ class InterestingComputationCog(HelperCog):
                 if not (
                     isinstance(remainders[i], int)
                     and isinstance(moduli[i], int)
-                    and modli[i] > remainders[i] > 0
+                    and moduli[i] > remainders[i] > 0
                 ):
                     raise ValueError("The CRT prerequsites are not satisifed!")
             self.remainders = remainders
@@ -77,14 +77,14 @@ class InterestingComputationCog(HelperCog):
                 embed=ErrorEmbed("Could not convert moduli to a list of numbers!")
             )
             raise
-        if len(moduli_) >= 100:
+        if len(moduli) >= 100:
             return inter.send(embed=ErrorEmbed("Too many moduli!"))
         for i in moduli:
             if i <= 0 or i > 10**30:
                 return inter.send("All the remainders must be positive")
         for i in range(len(moduli) - 1):
             for j in range(i, len(moduli)):
-                if math.gcd(moduli[i], moduli[j]) != 1:
+                if gcd(moduli[i], moduli[j]) != 1:
                     return inter.send(
                         embed=ErrorEmbed(
                             "The chinese remainder theorem doesn't hold unless the numbers are relatively prime"
@@ -93,7 +93,7 @@ class InterestingComputationCog(HelperCog):
             if moduli[i] >= MAX_NUM:
                 raise MathProblemsModuleException("Remainder too big")
             for j in range(i, len(moduli)):
-                if math.gcd(moduli[i], moduli[j]) != 1:
+                if gcd(moduli[i], moduli[j]) != 1:
                     return inter.send(
                         embed=ErrorEmbed(
                             "The chinese remainder theorem doesn't hold unless the numbers are relatively prime"
@@ -120,7 +120,7 @@ class InterestingComputationCog(HelperCog):
             if nums[i] >= moduli[i]:
                 raise MathProblemsModuleException("nums[i] > moduli[i]")
         CRTC = InterestingComputationCog.ChineseRemainderTheoremComputer(
-            remainders=nums, nums=nums
+            remainders=nums, moduli=moduli
         )
         inter.send(embed=SuccessEmbed(f"The result is f{CRTC.compute()}."))
         return

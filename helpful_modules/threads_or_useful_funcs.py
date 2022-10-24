@@ -34,6 +34,27 @@ def get_git_revision_hash() -> str:
         .strip()[:7]
     )  # [7:] is here because of the commit hash, the rest of this function is from stack overflow
 
+def async_wrap(func):
+    """Turn a sync function into an asynchronous function
+    Source: https://dev.to/0xbf/turn-sync-function-to-async-python-tips-58nn
+    """
+
+    @wraps(func)
+    async def run(*args, loop=None, executor=None, **kwargs):
+        if loop is None:
+            loop = asyncio.get_event_loop()
+        pfunc = partial(func, *args, **kwargs)
+        return await loop.run_in_executor(executor, pfunc)
+
+    return run
+
+
+def modified_async_wrap(func):
+    assert isinstance(func, types.FunctionType)
+    if asyncio.iscoroutinefunction(func):
+        return func
+    return async_wrap(func)
+
 
 def loading_documentation_thread():
     """This thread reloads the documentation."""
