@@ -84,14 +84,22 @@ class InterestingComputationCog(HelperCog):
         for i in moduli:
             if i <= 0 or i > 10**30:
                 return inter.send("All the remainders must be positive")
-        for i in range(len(moduli) - 1):
-            for j in range(i+1, len(moduli)):
-                if gcd(moduli[i], moduli[j]) != 1:
-                    return await inter.send(
-                        embed=ErrorEmbed(
-                            "The chinese remainder theorem doesn't hold unless the numbers are relatively prime"
-                        )
+
+                
+        # linear time solution to check for relatively prime:
+        #compute a_1a_2a_3...a_n=C
+        #then for each n from 1 to n:
+        #compute C/a_i mod a_i (call it D)
+        #if gcd(a_i, D) != 1 then they are not pairwise relatively prime
+        # proof: if a_1 is relatively prime to a_2, a_3, a_4, ..., a_n then it is relatively prime to a_2a_3a_4...a_n
+                
+        for num1,num2 in more_itertools.distinct_combinations(moduli, 2):
+            if gcd(moduli[i], moduli[j]) != 1:
+                return await inter.send(
+                    embed=ErrorEmbed(
+                        "The chinese remainder theorem doesn't hold unless the numbers are relatively prime"
                     )
+                )
             if moduli[i] >= MAX_NUM:
                 raise MathProblemsModuleException("Remainder too big")
             for j in range(i, len(moduli)):
