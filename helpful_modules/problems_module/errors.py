@@ -1,5 +1,5 @@
 """Licensed under GPLv3"""
-import mysql.connector
+import aiomysql
 
 
 class MathProblemsModuleException(Exception):
@@ -68,7 +68,7 @@ class SQLException(MathProblemsModuleException):
     pass
 
 
-class MySQLException(SQLException, mysql.connector.Error):
+class MySQLException(SQLException, aiomysql.Error):
     """A generic MYSQL exception"""
 
     def __init__(self, message, base_error):

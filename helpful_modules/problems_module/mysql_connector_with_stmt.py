@@ -1,6 +1,6 @@
 import contextlib
 
-import mysql.connector
+import aiomysql.connector
 
 # Licensed under GPLv3 (or later)
 
