@@ -126,15 +126,7 @@ class DebugCog(HelperCog):
                 "Neither owner_id or owner_ids is defined... exiting!"
             )
 
-        if inter.guild is None:
-            pass
-        elif not (
-            inter.author.guild_permissions.administrator
-            and inter.guild.me.guild_permissions.administrator
-        ):
-            return await inter.send(
-                "We must both have the administrator permission to /eval!"
-            )
+        # the administrator permission requiring was removed
         code_ = "\n".join(code.split("\\n"))  # Split the code by `\n`
         thing_to_run = """async def func(): 
         """  # maybe: just exec() directly

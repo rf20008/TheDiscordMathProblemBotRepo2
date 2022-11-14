@@ -6,7 +6,7 @@ from copy import deepcopy
 from logging import handlers
 from sys import exc_info, stderr
 from time import asctime, sleep
-from typing import Optional
+from typing import Optional, Any
 
 import disnake
 from disnake.ext import commands
@@ -19,6 +19,8 @@ from .the_documentation_file_loader import DocumentationFileLoader
 # Licensed under GPLv3
 
 log = logging.getLogger(__name__)
+
+TYPE_CLASS = type(int) # the class 'type'
 
 
 def generate_new_id():
@@ -158,3 +160,27 @@ def _generate_special_id(guild_id, quiz_id, user_id, attempt_num):
             "attempt_num": attempt_num,
         }
     )
+
+
+def assert_type_or_throw_exception(
+        thing: Any,
+        type: TYPE_CLASS,
+        msg: str = "Wrong type provided!",
+        exc_type: BaseException = TypeError
+):
+    """
+    Assert that `thing` is of type `type` or throw an exception.
+    Parameters
+    ---------
+    thing : Any
+        The thing to test
+    type: `py:class:type`
+        A thing to test the type against
+    msg: str
+        The message of the error that will be raised if the thing is not of type type
+    exc_type: BaseException
+        The exception type thrown. Defaults to `py:class:TypeError`.
+    """
+    if not isinstance(thing, type):
+        raise exc_type(msg)
+    return
