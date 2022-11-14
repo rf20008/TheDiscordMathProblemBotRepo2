@@ -1,16 +1,13 @@
-git+git://github.com/EQUENOS/dislash.py.git@main
 python-dotenv>=0.19.1
-git+git://github.com/rf20008/sqldict.git@main
 mysql-connector-python>=8.0.27
-aiohttp>=3.7.3, <3.8 
-git+git://github.com/top-gg/python-sdk.git@master
-git+git://github.com/omnilib/aiosqlite.git@main
-git+git://github.com/DisnakeDev/disnake.git@main
-git+git://github.com/Iapetus-11/betterstatcord.py
-git+git://github.com/ijl/orjson.git
+aiohttp>=3.8
 pre-commit
 aiofiles >= 22.1.0
 mpmath >= 1.2.1
 more-itertools >= 8.14.0
 aiomysql >= 0.1.1
 pymysql >= 1.0.2
+aiofiles >= 22.1.0
+git+git://github.com/omnilib/aiosqlite.git@main
+git+git://github.com/DisnakeDev/disnake.git@main
+git+git://github.com/ijl/orjson.git

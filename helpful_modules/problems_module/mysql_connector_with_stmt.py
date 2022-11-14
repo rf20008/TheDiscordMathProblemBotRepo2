@@ -1,6 +1,6 @@
 import contextlib
 
-import aiomysql.connector
+import aiomysql
 
 # Licensed under GPLv3 (or later)
 
@@ -13,7 +13,7 @@ def mysql_connection(*args, **kwargs) -> None:
     If an exception happens in the with statement, the connection will commit and close and then the exception will be raised.
     Otherwise, the connection will commit and close. It will not return anything. :-)
     This function is licensed under GPLv3."""
-    connection = mysql.connector.connect(*args, **kwargs)  # Connect
+    connection = aiomysql.connect(*args, **kwargs)  # Connect
     try:
         yield connection
     except:
