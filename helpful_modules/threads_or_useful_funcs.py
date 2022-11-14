@@ -20,6 +20,8 @@ from .the_documentation_file_loader import DocumentationFileLoader
 
 log = logging.getLogger(__name__)
 
+TYPE_CLASS = type(int) # the class 'type'
+
 
 def generate_new_id():
     """Generate a random number from 0 to 2**53-1"""
@@ -158,3 +160,27 @@ def _generate_special_id(guild_id, quiz_id, user_id, attempt_num):
             "attempt_num": attempt_num,
         }
     )
+
+
+def assert_type_or_throw_exception(
+        thing: Any,
+        type: TYPE_CLASS,
+        msg: str = "Wrong type provided!",
+        exc_type: BaseException = TypeError
+):
+    """
+    Assert that `thing` is of type `type` or throw an exception.
+    Parameters
+    ---------
+    thing : Any
+        The thing to test
+    type: `py:class:type`
+        A thing to test the type against
+    msg: str
+        The message of the error that will be raised if the thing is not of type type
+    exc_type: BaseException
+        The exception type thrown. Defaults to `py:class:TypeError`.
+    """
+    if not isinstance(thing, type):
+        raise exc_type(msg)
+    return

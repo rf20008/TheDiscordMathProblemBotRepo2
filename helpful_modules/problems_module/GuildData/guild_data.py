@@ -21,8 +21,38 @@ class GuildData:
         mods_check: str,
         cache,
     ):
+        """
+        Do not instantiate this manually! The `py:class:MathProblemCache` will do it for you.
+        Parameters
+        ----------
+        guild_id : int
+            The ID of the guild that this `GuildData` is attached to.
+        blacklisted : bool
+            Whether this guild is blacklisted. If this is not found in the database , then it will be `False` by default.
+        can_create_quizzes_check : str
+            This is a JSON representation of the `py:class:CheckForUserPassage` to check whether a user can create quizzes.
+            Defaults to allowing everyone to create quizzes.
+        can_create_problems_check: str
+            This is a JSON representation of the `py:class:CheckForUserPassage` used to check whether users can create problems - defaulting to everyone!
+        mods_check : str
+            This is a JSON representation of the `py:class:CheckForUserPassage` used to check whether someone is a moderator and can do mod commands with the bot.
+            Defaults to requiring administrator permissions.
+        cache: py:class:MathProblemCache
+            Internally used for internal state!
+        an instance of py:class:MathProblemCache which is internally used for internal state (but it's not used in this current version)
+
+
+        Raises
+        ---------
+        InvalidDictionaryInDatabaseException
+            This exception would be raised if `can_create_quizzes_check`, `can_create_problems_check`, or `mods_check` could not be parsed into JSON
+        """
         self.cache = cache
+        if not isinstance(guild_id, int):
+            raise TypeError(f"I expected guild_id to be an int, but I got a {guild_id.__class__.name__} instead!")
         self.guild_id = guild_id
+        if not isinstance(guild_id, bool):
+            raise TypeError(f"I expected guild_id to be an int, but I got a {guild_id.__class__.name__} instead!")
         self.blacklisted = blacklisted
         try:
             self.can_create_problems_check = CheckForUserPassage.from_dict(
