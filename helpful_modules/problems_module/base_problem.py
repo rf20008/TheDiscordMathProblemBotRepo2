@@ -5,7 +5,7 @@ import traceback
 import typing
 import warnings
 from copy import deepcopy
-
+from typing import Optional
 import disnake
 
 from .errors import *
@@ -77,9 +77,9 @@ class BaseProblem:
     async def edit(
         self,
         question: str = None,
-        answer: str = None,
-        id: int = None,
-        guild_id: int = None,
+        answer: str | None = None,
+        id: int | None = None,
+        guild_id: Optional[int] = None,
         voters: typing.Optional[typing.List[str]] = None,
         solvers: typing.Optional[typing.List[str]] = None,
         author: typing.Optional[int] = None,

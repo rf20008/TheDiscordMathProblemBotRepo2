@@ -3,6 +3,7 @@ import logging
 import sqlite3
 import typing
 import warnings
+import pickle
 from copy import copy, deepcopy
 from types import FunctionType
 from typing import *
