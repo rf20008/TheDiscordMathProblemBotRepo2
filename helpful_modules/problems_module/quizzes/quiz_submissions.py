@@ -104,10 +104,15 @@ class QuizSubmission:
         return await self.cache.get_quiz(self.quiz_id)
 
     def set_answer(self, problem_id: int, answer: str) -> None:
-        """Set the answer of a quiz problem
+        """Set the answer of a quiz submission
         Parameters
         ----------
-        problem_id: the id of the problem that
+        problem_id : int
+            The ID of the problem that the answer corresponds to.
+        answer : str
+            The actual answer that this submission is sent to
+
+        NOTE THAT THIS DOES NOT CHANGE THE ACTUAL DATABASE! YOU MUST DO IT YOURSELF. <! # todo: make this a note >
         """
         if not self.mutable:
             raise RuntimeError("This instance is not mutable")
